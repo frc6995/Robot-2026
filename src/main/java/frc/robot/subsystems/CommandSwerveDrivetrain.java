@@ -49,7 +49,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    Pigeon2 m_gyro = new Pigeon2(75, TunerConstants.kCANBus2);
+    Pigeon2 m_gyro = new Pigeon2(75, TunerConstants.kCANBus);
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;

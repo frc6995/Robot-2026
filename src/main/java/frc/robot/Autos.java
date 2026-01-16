@@ -70,7 +70,7 @@ import frc.robot.util.ChoreoVariables;
 public class Autos {
 
     public class AutoConstants {
-        public static double DEFAULT_ACCELERATION = 12;
+        public static double DEFAULT_ACCELERATION = 3;
         public static double DEFAULT_JERK = 3;
     }
 
@@ -205,6 +205,11 @@ public class Autos {
         return AllianceFlipUtil.flipPose(bluePose);
     }
 
+    /**
+     * 
+     * @param poseName
+     * @return
+    */
     public static Pose2d flipChorPose(Pose2d poseName) {
         return AllianceFlipUtil.flipPose(poseName);
     }
