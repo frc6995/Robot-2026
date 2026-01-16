@@ -70,7 +70,7 @@ import frc.robot.util.ChoreoVariables;
 public class Autos {
 
     public class AutoConstants {
-        public static double DEFAULT_ACCELERATION = 3;
+        public static double DEFAULT_ACCELERATION = 12;
         public static double DEFAULT_JERK = 3;
     }
 
@@ -87,40 +87,35 @@ public class Autos {
         m_factory = factory;
         m_container = container;
 
-        container.m_chooser.addRoutine(simpleAutoName, this::simpleAuto);
-        container.m_chooser.addRoutine(backsideL1Name, this::backsideL1);
+        container.m_chooser.addRoutine(choreoAutoName, this::choreoAuto);
+        container.m_chooser.addRoutine(APName, this::APAuto);
     }
 
-    // Example auto
-    String simpleAutoName = "Simple Auto";
-    Pose2d stationIntake = ChoreoVars.Poses.Lolipop1;
+    Pose2d testStart = flipChorPose(ChoreoVars.Poses.testStart);
+    Pose2d testEndPose = flipChorPose(ChoreoVars.Poses.testEnd);
 
-    public AutoRoutine simpleAuto() {
-        final AutoRoutine routine = m_factory.newRoutine(simpleAutoName);
-        final AutoTrajectory traj = routine.trajectory("NewPath");
+
+    // Example auto
+    String choreoAutoName = "Choreo Auto";
+
+    public AutoRoutine choreoAuto() {
+        final AutoRoutine routine = m_factory.newRoutine(choreoAutoName);
+        final AutoTrajectory traj = routine.trajectory("OP");
         routine.active().onTrue(
                 traj.resetOdometry()
-                        .andThen(traj.cmd())
-                        .andThen(defaultAutoAlignCommand(stationIntake)));
+                        .andThen(traj.cmd()));
         return routine;
     }
 
-    // Example auto
-    String backsideL1Name = "Backside L1";
+     // Example auto
+    String APName = "AP Auto";
+    public AutoRoutine APAuto() {
+        final AutoRoutine routine = m_factory.newRoutine(APName);
+        final AutoTrajectory odometry = routine.trajectory("resetOdometryStart");
 
-    public AutoRoutine backsideL1() {
-        final AutoRoutine routine = m_factory.newRoutine(backsideL1Name);
-        var firstScore = routine.trajectory("BacksideL1(1)");
-        var postScoreIntake = routine.trajectory("BackbsideL1(2)");
         routine.active().onTrue(
-                firstScore.resetOdometry()
-                        .andThen(firstScore.cmd()
-                                .andThen(waitSeconds(SCORE_WAIT))
-                                .andThen(postScoreIntake.cmd())));
-
-        firstScore.atTimeBeforeEnd(0.2).onTrue(prepL1());
-        // firstScore.doneFor(0.1).onTrue(null/*stateMachine.scoreL1());
-        // firstScore.atTimeBeforeEnd(0.1).onTrue(stateMachine.intakeCoral());
+                odometry.resetOdometry()
+                        .andThen(defaultAlignRequest(testEndPose)));
         return routine;
     }
 
@@ -173,7 +168,7 @@ public class Autos {
      * @param targetPose The desired ending Pose2d
      * @return The Command to navigate to the given Pose2d.
      */
-    public Command defaultAutoAlignCommand(Pose2d targetPose) {
+    public Command defaultAlignRequest(Pose2d targetPose) {
         return new AutoAlign(new APTarget(AllianceFlipUtil.flipPose(targetPose)), m_drivebase,
                 new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
     }
@@ -187,7 +182,7 @@ public class Autos {
      * @param entryAngle The desired angle to approach the targetPose with.
      * @return The Command to navigate to the given Pose2d.
      */
-    public Command defaultAutoAlignCommand(Pose2d targetPose, Rotation2d entryAngle) {
+    public Command defaultAlignRequest(Pose2d targetPose, Rotation2d entryAngle) {
         return new AutoAlign(new APTarget(AllianceFlipUtil.flipPose(targetPose))
                 .withEntryAngle(AllianceFlipUtil.flipRotation(entryAngle)), m_drivebase,
                 new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
@@ -195,17 +190,22 @@ public class Autos {
 
     /**
      * Creates a Pose2d from choreo variables
+     * Warning, this is not codegen
      * 
      * @param poseName (from Choreo)
      * @return a new {@code Pose2d} with the specified pose's coordinates and
      *         rotation
      */
-    public static Pose2d createChoreoPose(String poseName) {
+    public static Pose2d createChoreoVariablesPose(String poseName) {
         Pose2d bluePose = new Pose2d(
                 ChoreoVariables.getPose(poseName).getX(),
                 ChoreoVariables.getPose(poseName).getY(),
                 ChoreoVariables.getPose(poseName).getRotation());
 
         return AllianceFlipUtil.flipPose(bluePose);
+    }
+
+    public static Pose2d flipChorPose(Pose2d poseName) {
+        return AllianceFlipUtil.flipPose(poseName);
     }
 }

@@ -27,30 +27,23 @@ public record ChoreoTraj(
     public static final ChoreoTraj Variables = new ChoreoTraj(
 	    "Variables",
 	    OptionalInt.empty(),
-	    4.12055,
-	    new Pose2d(7.306, 5.288, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(1.228, 7.163, Rotation2d.fromRadians(2.205))
+	    1.41811,
+	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0)),
+	    new Pose2d(7.429, 6.561, Rotation2d.fromRadians(-1.044))
 	);
-	public static final ChoreoTraj NewPath = new ChoreoTraj(
-	    "NewPath",
+	public static final ChoreoTraj OP = new ChoreoTraj(
+	    "OP",
 	    OptionalInt.empty(),
-	    1.19646,
-	    new Pose2d(7.527, 6.493, Rotation2d.fromRadians(0)),
-	    new Pose2d(4.958, 4.505, Rotation2d.fromRadians(0))
+	    1.41811,
+	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0)),
+	    new Pose2d(7.429, 6.561, Rotation2d.fromRadians(-1.044))
 	);
-	public static final ChoreoTraj B2 = new ChoreoTraj(
-	    "B2",
+	public static final ChoreoTraj resetOdometryStart = new ChoreoTraj(
+	    "resetOdometryStart",
 	    OptionalInt.empty(),
-	    0.74099,
-	    new Pose2d(5.96, 3.87, Rotation2d.fromRadians(1.571)),
-	    new Pose2d(7.043, 4.288, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj B3 = new ChoreoTraj(
-	    "B3",
-	    OptionalInt.empty(),
-	    2.44151,
-	    new Pose2d(6.05, 4.03, Rotation2d.fromRadians(1.571)),
-	    new Pose2d(2.241, 7.056, Rotation2d.fromRadians(0))
+	    0.00001,
+	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0)),
+	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0))
 	);
 
     /**
@@ -59,9 +52,8 @@ public record ChoreoTraj(
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("Variables", Variables),
-		Map.entry("NewPath", NewPath),
-		Map.entry("B2", B2),
-		Map.entry("B3", B3)
+		Map.entry("OP", OP),
+		Map.entry("resetOdometryStart", resetOdometryStart)
     );
 
     /**
