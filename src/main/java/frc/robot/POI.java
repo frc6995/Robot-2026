@@ -26,6 +26,8 @@ public class POI {
     public final static Pose2d testStart = ChoreoVars.Poses.testStart;
     public final static Pose2d testEnd = ChoreoVars.Poses.testEnd;
 
+
+    // ============= CHOREO POSE UTILITIES =============
     /**
      * DEPRICATED! Creates a Pose2d from choreo variables
      * Warning, this is not codegen

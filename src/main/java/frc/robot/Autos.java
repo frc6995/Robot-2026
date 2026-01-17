@@ -114,16 +114,6 @@ public class Autos {
 
     // ============= CONVENIENCE WRAPPERS =============
 
-    /**
-     * Quick AP-only auto builder for simple point-to-point
-     */
-    private AutoRoutine apOnlyAuto(String name, Pose2d start, Pose2d... targets) {
-        Command[] commands = new Command[targets.length];
-        for (int i = 0; i < targets.length; i++) {
-            commands[i] = defaultAlignRequest(targets[i]);
-        }
-        return auto(name, start, commands);
-    }
 
     /**
      * Hybrid auto builder for common pattern
