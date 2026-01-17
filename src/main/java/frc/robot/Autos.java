@@ -1,71 +1,25 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.wpilibj2.command.Commands.deadline;
-import static edu.wpi.first.wpilibj2.command.Commands.defer;
-import static edu.wpi.first.wpilibj2.command.Commands.either;
-import static edu.wpi.first.wpilibj2.command.Commands.none;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.print;
-import static edu.wpi.first.wpilibj2.command.Commands.race;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static edu.wpi.first.wpilibj2.command.Commands.select;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.therekrab.autopilot.APConstraints;
-import com.therekrab.autopilot.APTarget;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import choreo.auto.AutoChooser;
-import choreo.trajectory.SwerveSample;
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.Logged.Strategy;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Pair;
+import com.therekrab.autopilot.APConstraints;
+import com.therekrab.autopilot.APTarget;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.ChoreoVars;
-
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.IntakePivotS;
-import frc.robot.subsystems.IntakePivotS.intakeConstants;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.ChoreoVariables;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class Autos {
 
@@ -74,92 +28,111 @@ public class Autos {
         public static double DEFAULT_JERK = 12;
     }
 
-    private final AutoFactory m_factory;
-    private final RobotContainer m_container;
-    protected final CommandSwerveDrivetrain m_drivebase;
-    protected final IntakePivotS m_intakepiv;
-    private final double SCORE_WAIT = 0.875;
+    private final AutoFactory factory;
+    private final CommandSwerveDrivetrain m_drivebase;
+    private final Map<String, Supplier<AutoRoutine>> autos = new LinkedHashMap<>();
 
-    public Autos(CommandSwerveDrivetrain drivebase, IntakePivotS intakepiv,
-            AutoFactory factory, RobotContainer container) {
-        m_drivebase = drivebase; // need
-        m_intakepiv = intakepiv;
-        m_factory = factory;
-        m_container = container;
+    public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container) {
+        this.factory = factory;
+        this.m_drivebase = drive;
 
-        container.m_chooser.addRoutine(choreoAutoName, this::choreoAuto);
-        container.m_chooser.addRoutine(APName, this::APAuto);
+        // Define all autos - now with full flexibility
+        autos.put("AP_Simple", () -> auto("AP_Simple", POI.testStart,
+                defaultAlignRequest(POI.testEnd)));
+
+        autos.put("AP_Multi", () -> auto("AP_Multi", POI.testStart,
+                defaultAlignRequest(POI.testStart),
+                defaultAlignRequest(POI.testStart)));
+        autos.put("Hybrid_Flex", () -> auto("Hybrid_Flex", POI.testStart,
+                defaultAlignRequest(POI.testStart),
+                interruptibleChoreo("PrecisePath"),
+                defaultAlignRequest(POI.testEnd),
+                defaultAlignRequest(POI.testStart)));
+
+        // Auto-register
+        autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));
     }
 
-    Pose2d testStart = flipChorPose(ChoreoVars.Poses.testStart);
-    Pose2d testEndPose = flipChorPose(ChoreoVars.Poses.testEnd);
+    // ============= FLEXIBLE AUTO BUILDER =============
 
+    /**
+     * Build any auto with full command sequence flexibility
+     * 
+     * @param name      Auto name
+     * @param startPose Starting pose (auto-resets odometry)
+     * @param commands  Any sequence of commands (AP, choreo, actions, etc.)
+     */
+    private AutoRoutine auto(String name, Pose2d startPose, Command... commands) {
+        AutoRoutine r = factory.newRoutine(name);
 
-    // Example auto
-    String choreoAutoName = "Choreo Auto";
+        // Start with odometry reset
+        Command sequence = factory.resetOdometry(() -> Optional.of(startPose));
 
-    public AutoRoutine choreoAuto() {
-        final AutoRoutine routine = m_factory.newRoutine(choreoAutoName);
-        final AutoTrajectory traj = routine.trajectory("OP");
-        routine.active().onTrue(
-                traj.resetOdometry()
-                .andThen(traj.cmd())
-                      );
-        return routine;
+        // Add all provided commands
+        for (Command cmd : commands) {
+            sequence = sequence.andThen(cmd);
+        }
+
+        r.active().onTrue(sequence);
+        return r;
     }
 
-     // Example auto
-    String APName = "AP Auto";
-    public AutoRoutine APAuto() {
-        final AutoRoutine routine = m_factory.newRoutine(APName);
-        final AutoTrajectory odometry = routine.trajectory("resetOdometryStart");
+    // ============= REUSABLE COMMAND BUILDERS =============
 
-        routine.active().onTrue(
-                odometry.resetOdometry()
-                        .andThen(defaultAlignRequest(testEndPose)));
-        return routine;
+    /**
+     * Interruptible choreo path (can be cancelled by safety/operator)
+     */
+    private Command interruptibleChoreo(String choreoName) {
+        // Create a temporary routine to get the trajectory
+        AutoTrajectory choreo = factory.newRoutine("temp").trajectory(choreoName);
+
+        return Commands.race(
+                choreo.cmd(),
+                Commands.waitUntil(this::shouldInterrupt)
+                        .andThen(Commands.print("Interrupted choreo: " + choreoName)));
     }
 
-    public enum RobotState {
-        // Todo: add all states as in button mapping doc
-        CORAL_INTAKING,
-        HANDOFF,
-        L1_PRE_SCORE,
-        L2_PRE_SCORE,
-        L3_PRE_SCORE,
-        L4_PRE_SCORE,
-        INTAKING_ALGAE_GROUND,
-        INTAKING_ALGAE_REEF,
-        ALGAE_STOW,
-        BARGE_PREP
+    /**
+     * Interruptible choreo with custom interruption condition
+     */
+    private Command interruptibleChoreo(String choreoName, Supplier<Boolean> interruptCondition) {
+        AutoTrajectory choreo = factory.newRoutine("temp").trajectory(choreoName);
 
+        return Commands.race(
+                choreo.cmd(),
+                Commands.waitUntil((BooleanSupplier) interruptCondition)
+                        .andThen(Commands.print("Custom interrupt: " + choreoName)));
     }
 
-    public RobotState currentState = RobotState.HANDOFF;
+    // ============= UTILITY COMMANDS =============
 
-    // Functions below:
-    // Todo: add command that combines intakeCoral and stowCoral, update states
-
-    public Command stowCoral() {
-        return Commands.sequence(setState(RobotState.HANDOFF),
-                m_intakepiv.setAngle(intakeConstants.ALGAE_INTAKE));
+    private boolean shouldInterrupt() {
+        // Add your interruption logic. Within tolerance?
+        return false;
     }
 
-    // Commands below:
-    // TODO: add handoff sequence
+    // ============= CONVENIENCE WRAPPERS =============
 
-    public Command prepL1() {
-        return Commands.sequence(setState(RobotState.L1_PRE_SCORE),
-                m_intakepiv.setAngle(intakeConstants.STOW)
-
-        );
+    /**
+     * Quick AP-only auto builder for simple point-to-point
+     */
+    private AutoRoutine apOnlyAuto(String name, Pose2d start, Pose2d... targets) {
+        Command[] commands = new Command[targets.length];
+        for (int i = 0; i < targets.length; i++) {
+            commands[i] = defaultAlignRequest(targets[i]);
+        }
+        return auto(name, start, commands);
     }
 
-    public Command setState(RobotState newState) {
-        return Commands.runOnce(() -> {
-            currentState = newState;
-            System.out.println("State changed to: " + newState);
-        });
+    /**
+     * Hybrid auto builder for common pattern
+     */
+    private AutoRoutine hybridPatternAuto(String name, Pose2d start,
+            String choreoName, Pose2d afterChoreo) {
+        return auto(name, start,
+                defaultAlignRequest(ChoreoVars.Poses.testStart),
+                interruptibleChoreo(choreoName),
+                defaultAlignRequest(afterChoreo));
     }
 
     /**
@@ -189,29 +162,5 @@ public class Autos {
                 new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
     }
 
-    /**
-     * Creates a Pose2d from choreo variables
-     * Warning, this is not codegen
-     * 
-     * @param poseName (from Choreo)
-     * @return a new {@code Pose2d} with the specified pose's coordinates and
-     *         rotation
-     */
-    public static Pose2d createChoreoVariablesPose(String poseName) {
-        Pose2d bluePose = new Pose2d(
-                ChoreoVariables.getPose(poseName).getX(),
-                ChoreoVariables.getPose(poseName).getY(),
-                ChoreoVariables.getPose(poseName).getRotation());
 
-        return AllianceFlipUtil.flipPose(bluePose);
-    }
-
-    /**
-     * 
-     * @param poseName
-     * @return
-    */
-    public static Pose2d flipChorPose(Pose2d poseName) {
-        return AllianceFlipUtil.flipPose(poseName);
-    }
 }

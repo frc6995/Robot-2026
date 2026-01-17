@@ -76,7 +76,7 @@ public class RobotContainer {
         SmartDashboard.putData("Visualzer", VISUALIZER);
 
         autoFactory = m_drivetrain.createAutoFactory();
-        autoRoutines = new Autos(m_drivetrain, yIntakePivot, autoFactory, this);
+        autoRoutines = new Autos(m_drivetrain, autoFactory, this);
         SmartDashboard.putData("Auto Mode", m_chooser);
         configureBindings();
 
@@ -120,7 +120,6 @@ public class RobotContainer {
          */
         m_drivetrain.registerTelemetry(logger::telemeterize);
         // Assigns button b on a zbox controller to the command "goToAngle".
-        joystick.b().onTrue(autoRoutines.prepL1());
        /*  joystick.start().onTrue(Commands.runOnce(() -> {
             m_drivetrain.resetPose(
                 m_drivetrain.getState().Pose.getTranslation(),
