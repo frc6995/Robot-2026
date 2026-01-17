@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -49,7 +50,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    Pigeon2 m_gyro = new Pigeon2(75, TunerConstants.kCANBus2);
+    private final Pigeon2 m_gyro = new Pigeon2(75, TunerConstants.kCANBus2);
+
+    private final Vision m_vision = new Vision(m_gyro);
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -316,6 +319,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                                 : kBlueAlliancePerspectiveRotation);
                 m_hasAppliedOperatorPerspective = true;
             });
+        }
+
+        if(Robot.isReal()) {
+            m_vision.periodic();
+
+            var estimates = m_vision.getAllEstimates();
+
+            for(var estimate : estimates) {
+                addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);
+            }
         }
     }
 
