@@ -37,14 +37,16 @@ public class Autos {
         this.m_drivebase = drive;
 
         // Define all autos - now with full flexibility
-        autos.put("AP_Simple", () -> auto("AP_Simple", POI.testStart,
-                defaultAlignRequest(POI.testEnd),
-                defaultAlignRequest(POI.testStart)));
+        autos.put("AP_Simple", () -> auto("AP_Simple", ChoreoVars.Poses.L_Start,
+                defaultAlignRequest(ChoreoVars.Poses.L_Sweep),
+                defaultAlignRequest( ChoreoVars.Poses.R_Sweep),
+                defaultAlignRequest(ChoreoVars.Poses.R_Start),
+                defaultAlignRequest(ChoreoVars.Poses.C_ClimbPose)
+                ));
 
-        autos.put("AP_Multi", () -> auto("AP_Multi", POI.testStart,
-                defaultAlignRequest(POI.testEnd),
-                defaultAlignRequest(POI.testStart)));
-
+        autos.put("AP_Multi", () -> auto("AP_Multi", ChoreoVars.Poses.R_Start,
+                defaultAlignRequest(ChoreoVars.Poses.L_Sweep),
+                defaultAlignRequest(ChoreoVars.Poses.R_Start)));
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));

@@ -24,12 +24,12 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj Variables = new ChoreoTraj(
-	    "Variables",
+    public static final ChoreoTraj Poses = new ChoreoTraj(
+	    "Poses",
 	    OptionalInt.empty(),
-	    0.86639,
-	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0)),
-	    new Pose2d(4.729, 6.561, Rotation2d.fromRadians(-1.044))
+	    9.25883,
+	    new Pose2d(0.45, 5.971, Rotation2d.fromRadians(0)),
+	    new Pose2d(3.53, 0.732, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj OP = new ChoreoTraj(
 	    "OP",
@@ -58,7 +58,7 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("Variables", Variables),
+    	Map.entry("Poses", Poses),
 		Map.entry("OP", OP),
 		Map.entry("resetOdometryStart", resetOdometryStart),
 		Map.entry("Flex", Flex)
