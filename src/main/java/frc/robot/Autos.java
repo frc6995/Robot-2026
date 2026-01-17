@@ -70,8 +70,8 @@ import frc.robot.util.ChoreoVariables;
 public class Autos {
 
     public class AutoConstants {
-        public static double DEFAULT_ACCELERATION = 3;
-        public static double DEFAULT_JERK = 3;
+        public static double DEFAULT_ACCELERATION = 15;
+        public static double DEFAULT_JERK = 12;
     }
 
     private final AutoFactory m_factory;
@@ -103,7 +103,8 @@ public class Autos {
         final AutoTrajectory traj = routine.trajectory("OP");
         routine.active().onTrue(
                 traj.resetOdometry()
-                        .andThen(traj.cmd()));
+                .andThen(traj.cmd())
+                      );
         return routine;
     }
 

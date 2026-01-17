@@ -121,7 +121,14 @@ public class RobotContainer {
         m_drivetrain.registerTelemetry(logger::telemeterize);
         // Assigns button b on a zbox controller to the command "goToAngle".
         joystick.b().onTrue(autoRoutines.prepL1());
-
+       /*  joystick.start().onTrue(Commands.runOnce(() -> {
+            m_drivetrain.resetPose(
+                m_drivetrain.getState().Pose.getTranslation(),
+                Rotation2d.fromDegrees(0)
+            );
+            System.out.println("Heading zeroed!");
+        }));
+*/
     }
 
     public Command getAutonomousCommand() {
