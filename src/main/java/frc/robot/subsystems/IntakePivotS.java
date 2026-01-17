@@ -96,7 +96,7 @@ public class IntakePivotS extends SubsystemBase {
       .withStatorCurrentLimit(Amps.of(intakeConstants.STATOR_CURRENT_LIMIT));
 
   // Vendor motor controller object
-  private TalonFX intakePivotMotor = new TalonFX(intakeConstants.MOTOR_ID, TunerConstants.kCANBus2);
+  private TalonFX intakePivotMotor = new TalonFX(intakeConstants.MOTOR_ID, TunerConstants.kCANBus);
 
   // Create our SmartMotorController from our Spark and config with the NEO.
   private SmartMotorController IntakeSMC = new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);

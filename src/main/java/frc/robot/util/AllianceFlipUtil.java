@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class AllianceFlipUtil {
     public static double FIELD_WIDTH = Units.feetToMeters(26.0) + Units.inchesToMeters(5.0);
-    public static double FIELD_LENGTH = Units.feetToMeters(57.0) + Units.inchesToMeters(6.875);
+    public static double FIELD_LENGTH = Units.feetToMeters(54.3);
 
     public static boolean isRedAlliance() {
         var alliance = DriverStation.getAlliance();

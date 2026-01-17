@@ -13,8 +13,8 @@ import edu.wpi.first.units.measure.*;
 public final class ChoreoVars {
 
     public static final class Poses {
+        public static final Pose2d testEnd = new Pose2d(4.729, 6.561, Rotation2d.fromRadians(-1.044));
         public static final Pose2d testStart = new Pose2d(3.627, 7.495, Rotation2d.kZero);
-        public static final Pose2d testEnd = new Pose2d(7.429, 6.561, Rotation2d.fromRadians(-1.044));
 
         private Poses() {}
     }
