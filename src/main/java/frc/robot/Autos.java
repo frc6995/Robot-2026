@@ -38,10 +38,11 @@ public class Autos {
 
         // Define all autos - now with full flexibility
         autos.put("AP_Simple", () -> auto("AP_Simple", POI.testStart,
-                defaultAlignRequest(POI.testEnd)));
+                defaultAlignRequest(POI.testEnd),
+                defaultAlignRequest(POI.testStart)));
 
         autos.put("AP_Multi", () -> auto("AP_Multi", POI.testStart,
-                defaultAlignRequest(POI.testStart),
+                defaultAlignRequest(POI.testEnd),
                 defaultAlignRequest(POI.testStart)));
         autos.put("Hybrid_Flex", () -> auto("Hybrid_Flex", POI.testStart,
                 defaultAlignRequest(POI.testStart),
@@ -66,7 +67,7 @@ public class Autos {
         AutoRoutine r = factory.newRoutine(name);
 
         // Start with odometry reset
-        Command sequence = factory.resetOdometry(() -> Optional.of(startPose));
+        Command sequence = factory.resetOdometry((Optional.of(startPose)), true);
 
         // Add all provided commands
         for (Command cmd : commands) {
@@ -161,6 +162,5 @@ public class Autos {
                 .withEntryAngle(AllianceFlipUtil.flipRotation(entryAngle)), m_drivebase,
                 new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
     }
-
 
 }

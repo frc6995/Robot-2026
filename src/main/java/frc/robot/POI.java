@@ -21,12 +21,10 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-
 public class POI {
-    
-    public final static Pose2d testStart = flipChorPose(ChoreoVars.Poses.testStart);
-    public final static Pose2d testEnd = flipChorPose(ChoreoVars.Poses.testEnd);
 
+    public final static Pose2d testStart = ChoreoVars.Poses.testStart;
+    public final static Pose2d testEnd = ChoreoVars.Poses.testEnd;
 
     /**
      * DEPRICATED! Creates a Pose2d from choreo variables
@@ -47,6 +45,7 @@ public class POI {
 
     /**
      * Creates a Pose2d from Choreo and flips it based on alliance
+     * 
      * @param poseName
      * @return
      */
