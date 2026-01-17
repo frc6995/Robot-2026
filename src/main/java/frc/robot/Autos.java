@@ -44,11 +44,7 @@ public class Autos {
         autos.put("AP_Multi", () -> auto("AP_Multi", POI.testStart,
                 defaultAlignRequest(POI.testEnd),
                 defaultAlignRequest(POI.testStart)));
-        autos.put("Hybrid_Flex", () -> auto("Hybrid_Flex", POI.testStart,
-                defaultAlignRequest(POI.testStart),
-                interruptibleChoreo("PrecisePath"),
-                defaultAlignRequest(POI.testEnd),
-                defaultAlignRequest(POI.testStart)));
+
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));
@@ -78,54 +74,7 @@ public class Autos {
         return r;
     }
 
-    // ============= REUSABLE COMMAND BUILDERS =============
-
-    /**
-     * Interruptible choreo path (can be cancelled by safety/operator)
-     */
-    private Command interruptibleChoreo(String choreoName) {
-        // Create a temporary routine to get the trajectory
-        AutoTrajectory choreo = factory.newRoutine("temp").trajectory(choreoName);
-
-        return Commands.race(
-                choreo.cmd(),
-                Commands.waitUntil(this::shouldInterrupt)
-                        .andThen(Commands.print("Interrupted choreo: " + choreoName)));
-    }
-
-    /**
-     * Interruptible choreo with custom interruption condition
-     */
-    private Command interruptibleChoreo(String choreoName, Supplier<Boolean> interruptCondition) {
-        AutoTrajectory choreo = factory.newRoutine("temp").trajectory(choreoName);
-
-        return Commands.race(
-                choreo.cmd(),
-                Commands.waitUntil((BooleanSupplier) interruptCondition)
-                        .andThen(Commands.print("Custom interrupt: " + choreoName)));
-    }
-
-    // ============= UTILITY COMMANDS =============
-
-    private boolean shouldInterrupt() {
-        // Add your interruption logic. Within tolerance?
-        return false;
-    }
-
-    // ============= CONVENIENCE WRAPPERS =============
-
-
-    /**
-     * Hybrid auto builder for common pattern
-     */
-    private AutoRoutine hybridPatternAuto(String name, Pose2d start,
-            String choreoName, Pose2d afterChoreo) {
-        return auto(name, start,
-                defaultAlignRequest(ChoreoVars.Poses.testStart),
-                interruptibleChoreo(choreoName),
-                defaultAlignRequest(afterChoreo));
-    }
-
+  
     /**
      * Creates a new Command using the Autopilot AutoAlign to navigate to the
      * targetPose.

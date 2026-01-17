@@ -45,6 +45,13 @@ public record ChoreoTraj(
 	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0)),
 	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0))
 	);
+	public static final ChoreoTraj Flex = new ChoreoTraj(
+	    "Flex",
+	    OptionalInt.empty(),
+	    0.77852,
+	    new Pose2d(6.102, 7.124, Rotation2d.fromRadians(0)),
+	    new Pose2d(6.393, 5.94, Rotation2d.fromRadians(0))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -53,7 +60,8 @@ public record ChoreoTraj(
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("Variables", Variables),
 		Map.entry("OP", OP),
-		Map.entry("resetOdometryStart", resetOdometryStart)
+		Map.entry("resetOdometryStart", resetOdometryStart),
+		Map.entry("Flex", Flex)
     );
 
     /**
