@@ -53,7 +53,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    private final Pigeon2 m_gyro = new Pigeon2(75, TunerConstants.kCANBus2);
+    private final Pigeon2 m_gyro = new Pigeon2(75, TunerConstants.kCANBus);
 
     private final Vision m_vision = new Vision(m_gyro);
 
@@ -324,14 +324,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        if(Robot.isReal()) {
-            m_vision.periodic();
+        m_vision.periodic();
 
-            var estimates = m_vision.getAllEstimates();
-
-            for(var estimate : estimates) {
-                addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);
-            }
+        var estimates = m_vision.getAllEstimates();
+        for(var estimate : estimates) {
+            addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);
         }
     }
 

@@ -66,9 +66,18 @@ public class VisionModule {
      */
     private void updateTelemetry() {
         estimatePublisher.accept(getPose().isPresent() ? getPose().get().pose : new Pose3d());
-        isActivePublisher.accept(getPoseMT1().isPresent() && getPoseMT1().get().hasData);
+        isActivePublisher.accept(isActive());
         modePublisher.accept(lastMode.toString());
         defaultModePublisher.accept(defaultMode.toString());
+    }
+
+    /**
+     * Checks if there is an AprilTag pose estimation.
+     * 
+     * @return Whether or not the Limelight is estimating a robot pose.
+     */
+    public boolean isActive() {
+        return getPoseMT1().isPresent() && getPoseMT1().get().hasData;
     }
 
     /**
@@ -79,6 +88,8 @@ public class VisionModule {
      * @return The estimated pose if the Limelight has targets
      */
     public Optional<PoseEstimate> getPose() {
+        if(!isActive()) return Optional.empty();
+
         switch(defaultMode) {
             case MEGATAG1:
                 return getPoseMT1();
