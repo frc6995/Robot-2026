@@ -27,16 +27,16 @@ public record ChoreoTraj(
     public static final ChoreoTraj OP = new ChoreoTraj(
 	    "OP",
 	    OptionalInt.empty(),
-	    1.65841,
+	    1.02954,
 	    new Pose2d(2.079, 6.897, Rotation2d.fromRadians(0)),
-	    new Pose2d(5.741, 3.316, Rotation2d.fromRadians(-0.658))
+	    new Pose2d(3.041, 5.016, Rotation2d.fromRadians(-0.658))
 	);
 	public static final ChoreoTraj Poses = new ChoreoTraj(
 	    "Poses",
 	    OptionalInt.empty(),
-	    12.68967,
+	    12.01389,
 	    new Pose2d(0.45, 5.971, Rotation2d.fromRadians(0)),
-	    new Pose2d(5.741, 3.316, Rotation2d.fromRadians(-0.658))
+	    new Pose2d(3.041, 5.816, Rotation2d.fromRadians(-0.658))
 	);
 
     /**
