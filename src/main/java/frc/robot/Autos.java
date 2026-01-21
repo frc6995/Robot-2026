@@ -1,5 +1,6 @@
 package frc.robot;
 
+import choreo.Choreo;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
@@ -14,6 +15,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.ChoreoVariables;
+import frc.robot.POI;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,14 +41,14 @@ public class Autos {
         // Define all autos - now with full flexibility
         autos.put("AP_Simple", () -> auto("AP_Simple", ChoreoVars.Poses.L_Start,
                 defaultAlignRequest(ChoreoVars.Poses.L_Sweep),
-                defaultAlignRequest( ChoreoVars.Poses.R_Sweep),
+                defaultAlignRequest(ChoreoVars.Poses.R_Sweep),
                 defaultAlignRequest(ChoreoVars.Poses.R_Start),
                 defaultAlignRequest(ChoreoVars.Poses.C_ClimbPose)
                 ));
 
         autos.put("AP_Multi", () -> auto("AP_Multi", ChoreoVars.Poses.R_Start,
-                defaultAlignRequest(ChoreoVars.Poses.L_Sweep),
-                defaultAlignRequest(ChoreoVars.Poses.R_Start)));
+                defaultAlignRequestNotFlipped(POI.getInstance().getL_Start()),
+                defaultAlignRequestNotFlipped(POI.getL_Start())));
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));
@@ -89,6 +91,18 @@ public class Autos {
                 new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
     }
 
+        /**
+     * NOT FLIPPED! Creates a new Command using the Autopilot AutoAlign to navigate to the
+     * targetPose.
+     * 
+     * @param targetPose The desired ending Pose2d
+     * @return The Command to navigate to the given Pose2d.
+     */
+    public Command defaultAlignRequestNotFlipped(Pose2d targetPose) {
+        return new AutoAlign(new APTarget(targetPose), m_drivebase,
+                new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
+    }
+
     /**
      * Creates a new Command using the Autopilot AutoAlign to navigate to the
      * targetPose. Takes a desired entry angle
@@ -101,6 +115,21 @@ public class Autos {
     public Command defaultAlignRequest(Pose2d targetPose, Rotation2d entryAngle) {
         return new AutoAlign(new APTarget(AllianceFlipUtil.flipPose(targetPose))
                 .withEntryAngle(AllianceFlipUtil.flipRotation(entryAngle)), m_drivebase,
+                new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
+    }
+
+    /**
+     * NOT FLIPPED! Creates a new Command using the Autopilot AutoAlign to navigate to the
+     * targetPose. Takes a desired entry angle
+     * when approaching the targetPose.
+     * 
+     * @param targetPose The desired ending Pose2d
+     * @param entryAngle The desired angle to approach the targetPose with.
+     * @return The Command to navigate to the given Pose2d.
+     */
+    public Command defaultAlignRequestNotFlipped(Pose2d targetPose, Rotation2d entryAngle) {
+        return new AutoAlign(new APTarget(targetPose)
+                .withEntryAngle(entryAngle), m_drivebase,
                 new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
     }
 
