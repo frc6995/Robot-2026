@@ -39,9 +39,11 @@ public class Autos {
         this.m_drivebase = drive;
 
         // ============= DEFINE AUTOS =============
-        autos.put("AP_Multi", () -> auto("AP_Multi", POI.R_Start.get(),
-                defaultAlignRequest(POI.L_Start.get()),
-                defaultAlignRequest(POI.R_Start.get())));
+        autos.put("Basic", () -> auto("Basic", POI.testStart.get(),
+                defaultAlignRequest(POI.testEnd.get())));
+
+        autos.put("EntryAngle", () -> auto("EntryAngle", POI.testStart.get(),
+                defaultAlignRequest(POI.testEnd.get(), POI.testEntry.get())));
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));

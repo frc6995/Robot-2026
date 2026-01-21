@@ -24,33 +24,19 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj Poses = new ChoreoTraj(
-	    "Poses",
-	    OptionalInt.empty(),
-	    9.25883,
-	    new Pose2d(0.45, 5.971, Rotation2d.fromRadians(0)),
-	    new Pose2d(3.53, 0.732, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj OP = new ChoreoTraj(
+    public static final ChoreoTraj OP = new ChoreoTraj(
 	    "OP",
 	    OptionalInt.empty(),
-	    0.86639,
-	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0)),
-	    new Pose2d(4.729, 6.561, Rotation2d.fromRadians(-1.044))
+	    1.65841,
+	    new Pose2d(2.079, 6.897, Rotation2d.fromRadians(0)),
+	    new Pose2d(5.741, 3.316, Rotation2d.fromRadians(-0.658))
 	);
-	public static final ChoreoTraj resetOdometryStart = new ChoreoTraj(
-	    "resetOdometryStart",
+	public static final ChoreoTraj Poses = new ChoreoTraj(
+	    "Poses",
 	    OptionalInt.empty(),
-	    0.00001,
-	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0)),
-	    new Pose2d(3.627, 7.495, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj Flex = new ChoreoTraj(
-	    "Flex",
-	    OptionalInt.empty(),
-	    0.77852,
-	    new Pose2d(6.102, 7.124, Rotation2d.fromRadians(0)),
-	    new Pose2d(6.393, 5.94, Rotation2d.fromRadians(0))
+	    12.68967,
+	    new Pose2d(0.45, 5.971, Rotation2d.fromRadians(0)),
+	    new Pose2d(5.741, 3.316, Rotation2d.fromRadians(-0.658))
 	);
 
     /**
@@ -58,10 +44,8 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("Poses", Poses),
-		Map.entry("OP", OP),
-		Map.entry("resetOdometryStart", resetOdometryStart),
-		Map.entry("Flex", Flex)
+    	Map.entry("OP", OP),
+		Map.entry("Poses", Poses)
     );
 
     /**
