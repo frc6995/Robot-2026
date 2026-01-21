@@ -38,17 +38,10 @@ public class Autos {
         this.factory = factory;
         this.m_drivebase = drive;
 
-        // Define all autos - now with full flexibility
-        autos.put("AP_Simple", () -> auto("AP_Simple", ChoreoVars.Poses.L_Start,
-                defaultAlignRequest(ChoreoVars.Poses.L_Sweep),
-                defaultAlignRequest(ChoreoVars.Poses.R_Sweep),
-                defaultAlignRequest(ChoreoVars.Poses.R_Start),
-                defaultAlignRequest(ChoreoVars.Poses.C_ClimbPose)
-                ));
-
-        autos.put("AP_Multi", () -> auto("AP_Multi", ChoreoVars.Poses.R_Start,
-                defaultAlignRequestNotFlipped(POI.getInstance().getL_Start()),
-                defaultAlignRequestNotFlipped(POI.getL_Start())));
+        // ============= DEFINE AUTOS =============
+        autos.put("AP_Multi", () -> auto("AP_Multi", POI.R_Start.get(),
+                defaultAlignRequest(POI.L_Start.get()),
+                defaultAlignRequest(POI.R_Start.get())));
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));
@@ -67,7 +60,7 @@ public class Autos {
         AutoRoutine r = factory.newRoutine(name);
 
         // Start with odometry reset
-        Command sequence = factory.resetOdometry((Optional.of(startPose)), true);
+        Command sequence = factory.resetOdometry((Optional.of(startPose)), false);
 
         // Add all provided commands
         for (Command cmd : commands) {
@@ -78,33 +71,22 @@ public class Autos {
         return r;
     }
 
-  
     /**
-     * Creates a new Command using the Autopilot AutoAlign to navigate to the
+     * NOT FLIPPED! Creates a new Command using the Autopilot AutoAlign to navigate
+     * to the
      * targetPose.
      * 
      * @param targetPose The desired ending Pose2d
      * @return The Command to navigate to the given Pose2d.
      */
     public Command defaultAlignRequest(Pose2d targetPose) {
-        return new AutoAlign(new APTarget(AllianceFlipUtil.flipPose(targetPose)), m_drivebase,
-                new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
-    }
-
-        /**
-     * NOT FLIPPED! Creates a new Command using the Autopilot AutoAlign to navigate to the
-     * targetPose.
-     * 
-     * @param targetPose The desired ending Pose2d
-     * @return The Command to navigate to the given Pose2d.
-     */
-    public Command defaultAlignRequestNotFlipped(Pose2d targetPose) {
         return new AutoAlign(new APTarget(targetPose), m_drivebase,
                 new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
     }
 
     /**
-     * Creates a new Command using the Autopilot AutoAlign to navigate to the
+     * NOT FLIPPED! Creates a new Command using the Autopilot AutoAlign to navigate
+     * to the
      * targetPose. Takes a desired entry angle
      * when approaching the targetPose.
      * 
@@ -113,21 +95,6 @@ public class Autos {
      * @return The Command to navigate to the given Pose2d.
      */
     public Command defaultAlignRequest(Pose2d targetPose, Rotation2d entryAngle) {
-        return new AutoAlign(new APTarget(AllianceFlipUtil.flipPose(targetPose))
-                .withEntryAngle(AllianceFlipUtil.flipRotation(entryAngle)), m_drivebase,
-                new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
-    }
-
-    /**
-     * NOT FLIPPED! Creates a new Command using the Autopilot AutoAlign to navigate to the
-     * targetPose. Takes a desired entry angle
-     * when approaching the targetPose.
-     * 
-     * @param targetPose The desired ending Pose2d
-     * @param entryAngle The desired angle to approach the targetPose with.
-     * @return The Command to navigate to the given Pose2d.
-     */
-    public Command defaultAlignRequestNotFlipped(Pose2d targetPose, Rotation2d entryAngle) {
         return new AutoAlign(new APTarget(targetPose)
                 .withEntryAngle(entryAngle), m_drivebase,
                 new APConstraints(AutoConstants.DEFAULT_ACCELERATION, AutoConstants.DEFAULT_JERK));
