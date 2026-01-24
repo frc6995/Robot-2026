@@ -38,6 +38,21 @@ public class Autos {
     private final CommandSwerveDrivetrain m_drivebase;
     private final Map<String, Supplier<AutoRoutine>> autos = new LinkedHashMap<>();
 
+    /*
+     * . CHOREO AUTO EXAMPLE
+     * 
+     * String choreoAutoName = "Choreo Auto";
+     * 
+     * public AutoRoutine choreoAuto() {
+     * final AutoRoutine routine = factory.newRoutine(choreoAutoName);
+     * final AutoTrajectory traj = routine.trajectory("OP");
+     * routine.active().onTrue(
+     * traj.resetOdometry()
+     * .andThen(traj.cmd()));
+     * return routine;
+     * }
+     */
+
     public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container) {
         this.factory = factory;
         autoCommands = new AutoCommands(drive, this);
@@ -53,8 +68,14 @@ public class Autos {
         autos.put("interuptTest", () -> auto("interuptTest", POI.testStart.get(),
                 autoCommands.runAPUntilNear(POI.testEnd.get(), 0.5)));
 
+        /* */
+
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));
+
+        // Choreo Auto
+        // container.m_chooser.addRoutine(choreoAutoName, this::choreoAuto);
+
     }
 
     // ============= FLEXIBLE AUTO BUILDER =============

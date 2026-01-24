@@ -45,13 +45,6 @@ public record ChoreoTraj(
 	    new Pose2d(3.53, 7.372, Rotation2d.fromRadians(0)),
 	    new Pose2d(1.522, 3.238, Rotation2d.fromRadians(0))
 	);
-	public static final ChoreoTraj Start_Climb = new ChoreoTraj(
-	    "Start_Climb",
-	    OptionalInt.empty(),
-	    1.26515,
-	    new Pose2d(3.53, 0.732, Rotation2d.fromRadians(0)),
-	    new Pose2d(1.522, 3.238, Rotation2d.fromRadians(0))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -60,8 +53,7 @@ public record ChoreoTraj(
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("OP", OP),
 		Map.entry("Poses", Poses),
-		Map.entry("Sweep", Sweep),
-		Map.entry("Start_Climb", Start_Climb)
+		Map.entry("Sweep", Sweep)
     );
 
     /**

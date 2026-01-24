@@ -18,6 +18,7 @@ public class AutoCommands {
         this.autos = autos;
     }
 
+    //CHOREO HAS NOT BEEN TESTED!
     /**
      * Runs a choreo path until a condition is met, then interrupts it
      */
