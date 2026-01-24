@@ -17,7 +17,6 @@ import frc.robot.util.AutoAlign;
 import frc.robot.generated.ChoreoTraj;
 import frc.robot.util.ChoreoVariables;
 import frc.robot.AutoCommands;
-import static frc.robot.AutoCommands.*; // Optional static import
 import frc.robot.POI;
 
 import java.util.LinkedHashMap;
@@ -66,7 +65,7 @@ public class Autos {
                 defaultAlignRequest(POI.testEnd.get(), POI.testEntry.get())));
 
         autos.put("interuptTest", () -> auto("interuptTest", POI.testStart.get(),
-                autoCommands.runAPUntilNear(POI.testEnd.get(), 0.5)));
+                autoCommands.runDefaultAPUntilNear(POI.testEnd.get(), 0.5)));
 
         /* */
 
@@ -81,7 +80,7 @@ public class Autos {
     // ============= FLEXIBLE AUTO BUILDER =============
 
     /**
-     * Build any auto with full command sequence flexibility
+     * Build any auto with command sequence flexibility
      * 
      * @param name      Auto name
      * @param startPose Starting pose (auto-resets odometry)
@@ -103,7 +102,7 @@ public class Autos {
     }
 
     /**
-     * NOT FLIPPED! Creates a new Command using the Autopilot AutoAlign to navigate
+     * NOT FLIPPED! Creates a new Command using Autopilot AutoAlign
      * to the
      * targetPose.
      * 
@@ -116,7 +115,7 @@ public class Autos {
     }
 
     /**
-     * NOT FLIPPED! Creates a new Command using the Autopilot AutoAlign to navigate
+     * NOT FLIPPED! Creates a new Command using Autopilot AutoAlign
      * to the
      * targetPose. Takes a desired entry angle
      * when approaching the targetPose.

@@ -17,7 +17,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-    private double autoSimTime = 2;
+    private double autoSimTime = 20;
 
 
   public Robot() {

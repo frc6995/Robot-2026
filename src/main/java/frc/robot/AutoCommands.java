@@ -69,7 +69,7 @@ public class AutoCommands {
     }
 
     /**
-     * AP command with timeout - interrupts if AP takes too long
+     * AP command with timeout
      */
     public Command runAPWithTimeout(Command apCommand, double timeoutSeconds) {
         return deadline(
@@ -82,7 +82,7 @@ public class AutoCommands {
     /**
      * Runs AP to a pose until near the target (early termination)
      */
-    public Command runAPUntilNear(Pose2d targetPose, double toleranceMeters) {
+    public Command runDefaultAPUntilNear(Pose2d targetPose, double toleranceMeters) {
         // Use the autos instance to get the defaultAlignRequest
         Command apCommand = autos.defaultAlignRequest(targetPose);
 
