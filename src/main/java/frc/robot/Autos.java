@@ -45,6 +45,8 @@ public class Autos {
         autos.put("EntryAngle", () -> auto("EntryAngle", POI.testStart.get(),
                 defaultAlignRequest(POI.testEnd.get(), POI.testEntry.get())));
 
+        
+
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));
     }

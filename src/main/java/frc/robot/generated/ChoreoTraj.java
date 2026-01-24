@@ -27,16 +27,30 @@ public record ChoreoTraj(
     public static final ChoreoTraj OP = new ChoreoTraj(
 	    "OP",
 	    OptionalInt.empty(),
-	    1.02954,
+	    0.8568,
 	    new Pose2d(2.079, 6.897, Rotation2d.fromRadians(0)),
-	    new Pose2d(3.041, 5.016, Rotation2d.fromRadians(-0.658))
+	    new Pose2d(3.041, 5.816, Rotation2d.fromRadians(-0.658))
 	);
 	public static final ChoreoTraj Poses = new ChoreoTraj(
 	    "Poses",
 	    OptionalInt.empty(),
-	    12.01389,
+	    14.79963,
 	    new Pose2d(0.45, 5.971, Rotation2d.fromRadians(0)),
-	    new Pose2d(3.041, 5.816, Rotation2d.fromRadians(-0.658))
+	    new Pose2d(5.68, 0.73, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj Sweep = new ChoreoTraj(
+	    "Sweep",
+	    OptionalInt.empty(),
+	    4.69654,
+	    new Pose2d(3.53, 7.372, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.522, 3.238, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj Start_Climb = new ChoreoTraj(
+	    "Start_Climb",
+	    OptionalInt.empty(),
+	    1.26515,
+	    new Pose2d(3.53, 0.732, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.522, 3.238, Rotation2d.fromRadians(0))
 	);
 
     /**
@@ -45,7 +59,9 @@ public record ChoreoTraj(
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("OP", OP),
-		Map.entry("Poses", Poses)
+		Map.entry("Poses", Poses),
+		Map.entry("Sweep", Sweep),
+		Map.entry("Start_Climb", Start_Climb)
     );
 
     /**

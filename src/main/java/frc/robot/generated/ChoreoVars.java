@@ -21,8 +21,10 @@ public final class ChoreoVars {
         public static final Pose2d R_Start = new Pose2d(3.53, 0.732, Rotation2d.kZero);
         public static final Pose2d R_Sweep = new Pose2d(7.316, 1.1, Rotation2d.fromRadians(0.75));
         public static final Pose2d StationIntake = new Pose2d(0.472, 0.652, Rotation2d.kZero);
-        public static final Pose2d testStart = new Pose2d(2.079, 6.897, Rotation2d.kZero);
         public static final Pose2d testEnd = new Pose2d(3.041, 5.816, Rotation2d.fromRadians(-0.658));
+        public static final Pose2d testStart = new Pose2d(2.079, 6.897, Rotation2d.kZero);
+        public static final Pose2d L_Trench = new Pose2d(5.68, 7.37, Rotation2d.kZero);
+        public static final Pose2d R_Trench = new Pose2d(5.68, 0.73, Rotation2d.kZero);
 
         private Poses() {}
     }
