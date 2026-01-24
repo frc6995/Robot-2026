@@ -6,18 +6,18 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import static edu.wpi.first.wpilibj2.command.Commands.*;  // Static import for WPILib Commands
+import static edu.wpi.first.wpilibj2.command.Commands.*; // Static import for WPILib Commands
 
 public class AutoCommands {
     // You need these dependencies passed in
     private final CommandSwerveDrivetrain m_drivebase;
-    private final Autos autos;  // Reference to your Autos class
-    
+    private final Autos autos; // Reference to your Autos class
+
     public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos) {
         this.m_drivebase = drivebase;
         this.autos = autos;
     }
-    
+
     /**
      * Runs a choreo path until a condition is met, then interrupts it
      */
@@ -54,20 +54,17 @@ public class AutoCommands {
      */
     public Command runAPUntil(Command apCommand, BooleanSupplier interruptCondition) {
         return race(
-            // The AP command to run
-            apCommand,
-            
-            // The interruption logic
-            sequence(
-                // Wait for the interrupt condition
-                waitUntil(interruptCondition),
-                // When condition met, print and cancel the AP
-                runOnce(() -> {
-                    System.out.println("AP command interrupted by condition");
-                    apCommand.cancel();  // Explicit cancel
-                })
-            )
-        );
+                // The AP command to run
+                apCommand,
+
+                // The interruption logic
+                sequence(
+                        // Wait for the interrupt condition
+                        waitUntil(interruptCondition),
+                        // When condition met, print and cancel the AP
+                        runOnce(() -> {
+                            apCommand.cancel(); // Explicit cancel
+                        })));
     }
 
     /**
@@ -75,12 +72,10 @@ public class AutoCommands {
      */
     public Command runAPWithTimeout(Command apCommand, double timeoutSeconds) {
         return deadline(
-            waitSeconds(timeoutSeconds)
-                .andThen(runOnce(() -> 
-                    System.out.println("AP timeout after " + timeoutSeconds + "s")
-                )),
-            apCommand
-        );
+                waitSeconds(timeoutSeconds)
+
+                ,
+                apCommand);
     }
 
     /**
@@ -89,21 +84,19 @@ public class AutoCommands {
     public Command runAPUntilNear(Pose2d targetPose, double toleranceMeters) {
         // Use the autos instance to get the defaultAlignRequest
         Command apCommand = autos.defaultAlignRequest(targetPose);
-        
+
         return race(
-            apCommand,
-            sequence(
-                waitUntil(() -> {
-                    Pose2d currentPose = m_drivebase.getState().Pose;
-                    double distance = currentPose.getTranslation()
-                        .getDistance(targetPose.getTranslation());
-                    return distance <= toleranceMeters;
-                }),
-                runOnce(() -> {
-                    System.out.println("AP reached proximity to target, terminating early");
-                    apCommand.cancel();
-                })
-            )
-        );
+                apCommand,
+                sequence(
+                        waitUntil(() -> {
+                            Pose2d currentPose = m_drivebase.getState().Pose;
+                            double distance = currentPose.getTranslation()
+                                    .getDistance(targetPose.getTranslation());
+                            return distance <= toleranceMeters;
+                        }),
+                        runOnce(() -> {
+                            apCommand.cancel();
+                        })));
     }
+
 }
