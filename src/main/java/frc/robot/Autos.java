@@ -14,7 +14,10 @@ import frc.robot.generated.ChoreoVars;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.AutoAlign;
+import frc.robot.generated.ChoreoTraj;
 import frc.robot.util.ChoreoVariables;
+import frc.robot.AutoCommands;
+import static frc.robot.AutoCommands.*; // Optional static import
 import frc.robot.POI;
 
 import java.util.LinkedHashMap;
@@ -30,12 +33,14 @@ public class Autos {
         public static double DEFAULT_JERK = 12;
     }
 
+    private final AutoCommands autoCommands;
     private final AutoFactory factory;
     private final CommandSwerveDrivetrain m_drivebase;
     private final Map<String, Supplier<AutoRoutine>> autos = new LinkedHashMap<>();
 
     public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container) {
         this.factory = factory;
+        autoCommands = new AutoCommands(drive, this);
         this.m_drivebase = drive;
 
         // ============= DEFINE AUTOS =============
@@ -45,7 +50,8 @@ public class Autos {
         autos.put("EntryAngle", () -> auto("EntryAngle", POI.testStart.get(),
                 defaultAlignRequest(POI.testEnd.get(), POI.testEntry.get())));
 
-        
+        autos.put("interuptTest", () -> auto("interuptTest", POI.testStart.get(),
+                autoCommands.runAPUntilNear(POI.testEnd.get(), 0.5)));
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));
