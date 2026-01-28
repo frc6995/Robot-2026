@@ -11,20 +11,17 @@ import edu.wpi.first.units.measure.*;
  * in the Choreo GUI.
  */
 public final class ChoreoVars {
+    public static final Distance fieldWidth = Units.Meters.of(8.052);
 
     public static final class Poses {
-        public static final Pose2d C_ClimbPose = new Pose2d(1.521, 3.743, Rotation2d.kZero);
-        public static final Pose2d L_ClimbPose = new Pose2d(1.52, 4.253, Rotation2d.kZero);
-        public static final Pose2d L_Start = new Pose2d(3.53, 7.372, Rotation2d.kZero);
-        public static final Pose2d L_Sweep = new Pose2d(7.316, 6.946, Rotation2d.fromRadians(-0.744));
-        public static final Pose2d R_Climb_Pose = new Pose2d(1.522, 3.238, Rotation2d.kZero);
-        public static final Pose2d R_Start = new Pose2d(3.53, 0.732, Rotation2d.kZero);
-        public static final Pose2d R_Sweep = new Pose2d(7.316, 1.1, Rotation2d.fromRadians(0.75));
-        public static final Pose2d StationIntake = new Pose2d(0.472, 0.652, Rotation2d.kZero);
-        public static final Pose2d testEnd = new Pose2d(3.041, 5.816, Rotation2d.fromRadians(-0.658));
-        public static final Pose2d testStart = new Pose2d(2.079, 6.897, Rotation2d.kZero);
-        public static final Pose2d L_Trench = new Pose2d(5.68, 7.37, Rotation2d.kZero);
-        public static final Pose2d R_Trench = new Pose2d(5.68, 0.73, Rotation2d.kZero);
+        public static final Pose2d TR1 = new Pose2d(4.403, 7.513, Rotation2d.kZero);
+        public static final Pose2d TR2 = new Pose2d(4.403, 0.732, Rotation2d.kZero);
+        public static final Pose2d BALL1 = new Pose2d(6.917, 6.701, Rotation2d.fromRadians(-0.785));
+        public static final Pose2d BALL2 = new Pose2d(6.917, 1.351, Rotation2d.fromRadians(0.785));
+        public static final Pose2d HELP1 = new Pose2d(5.776, 7.513, Rotation2d.kZero);
+        public static final Pose2d DEPOT = new Pose2d(0.484, 7.033, Rotation2d.fromRadians(-1.571));
+        public static final Pose2d STA1 = new Pose2d(0.474, 0.661, Rotation2d.kZero);
+        public static final Pose2d CL1 = new Pose2d(1.586, 4.176, Rotation2d.kZero);
 
         private Poses() {}
     }

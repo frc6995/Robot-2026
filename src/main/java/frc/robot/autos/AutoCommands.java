@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.autos;
 
 import java.util.function.BooleanSupplier;
 
@@ -6,6 +6,8 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.AutoAlign;
+
 import static edu.wpi.first.wpilibj2.command.Commands.*; // Static import for WPILib Commands
 
 public class AutoCommands {
@@ -84,7 +86,7 @@ public class AutoCommands {
      */
     public Command runDefaultAPUntilNear(Pose2d targetPose, double toleranceMeters) {
         // Use the autos instance to get the defaultAlignRequest
-        Command apCommand = autos.defaultAlignRequest(targetPose);
+        Command apCommand = new AutoAlign(targetPose, m_drivebase);
 
         return race(
                 apCommand,
