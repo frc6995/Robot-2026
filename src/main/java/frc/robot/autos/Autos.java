@@ -58,9 +58,15 @@ public class Autos {
         this.m_drivebase = drive;
 
         // ============= DEFINE AUTOS =============
+        Command run = factory.trajectoryCmd("Poses");
 
         autos.put("EntryAngle", () -> auto("EntryAngle", POI.TR1.get(),
                 new AutoAlign(POI.HELP1.get(), m_drivebase)
+
+        ));
+
+        autos.put("Choreo test", () -> auto("Choreo test", POI.TR1.get(),
+                run
 
         ));
 
