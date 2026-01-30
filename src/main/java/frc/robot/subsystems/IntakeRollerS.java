@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -73,7 +75,7 @@ public class IntakeRollerS extends SubsystemBase{
     }
 
 private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-  .withControlMode(ControlMode.CLOSED_LOOP)
+  .withControlMode(ControlMode.OPEN_LOOP)
   // Feedback Constants (PID Constants)
   .withClosedLoopController(rollerConstants.kP, rollerConstants.kI, rollerConstants.kD, 
   DegreesPerSecond.of(rollerConstants.kVelocity), 
@@ -98,10 +100,31 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
 
   private SmartMotorController talonFXSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig); 
 
+ public Command setVoltage(Voltage volts) {
+        return Commands.runOnce(() -> motor.setVoltage(volts.in(Volts)));
+    }
+
+    public Current getCurrent() {
+        return motor.getSupplyCurrent().getValue();
+    }
+  
+    @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    talonFXSmartMotorController.updateTelemetry();
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // This method will be called once per scheduler run during simulation
+    talonFXSmartMotorController.simIterate();
+  }
+
+  
+
 public IntakeRollerS() {
 
 }
-
-
-
 }
+
+

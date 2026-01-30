@@ -37,6 +37,7 @@ import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakePivotS;
+import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.util.Telemetry;
 
 public class RobotContainer {
@@ -63,6 +64,7 @@ public class RobotContainer {
 
     private final AutoFactory autoFactory;
     private final IntakePivotS robotArm = new IntakePivotS();
+    private final IntakeRollerS rollers = new IntakeRollerS();
     private Mechanism2d VISUALIZER;
     private final Autos autoRoutines;
     public final AutoChooser m_chooser = new AutoChooser();
@@ -133,6 +135,7 @@ public class RobotContainer {
 */
     joystick.rightTrigger().onTrue(robotArm.setAngle(Degrees.of(138)));
     joystick.rightBumper().onTrue(robotArm.setAngle(Degrees.of(-17)));
+    joystick.leftTrigger().onTrue(rollers.setVoltage(Volts.of(10)));
     }
 
     public Command getAutonomousCommand() {
