@@ -9,24 +9,25 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.generated.TunerConstants;
+import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.ArmConfig;
 import yams.mechanisms.config.MechanismPositionConfig;
 import yams.mechanisms.positional.Arm;
@@ -35,11 +36,6 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-
-import com.ctre.phoenix6.hardware.TalonFX;
-
-import frc.robot.generated.TunerConstants;
-import yams.mechanisms.SmartMechanism;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivotS extends SubsystemBase {
@@ -48,49 +44,60 @@ public class IntakePivotS extends SubsystemBase {
     public static final Distance OFFSET_Y = Inches.of(0);
     public static final Distance OFFSET_Z = Inches.of(4);
 
-    public static final Angle CW_LIMIT = Degrees.of(-10);
-    public static final Angle CCW_LIMIT = Degrees.of(95);
+    public static final Angle CW_LIMIT = Degrees.of(-25);
+    public static final Angle CCW_LIMIT = Degrees.of(146);
 
-    public static final Angle ALGAE_INTAKE = Degrees.of(45);
-    public static final Angle STOW = Degrees.of(95);
-    public static final Angle L1_POST_SCORE = Degrees.of(80);
-    public static final Angle ALGAE_POST_SCORE = Degrees.of(70);
+    public static final Angle FUEL_INTAKE = Degrees.of(-25);
+    public static final Angle STOW = Degrees.of(146);
+    public static final Angle PLACEHOLDER1 = Degrees.of(80);
+    public static final Angle PLACEHOLDER2 = Degrees.of(70);
 
-    public static final double KP = 18;
+    public static final double KP = 56;
     public static final double KI = 0;
     public static final double KD = 0.2;
-    public static final double KS = -0.1;
-    public static final double KG = 1.2;
-    public static final double KV = 0;
-    public static final double KA = 0;
-    public static final double VELOCITY = 458;
-    public static final double ACCELERATION = 688;
+    public static final double KS = 0;
+    public static final double KG = 1.210;
+    public static final double KV = 0.928;
+    public static final double KA = 0.16;
+    public static final AngularVelocity kVelocity = DegreesPerSecond.of(2880);
+    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1440);
     public static final int MOTOR_ID = 40;
     public static final double STATOR_CURRENT_LIMIT = 120;
     public static final double MOI = 0.0855457256;
     public static Angle L1_ANGLE;
+
+    public static final double KSimP = 56;
+    public static final double KSimI = 0;
+    public static final double KSimD = 0.2;
+    public static final double KSimS = 0;
+    public static final double KSimG = 1.210;
+    public static final double KSimV = 0.928;
+    public static final double KSimA = 0.16;
+    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(2880);
+    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(1440);
   }
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
       // Feedback Constants (PID Constants)
       .withClosedLoopController(intakeConstants.KP, intakeConstants.KI, intakeConstants.KD,
-          DegreesPerSecond.of(intakeConstants.VELOCITY), DegreesPerSecondPerSecond.of(intakeConstants.ACCELERATION))
+      intakeConstants.kVelocity, 
+      intakeConstants.kAcceleration)
       // can be seperate for sim:
-      .withSimClosedLoopController(intakeConstants.KP, intakeConstants.KI, intakeConstants.KD,
-          DegreesPerSecond.of(intakeConstants.VELOCITY),
-          DegreesPerSecondPerSecond.of(intakeConstants.ACCELERATION))
+      .withSimClosedLoopController(intakeConstants.KSimP, intakeConstants.KSimI, intakeConstants.KSimD,
+          intakeConstants.kSimVelocity,
+          intakeConstants.kSimAcceleration)
       // Feedforward Constants
       .withFeedforward(
           new ArmFeedforward(intakeConstants.KS, intakeConstants.KG, intakeConstants.KV, intakeConstants.KA))
       .withSimFeedforward(
-          new ArmFeedforward(intakeConstants.KS, intakeConstants.KG, intakeConstants.KV, intakeConstants.KA))
+          new ArmFeedforward(intakeConstants.KSimS, intakeConstants.KSimG, intakeConstants.KSimV, intakeConstants.KSimA))
       // Telemetry name and verbosity level
       .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
       // Gearing from the motor rotor to final shaft.
       // In this example gearbox(3,4) is the same as gearbox("3:1","4:1") which
       // corresponds to the gearbox attached to your motor.
-      .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(24, 1)))
+      .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(57.5)))
       .withMotorInverted(false)
       .withIdleMode(MotorMode.BRAKE)
       .withStatorCurrentLimit(Amps.of(intakeConstants.STATOR_CURRENT_LIMIT));
@@ -113,9 +120,11 @@ public class IntakePivotS extends SubsystemBase {
       .withStartingPosition(intakeConstants.STOW)
 
       // Length and mass of your arm for sim.
-      .withLength(Feet.of((18 / 12)))
+      .withLength(Inches.of(10.5))
 
-      .withMOI(intakeConstants.MOI)
+      .withMass(Pounds.of(3.875))
+
+      // .withMOI(intakeConstants.MOI)
 
       // Telemetry name and verbosity for the arm.
       .withTelemetry("Intake", TelemetryVerbosity.HIGH)

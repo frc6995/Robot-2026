@@ -62,6 +62,7 @@ public class RobotContainer {
     public final IntakePivotS yIntakePivot = new IntakePivotS();
 
     private final AutoFactory autoFactory;
+    private final IntakePivotS robotArm = new IntakePivotS();
     private Mechanism2d VISUALIZER;
     private final Autos autoRoutines;
     public final AutoChooser m_chooser = new AutoChooser();
@@ -128,7 +129,10 @@ public class RobotContainer {
             );
             System.out.println("Heading zeroed!");
         }));
+        
 */
+    joystick.rightTrigger().onTrue(robotArm.setAngle(Degrees.of(138)));
+    joystick.rightBumper().onTrue(robotArm.setAngle(Degrees.of(-17)));
     }
 
     public Command getAutonomousCommand() {
