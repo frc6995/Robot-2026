@@ -56,7 +56,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private final Pigeon2 m_gyro = new Pigeon2(75, TunerConstants.kCANBus);
 
-    private final Vision m_vision = new Vision(m_gyro);
+    private final Vision m_vision;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -155,6 +155,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        m_vision = Robot.isReal() ? new Vision(m_gyro) : null;
     }
 
     /**
@@ -180,6 +181,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        m_vision = Robot.isReal() ? new Vision(m_gyro) : null;
     }
 
     public Rotation2d getGyroRotation() {
@@ -228,6 +230,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        m_vision = Robot.isReal() ? new Vision(m_gyro) : null;
     }
 
     @NotLogged
@@ -325,8 +328,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        m_vision.periodic();
+        if(m_vision == null) return;
 
+        m_vision.periodic();
+ 
         var estimates = m_vision.getAllEstimates();
         for(var estimate : estimates) {
             addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);

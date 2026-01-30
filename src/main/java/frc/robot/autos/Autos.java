@@ -61,8 +61,8 @@ public class Autos {
         Command run = factory.trajectoryCmd("Poses");
 
         autos.put("EntryAngle", () -> auto("EntryAngle", POI.CL1.get(),
-                new AutoAlign(POI.HELPL1.get(), m_drivebase),
-                run
+                new AutoAlign(POI.HELPL1.get(), m_drivebase)
+                
 
         ));
 

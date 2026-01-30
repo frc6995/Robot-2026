@@ -36,7 +36,6 @@ import choreo.auto.AutoFactory;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.IntakePivotS;
 import frc.robot.util.Telemetry;
 
 public class RobotContainer {
@@ -56,10 +55,6 @@ public class RobotContainer {
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
-
-    // public final IntakePivotS intakePivot = new IntakePivotS();
-
-    public final IntakePivotS yIntakePivot = new IntakePivotS();
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -81,8 +76,6 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Mode", m_chooser);
         configureBindings();
 
-                
-
     }
 
     public double xButtonPressedTime = 0;
@@ -90,45 +83,34 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        m_drivetrain.setDefaultCommand(        // Drivetrain will execute this command periodically
-        m_drivetrain.applyRequest(
-            () -> {
-              var xSpeed = -joystick.getLeftY() * 4.2;
-              var ySpeed = -joystick.getLeftX() * 4.2;
-              var rotationSpeed = -joystick.getRightX() * 2 * Math.PI;
+        m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+                m_drivetrain.applyRequest(
+                        () -> {
+                            var xSpeed = -joystick.getLeftY() * 4.2;
+                            var ySpeed = -joystick.getLeftX() * 4.2;
+                            var rotationSpeed = -joystick.getRightX() * 2 * Math.PI;
 
-              if (DriverStation.isAutonomous()) {
-                return m_driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
-              }
-              return m_driveRequest
-                  .withVelocityX(
-                      xSpeed) // Drive forward with negative Y (forward)
-                  .withVelocityY(
-                      ySpeed) // Drive left with negative X (left)
-                  .withRotationalRate(
-                      rotationSpeed);
-            } // Drive counterclockwise with negative X (left)
-        ));
+                            if (DriverStation.isAutonomous()) {
+                                return m_driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
+                            }
+                            return m_driveRequest
+                                    .withVelocityX(
+                                            xSpeed) // Drive forward with negative Y (forward)
+                                    .withVelocityY(
+                                            ySpeed) // Drive left with negative X (left)
+                                    .withRotationalRate(
+                                            rotationSpeed);
+                        } // Drive counterclockwise with negative X (left)
+                ));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-        /*
-         * joystick.a().onTrue(
-         * stateMachine.intakeCoral());
-         */
+
         m_drivetrain.registerTelemetry(logger::telemeterize);
-        // Assigns button b on a zbox controller to the command "goToAngle".
-       /*  joystick.start().onTrue(Commands.runOnce(() -> {
-            m_drivetrain.resetPose(
-                m_drivetrain.getState().Pose.getTranslation(),
-                Rotation2d.fromDegrees(0)
-            );
-            System.out.println("Heading zeroed!");
-        }));
-*/
+
     }
 
     public Command getAutonomousCommand() {
