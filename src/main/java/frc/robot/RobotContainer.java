@@ -36,6 +36,7 @@ import choreo.auto.AutoFactory;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.TurretS;
 import frc.robot.util.Telemetry;
 
 public class RobotContainer {
@@ -55,6 +56,8 @@ public class RobotContainer {
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
+
+    public final TurretS m_turret = new TurretS();
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -110,7 +113,8 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
-
+        joystick.a().whileTrue(
+                m_turret.zeroTurretCommand());
     }
 
     public Command getAutonomousCommand() {

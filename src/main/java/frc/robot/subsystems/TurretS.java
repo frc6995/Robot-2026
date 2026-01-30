@@ -16,11 +16,14 @@ import java.util.Optional;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
@@ -28,6 +31,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.generated.TunerConstants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -53,8 +57,8 @@ public class TurretS extends SubsystemBase {
         public static double kG = 0.0;
         public static double kV = 0.0;
         public static double kA = 0.0;
-        public static double kVelocity = 200.0;
-        public static double kAcceleration = 200.0;
+        public static AngularVelocity kVelocity = DegreesPerSecond.of(200.0);
+        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(200.0);
 
         public static double kSimP = 40;
         public static double kSimI = 0.0;
@@ -63,8 +67,8 @@ public class TurretS extends SubsystemBase {
         public static double kSimG = 0.0;
         public static double kSimV = 0.0;
         public static double kSimA = 0.0;
-        public static double kSimVelocity = 200.0;
-        public static double kSimAcceleration = 200.0;
+        public static AngularVelocity kSimVelocity = DegreesPerSecond.of(200.0);
+        public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(200.0);
 
         public static Angle kStartAngle = Degrees.of(150);
         public static Angle kCWLimit = Degrees.of(-180);
@@ -82,14 +86,16 @@ public class TurretS extends SubsystemBase {
 
     }
 
+    private Debouncer m_currentDebouncer = new Debouncer(1.0, Debouncer.DebounceType.kRising);
+
     private final TalonFX m_turretMotor = new TalonFX(TurretConstants.kCANID, TunerConstants.kCANBus);
     private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
             .withClosedLoopController(TurretConstants.kP, TurretConstants.kI, TurretConstants.kD,
-                    DegreesPerSecond.of(TurretConstants.kVelocity),
-                    DegreesPerSecondPerSecond.of(TurretConstants.kAcceleration))
+                    TurretConstants.kVelocity,
+                    TurretConstants.kAcceleration)
             .withSimClosedLoopController(TurretConstants.kSimP, TurretConstants.kSimI, TurretConstants.kSimD,
-                    DegreesPerSecond.of(TurretConstants.kSimVelocity),
-                    DegreesPerSecondPerSecond.of(TurretConstants.kSimAcceleration))
+                    TurretConstants.kSimVelocity,
+                    TurretConstants.kSimAcceleration)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(TurretConstants.kReduction)))
             .withIdleMode(MotorMode.BRAKE)
             .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
@@ -154,4 +160,24 @@ public class TurretS extends SubsystemBase {
         return m_turretMotor.getSupplyCurrent().getValue();
     }
 
+    public Command zeroTurretCommand() {
+        return Commands.sequence(
+                // Start moving towards limit at low voltage
+                Commands.runOnce(() -> {
+                    setVoltage(Units.Volts.of(1.0)).schedule();
+                }),
+
+                // Wait until current exceeds threshold (turret hits limit)
+                new WaitUntilCommand(() -> {
+                    boolean overThreshold = getSupplyCurrent().in(Units.Amps) > 30.0;
+                    return m_currentDebouncer.calculate(overThreshold);
+                }),
+
+                // Stop motor and set position to CCW limit
+                Commands.runOnce(() -> {
+                    setVoltage(Units.Volts.of(0)).schedule();
+                    m_turret.getMotorController().setEncoderPosition(TurretConstants.kCCWLimit);
+                }))
+                .withTimeout(5.0);
+    }
 }
