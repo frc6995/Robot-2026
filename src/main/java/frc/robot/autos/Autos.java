@@ -36,7 +36,7 @@ public class Autos {
     private final AutoCommands autoCommands;
     private final AutoFactory factory;
     private final CommandSwerveDrivetrain m_drivebase;
-    private final Map<String, Supplier<AutoRoutine>> autos = new LinkedHashMap<>();
+    private final Map<String, Supplier<Command>> autos = new LinkedHashMap<>();
 
     /*
      * . CHOREO AUTO EXAMPLE
@@ -60,18 +60,19 @@ public class Autos {
         // ============= DEFINE AUTOS =============
         Command run = factory.trajectoryCmd("Poses");
 
-        autos.put("EntryAngle", () -> auto("EntryAngle", POI.TR1.get(),
-                new AutoAlign(POI.HELP1.get(), m_drivebase)
+        autos.put("EntryAngle", () -> auto("EntryAngle", POI.CL1.get(),
+                new AutoAlign(POI.HELPL1.get(), m_drivebase),
+                run
 
         ));
 
-        autos.put("Choreo test", () -> auto("Choreo test", POI.TR1.get(),
+        autos.put("Choreo test", () -> auto("Choreo test", POI.TRR1.get(),
                 run
 
         ));
 
         // Auto-register
-        autos.forEach((name, sup) -> container.m_chooser.addRoutine(name, sup));
+        autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
         // Choreo Auto
         // container.m_chooser.addRoutine(choreoAutoName, this::choreoAuto);
 
@@ -86,8 +87,7 @@ public class Autos {
      * @param startPose Starting pose (auto-resets odometry)
      * @param commands  Any sequence of commands (AP, choreo, actions, etc.)
      */
-    private AutoRoutine auto(String name, Pose2d startPose, Command... commands) {
-        AutoRoutine r = factory.newRoutine(name);
+    private Command auto(String name, Pose2d startPose, Command... commands) {
 
         // Start with odometry reset
         Command sequence = factory.resetOdometry((Optional.of(startPose)), false);
@@ -97,8 +97,7 @@ public class Autos {
             sequence = sequence.andThen(cmd);
         }
 
-        r.active().onTrue(sequence);
-        return r;
+        return sequence;
     }
 
 }

@@ -11,14 +11,14 @@ import frc.robot.generated.ChoreoVars;
 
 public class POI {
     // ============= POSES =============
-    public static final Supplier<Pose2d> BALL1= () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALL1);
-    public static final Supplier<Pose2d> TR1= () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TR1);
-    public static final Supplier<Pose2d> HELP1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.HELP1);
+    public static final Supplier<Pose2d> BALLL1= () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLL1);
+    public static final Supplier<Pose2d> TRL1= () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TRL1);
+    public static final Supplier<Pose2d> HELPL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.HELPL1);
     public static final Supplier<Pose2d> DEPOT = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.DEPOT);
     public static final Supplier<Pose2d> STA1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.STA1);
     public static final Supplier<Pose2d> CL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.CL1);
-    public static final Supplier<Pose2d> BALL2 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALL2);
-    public static final Supplier<Pose2d> TR2 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TR2);
+    public static final Supplier<Pose2d> BALLR1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLR1);
+    public static final Supplier<Pose2d> TRR1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TRR1);
     // ============= ROTATIONS =============
     public static final Supplier<Rotation2d> testEntry = () -> AllianceFlipUtil
             .flipRotation(new Rotation2d(Degrees.of(-90)));
