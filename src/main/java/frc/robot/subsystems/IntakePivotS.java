@@ -40,17 +40,12 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivotS extends SubsystemBase {
   public class intakeConstants {
-    public static final Distance OFFSET_X = Inches.of(5.6);
-    public static final Distance OFFSET_Y = Inches.of(0);
-    public static final Distance OFFSET_Z = Inches.of(4);
 
-    public static final Angle CW_LIMIT = Degrees.of(-25);
-    public static final Angle CCW_LIMIT = Degrees.of(146);
+    public static final Angle kCW = Degrees.of(-25);
+    public static final Angle kCCW = Degrees.of(146);
 
-    public static final Angle FUEL_INTAKE = Degrees.of(-25);
-    public static final Angle STOW = Degrees.of(146);
-    public static final Angle PLACEHOLDER1 = Degrees.of(80);
-    public static final Angle PLACEHOLDER2 = Degrees.of(70);
+    public static final Angle kFuelIntakeAngle= Degrees.of(-25);
+    public static final Angle kStowAngle = Degrees.of(146);
 
     public static final double kP = 56;
     public static final double kI = 0;
@@ -61,10 +56,12 @@ public class IntakePivotS extends SubsystemBase {
     public static final double kA = 0.16;
     public static final AngularVelocity kVelocity = DegreesPerSecond.of(2880);
     public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1440);
-    public static final int MOTOR_ID = 40;
-    public static final double STATOR_CURRENT_LIMIT = 120;
-    public static final double MOI = 0.0855457256;
-    public static Angle L1_ANGLE;
+    public static final int kCANID = 40;
+    public static final double kSupplyCurrentLimit = 80;
+    public static final double kStatorCurrentLimit = 120;
+    public static final double kMOI = 0.05;
+    public static final Distance kLength = Inches.of(5.6);
+    public static final double kReduction = 57.5;
 
     public static final double kSimP = 56;
     public static final double kSimI = 0;
@@ -97,38 +94,31 @@ public class IntakePivotS extends SubsystemBase {
       // Gearing from the motor rotor to final shaft.
       // In this example gearbox(3,4) is the same as gearbox("3:1","4:1") which
       // corresponds to the gearbox attached to your motor.
-      .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(57.5)))
+      .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(intakeConstants.kReduction)))
       .withMotorInverted(false)
       .withIdleMode(MotorMode.BRAKE)
-      .withStatorCurrentLimit(Amps.of(intakeConstants.STATOR_CURRENT_LIMIT));
+      .withStatorCurrentLimit(Amps.of(intakeConstants.kStatorCurrentLimit));
 
   // Vendor motor controller object
-  private TalonFX intakePivotMotor = new TalonFX(intakeConstants.MOTOR_ID, TunerConstants.kCANBus);
+  private TalonFX intakePivotMotor = new TalonFX(intakeConstants.kCANID, TunerConstants.kCANBus);
 
   // Create our SmartMotorController from our Spark and config with the NEO.
   private SmartMotorController IntakeSMC = new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);
 
-  private final MechanismPositionConfig robotToMechanism = new MechanismPositionConfig()
-      .withRelativePosition(
-          new Translation3d(intakeConstants.OFFSET_X, intakeConstants.OFFSET_Y, intakeConstants.OFFSET_Z));
-
   private ArmConfig armCfg = new ArmConfig(IntakeSMC)
       // Soft limit is applied to the SmartMotorControllers PID
 
-      .withHardLimit(intakeConstants.CW_LIMIT, intakeConstants.CCW_LIMIT)
+      .withHardLimit(intakeConstants.kCW, intakeConstants.kCCW)
       // Starting position is where your arm starts
-      .withStartingPosition(intakeConstants.STOW)
+      .withStartingPosition(intakeConstants.kStowAngle)
 
       // Length and mass of your arm for sim.
-      .withLength(Inches.of(10.5))
+      .withLength(intakeConstants.kLength)
 
-      .withMass(Pounds.of(3.875))
-
-      // .withMOI(intakeConstants.MOI)
+      .withMOI(intakeConstants.kMOI)
 
       // Telemetry name and verbosity for the arm.
-      .withTelemetry("Intake", TelemetryVerbosity.HIGH)
-      .withMechanismPositionConfig(robotToMechanism);
+      .withTelemetry("Intake", TelemetryVerbosity.HIGH);
 
   // Arm Mechanism
   private Arm arm = new Arm(armCfg);
