@@ -38,10 +38,8 @@ public class HoodS extends SubsystemBase{
 
 public class hoodConstants {
 
-    public static final Angle kLowerSoftLimit = Degrees.of(12.5);
-    public static final Angle kUpperSoftLimit = Degrees.of(40);
-    public static final Angle kLowerHardLimit = Degrees.of(12.5);
-    public static final Angle kUpperHardLimit = Degrees.of(40);
+    public static final Angle kCW = Degrees.of(12.5);
+    public static final Angle kCCW = Degrees.of(40);
 
     public static final Angle kFuelIntakeAngle = Degrees.of(0);
     public static final Angle kStowAngle = Degrees.of(12.5);
@@ -57,22 +55,21 @@ public class hoodConstants {
     public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(0);
     public static final double kStatorCurrentLimit = 40;
     public static final double kSupplyCurrentLimit = 25;
-    public static final double kMOI = 0;
     public static final double kReduction = 40;
     public static final boolean kMotorInverted = false;
     public static final int kCANID = 42;
     public static final Distance kArmLength = Inches.of(1);
     public static final Mass kArmMass = Pounds.of(0.05);
 
-    public static final double kSimP = 0;
+    public static final double kSimP = 50;
     public static final double kSimI = 0;
     public static final double kSimD = 0;
     public static final double kSimS = 0;
     public static final double kSimG = 0;
     public static final double kSimV = 0;
     public static final double kSimA = 0;
-    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(0);
-    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(0);
+    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(90);
+    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(45);
 }
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -105,9 +102,9 @@ public class hoodConstants {
 
   private ArmConfig hoodCfg = new ArmConfig(talonSmartMotorController)
   // Soft limit is applied to the SmartMotorControllers PID
-  .withSoftLimits(hoodConstants.kLowerSoftLimit, hoodConstants.kUpperSoftLimit)
+  .withSoftLimits(hoodConstants.kCW, hoodConstants.kCCW)
   // Hard limit is applied to the simulation.
-  .withHardLimit(hoodConstants.kLowerHardLimit, hoodConstants.kUpperHardLimit)
+  .withHardLimit(hoodConstants.kCW, hoodConstants.kCCW)
   // Starting position is where your arm starts
   .withStartingPosition(hoodConstants.kStowAngle)
   // Length and mass of your arm for sim.
