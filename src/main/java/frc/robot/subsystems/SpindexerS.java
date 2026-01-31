@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -99,8 +101,8 @@ public class SpindexerS extends SubsystemBase {
      * @return A {@link edu.wpi.first.wpilibj2.command.Command Command} to send the
      *         specified voltage to the motor.
      */
-    public Command setVoltage(Voltage volts) {
-        return Commands.runOnce(() -> m_spindexerController.setVoltage(volts));
+    public Command setVoltage(Supplier<Voltage> volts) {
+        return Commands.runOnce(() -> m_spindexerController.setVoltage(volts.get()));
     }
 
     /**
@@ -114,8 +116,8 @@ public class SpindexerS extends SubsystemBase {
         return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
     }
 
-    public Command setVelocity(AngularVelocity angularVelocity) {
-        return Commands.runOnce(() -> m_spindexerController.setVelocity(angularVelocity));
+    public Command setVelocity(Supplier<AngularVelocity> angularVelocity) {
+        return Commands.runOnce(() -> m_spindexerController.setVelocity(angularVelocity.get()));
     }
 
     

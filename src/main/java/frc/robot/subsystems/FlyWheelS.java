@@ -12,6 +12,8 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import edu.wpi.first.math.Pair;
@@ -115,11 +117,11 @@ public class FlyWheelS extends SubsystemBase {
     m_shooter.simIterate();
   }
 
-  public Command setVelocity(AngularVelocity speed) {
+  public Command setVelocity(Supplier<AngularVelocity> speed) {
     return m_shooter.setSpeed(speed);
   }
 
-  public Command setVoltage(Voltage voltage) {
+  public Command setVoltage(Supplier<Voltage> voltage) {
     return m_shooter.setVoltage(voltage);
   }
 

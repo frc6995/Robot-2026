@@ -15,6 +15,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -24,9 +26,13 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.TunerConstants;
+import yams.gearing.GearBox;
+import yams.gearing.MechanismGearing;
 import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.ArmConfig;
 import yams.mechanisms.config.MechanismPositionConfig;
@@ -39,121 +45,125 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivotS extends SubsystemBase {
-  public class intakeConstants {
-
-    public static final Angle kCW = Degrees.of(-25);
-    public static final Angle kCCW = Degrees.of(146);
-
-    public static final Angle kFuelIntakeAngle= Degrees.of(-25);
-    public static final Angle kStowAngle = Degrees.of(146);
-
+  public class IntakePivotConstants {
+      // CAN IDs
+    public static final int kCANID = 21;
+      // Profiled PID Constants
     public static final double kP = 56;
     public static final double kI = 0;
     public static final double kD = 0.2;
+    public static final AngularVelocity kVelocity = DegreesPerSecond.of(2880);
+    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1440);
+      // Feeforward Constants
     public static final double kS = 0;
     public static final double kG = 1.210;
     public static final double kV = 0.928;
     public static final double kA = 0.16;
-    public static final AngularVelocity kVelocity = DegreesPerSecond.of(2880);
-    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1440);
-    public static final int kCANID = 40;
-    public static final double kSupplyCurrentLimit = 80;
-    public static final double kStatorCurrentLimit = 120;
-    public static final double kMOI = 0.05;
-    public static final Distance kLength = Inches.of(5.6);
-    public static final double kReduction = 57.5;
-
+      // Sim Profiled PID
     public static final double kSimP = 56;
     public static final double kSimI = 0;
     public static final double kSimD = 0.2;
+    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(2880);
+    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(1440);
+      // Sim Feedforward
     public static final double kSimS = 0;
     public static final double kSimG = 1.210;
     public static final double kSimV = 0.928;
     public static final double kSimA = 0.16;
-    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(2880);
-    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(1440);
+      // Motor Configs
+    public static final double kSupplyCurrentLimit = 80;
+    public static final double kStatorCurrentLimit = 120;
+      // Physical Properties
+    public static final double kMOI = 0.05;
+    public static final Distance kLength = Inches.of(5.6);
+    public static final double kReduction = 57.5;
+      // Setpoints and Stops
+    public static final Angle kCWLimit = Degrees.of(-25);
+    public static final Angle kCCWLimit = Degrees.of(146);
+    public static final Angle kFuelIntakeAngle= Degrees.of(-25);
+    public static final Angle kStowAngle = Degrees.of(146);
   }
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
       // Feedback Constants (PID Constants)
-      .withClosedLoopController(intakeConstants.kP, intakeConstants.kI, intakeConstants.kD,
-      intakeConstants.kVelocity, 
-      intakeConstants.kAcceleration)
+      .withClosedLoopController(IntakePivotConstants.kP, IntakePivotConstants.kI, IntakePivotConstants.kD,
+      IntakePivotConstants.kVelocity, 
+      IntakePivotConstants.kAcceleration)
       // can be seperate for sim:
-      .withSimClosedLoopController(intakeConstants.kSimP, intakeConstants.kSimI, intakeConstants.kSimD,
-          intakeConstants.kSimVelocity,
-          intakeConstants.kSimAcceleration)
+      .withSimClosedLoopController(IntakePivotConstants.kSimP, IntakePivotConstants.kSimI, IntakePivotConstants.kSimD,
+          IntakePivotConstants.kSimVelocity,
+          IntakePivotConstants.kSimAcceleration)
       // Feedforward Constants
       .withFeedforward(
-          new ArmFeedforward(intakeConstants.kS, intakeConstants.kG, intakeConstants.kV, intakeConstants.kA))
+          new ArmFeedforward(IntakePivotConstants.kS, IntakePivotConstants.kG, IntakePivotConstants.kV, IntakePivotConstants.kA))
       .withSimFeedforward(
-          new ArmFeedforward(intakeConstants.kSimS, intakeConstants.kSimG, intakeConstants.kSimV, intakeConstants.kSimA))
+          new ArmFeedforward(IntakePivotConstants.kSimS, IntakePivotConstants.kSimG, IntakePivotConstants.kSimV, IntakePivotConstants.kSimA))
       // Telemetry name and verbosity level
       .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
-      // Gearing from the motor rotor to final shaft.
-      // In this example gearbox(3,4) is the same as gearbox("3:1","4:1") which
-      // corresponds to the gearbox attached to your motor.
-      .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(intakeConstants.kReduction)))
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(IntakePivotConstants.kReduction)))
       .withMotorInverted(false)
       .withIdleMode(MotorMode.BRAKE)
-      .withStatorCurrentLimit(Amps.of(intakeConstants.kStatorCurrentLimit));
+      .withStatorCurrentLimit(Amps.of(IntakePivotConstants.kStatorCurrentLimit));
 
   // Vendor motor controller object
-  private TalonFX intakePivotMotor = new TalonFX(intakeConstants.kCANID, TunerConstants.kCANBus);
+  private TalonFX intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kCANBus);
 
   // Create our SmartMotorController from our Spark and config with the NEO.
   private SmartMotorController IntakeSMC = new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);
 
-  private ArmConfig armCfg = new ArmConfig(IntakeSMC)
+  private ArmConfig intakeCfg = new ArmConfig(IntakeSMC)
       // Soft limit is applied to the SmartMotorControllers PID
 
-      .withHardLimit(intakeConstants.kCW, intakeConstants.kCCW)
+      .withHardLimit(IntakePivotConstants.kCWLimit, IntakePivotConstants.kCCWLimit)
       // Starting position is where your arm starts
-      .withStartingPosition(intakeConstants.kStowAngle)
+      .withStartingPosition(IntakePivotConstants.kStowAngle)
 
       // Length and mass of your arm for sim.
-      .withLength(intakeConstants.kLength)
+      .withLength(IntakePivotConstants.kLength)
 
-      .withMOI(intakeConstants.kMOI)
+      .withMOI(IntakePivotConstants.kMOI)
 
       // Telemetry name and verbosity for the arm.
       .withTelemetry("Intake", TelemetryVerbosity.HIGH);
 
   // Arm Mechanism
-  private Arm arm = new Arm(armCfg);
+  private Arm intakePivot = new Arm(intakeCfg);
 
   /**
    * Set the angle of the arm.
    * 
    * @param angle Angle to go to.
    */
-  public Command setAngle(Angle angle) {
+  public Command setAngle(Supplier<Angle> angle) {
+    return intakePivot.setAngle(angle);
+  }
 
-    return arm.setAngle(angle);
+  public Command setVoltage(Supplier<Voltage> volts) {
+    return intakePivot.setVoltage(volts);
   }
 
   /**
    * Run sysId on the {@link Arm}
    */
   public Command sysId() {
-    return arm.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+    return intakePivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    arm.updateTelemetry();
+    intakePivot.updateTelemetry();
 
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    arm.simIterate();
+    intakePivot.simIterate();
   }
 
   public Angle getAngle() {
-    return arm.getAngle();
+    return intakePivot.getAngle();
   }
 }

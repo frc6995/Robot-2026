@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -42,8 +45,8 @@ public class IndexerS extends SubsystemBase {
     private TalonFX m_indexerMotor = new TalonFX(IndexerConstants.kCAN_ID);
     private SmartMotorController m_indexerController = new TalonFXWrapper(m_indexerMotor, DCMotor.getKrakenX44(1),smcConfig);
 
-    public Command setVoltage(Voltage volts) {  
-        return Commands.runOnce(() -> m_indexerController.setVoltage(volts));
+    public Command setVoltage(Supplier<Voltage> volts) {  
+        return Commands.runOnce(() -> m_indexerController.setVoltage(volts.get()));
     }
 
     public Current getCurrent() {
