@@ -19,6 +19,7 @@ public class POI {
     public static final Supplier<Pose2d> CL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.CL1);
     public static final Supplier<Pose2d> BALLR1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLR1);
     public static final Supplier<Pose2d> TRR1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TRR1);
+    public static final Supplier<Pose2d> HUB1 = () -> AllianceFlipUtil.flipPose(new Pose2d(4.625, 4.05, new Rotation2d()));
     // ============= ROTATIONS =============
     public static final Supplier<Rotation2d> testEntry = () -> AllianceFlipUtil
             .flipRotation(new Rotation2d(Degrees.of(-90)));

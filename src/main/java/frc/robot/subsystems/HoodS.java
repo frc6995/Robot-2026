@@ -133,21 +133,21 @@ public class hoodConstants {
 
   private Pivot hood = new Pivot(hoodCfg);
 
-  public Command setAngle(Angle angle) {return hood.setAngle(angle);}
+  public Command setAngle(Supplier<Angle> angle) {return hood.setAngle(angle);}
 
-  public Command set(double voltage) { return hood.set(voltage);}
+  public Command set(Supplier<Double> voltage) { return hood.set(voltage);}
 
   public Command sysId() { return hood.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));}
  
   public Command getDefaultCommand(Supplier<ChassisSpeeds> chassisSpeeds, Supplier<Pose2d> robotPose) {
       return TriggerCommand.create(autoHoodAngle(robotPose)).bind(
-        setAngle(hoodConstants.kStowAngle),
+        setAngle(()->hoodConstants.kStowAngle),
         TriggerUtil.and(() -> Math.abs(chassisSpeeds.get().vxMetersPerSecond) > 0.2, TriggerUtil.isWithinZone(null,null, robotPose))
       );
   }
 
   public Command autoHoodAngle(Supplier<Pose2d> robotPose) {
-    return setAngle(Degrees.of(table.get(robotPose.get().getTranslation().getDistance(POI.HUB1.get().getTranslation()))));
+    return setAngle(()->Degrees.of(table.get(robotPose.get().getTranslation().getDistance(POI.HUB1.get().getTranslation()))));
   }
 
   
