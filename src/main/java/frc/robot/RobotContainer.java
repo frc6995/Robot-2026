@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import java.lang.Thread.State;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -15,6 +16,7 @@ import com.ctre.phoenix6.hardware.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -29,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import choreo.auto.AutoChooser;
@@ -125,6 +128,7 @@ public class RobotContainer {
                                                                                         rotationSpeed);
                                                 } // Drive counterclockwise with negative X (left)
                                 ));
+                                
 
                 // Idle while the robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
@@ -134,6 +138,8 @@ public class RobotContainer {
                         
 
                 m_drivetrain.registerTelemetry(logger::telemeterize);
+                joystick.rightBumper().onTrue(m_hood.autoHoodAngle(()->m_drivetrain.state.Pose));
+                //joystick.leftBumper().onTrue(m_hood.autoRetractHood(()->m_drivetrain.state.Speeds, ()->m_drivetrain.state.Pose));
 
         }
 

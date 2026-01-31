@@ -46,23 +46,19 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class HoodS extends SubsystemBase{
-
-public static final InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
-
-public class hoodConstants {
+public class HoodS extends SubsystemBase {
+  public class HoodConstants {
 
     public static final Angle kCW = Degrees.of(12.5);
     public static final Angle kCCW = Degrees.of(40);
 
     public static final Angle kFuelIntakeAngle = Degrees.of(0);
     public static final Angle kStowAngle = Degrees.of(12.5);
-    public static final double[][] kAngleDatA = {
-     // Distance (in meters), Angle(in degrees)
-      {1, 12.5},
-      {5, 40},
+    public static final double[][] kAngleData = {
+        // Distance (in meters), Angle(in degrees)
+        { 1, 12.5 },
+        { 5, 40 },
     };
-
 
     public static final double kP = 0;
     public static final double kI = 0;
@@ -79,7 +75,7 @@ public class hoodConstants {
     public static final boolean kMotorInverted = false;
     public static final int kCANID = 42;
     public static final Distance kArmLength = Inches.of(1);
-    public static final Mass kArmMass = Pounds.of(0.05);
+    public static final Double kMOI = 0.05;
 
     public static final double kSimP = 50;
     public static final double kSimI = 0;
@@ -90,68 +86,85 @@ public class hoodConstants {
     public static final double kSimA = 0;
     public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(90);
     public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(45);
-}
+  }
 
-    private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-    .withControlMode(ControlMode.CLOSED_LOOP)
-  // Feedback Constants (PID Constants)
-  .withClosedLoopController(hoodConstants.kP, hoodConstants.kI, hoodConstants.kD, 
-  hoodConstants.kVelocity, 
-  hoodConstants.kAcceleration)
-  .withSimClosedLoopController(hoodConstants.kSimP, hoodConstants.kSimI, hoodConstants.kSimD, 
-  hoodConstants.kSimVelocity, 
-  hoodConstants.kSimAcceleration)
-  // Feedforward Constants
-  .withFeedforward(new ArmFeedforward(hoodConstants.kS, hoodConstants.kG, hoodConstants.kV, hoodConstants.kA))
-  .withSimFeedforward(new ArmFeedforward(hoodConstants.kSimS, hoodConstants.kSimG, hoodConstants.kSimV, hoodConstants.kSimA))
-  // Telemetry name and verbosity level
-  .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
-  // Gearing from the motor rotor to final shaft.
-  // In this example GearBox.fromReductionStages(3,4) is the same as GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your motor.
-  // You could also use .withGearing(12) which does the same thing.
-  .withGearing(new MechanismGearing(GearBox.fromReductionStages(hoodConstants.kReduction)))
-  // Motor properties to prevent over currenting.
-  .withMotorInverted(hoodConstants.kMotorInverted)
-  .withIdleMode(MotorMode.BRAKE)
-  .withStatorCurrentLimit(Amps.of(hoodConstants.kStatorCurrentLimit))
-  .withSupplyCurrentLimit(Amps.of(hoodConstants.kSupplyCurrentLimit));
+  public InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
-  private TalonFX motor = new TalonFX(hoodConstants.kCANID);
+  private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+      .withControlMode(ControlMode.CLOSED_LOOP)
+      // Feedback Constants (PID Constants)
+      .withClosedLoopController(HoodConstants.kP, HoodConstants.kI, HoodConstants.kD,
+          HoodConstants.kVelocity,
+          HoodConstants.kAcceleration)
+      .withSimClosedLoopController(HoodConstants.kSimP, HoodConstants.kSimI, HoodConstants.kSimD,
+          HoodConstants.kSimVelocity,
+          HoodConstants.kSimAcceleration)
+      // Feedforward Constants
+      .withFeedforward(new ArmFeedforward(HoodConstants.kS, HoodConstants.kG, HoodConstants.kV, HoodConstants.kA))
+      .withSimFeedforward(
+          new ArmFeedforward(HoodConstants.kSimS, HoodConstants.kSimG, HoodConstants.kSimV, HoodConstants.kSimA))
+      // Telemetry name and verbosity level
+      .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
+      // Gearing from the motor rotor to final shaft.
+      // In this example GearBox.fromReductionStages(3,4) is the same as
+      // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
+      // your motor.
+      // You could also use .withGearing(12) which does the same thing.
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(HoodConstants.kReduction)))
+      // Motor properties to prevent over currenting.
+      .withMotorInverted(HoodConstants.kMotorInverted)
+      .withIdleMode(MotorMode.BRAKE)
+      .withStatorCurrentLimit(Amps.of(HoodConstants.kStatorCurrentLimit))
+      .withSupplyCurrentLimit(Amps.of(HoodConstants.kSupplyCurrentLimit));
 
-  private SmartMotorController talonSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX44(1), smcConfig);
+  private TalonFX motor = new TalonFX(HoodConstants.kCANID);
+
+  private SmartMotorController talonSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX44(1),
+      smcConfig);
 
   private PivotConfig hoodCfg = new PivotConfig(talonSmartMotorController)
-  // Soft limit is applied to the SmartMotorControllers PID
-  .withSoftLimits(hoodConstants.kCW, hoodConstants.kCCW)
-  // Hard limit is applied to the simulation.
-  .withHardLimit(hoodConstants.kCW, hoodConstants.kCCW)
-  // Starting position is where your arm starts
-  .withStartingPosition(hoodConstants.kStowAngle)
-  // Length and mass of your arm for sim.
-  // Telemetry name and verbosity for the arm.
-  .withTelemetry("Hood", TelemetryVerbosity.HIGH);
+      // Soft limit is applied to the SmartMotorControllers PID
+      .withSoftLimits(HoodConstants.kCW, HoodConstants.kCCW)
+      // Hard limit is applied to the simulation.
+      .withHardLimit(HoodConstants.kCW, HoodConstants.kCCW)
+      // Starting position is where your arm starts
+      .withStartingPosition(HoodConstants.kStowAngle)
+      .withMOI(HoodConstants.kMOI)
+      // Length and mass of your arm for sim.
+      // Telemetry name and verbosity for the arm.
+      .withTelemetry("Hood", TelemetryVerbosity.HIGH);
 
   private Pivot hood = new Pivot(hoodCfg);
 
-  public Command setAngle(Supplier<Angle> angle) {return hood.setAngle(angle);}
+  public HoodS() {
+    for(double[] entry : HoodConstants.kAngleData){
+      table.put(entry[0], entry[1]);
+    }
+  }
 
-  public Command set(Supplier<Double> voltage) { return hood.set(voltage);}
+  public Command setAngle(Supplier<Angle> angle) {
+    return hood.setAngle(angle);
+  }
 
-  public Command sysId() { return hood.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));}
- 
-  public Command getDefaultCommand(Supplier<ChassisSpeeds> chassisSpeeds, Supplier<Pose2d> robotPose) {
-      return TriggerCommand.create(autoHoodAngle(robotPose)).bind(
-        setAngle(()->hoodConstants.kStowAngle),
-        TriggerUtil.and(() -> Math.abs(chassisSpeeds.get().vxMetersPerSecond) > 0.2, TriggerUtil.isWithinZone(null,null, robotPose))
-      );
+  public Command set(Supplier<Double> voltage) {
+    return hood.set(voltage);
+  }
+
+  public Command sysId() {
+    return hood.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   }
 
   public Command autoHoodAngle(Supplier<Pose2d> robotPose) {
-    return setAngle(()->Degrees.of(table.get(robotPose.get().getTranslation().getDistance(POI.HUB1.get().getTranslation()))));
+    return setAngle(
+        () -> Degrees.of(table.get(robotPose.get().getTranslation().getDistance(POI.HUB1.get().getTranslation()))));
   }
 
-  
-
+  public Command autoRetractHood(Supplier<ChassisSpeeds> chassisSpeeds, Supplier<Pose2d> robotPose) {
+    return TriggerCommand.create(autoHoodAngle(robotPose)).bind(
+        setAngle(() -> HoodConstants.kStowAngle),
+        TriggerUtil.and(() -> Math.abs(chassisSpeeds.get().vxMetersPerSecond) > 0.2,
+            TriggerUtil.isWithinZone(()->POI.LLNoHoodZone.get().getTranslation(), ()->POI.URNoHoodZone.get().getTranslation(), robotPose)));
+  }
 
   @Override
   public void periodic() {
@@ -162,7 +175,7 @@ public class hoodConstants {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    hood.simIterate();  
+    hood.simIterate();
   }
 
 }
