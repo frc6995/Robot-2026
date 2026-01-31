@@ -61,8 +61,8 @@ public class hoodConstants {
     public static final double kReduction = 40;
     public static final boolean kMotorInverted = false;
     public static final int kCANID = 42;
-    public static final Distance kArmLength = Inches.of(0);
-    public static final Mass kArmMass = Pounds.of(0);
+    public static final Distance kArmLength = Inches.of(1);
+    public static final Mass kArmMass = Pounds.of(0.05);
 
     public static final double kSimP = 0;
     public static final double kSimI = 0;

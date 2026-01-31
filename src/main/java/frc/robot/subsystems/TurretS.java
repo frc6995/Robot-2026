@@ -175,4 +175,9 @@ public class TurretS extends SubsystemBase {
       
     ).withTimeout(1.0).andThen(setVoltage(Volts.of(0)));
   }
+
+public Command zeroTurretCommand() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'zeroTurretCommand'");
+}
 }

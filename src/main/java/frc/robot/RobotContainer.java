@@ -118,8 +118,7 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
-        joystick.a().whileTrue(
-                m_turret.zeroTurretCommand());
+
     }
 
     public Command getAutonomousCommand() {
