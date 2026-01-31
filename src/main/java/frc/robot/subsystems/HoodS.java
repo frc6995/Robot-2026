@@ -4,37 +4,51 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.lang.reflect.Array;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.POI;
+import frc.robot.util.TriggerCommand;
+import frc.robot.util.TriggerUtil;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.ArmConfig;
+import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.positional.Arm;
+import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.remote.TalonFXSWrapper;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class HoodS extends SubsystemBase{
+
+public static final InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
 public class hoodConstants {
 
@@ -43,6 +57,12 @@ public class hoodConstants {
 
     public static final Angle kFuelIntakeAngle = Degrees.of(0);
     public static final Angle kStowAngle = Degrees.of(12.5);
+    public static final double[][] kAngleDatA = {
+     // Distance (in meters), Angle(in degrees)
+      {1, 12.5},
+      {5, 40},
+    };
+
 
     public static final double kP = 0;
     public static final double kI = 0;
@@ -100,7 +120,7 @@ public class hoodConstants {
 
   private SmartMotorController talonSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX44(1), smcConfig);
 
-  private ArmConfig hoodCfg = new ArmConfig(talonSmartMotorController)
+  private PivotConfig hoodCfg = new PivotConfig(talonSmartMotorController)
   // Soft limit is applied to the SmartMotorControllers PID
   .withSoftLimits(hoodConstants.kCW, hoodConstants.kCCW)
   // Hard limit is applied to the simulation.
@@ -108,20 +128,29 @@ public class hoodConstants {
   // Starting position is where your arm starts
   .withStartingPosition(hoodConstants.kStowAngle)
   // Length and mass of your arm for sim.
-  .withLength(hoodConstants.kArmLength)
-  .withMass(hoodConstants.kArmMass)
   // Telemetry name and verbosity for the arm.
   .withTelemetry("Hood", TelemetryVerbosity.HIGH);
 
-  private Arm hood = new Arm(hoodCfg);
+  private Pivot hood = new Pivot(hoodCfg);
 
   public Command setAngle(Angle angle) {return hood.setAngle(angle);}
 
-  public Command set(double dutycycle) { return hood.set(dutycycle);}
+  public Command set(double voltage) { return hood.set(voltage);}
 
   public Command sysId() { return hood.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));}
+ 
+  public Command getDefaultCommand(Supplier<ChassisSpeeds> chassisSpeeds, Supplier<Pose2d> robotPose) {
+      return TriggerCommand.create(autoHoodAngle(robotPose)).bind(
+        setAngle(hoodConstants.kStowAngle),
+        TriggerUtil.and(() -> Math.abs(chassisSpeeds.get().vxMetersPerSecond) > 0.2, TriggerUtil.isWithinZone(null,null, robotPose))
+      );
+  }
 
-  public HoodS() {}
+  public Command autoHoodAngle(Supplier<Pose2d> robotPose) {
+    return setAngle(Degrees.of(table.get(robotPose.get().getTranslation().getDistance(POI.HUB1.get().getTranslation()))));
+  }
+
+  
 
 
   @Override
