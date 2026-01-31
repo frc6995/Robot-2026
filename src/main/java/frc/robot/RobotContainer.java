@@ -36,8 +36,6 @@ import choreo.auto.AutoFactory;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.HoodS;
-import frc.robot.subsystems.TurretS;
 import frc.robot.util.Telemetry;
 
 public class RobotContainer {
@@ -58,8 +56,7 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
 
-    public final TurretS m_turret = new TurretS();
-    public final HoodS m_hood = new HoodS();
+
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -108,8 +105,6 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
                         
-                joystick.a().onTrue(m_hood.setAngle(Degrees.of(40)));
-                joystick.b().onTrue(m_hood.setAngle(Degrees.of(12.5)));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
