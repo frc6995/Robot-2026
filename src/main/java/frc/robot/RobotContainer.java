@@ -36,9 +36,15 @@ import choreo.auto.AutoFactory;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.FlyWheelS;
+import frc.robot.subsystems.HoodS;
+import frc.robot.subsystems.IndexerS;
 import frc.robot.subsystems.IntakePivotS;
 import frc.robot.subsystems.IntakeRollerS;
+import frc.robot.subsystems.SpindexerS;
+import frc.robot.subsystems.TurretS;
 import frc.robot.util.Telemetry;
+import yams.mechanisms.velocity.FlyWheel;
 
 public class RobotContainer {
         private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
@@ -58,6 +64,15 @@ public class RobotContainer {
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
         public static final CommandXboxController joystick = new CommandXboxController(0);
+        
+        private final FlyWheelS m_flywheel = new FlyWheelS();
+        private final HoodS m_hood = new HoodS();
+        private final IndexerS m_indexer = new IndexerS();
+        private final IntakePivotS m_intakepivot = new IntakePivotS();
+        private final IntakeRollerS m_intakeroller = new IntakeRollerS();
+        private final SpindexerS m_spindexer = new SpindexerS();
+        private final TurretS m_turret = new TurretS();
+
 
         public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
 

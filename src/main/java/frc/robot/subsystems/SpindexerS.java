@@ -117,4 +117,19 @@ public class SpindexerS extends SubsystemBase {
     public Command setVelocity(AngularVelocity angularVelocity) {
         return Commands.runOnce(() -> m_spindexerController.setVelocity(angularVelocity));
     }
+
+    
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    m_spindexerController.updateTelemetry();
+
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // This method will be called once per scheduler run during simulation
+    m_spindexerController.simIterate();
+  }
+
 }
