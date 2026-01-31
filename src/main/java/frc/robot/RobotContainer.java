@@ -114,6 +114,7 @@ public class RobotContainer {
                 final var idle = new SwerveRequest.Idle();
                 RobotModeTriggers.disabled().whileTrue(
                                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+                        
 
                 m_drivetrain.registerTelemetry(logger::telemeterize);
 
