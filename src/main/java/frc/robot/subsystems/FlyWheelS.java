@@ -5,20 +5,11 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
-
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import yams.mechanisms.config.FlyWheelConfig;
@@ -27,129 +18,118 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
-import yams.mechanisms.SmartMechanism;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 import yams.motorcontrollers.SmartMotorController;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
-import edu.wpi.first.units.Unit;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 
 public class FlyWheelS extends SubsystemBase {
-  /** Creates a new FlyWheels. */
-  public class tuneConstants {
+  public static class FlywheelConstants {
+      // PID Constants
     public static final double kP = 0;
     public static final double kI = 0;
     public static final double kD = 0;
+      // Feedforward Constants
     public static final double kS = 0;
     public static final double kV = 0;
     public static final double kA = 0;
-
+      // Sim PID Constants
     public static final double kSimP = 0;
     public static final double kSimI = 0;
     public static final double kSimD = 0;
+      // Sim Feedforward Constants
     public static final double kSimS = 0;
     public static final double kSimV = 0;
     public static final double kSimA = 0;
-
-    public static final int kMotorOneCANID = 43;
-    public static final int kMotorTwoCANID = 43;
-    public static final double kcurrentLimit = 40;
-
+      // CAN IDs
+    public static final int kLeadMotorCANID = 43;
+    public static final int kFollowMotorCANID = 44;
+      // Motor Config Constants
+    public static final boolean kInvertLeadMotor = true;
+    public static final boolean kInvertFollowMotor = false;
+    public static final double kSupplyCurrentLimit = 40;
+    public static final double kStatorCurrentLimit = 80;
+      // Sim Constants
     public static final double kDiameter = 1;
     public static final double kMass = 1;
+      // Setpoints
     public static final AngularVelocity kMaxSpeed = RotationsPerSecond.of(4400.0 / 60.0);
-
-    public static final Boolean invertedOne = true;
-    public static final boolean invertedTwo = false;
-
-    public static final AngularVelocity kVelocity = DegreesPerSecond.of(0);
-    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(0);
   }
 
-  private TalonFX motorOne = new TalonFX(tuneConstants.kMotorOneCANID);
+    // Motors
+  private TalonFX m_leadMotor = new TalonFX(FlywheelConstants.kLeadMotorCANID);
+  private TalonFX m_followerMotor = new TalonFX(FlywheelConstants.kFollowMotorCANID);
 
-  private TalonFX motorTwo = new TalonFX(tuneConstants.kMotorTwoCANID);
+    // SmartMotorController Config
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-      .withControlMode(ControlMode.CLOSED_LOOP)
-
-      // PID(Needs Tuning)
-      .withClosedLoopController(tuneConstants.kP, tuneConstants.kI, tuneConstants.kD, tuneConstants.kVelocity,
-          tuneConstants.kAcceleration)
-      .withSimClosedLoopController(tuneConstants.kSimP, tuneConstants.kSimI, tuneConstants.kSimD,
-          tuneConstants.kVelocity,
-          tuneConstants.kAcceleration)
-
-      .withFeedforward(new SimpleMotorFeedforward(tuneConstants.kS, tuneConstants.kV, tuneConstants.kA))
-      .withSimFeedforward(new SimpleMotorFeedforward(tuneConstants.kSimS, tuneConstants.kSimV, tuneConstants.kSimA))
-
-      .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
-
+    .withControlMode(ControlMode.CLOSED_LOOP)
+      // Apply PID constants
+    .withClosedLoopController(FlywheelConstants.kP, FlywheelConstants.kI, FlywheelConstants.kD)
+    .withSimClosedLoopController(FlywheelConstants.kSimP, FlywheelConstants.kSimI, FlywheelConstants.kSimD)
+      // Apply Feedforward constants
+    .withFeedforward(new SimpleMotorFeedforward(FlywheelConstants.kS, FlywheelConstants.kV, FlywheelConstants.kA))
+    .withSimFeedforward(new SimpleMotorFeedforward(FlywheelConstants.kSimS, FlywheelConstants.kSimV, FlywheelConstants.kSimA))
+      // Set Telemetry mode
+    .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
       // Gear Ratio(Needs tuning)
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.25)))
+    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.25)))
+      // Motor Configs
+    .withMotorInverted(FlywheelConstants.kInvertLeadMotor)
+    .withIdleMode(MotorMode.COAST)
+    .withStatorCurrentLimit(Amps.of((FlywheelConstants.kStatorCurrentLimit)))
+    .withSupplyCurrentLimit(Amps.of(FlywheelConstants.kSupplyCurrentLimit))
+      // Follower Motor Setup
+    .withFollowers(Pair.of(m_followerMotor, FlywheelConstants.kInvertFollowMotor));
+      
 
-      .withMotorInverted(tuneConstants.invertedOne)
-
-      .withIdleMode(MotorMode.COAST)
-      .withStatorCurrentLimit(Amps.of((tuneConstants.kcurrentLimit)))
-
-      .withFollowers(Pair.of(motorTwo, tuneConstants.invertedTwo));
-
-  private SmartMotorController motorOneController = new TalonFXWrapper(motorOne, DCMotor.getKrakenX60(2),
+    // SmartMotorController Object
+  private SmartMotorController m_motorController = new TalonFXWrapper(m_leadMotor, DCMotor.getKrakenX60(2),
       smcConfig);
 
-  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(motorOneController)
-      .withDiameter(Inches.of(tuneConstants.kDiameter))
-      .withMass(Pounds.of(tuneConstants.kMass))
-      .withUpperSoftLimit(tuneConstants.kMaxSpeed)
-      .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(m_motorController)
+      // Physical Properties
+    .withDiameter(Inches.of(FlywheelConstants.kDiameter))
+    .withMass(Pounds.of(FlywheelConstants.kMass))
+      // Maximum Speed
+    .withUpperSoftLimit(FlywheelConstants.kMaxSpeed)
+      // Telemetry Config
+    .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
-  private FlyWheel shooter = new FlyWheel(shooterConfig);
-
-  public AngularVelocity getVelocity() {
-    return shooter.getSpeed();
-  }
-
-  public Current getCurrent() {
-    var currentOptional = shooter.getMotorController().getSupplyCurrent();
-
-    return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
-  }
-
-  public Command setVelocity(AngularVelocity speed) {
-    return shooter.setSpeed(speed);
-  }
-
-  public Command setVoltage(Voltage voltage) {
-    return shooter.setVoltage(voltage);
-  }
-
-  public FlyWheelS() {
-  }
+  private FlyWheel m_shooter = new FlyWheel(shooterConfig);
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    shooter.updateTelemetry();
+    m_shooter.updateTelemetry();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    shooter.simIterate();
+    m_shooter.simIterate();
+  }
+
+  public Command setVelocity(AngularVelocity speed) {
+    return m_shooter.setSpeed(speed);
+  }
+
+  public Command setVoltage(Voltage voltage) {
+    return m_shooter.setVoltage(voltage);
+  }
+
+  public AngularVelocity getVelocity() {
+    return m_shooter.getSpeed();
+  }
+
+  public Current getCurrent() {
+    var currentOptional = m_shooter.getMotorController().getSupplyCurrent();
+
+    return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
   }
 }
