@@ -52,13 +52,13 @@ public class IntakePivotS extends SubsystemBase {
     public static final Angle PLACEHOLDER1 = Degrees.of(80);
     public static final Angle PLACEHOLDER2 = Degrees.of(70);
 
-    public static final double KP = 56;
-    public static final double KI = 0;
-    public static final double KD = 0.2;
-    public static final double KS = 0;
-    public static final double KG = 1.210;
-    public static final double KV = 0.928;
-    public static final double KA = 0.16;
+    public static final double kP = 56;
+    public static final double kI = 0;
+    public static final double kD = 0.2;
+    public static final double kS = 0;
+    public static final double kG = 1.210;
+    public static final double kV = 0.928;
+    public static final double kA = 0.16;
     public static final AngularVelocity kVelocity = DegreesPerSecond.of(2880);
     public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1440);
     public static final int MOTOR_ID = 40;
@@ -66,13 +66,13 @@ public class IntakePivotS extends SubsystemBase {
     public static final double MOI = 0.0855457256;
     public static Angle L1_ANGLE;
 
-    public static final double KSimP = 56;
-    public static final double KSimI = 0;
-    public static final double KSimD = 0.2;
-    public static final double KSimS = 0;
-    public static final double KSimG = 1.210;
-    public static final double KSimV = 0.928;
-    public static final double KSimA = 0.16;
+    public static final double kSimP = 56;
+    public static final double kSimI = 0;
+    public static final double kSimD = 0.2;
+    public static final double kSimS = 0;
+    public static final double kSimG = 1.210;
+    public static final double kSimV = 0.928;
+    public static final double kSimA = 0.16;
     public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(2880);
     public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(1440);
   }
@@ -80,18 +80,18 @@ public class IntakePivotS extends SubsystemBase {
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
       // Feedback Constants (PID Constants)
-      .withClosedLoopController(intakeConstants.KP, intakeConstants.KI, intakeConstants.KD,
+      .withClosedLoopController(intakeConstants.kP, intakeConstants.kI, intakeConstants.kD,
       intakeConstants.kVelocity, 
       intakeConstants.kAcceleration)
       // can be seperate for sim:
-      .withSimClosedLoopController(intakeConstants.KSimP, intakeConstants.KSimI, intakeConstants.KSimD,
+      .withSimClosedLoopController(intakeConstants.kSimP, intakeConstants.kSimI, intakeConstants.kSimD,
           intakeConstants.kSimVelocity,
           intakeConstants.kSimAcceleration)
       // Feedforward Constants
       .withFeedforward(
-          new ArmFeedforward(intakeConstants.KS, intakeConstants.KG, intakeConstants.KV, intakeConstants.KA))
+          new ArmFeedforward(intakeConstants.kS, intakeConstants.kG, intakeConstants.kV, intakeConstants.kA))
       .withSimFeedforward(
-          new ArmFeedforward(intakeConstants.KSimS, intakeConstants.KSimG, intakeConstants.KSimV, intakeConstants.KSimA))
+          new ArmFeedforward(intakeConstants.kSimS, intakeConstants.kSimG, intakeConstants.kSimV, intakeConstants.kSimA))
       // Telemetry name and verbosity level
       .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
       // Gearing from the motor rotor to final shaft.
