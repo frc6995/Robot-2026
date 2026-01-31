@@ -36,6 +36,8 @@ import choreo.auto.AutoFactory;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IntakePivotS;
+import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.util.Telemetry;
 
 public class RobotContainer {
