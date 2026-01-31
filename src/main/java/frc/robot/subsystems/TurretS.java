@@ -81,6 +81,9 @@ public class TurretS extends SubsystemBase {
         public static double kStatorLimit = 80.0;
         public static double kSupplyLimit = 40.0;
 
+        public static Voltage kHomingDrive = Volts.of(-1.0);
+        public static double kHomingCurrentThreshold = 3.0;
+
         public static boolean kIsInverted = false;
 
         // WIP
@@ -88,8 +91,6 @@ public class TurretS extends SubsystemBase {
         public static Distance kRadius = Units.Inches.of(4.0); // Radius of the Turret from center
 
     }
-
-    private Debouncer m_currentDebouncer = new Debouncer(1.0, Debouncer.DebounceType.kRising);
 
     private final TalonFX m_turretMotor = new TalonFX(TurretConstants.kCANID, TunerConstants.kCANBus);
     private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
@@ -116,7 +117,8 @@ public class TurretS extends SubsystemBase {
 
     private final PivotConfig m_config = new PivotConfig(turretMotorSMC)
             .withHardLimit(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
-            .withSoftLimits(TurretConstants.kCWLimit.plus(Degrees.of(10)), TurretConstants.kCCWLimit.minus(Degrees.of(10)))
+            .withSoftLimits(TurretConstants.kCWLimit.plus(Degrees.of(10)),
+                    TurretConstants.kCCWLimit.minus(Degrees.of(10)))
             .withTelemetry("Turret", TelemetryVerbosity.HIGH)
             .withStartingPosition(TurretConstants.kStartAngle)
             // WIP
@@ -167,13 +169,12 @@ public class TurretS extends SubsystemBase {
         return m_turretMotor.getSupplyCurrent().getValue();
     }
 
-   
-
     public Command driveToHome() {
         return Commands.sequence(
-            setVoltage(Volts.of(-1.0)).until(()-> getSupplyCurrent().magnitude() > 3),
-            this.runOnce(()->m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true)
-        ).withTimeout(10.0).andThen(setVoltage(Volts.of(0)));
+                setVoltage(TurretConstants.kHomingDrive)
+                        .until(() -> getSupplyCurrent().magnitude() > TurretConstants.kHomingCurrentThreshold),
+                this.runOnce(() -> m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true)).withTimeout(6.0)
+                .andThen(setVoltage(Volts.of(0)));
     }
 
 }
