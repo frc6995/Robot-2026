@@ -2,11 +2,19 @@ package frc.robot.autos;
 
 import java.util.function.BooleanSupplier;
 
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.HoodS;
+import frc.robot.subsystems.HoodS.hoodConstants;
 import frc.robot.util.AutoAlign;
+import frc.robot.util.POI;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*; // Static import for WPILib Commands
 
@@ -14,92 +22,30 @@ public class AutoCommands {
     // You need these dependencies passed in
     private final CommandSwerveDrivetrain m_drivebase;
     private final Autos autos; // Reference to your Autos class
+    private final HoodS m_hood;
 
-    public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos) {
+    public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood) {
         this.m_drivebase = drivebase;
         this.autos = autos;
+        this.m_hood = hood;
     }
 
-    //CHOREO HAS NOT BEEN TESTED!
-    /**
-     * Runs a choreo path until a condition is met, then interrupts it
-     */
-    public Command runChoreoUntil(AutoTrajectory choreoPath, BooleanSupplier interruptCondition) {
-        return race(
-                // The choreo path to run
-                choreoPath.cmd(),
+    SwerveRequest mIntakeRequest = new SwerveRequest.ApplyRobotSpeeds()
+            .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
+            .withSpeeds(new ChassisSpeeds(0.3, 0, 0));
 
-                // The interruption logic
-                sequence(
-                        // Wait for the interrupt condition
-                        waitUntil(interruptCondition),
-                        // When condition met, print and cancel the choreo
-                        runOnce(() -> {
-                            choreoPath.cmd().cancel(); // Explicit cancel
-                        })));
-    }
+    public Command autoBackFromIntake(BooleanSupplier isLeftSide) {
+        if (isLeftSide.getAsBoolean()) {
+            return Commands.sequence(
+                m_hood.setAngle(hoodConstants.kStowAngle),
+                new AutoAlign(POI.TRL1.get(),  POI.testEntry.get(), m_drivebase)
+            );
+        } else {
+            return sequence(
+                autos.getTrajectoryCommand("AutoBackFromIntakeRight", m_drivebase),
+                new AutoAlign(m_drivebase, false)
+            );
+        }
 
-    /**
-     * Runs choreo until near a target pose
-     */
-    public Command runChoreoUntilNear(AutoTrajectory choreoPath, Pose2d targetPose,
-            double toleranceMeters) {
-        return runChoreoUntil(choreoPath, () -> {
-            Pose2d currentPose = m_drivebase.getState().Pose;
-            double distance = currentPose.getTranslation()
-                    .getDistance(targetPose.getTranslation());
-            return distance <= toleranceMeters;
-        });
-    }
-
-    /**
-     * Runs an AP command until a condition is met, then interrupts it
-     */
-    public Command runAPUntil(Command apCommand, BooleanSupplier interruptCondition) {
-        return race(
-                // The AP command to run
-                apCommand,
-
-                // The interruption logic
-                sequence(
-                        // Wait for the interrupt condition
-                        waitUntil(interruptCondition),
-                        // When condition met, print and cancel the AP
-                        runOnce(() -> {
-                            apCommand.cancel(); // Explicit cancel
-                        })));
-    }
-
-    /**
-     * AP command with timeout
-     */
-    public Command runAPWithTimeout(Command apCommand, double timeoutSeconds) {
-        return deadline(
-                waitSeconds(timeoutSeconds)
-
-                ,
-                apCommand);
-    }
-
-    /**
-     * Runs AP to a pose until near the target (early termination)
-     */
-    public Command runDefaultAPUntilNear(Pose2d targetPose, double toleranceMeters) {
-        // Use the autos instance to get the defaultAlignRequest
-        Command apCommand = new AutoAlign(targetPose, m_drivebase);
-
-        return race(
-                apCommand,
-                sequence(
-                        waitUntil(() -> {
-                            Pose2d currentPose = m_drivebase.getState().Pose;
-                            double distance = currentPose.getTranslation()
-                                    .getDistance(targetPose.getTranslation());
-                            return distance <= toleranceMeters;
-                        }),
-                        runOnce(() -> {
-                            apCommand.cancel();
-                        })));
-    }
-
+{
 }
