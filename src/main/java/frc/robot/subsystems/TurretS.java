@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.io.ObjectInputFilter.Config;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -30,8 +31,10 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -60,7 +63,7 @@ public class TurretS extends SubsystemBase {
         public static AngularVelocity kVelocity = DegreesPerSecond.of(200.0);
         public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(200.0);
 
-        public static double kSimP = 40;
+        public static double kSimP = 4;
         public static double kSimI = 0.0;
         public static double kSimD = 0.0;
         public static double kSimS = 0.0;
@@ -113,7 +116,7 @@ public class TurretS extends SubsystemBase {
 
     private final PivotConfig m_config = new PivotConfig(turretMotorSMC)
             .withHardLimit(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
-            .withSoftLimits(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
+            .withSoftLimits(TurretConstants.kCWLimit.plus(Degrees.of(10)), TurretConstants.kCCWLimit.minus(Degrees.of(10)))
             .withTelemetry("Turret", TelemetryVerbosity.HIGH)
             .withStartingPosition(TurretConstants.kStartAngle)
             // WIP
@@ -140,6 +143,10 @@ public class TurretS extends SubsystemBase {
         return m_turret.setVoltage(voltage);
     }
 
+    public Command setVoltage(Supplier<Voltage> voltageSupplier) {
+        return m_turret.setVoltage(voltageSupplier);
+    }
+
     public Command sysId() {
         return m_turret.sysId(Volts.of(3), Volts.of(3).per(Second), Second.of(30));
     }
@@ -162,12 +169,11 @@ public class TurretS extends SubsystemBase {
 
    
 
-        public Command driveToHome() {
-    return Commands.sequence(
-      setVoltage(Volts.of(-1.0)).until(()-> getSupplyCurrent().magnitude() > 3),
-      this.runOnce(()->m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true)
-      
-    ).withTimeout(10.0).andThen(setVoltage(Volts.of(0)));
-  }
+    public Command driveToHome() {
+        return Commands.sequence(
+            setVoltage(Volts.of(-1.0)).until(()-> getSupplyCurrent().magnitude() > 3),
+            this.runOnce(()->m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true)
+        ).withTimeout(10.0).andThen(setVoltage(Volts.of(0)));
+    }
 
 }
