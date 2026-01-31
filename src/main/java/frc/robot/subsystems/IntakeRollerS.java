@@ -71,6 +71,7 @@ public class IntakeRollerS extends SubsystemBase{
     public static final double kSimVelocity = 0;
     public static final double kSimAcceleration = 0;
 
+    public static final Voltage kIntakeVoltage = Volts.of(5);
     
     }
 

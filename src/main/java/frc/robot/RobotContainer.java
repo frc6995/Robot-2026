@@ -92,7 +92,7 @@ public class RobotContainer {
                 SmartDashboard.putData("Visualzer", VISUALIZER);
 
                 autoFactory = m_drivetrain.createAutoFactory();
-                autoRoutines = new Autos(m_drivetrain, autoFactory, this);
+                autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakepivot, m_intakeroller, m_turret);
                 SmartDashboard.putData("Auto Mode", m_chooser);
                 configureBindings();
 
