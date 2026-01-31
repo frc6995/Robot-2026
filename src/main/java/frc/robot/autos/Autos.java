@@ -56,7 +56,6 @@ public class Autos {
         this.factory = factory;
         autoCommands = new AutoCommands(drive, this);
         this.m_drivebase = drive;
-
         // ============= DEFINE AUTOS =============
         Command run = factory.trajectoryCmd("Poses");
 

@@ -2,7 +2,7 @@ package frc.robot.autos;
 
 import java.util.function.BooleanSupplier;
 
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoTrajectory;
@@ -24,28 +24,48 @@ public class AutoCommands {
     private final Autos autos; // Reference to your Autos class
     private final HoodS m_hood;
 
+    SwerveRequest mIntakeRequest = new SwerveRequest.ApplyRobotSpeeds()
+            .withDriveRequestType(SwerveModule.DriveRequestType.Velocity)
+            .withSpeeds(new ChassisSpeeds(0.3, 0, 0));
+
     public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood) {
         this.m_drivebase = drivebase;
         this.autos = autos;
         this.m_hood = hood;
     }
 
-    SwerveRequest mIntakeRequest = new SwerveRequest.ApplyRobotSpeeds()
-            .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
-            .withSpeeds(new ChassisSpeeds(0.3, 0, 0));
+    public Command autoIntake(BooleanSupplier isLeftSide, Pose2d intakePose, double driveTime) {
+       if (isLeftSide.getAsBoolean()) {
+            return Commands.sequence(
+                    m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
+                    new AutoAlign(POI.get(), POI.TRL1Entry.get(), m_drivebase));
+        } else {
+            return Commands.sequence(
+                    m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
+                    new AutoAlign(POI.RR1.get(), POI.TRR1Entry.get(), m_drivebase));
+        }
 
+
+
+        }
+    
+    
     public Command autoBackFromIntake(BooleanSupplier isLeftSide) {
         if (isLeftSide.getAsBoolean()) {
             return Commands.sequence(
-                m_hood.setAngle(hoodConstants.kStowAngle),
-                new AutoAlign(POI.TRL1.get(),  POI.testEntry.get(), m_drivebase)
-            );
+                    m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
+                    new AutoAlign(POI.TRL1.get(), POI.TRL1Entry.get(), m_drivebase));
         } else {
-            return sequence(
-                autos.getTrajectoryCommand("AutoBackFromIntakeRight", m_drivebase),
-                new AutoAlign(m_drivebase, false)
-            );
+            return Commands.sequence(
+                    m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
+                    new AutoAlign(POI.T.get(), POI.TRR1Entry.get(), m_drivebase));
         }
 
-{
+    }
+
+    public Command fuelIntake() {
+        return Commands.parallel(
+                m_drivebase.runRequest(mIntakeRequest).withTimeout(2.0)
+        );
+    }
 }

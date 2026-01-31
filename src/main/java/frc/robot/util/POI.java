@@ -11,8 +11,8 @@ import frc.robot.generated.ChoreoVars;
 
 public class POI {
     // ============= POSES =============
-    public static final Supplier<Pose2d> BALLL1= () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLL1);
-    public static final Supplier<Pose2d> TRL1= () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TRL1);
+    public static final Supplier<Pose2d> BALLL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLL1);
+    public static final Supplier<Pose2d> TRL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TRL1);
     public static final Supplier<Pose2d> HELPL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.HELPL1);
     public static final Supplier<Pose2d> DEPOT = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.DEPOT);
     public static final Supplier<Pose2d> STA1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.STA1);
@@ -22,5 +22,8 @@ public class POI {
     // ============= ROTATIONS =============
     public static final Supplier<Rotation2d> testEntry = () -> AllianceFlipUtil
             .flipRotation(new Rotation2d(Degrees.of(-90)));
+    public static final Supplier<Rotation2d> TRL1Entry = () -> AllianceFlipUtil
+            .flipRotation(new Rotation2d(Degrees.of(0)));
+    public static final Supplier<Rotation2d> TRR1Entry = () -> AllianceFlipUtil
+            .flipRotation(new Rotation2d(Degrees.of(0)));
 }
-    

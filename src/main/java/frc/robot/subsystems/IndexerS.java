@@ -51,4 +51,17 @@ public class IndexerS extends SubsystemBase {
 
         return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
     }
+
+    @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    m_indexerController.updateTelemetry();
+
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // This method will be called once per scheduler run during simulation
+    m_indexerController.simIterate();
+  }
 }
