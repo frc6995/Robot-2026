@@ -160,24 +160,14 @@ public class TurretS extends SubsystemBase {
         return m_turretMotor.getSupplyCurrent().getValue();
     }
 
-    public Command zeroTurretCommand() {
-        return Commands.sequence(
-                // Start moving towards limit at low voltage
-                Commands.runOnce(() -> {
-                    setVoltage(Units.Volts.of(1.0)).schedule();
-                }),
+   
 
-                // Wait until current exceeds threshold (turret hits limit)
-                new WaitUntilCommand(() -> {
-                    boolean overThreshold = getSupplyCurrent().in(Units.Amps) > 30.0;
-                    return m_currentDebouncer.calculate(overThreshold);
-                }),
+        public Command driveToHome() {
+    return Commands.sequence(
+      setVoltage(Volts.of(-1.0)).until(()-> getSupplyCurrent().magnitude() > 3),
+      this.runOnce(()->m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true)
+      
+    ).withTimeout(10.0).andThen(setVoltage(Volts.of(0)));
+  }
 
-                // Stop motor and set position to CCW limit
-                Commands.runOnce(() -> {
-                    setVoltage(Units.Volts.of(0)).schedule();
-                    m_turret.getMotorController().setEncoderPosition(TurretConstants.kCCWLimit);
-                }))
-                .withTimeout(5.0);
-    }
 }

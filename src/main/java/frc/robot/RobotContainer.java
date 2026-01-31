@@ -114,7 +114,7 @@ public class RobotContainer {
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
         joystick.a().whileTrue(
-                m_turret.zeroTurretCommand());
+                m_turret.driveToHome());
     }
 
     public Command getAutonomousCommand() {
