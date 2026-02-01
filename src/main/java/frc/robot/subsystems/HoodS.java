@@ -28,6 +28,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.POI;
@@ -160,9 +161,8 @@ public class HoodS extends SubsystemBase {
   }
 
   public Command autoRetractHood(Supplier<ChassisSpeeds> chassisSpeeds, Supplier<Pose2d> robotPose) {
-    return TriggerCommand.create(autoHoodAngle(robotPose)).bind(
-        setAngle(() -> HoodConstants.kStowAngle),
-        TriggerUtil.and(() -> Math.abs(chassisSpeeds.get().vxMetersPerSecond) > 0.2,
+    return Commands.either(setAngle(() -> HoodConstants.kStowAngle), autoHoodAngle(robotPose),
+        TriggerUtil.and(() -> Math.abs(chassisSpeeds.get().vxMetersPerSecond) > 0.2,  
             TriggerUtil.isWithinZone(()->POI.LLNoHoodZone.get().getTranslation(), ()->POI.URNoHoodZone.get().getTranslation(), robotPose)));
   }
 
