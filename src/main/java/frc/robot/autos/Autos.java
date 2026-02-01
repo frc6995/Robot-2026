@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.generated.ChoreoVars;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.HoodS;
@@ -85,8 +86,13 @@ public class Autos {
 
         ));
 
-                autos.put("AutoCommands test", () -> auto("AutoCommands test", POI.TRL1.get(),
-                autoCommands.autoToIntake(() -> true, POI.BALLL1.get(), 2.0)
+                autos.put("RAutoCommands test", () -> auto("RAutoCommands test", POI.TRR1.get(),
+                autoCommands.autoToIntake(() -> true, POI.BALLR1.get(), 2.0)
+
+        ));
+
+         autos.put("AutoCommands test", () -> auto("AutoCommands test", POI.TRL1.get(),
+                autoCommands.autoToIntake(() -> true, POI.BALLL2.get(), 2.0)
 
         ));
 
@@ -113,7 +119,7 @@ public class Autos {
 
         // Add all provided commands
         for (Command cmd : commands) {
-            sequence = sequence.andThen(cmd);
+            sequence = sequence.andThen(new ScheduleCommand(cmd).alongWith(Commands.print("RUNNING").repeatedly()));
         }
 
         return sequence;

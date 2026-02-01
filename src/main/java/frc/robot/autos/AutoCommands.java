@@ -18,7 +18,11 @@ import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.subsystems.TurretS;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
+import frc.robot.util.TriggerCommand;
+import frc.robot.util.TriggerUtil;
 
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.Commands.*; // Static import for WPILib Commands
 
 public class AutoCommands {
@@ -50,13 +54,17 @@ public class AutoCommands {
 
     public Command autoToIntake(BooleanSupplier isLeftSide, Pose2d intakePose, double driveTime) {
         return Commands.sequence(
-
-                isLeftSide.getAsBoolean() ? new AutoAlign(POI.HELPL1.get(), POI.HELPL1Entry.get(), m_drivebase)
-                        : new AutoAlign(POI.HELPR1.get(), POI.HELPR1Entry.get(), m_drivebase),
-                new AutoAlign(intakePose, m_drivebase),
-
-                isLeftSide.getAsBoolean() ? (m_drivebase.applyRequest(() -> m_LIntakeRequest).withTimeout(driveTime))
-                        : (m_drivebase.applyRequest(() -> m_RIntakeRequest).withTimeout(driveTime)));
+                //TO DO: FIX WITH SIDE OF FIELD
+                    isLeftSide.getAsBoolean() ? new AutoAlign(POI.HELPL1.get(), POI.HELPL1Entry.get(), m_drivebase).until(
+                                TriggerUtil.isWithinRadius(() -> POI.HELPL1.get().getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(1.0)))
+                        : new AutoAlign(POI.HELPR1.get(), POI.HELPR1Entry.get(), m_drivebase).until(
+                                TriggerUtil.isWithinRadius(() -> POI.HELPR1.get().getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(1.0))),
+                     
+                    new AutoAlign(intakePose, m_drivebase).until(
+                            TriggerUtil.isWithinRadius(() -> intakePose.getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(0.3))),
+                           
+                    (m_drivebase.applyRequest(() -> m_RIntakeRequest).withTimeout(driveTime)
+        ));
 
     }
 
