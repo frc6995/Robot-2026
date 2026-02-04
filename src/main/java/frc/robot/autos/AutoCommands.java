@@ -1,6 +1,7 @@
 package frc.robot.autos;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -97,6 +98,49 @@ public class AutoCommands {
 
                                 (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
                                                 .withTimeout(driveTime)));
+                        }
+        
+                public Command ChoreoToIntake(
+                        Command choreoCommand,
+                        Pose2d helpl1,
+                        Rotation2d helpPoseEntryAngle,
+                        Distance helpPoseTolerance,
+                        Pose2d intakePose,
+                        Rotation2d intakePoseEntryAngle,
+                        Distance intakePoseTolerance,
+                        Time driveTime) {
+                return Commands.sequence(
+                                // TO DO: ADD HOOD CLAMPING REQUIREMENT
+                                choreoCommand.until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> helpl1.getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> helpPoseTolerance)),
+                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> intakePose.getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> intakePoseTolerance)),
+
+                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
+                                                .withTimeout(driveTime)));
+
+                        }
+                public Command ChoreoBackFromIntake(
+                        Command choreoCommand,
+                        Pose2d helpl1,
+                        Rotation2d helpPoseEntryAngle,
+                        Distance helpPoseTolerance,
+                        Pose2d targetpose,
+                        Rotation2d targetPoseEntryAngle) {
+                // TO DO: ADD HOOD UNCLAMPING REQUIREMENT
+                return Commands.sequence(
+                                choreoCommand.until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> helpl1.getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> helpPoseTolerance)),
+                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase));
 
         }
 
@@ -141,3 +185,4 @@ public class AutoCommands {
                                 m_Spindexer.setVelocity(()-> SpindexerS.SpindexerConstants.kVelocity));
         }
 }
+

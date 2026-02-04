@@ -81,6 +81,8 @@ public class Autos {
         this.m_spindexer = spindexer;
         // ============= DEFINE AUTOS =============
         Command run = factory.trajectoryCmd("Poses");
+        Command testRun = factory.trajectoryCmd("ChoreoTest");
+        Command testRunBack = factory.trajectoryCmd("ChoreoTestBack");
 
         autos.put("EntryAngle", () -> auto("EntryAngle", POI.CL1.get(),
                 run
@@ -106,6 +108,21 @@ public class Autos {
                         POI.TRL1Entry.get()
 
                 ))));
+
+        autos.put("Choreo auto test", ()-> auto("Choreo auto test", POI.HELPL1.get(),
+                autoCommands.ChoreoToIntake(
+                testRun, 
+                POI.HELPL1.get(), 
+                POI.HELPL1Entry.get(),
+                Meters.of(2.0),
+                POI.BALLL2.get(),
+                POI.BALLR1Entry.get(),
+                Meters.of(0.15),
+                Seconds.of(0.5)
+                )      
+                        .andThen(autoCommands.ChoreoBackFromIntake(testRunBack, POI.HELPL2, POI.HELPL2Entry, Meters.of(3), POI.TRL1, POI.TRL1Entry))
+                )
+        );
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
