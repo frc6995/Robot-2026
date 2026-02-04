@@ -46,6 +46,7 @@ import frc.robot.subsystems.IntakePivotS;
 import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.subsystems.SpindexerS;
 import frc.robot.subsystems.TurretS;
+import frc.robot.subsystems.HoodS.HoodConstants;
 import frc.robot.util.Telemetry;
 import yams.mechanisms.velocity.FlyWheel;
 
@@ -68,16 +69,15 @@ public class RobotContainer {
 
         public static final CommandXboxController joystick = new CommandXboxController(0);
         
+        public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
+        
         private final FlyWheelS m_flywheel = new FlyWheelS();
-        private final HoodS m_hood = new HoodS();
+        private final HoodS m_hood = new HoodS(()->m_drivetrain.state.Pose, ()-> m_drivetrain.state.Speeds);
         private final IndexerS m_indexer = new IndexerS();
         private final IntakePivotS m_intakepivot = new IntakePivotS();
         private final IntakeRollerS m_intakeroller = new IntakeRollerS();
         private final SpindexerS m_spindexer = new SpindexerS();
         private final TurretS m_turret = new TurretS();
-
-
-        public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
 
         private final AutoFactory autoFactory;
         private Mechanism2d VISUALIZER;
@@ -138,8 +138,11 @@ public class RobotContainer {
                         
 
                 m_drivetrain.registerTelemetry(logger::telemeterize);
-                joystick.rightBumper().onTrue(m_hood.autoHoodAngle(()->m_drivetrain.state.Pose));
-                //joystick.leftBumper().onTrue(m_hood.autoRetractHood(()->m_drivetrain.state.Speeds, ()->m_drivetrain.state.Pose));
+                joystick.rightBumper().onTrue(m_hood.autoHoodAngle());
+
+                m_hood.setDefaultCommand(
+                        m_hood.setAngle(() -> HoodConstants.kStowAngle)
+                );
 
         }
 
