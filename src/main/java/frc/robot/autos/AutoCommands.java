@@ -29,7 +29,7 @@ public class AutoCommands {
     // You need these dependencies passed in
     private final CommandSwerveDrivetrain m_drivebase;
     private final Autos autos; // Reference to your Autos class
-    private final HoodS m_hood;
+    /*private final HoodS m_hood;*/
     private final IntakePivotS m_intakePivot;
     private final IntakeRollerS m_intakeRoller;
     private final TurretS m_turret;
@@ -42,11 +42,11 @@ public class AutoCommands {
             .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
             .withSpeeds(new ChassisSpeeds(0.5, 0., 0));
 
-    public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
+    public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, /*HoodS hood,*/ IntakePivotS intakePivot,
             IntakeRollerS intakeRoller, TurretS turret) {
         this.m_drivebase = drivebase;
         this.autos = autos;
-        this.m_hood = hood;
+        /*this.m_hood = hood;*/
         this.m_intakePivot = intakePivot;
         this.m_intakeRoller = intakeRoller;
         this.m_turret = turret;
@@ -68,18 +68,18 @@ public class AutoCommands {
 
     }
 
-    public Command autoBackFromIntake(BooleanSupplier isLeftSide) {
-        if (isLeftSide.getAsBoolean()) {
-            return Commands.sequence(
-                    m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
-                    new AutoAlign(POI.TRL1.get(), POI.TRL1Entry.get(), m_drivebase));
-        } else {
-            return Commands.sequence(
-                    m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
-                    new AutoAlign(POI.TRR1.get(), POI.TRR1Entry.get(), m_drivebase));
-        }
+    // public Command autoBackFromIntake(BooleanSupplier isLeftSide) {
+    //     if (isLeftSide.getAsBoolean()) {
+    //         return Commands.sequence(
+    //                 m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
+    //                 new AutoAlign(POI.TRL1.get(), POI.TRL1Entry.get(), m_drivebase));
+    //     } else {
+    //         return Commands.sequence(
+    //                 m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
+    //                 new AutoAlign(POI.TRR1.get(), POI.TRR1Entry.get(), m_drivebase));
+    //     }
 
-    }
+    // }
 
     public Command fuelIntake() {
         return Commands.parallel(

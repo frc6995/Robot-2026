@@ -29,16 +29,16 @@ public class AutoAlign extends Command {
                 public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(DEFAULT_ACCELERATION, DEFAULT_JERK);
         }
 
-        private final Autopilot kAutopilot;
+        protected final Autopilot kAutopilot;
 
-        private final APTarget m_target;
-        private final CommandSwerveDrivetrain m_drivetrain;
-        private final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
+        protected final APTarget m_target;
+        protected final CommandSwerveDrivetrain m_drivetrain;
+        protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                         .withDriveRequestType(DriveRequestType.Velocity)
                         .withHeadingPID(4, 0, 0); // Replace with constants later
 
-        private SwerveDriveState swerveState = new SwerveDriveState();
+        protected SwerveDriveState swerveState = new SwerveDriveState();
 
         /**
          * Uses default constraints, beeline path

@@ -42,7 +42,7 @@ public class Autos {
     private final AutoFactory factory;
     private final CommandSwerveDrivetrain m_drivebase;
     private final Map<String, Supplier<Command>> autos = new LinkedHashMap<>();
-    private final HoodS m_hood;
+    /*private final HoodS m_hood;*/
     private final IntakePivotS m_intakePivot;
     private final IntakeRollerS m_intakeRoller;
     private final TurretS m_turret;
@@ -63,11 +63,11 @@ public class Autos {
      * return routine;
      * }
      */
-    public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
+    public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, /*HoodS hood,*/
             IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret) {
         this.factory = factory;
-        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret);
-        this.m_hood = hood;
+        autoCommands = new AutoCommands(drive, this, /*hood,*/ intakePivot, intakeRoller, turret);
+        /*this.m_hood = hood;*/
         this.m_intakePivot = intakePivot;
         this.m_intakeRoller = intakeRoller;
         this.m_turret = turret;
