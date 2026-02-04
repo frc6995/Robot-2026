@@ -58,20 +58,6 @@ public class Vision {
         for(int i = 0; i < limelights.length; i++) {
             limelights[i] = new VisionModule(VisionConstants.LL_IDS[i], VisionConstants.LL_OFFSETS[i], visionTable);
         }
-
-        List<PoseEstimate> initialEstimates = getAllEstimates();
-
-        Pose3d initialEstimate = (initialEstimates.size() != 0) ? initialEstimates.get(0).pose : new Pose3d(new Translation3d(), gyro.getRotation3d());
-
-        for(VisionModule limelight : limelights) {
-            limelight.seedOrientation(new Orientation3d(
-                initialEstimate.getRotation(), 
-                new AngularVelocity3d(
-                    gyro.getAngularVelocityXWorld().getValue(),
-                    gyro.getAngularVelocityYWorld().getValue(),
-                    gyro.getAngularVelocityZWorld().getValue())));
-            gyro.setYaw(initialEstimate.getRotation().getMeasureZ());
-        }
     }
 
     public void periodic() {
