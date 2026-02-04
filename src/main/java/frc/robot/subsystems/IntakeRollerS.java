@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
@@ -101,8 +102,8 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
 
   private SmartMotorController talonFXSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig); 
 
- public Command setVoltage(Voltage volts) {
-        return Commands.runOnce(() -> motor.setVoltage(volts.in(Volts)));
+ public Command setVoltage(Supplier<Voltage> volts) {
+        return Commands.runOnce(() -> motor.setVoltage(volts.get().in(Volts)));
     }
 
     public Current getCurrent() {

@@ -94,13 +94,13 @@ public class Autos {
                         Seconds.of(0.5)
 
                 )
-                        .andThen(autoCommands.autoBackFromIntake(POI.HELPL2.get(),
-                                POI.HELPL2Entry.get(),
-                                Meters.of(1.5),
-                                POI.TRL1.get(),
-                                POI.TRL1Entry.get()
+                .andThen(autoCommands.autoBackFromIntake(POI.HELPL2.get(),
+                        POI.HELPL2Entry.get(),
+                        Meters.of(1.5),
+                        POI.TRL1.get(),
+                        POI.TRL1Entry.get()
 
-                        ))));
+                ))));
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));

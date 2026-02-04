@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.HoodS;
-import frc.robot.subsystems.HoodS.hoodConstants;
 import frc.robot.subsystems.IntakePivotS;
 import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.subsystems.TurretS;
@@ -117,7 +116,7 @@ public class AutoCommands {
 
         public Command fuelIntake() {
                 return Commands.parallel(
-                                m_intakePivot.setAngle(IntakePivotS.intakeConstants.kCW),
-                                m_intakeRoller.setVoltage(IntakeRollerS.rollerConstants.kIntakeVoltage));
+                                m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kCWLimit),
+                                m_intakeRoller.setVoltage(() -> IntakeRollerS.rollerConstants.kIntakeVoltage));
         }
 }
