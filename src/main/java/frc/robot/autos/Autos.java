@@ -96,7 +96,7 @@ public class Autos {
                 )
                         .andThen(autoCommands.autoBackFromIntake(POI.HELPL2.get(),
                                 POI.HELPL2Entry.get(),
-                                Meters.of(3),
+                                Meters.of(1.5),
                                 POI.TRL1.get(),
                                 POI.TRL1Entry.get()
 
