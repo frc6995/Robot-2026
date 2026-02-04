@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.security.AllPermission;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 

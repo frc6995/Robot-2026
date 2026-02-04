@@ -23,6 +23,12 @@ public class TriggerCommand extends Command {
         bind(toRun, () -> true);
     }
 
+    @Override
+    public void execute() {
+        super.execute();
+        m_eventLoop.poll();
+    }
+
     public static TriggerCommand create(Runnable toRun) {
         return new TriggerCommand(toRun);
     }
@@ -46,31 +52,43 @@ public class TriggerCommand extends Command {
     }
 
     public TriggerCommand bind(Command command, BooleanSupplier booleanSupplier) {
-        if(!m_commands.contains(command)) {
+        return bind(command, booleanSupplier, false);
+    }
+
+    public TriggerCommand bind(Command command, BooleanSupplier booleanSupplier, boolean interrupt) {
+        if(!interrupt && !m_commands.contains(command)) {
             for(Subsystem requirement : command.getRequirements()) {
                 if(getRequirements().contains(requirement)) 
-                    throw new RuntimeException("Multiple Commands in TriggerCommands cannot require the same subsystem");
+                    throw new RuntimeException("Multiple Commands in a TriggerCommand cannot require the same subsystem unless interrupt is enabled.");
             }
         }
-        m_commands.add(command);
         m_eventLoop.bind(
             new Runnable() {
                 public void run() {
                     if(booleanSupplier.getAsBoolean()) {
+                        if(interrupt) {
+                            Set<Subsystem> reqs = command.getRequirements();
+                            for(Command scheduledCommand : m_commands) {
+                                if(scheduledCommand != command && scheduledCommand.getRequirements().stream().anyMatch(reqs::contains)) {
+                                    CommandScheduler.getInstance().cancel(scheduledCommand);
+                                }
+                            }
+                        }
                         CommandScheduler.getInstance().schedule(command);
                     }
                 }
             }
         );
+        m_commands.add(command);
         return this;
     }
 
-    public Set<Subsystem> getRequirements() {
-        Set<Subsystem> requirements = new HashSet<Subsystem>();
+    // public Set<Subsystem> getRequirements() {
+    //     Set<Subsystem> requirements = new HashSet<Subsystem>();
 
-        for(Command command : m_commands) {
-            requirements.addAll(command.getRequirements());
-        }
-        return requirements;
-    } 
+    //     for(Command command : m_commands) {
+    //         requirements.addAll(command.getRequirements());
+    //     }
+    //     return requirements;
+    // } 
 }

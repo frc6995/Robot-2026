@@ -33,4 +33,3 @@ public class POI {
 
     public static final Supplier<Distance> kOriginToTrench = () -> !AllianceFlipUtil.isRedAlliance() ? kOriginToTrenchBlue : kOriginToTrenchRed;
 }
-    
