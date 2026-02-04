@@ -7,7 +7,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -26,64 +30,93 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.Commands.*; // Static import for WPILib Commands
 
 public class AutoCommands {
-    // You need these dependencies passed in
-    private final CommandSwerveDrivetrain m_drivebase;
-    private final Autos autos; // Reference to your Autos class
-    private final HoodS m_hood;
-    private final IntakePivotS m_intakePivot;
-    private final IntakeRollerS m_intakeRoller;
-    private final TurretS m_turret;
+        // You need these dependencies passed in
+        private final CommandSwerveDrivetrain m_drivebase;
+        private final Autos autos; // Reference to your Autos class
+        private final HoodS m_hood;
+        private final IntakePivotS m_intakePivot;
+        private final IntakeRollerS m_intakeRoller;
+        private final TurretS m_turret;
 
-    SwerveRequest m_LIntakeRequest = new SwerveRequest.ApplyRobotSpeeds()
-            .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
-            .withSpeeds(new ChassisSpeeds(0.5, 0.0, 0));
+        SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
+                        .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
+                        .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
-    SwerveRequest m_RIntakeRequest = new SwerveRequest.ApplyRobotSpeeds()
-            .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
-            .withSpeeds(new ChassisSpeeds(0.5, 0., 0));
-
-    public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
-            IntakeRollerS intakeRoller, TurretS turret) {
-        this.m_drivebase = drivebase;
-        this.autos = autos;
-        this.m_hood = hood;
-        this.m_intakePivot = intakePivot;
-        this.m_intakeRoller = intakeRoller;
-        this.m_turret = turret;
-    }
-
-    public Command autoToIntake(BooleanSupplier isLeftSide, Pose2d intakePose, double driveTime) {
-        return Commands.sequence(
-                //TO DO: FIX WITH SIDE OF FIELD
-                    isLeftSide.getAsBoolean() ? new AutoAlign(POI.HELPL1.get(), POI.HELPL1Entry.get(), m_drivebase).until(
-                                TriggerUtil.isWithinRadius(() -> POI.HELPL1.get().getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(1.0)))
-                        : new AutoAlign(POI.HELPR1.get(), POI.HELPR1Entry.get(), m_drivebase).until(
-                                TriggerUtil.isWithinRadius(() -> POI.HELPR1.get().getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(1.0))),
-                     
-                    new AutoAlign(intakePose, m_drivebase).until(
-                            TriggerUtil.isWithinRadius(() -> intakePose.getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(0.3))),
-                           
-                    (m_drivebase.applyRequest(() -> m_RIntakeRequest).withTimeout(driveTime)
-        ));
-
-    }
-
-    public Command autoBackFromIntake(BooleanSupplier isLeftSide) {
-        if (isLeftSide.getAsBoolean()) {
-            return Commands.sequence(
-                    m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
-                    new AutoAlign(POI.TRL1.get(), POI.TRL1Entry.get(), m_drivebase));
-        } else {
-            return Commands.sequence(
-                    m_hood.setAngle(hoodConstants.kStowAngle), // replace with threshold command
-                    new AutoAlign(POI.TRR1.get(), POI.TRR1Entry.get(), m_drivebase));
+        public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
+                        IntakeRollerS intakeRoller, TurretS turret) {
+                this.m_drivebase = drivebase;
+                this.autos = autos;
+                this.m_hood = hood;
+                this.m_intakePivot = intakePivot;
+                this.m_intakeRoller = intakeRoller;
+                this.m_turret = turret;
         }
 
-    }
+        /**
+         * Creates a routine that intakes from the center line
+         * @param helpPose Pose to go through on the way to the final pose to intake
+         * @param helpPoseEntryAngle 
+         * @param helpPoseTolerance Minimum radius for robot to be in from helpPose that triggers the next command
+         * @param intakePose Pose to go through before slowDriveForward
+         * @param intakePoseEntryAngle
+         * @param intakePoseTolerance Mnimum radius for robot to be in from intakePose that triggers the next command
+         * @param driveTime Time to drive forward collecting fuel
+         * @return command that intakes from the center line
+         */
+        public Command autoToIntake(
+                        Pose2d helpPose,
+                        Rotation2d helpPoseEntryAngle,
+                        Distance helpPoseTolerance,
+                        Pose2d intakePose,
+                        Rotation2d intakePoseEntryAngle,
+                        Distance intakePoseTolerance,
+                        Time driveTime) {
+                return Commands.sequence(
+                                // TO DO: ADD HOOD CLAMPING REQUIREMENT
+                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> helpPose.getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> helpPoseTolerance)),
+                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> intakePose.getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> intakePoseTolerance)),
 
-    public Command fuelIntake() {
-        return Commands.parallel(
-                m_intakePivot.setAngle(IntakePivotS.intakeConstants.kCW),
-                m_intakeRoller.setVoltage(IntakeRollerS.rollerConstants.kIntakeVoltage));
-    }
+                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
+                                                .withTimeout(driveTime)));
+
+        }
+
+        /**
+         * Creates a command that intakes from the center line
+         * @param helpPose Pose to go through on the way to the final pose for scoring
+         * @param helpPoseEntryAngle 
+         * @param helpPoseTolerance  Minimum radius for robot to be in from helpPose that triggers the next command
+         * @param targetpose Final pose to drive to for scoring
+         * @param targetPoseEntryAngle
+         * @return command that intakes from the center line
+         */
+        public Command autoBackFromIntake(Pose2d helpPose,
+                        Rotation2d helpPoseEntryAngle,
+                        Distance helpPoseTolerance,
+                        Pose2d targetpose,
+                        Rotation2d targetPoseEntryAngle) {
+                // TO DO: ADD HOOD UNCLAMPING REQUIREMENT
+                return Commands.sequence(
+                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> helpPose.getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> helpPoseTolerance)),
+                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase));
+
+        }
+
+        public Command fuelIntake() {
+                return Commands.parallel(
+                                m_intakePivot.setAngle(IntakePivotS.intakeConstants.kCW),
+                                m_intakeRoller.setVoltage(IntakeRollerS.rollerConstants.kIntakeVoltage));
+        }
 }

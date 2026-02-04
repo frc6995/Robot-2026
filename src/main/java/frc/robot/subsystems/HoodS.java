@@ -22,6 +22,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.generated.TunerConstants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.ArmConfig;
@@ -96,13 +97,12 @@ public class hoodConstants {
   .withStatorCurrentLimit(Amps.of(hoodConstants.kStatorCurrentLimit))
   .withSupplyCurrentLimit(Amps.of(hoodConstants.kSupplyCurrentLimit));
 
-  private TalonFX motor = new TalonFX(hoodConstants.kCANID);
+  private TalonFX motor = new TalonFX(hoodConstants.kCANID, TunerConstants.kCANBus);
 
   private SmartMotorController talonSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX44(1), smcConfig);
 
   private ArmConfig hoodCfg = new ArmConfig(talonSmartMotorController)
   // Soft limit is applied to the SmartMotorControllers PID
-  .withSoftLimits(hoodConstants.kCW, hoodConstants.kCCW)
   // Hard limit is applied to the simulation.
   .withHardLimit(hoodConstants.kCW, hoodConstants.kCCW)
   // Starting position is where your arm starts

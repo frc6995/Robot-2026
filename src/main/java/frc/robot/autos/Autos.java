@@ -24,6 +24,10 @@ import frc.robot.util.ChoreoVariables;
 import frc.robot.util.POI;
 import frc.robot.RobotContainer;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -46,8 +50,6 @@ public class Autos {
     private final IntakePivotS m_intakePivot;
     private final IntakeRollerS m_intakeRoller;
     private final TurretS m_turret;
-
-    
 
     /*
      * . CHOREO AUTO EXAMPLE
@@ -76,25 +78,29 @@ public class Autos {
         Command run = factory.trajectoryCmd("Poses");
 
         autos.put("EntryAngle", () -> auto("EntryAngle", POI.CL1.get(),
-                new AutoAlign(POI.HELPL1.get(), m_drivebase)
-                
-
-        ));
-
-        autos.put("Choreo test", () -> auto("Choreo test", POI.TRR1.get(),
                 run
+                        .andThen(
+                                new AutoAlign(POI.HELPL1.get(), m_drivebase))
 
         ));
 
-                autos.put("RAutoCommands test", () -> auto("RAutoCommands test", POI.TRR1.get(),
-                autoCommands.autoToIntake(() -> true, POI.BALLR1.get(), 2.0)
+        autos.put("AutoCommands test", () -> auto("AutoCommands test", POI.TRL1.get(),
+                autoCommands.autoToIntake(POI.HELPL1.get(),
+                        POI.HELPL1Entry.get(),
+                        Meters.of(2.0),
+                        POI.BALLL2.get(),
+                        POI.BALLR1Entry.get(),
+                        Meters.of(0.15),
+                        Seconds.of(0.5)
 
-        ));
+                )
+                        .andThen(autoCommands.autoBackFromIntake(POI.HELPL2.get(),
+                                POI.HELPL2Entry.get(),
+                                Meters.of(3),
+                                POI.TRL1.get(),
+                                POI.TRL1Entry.get()
 
-         autos.put("AutoCommands test", () -> auto("AutoCommands test", POI.TRL1.get(),
-                autoCommands.autoToIntake(() -> true, POI.BALLL2.get(), 2.0)
-
-        ));
+                        ))));
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
@@ -112,17 +118,8 @@ public class Autos {
      * @param startPose Starting pose (auto-resets odometry)
      * @param commands  Any sequence of commands (AP, choreo, actions, etc.)
      */
-    private Command auto(String name, Pose2d startPose, Command... commands) {
-
-        // Start with odometry reset
-        Command sequence = factory.resetOdometry((Optional.of(startPose)), false);
-
-        // Add all provided commands
-        for (Command cmd : commands) {
-            sequence = sequence.andThen(new ScheduleCommand(cmd).alongWith(Commands.print("RUNNING").repeatedly()));
-        }
-
-        return sequence;
+    private Command auto(String name, Pose2d startPose, Command command) {
+        return factory.resetOdometry((Optional.of(startPose)), false).andThen(new ScheduleCommand(command));
     }
 
 }
