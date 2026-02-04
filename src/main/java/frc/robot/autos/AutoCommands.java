@@ -71,8 +71,9 @@ public class AutoCommands {
                         Rotation2d intakePoseEntryAngle,
                         Distance intakePoseTolerance,
                         Time driveTime) {
+
                 return Commands.sequence(
-                                // TO DO: ADD HOOD CLAMPING REQUIREMENT
+                                // TO DO: ADD HOOD CLAMPING REQUIREMENT, INTAKE ROLLERS
                                 new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
                                                 TriggerUtil.isWithinRadius(
                                                                 () -> helpPose.getTranslation(),
