@@ -23,6 +23,7 @@ import frc.robot.subsystems.IntakePivotS;
 import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.subsystems.SpindexerS;
 import frc.robot.subsystems.TurretS;
+import frc.robot.subsystems.HoodS.HoodConstants;
 import frc.robot.subsystems.IndexerS.IndexerConstants;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
@@ -87,7 +88,7 @@ public class AutoCommands {
 
                 return Commands.deadline(
                                 Commands.sequence(
-                                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
+                                        Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                                 new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
