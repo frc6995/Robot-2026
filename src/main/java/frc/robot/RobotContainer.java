@@ -139,6 +139,13 @@ public class RobotContainer {
         
         joystick.a().whileTrue(new AutoAlignFixedHeading(
                     new Pose2d(Meters.of(1), Meters.of(1), Rotation2d.k180deg), m_drivetrain, true));
+        joystick.b().onTrue(m_intakepivot.setAngle(()->Degrees.of(25)));
+        joystick.x().onTrue(m_intakepivot.setAngle(()->Degrees.of(90)));
+        joystick.y().whileTrue(m_hood.autoHoodAngle());
+        joystick.leftBumper().onTrue(m_hood.setAngle(()->Degrees.of(40)));
+        joystick.leftTrigger().onTrue(m_hood.setAngle(()->Degrees.of(12.5)));
+        joystick.rightTrigger().onTrue(m_turret.setAngle(()->Degrees.of(-180)));
+        joystick.rightBumper().onTrue(m_turret.setAngle(()->Degrees.of(150)));
         
         m_drivetrain.registerTelemetry(logger::telemeterize);
 

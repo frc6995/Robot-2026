@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.POI;
+import frc.robot.util.RobotVisualizer;
 import frc.robot.util.TriggerUtil;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -45,7 +47,7 @@ public class HoodS extends SubsystemBase {
       // CAN IDs
     public static final int kCANID = 42;
       // PID-FF Constants
-    public static final double kP = 0;
+    public static final double kP = 50;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kS = 0;
@@ -139,6 +141,7 @@ public class HoodS extends SubsystemBase {
     
     for(double[] entry : HoodConstants.kAngleData){
       table.put(entry[0], entry[1]);
+      
     }
   }
 
@@ -166,6 +169,8 @@ public class HoodS extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    double currentAngleRad = hood.getAngle().in(Radians);
+    RobotVisualizer.updateHood(currentAngleRad);
     hood.updateTelemetry();
   }
 
