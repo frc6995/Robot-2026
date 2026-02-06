@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.HoodS;
 import frc.robot.subsystems.IndexerS;
@@ -48,7 +49,7 @@ public class AutoCommands {
                         .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
         public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
-                        IntakeRollerS intakeRoller, TurretS turret,IndexerS indexer, SpindexerS spindexer) {
+                        IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer) {
                 this.m_drivebase = drivebase;
                 this.autos = autos;
                 this.m_hood = hood;
@@ -59,6 +60,7 @@ public class AutoCommands {
                 this.m_Spindexer = spindexer;
         }
 
+        // Create a trigger that watches your condition
         /**
          * Creates a routine that intakes from the center line
          * 
@@ -69,8 +71,9 @@ public class AutoCommands {
          *                             that triggers the next command
          * @param intakePose           Pose to go through before slowDriveForward
          * @param intakePoseEntryAngle
-         * @param intakePoseTolerance Mnimum radius for robot to be in from intakePose that triggers the next command
-         * @param driveTime Time to drive forward collecting fuel
+         * @param intakePoseTolerance  Mnimum radius for robot to be in from intakePose
+         *                             that triggers the next command
+         * @param driveTime            Time to drive forward collecting fuel
          * @return command that intakes from the center line
          */
         public Command APToIntake(
@@ -82,21 +85,23 @@ public class AutoCommands {
                         Distance intakePoseTolerance,
                         Time driveTime) {
 
-                return Commands.sequence(
-                                // TO DO: ADD HOOD CLAMPING REQUIREMENT, INTAKE ROLLERS
-                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
-                                                TriggerUtil.isWithinRadius(
-                                                                () -> helpPose.getTranslation(),
-                                                                () -> m_drivebase.state.Pose,
-                                                                () -> helpPoseTolerance)),
-                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
-                                                TriggerUtil.isWithinRadius(
-                                                                () -> intakePose.getTranslation(),
-                                                                () -> m_drivebase.state.Pose,
-                                                                () -> intakePoseTolerance)),
+                return Commands.deadline(
+                                Commands.sequence(
+                                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
+                                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> intakePose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> intakePoseTolerance)),
 
-                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
-                                                .withTimeout(driveTime)));
+                                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
+                                                                .withTimeout(driveTime))),
+                                fuelIntake());
         }
 
         /**
@@ -122,21 +127,23 @@ public class AutoCommands {
                         Rotation2d intakePoseEntryAngle,
                         Distance intakePoseTolerance,
                         Time driveTime) {
-                return Commands.sequence(
-                                // TO DO: ADD HOOD CLAMPING REQUIREMENT,INTAKE
-                                choreoCommand.until(
-                                                TriggerUtil.isWithinRadius(
-                                                                () -> helpPose.getTranslation(),
-                                                                () -> m_drivebase.state.Pose,
-                                                                () -> helpPoseTolerance)),
-                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
-                                                TriggerUtil.isWithinRadius(
-                                                                () -> intakePose.getTranslation(),
-                                                                () -> m_drivebase.state.Pose,
-                                                                () -> intakePoseTolerance)),
+                return Commands.deadline(
+                                Commands.sequence(
+                                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
+                                                choreoCommand.until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> intakePose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> intakePoseTolerance)),
 
-                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
-                                                .withTimeout(driveTime)));
+                                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
+                                                                .withTimeout(driveTime))),
+                                fuelIntake());
 
         }
 
@@ -157,8 +164,8 @@ public class AutoCommands {
                         Distance helpPoseTolerance,
                         Pose2d targetpose,
                         Rotation2d targetPoseEntryAngle) {
-                // TO DO: ADD HOOD UNCLAMPING REQUIREMENT
                 return Commands.sequence(
+                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                 new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
                                                 TriggerUtil.isWithinRadius(
                                                                 () -> helpPose.getTranslation(),
@@ -186,8 +193,8 @@ public class AutoCommands {
                         Distance helpPoseTolerance,
                         Pose2d targetpose,
                         Rotation2d targetPoseEntryAngle) {
-                // TO DO: ADD HOOD UNCLAMPING REQUIREMENT
                 return Commands.sequence(
+                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                 choreoCommand.until(
                                                 TriggerUtil.isWithinRadius(
                                                                 () -> helpPose.getTranslation(),
@@ -202,11 +209,12 @@ public class AutoCommands {
                                 m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kCWLimit),
                                 m_intakeRoller.setVoltage(() -> IntakeRollerS.rollerConstants.kIntakeVoltage));
         }
-        //auto hood angle command
+
+        // auto hood angle command
         public Command Score() {
                 return Commands.parallel(
                                 m_hood.autoHoodAngle(),
                                 m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
-                                m_Spindexer.setVelocity(()-> SpindexerS.SpindexerConstants.kVelocity));
+                                m_Spindexer.setVelocity(() -> SpindexerS.SpindexerConstants.kVelocity));
         }
 }

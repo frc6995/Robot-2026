@@ -68,7 +68,8 @@ public class Autos {
          * }
          */
         public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
-                        IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS m_indexer, SpindexerS m_spindexer) {
+                        IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS m_indexer,
+                        SpindexerS m_spindexer) {
                 this.factory = factory;
                 autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, null, null);
                 this.m_hood = hood;
@@ -120,6 +121,13 @@ public class Autos {
 
                                                 ))));
 
+                autos.put("Choreo-test", () -> auto(POI.TRL1.get(),
+                                autoCommands.choreoToIntake(run, POI.HELPL1.get(),
+                                                Meters.of(2.0),
+                                                POI.BALLL2.get(),
+                                                POI.BALLL2Entry.get(),
+                                                Meters.of(0.15),
+                                                Seconds.of(0.5))));
                 // Auto-register
                 autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
 
