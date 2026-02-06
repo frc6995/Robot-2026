@@ -74,8 +74,8 @@ public class AutoAlign extends Command {
                 this.m_drivetrain = drivetrain;
 
                 APProfile kProfile = new APProfile(constraints)
-                                .withErrorXY(Centimeters.of(2))
-                                .withErrorTheta(Degrees.of(0.5))
+                                .withErrorXY(Centimeters.of(5))
+                                .withErrorTheta(Degrees.of(1.5))
                                 .withBeelineRadius(Centimeters.of(8));
 
                 kAutopilot = new Autopilot(kProfile);
@@ -96,7 +96,7 @@ public class AutoAlign extends Command {
 
         @Override
         public void end(boolean interrupted) {
-                System.out.println("AutoAlign ended" + (interrupted ? " due to interruption." : "."));
+                
         }
 
         @Override

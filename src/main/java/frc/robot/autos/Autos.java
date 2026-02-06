@@ -38,110 +38,103 @@ import java.util.function.Supplier;
 
 public class Autos {
 
-    public class AutoConstants {
-        private static double DEFAULT_ACCELERATION = 15;
-        private static double DEFAULT_JERK = 12;
+        public class AutoConstants {
+                private static double DEFAULT_ACCELERATION = 15;
+                private static double DEFAULT_JERK = 12;
 
-    }
+        }
 
-    private final AutoCommands autoCommands;
-    private final AutoFactory factory;
-    private final CommandSwerveDrivetrain m_drivebase;
-    private final Map<String, Supplier<Command>> autos = new LinkedHashMap<>();
-    private final HoodS m_hood;
-    private final IntakePivotS m_intakePivot;
-    private final IntakeRollerS m_intakeRoller;
-    private final TurretS m_turret;
-    private final IndexerS m_indexer;
-    private final SpindexerS m_spindexer;
-    /*
-     * . CHOREO AUTO EXAMPLE
-     * 
-     * String choreoAutoName = "Choreo Auto";
-     * 
-     * public AutoRoutine choreoAuto() {
-     * final AutoRoutine routine = factory.newRoutine(choreoAutoName);
-     * final AutoTrajectory traj = routine.trajectory("OP");
-     * routine.active().onTrue(
-     * traj.resetOdometry()
-     * .andThen(traj.cmd()));
-     * return routine;
-     * }
-     */
-    public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
-            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer) {
-        this.factory = factory;
-        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer);
-        this.m_hood = hood;
-        this.m_intakePivot = intakePivot;
-        this.m_intakeRoller = intakeRoller;
-        this.m_turret = turret;
-        this.m_drivebase = drive;
-        this.m_indexer = indexer;
-        this.m_spindexer = spindexer;
-        // ============= DEFINE AUTOS =============
-        Command run = factory.trajectoryCmd("Poses");
-        Command testRun = factory.trajectoryCmd("ChoreoTest");
-        Command testRunBack = factory.trajectoryCmd("ChoreoTestBack");
+        private final AutoCommands autoCommands;
+        private final AutoFactory factory;
+        private final CommandSwerveDrivetrain m_drivebase;
+        private final Map<String, Supplier<Command>> autos = new LinkedHashMap<>();
+        private final HoodS m_hood;
+        private final IntakePivotS m_intakePivot;
+        private final IntakeRollerS m_intakeRoller;
+        private final TurretS m_turret;
 
-        autos.put("EntryAngle", () -> auto("EntryAngle", POI.CL1.get(),
-                run
-                        .andThen(
-                                new AutoAlign(POI.HELPL1.get(), m_drivebase))
+        /*
+         * . CHOREO AUTO EXAMPLE
+         * 
+         * String choreoAutoName = "Choreo Auto";
+         * 
+         * public AutoRoutine choreoAuto() {
+         * final AutoRoutine routine = factory.newRoutine(choreoAutoName);
+         * final AutoTrajectory traj = routine.trajectory("OP");
+         * routine.active().onTrue(
+         * traj.resetOdometry()
+         * .andThen(traj.cmd()));
+         * return routine;
+         * }
+         */
+        public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
+                        IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret) {
+                this.factory = factory;
+                autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret);
+                this.m_hood = hood;
+                this.m_intakePivot = intakePivot;
+                this.m_intakeRoller = intakeRoller;
+                this.m_turret = turret;
+                this.m_drivebase = drive;
 
-        ));
+                // ============= CHOREO COMMANDS =============
 
-        autos.put("AutoCommands test", () -> auto("AutoCommands test", POI.TRL1.get(),
-                autoCommands.autoToIntake(POI.HELPL1.get(),
-                        POI.HELPL1Entry.get(),
-                        Meters.of(2.0),
-                        POI.BALLL2.get(),
-                        POI.BALLR1Entry.get(),
-                        Meters.of(0.15),
-                        Seconds.of(0.5)
+                // To intake
+                // Back to start
+                // To climb
 
-                )
-                .andThen(autoCommands.autoBackFromIntake(POI.HELPL2.get(),
-                        POI.HELPL2Entry.get(),
-                        Meters.of(1.5),
-                        POI.TRL1.get(),
-                        POI.TRL1Entry.get()
+                // Other
+                Command run = factory.trajectoryCmd("Poses");
 
-                ))));
+                // ============= DEFINE AUTOS =============
 
-        autos.put("Choreo auto test", ()-> auto("Choreo auto test", POI.HELPL1.get(),
-                autoCommands.ChoreoToIntake(
-                testRun, 
-                POI.HELPL1.get(), 
-                POI.HELPL1Entry.get(),
-                Meters.of(2.0),
-                POI.BALLL2.get(),
-                POI.BALLR1Entry.get(),
-                Meters.of(0.15),
-                Seconds.of(0.5)
-                )      
-                        .andThen(autoCommands.ChoreoBackFromIntake(testRunBack, POI.HELPL2, POI.HELPL2Entry, Meters.of(3), POI.TRL1, POI.TRL1Entry))
-                )
-        );
+                autos.put("L center-line 2x", () -> auto(POI.TRL1.get(),
+                                autoCommands.APToIntake(POI.HELPL1.get(),
+                                                POI.HELPL1Entry.get(),
+                                                Meters.of(2.0),
+                                                POI.BALLL2.get(),
+                                                POI.BALLL2Entry.get(),
+                                                Meters.of(0.15),
+                                                Seconds.of(0.5)
 
-        // Auto-register
-        autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
-        // Choreo Auto
-        // container.m_chooser.addRoutine(choreoAutoName, this::choreoAuto);
+                                )
+                                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                                                POI.HELPL2Entry.get(),
+                                                                Meters.of(1.4),
+                                                                POI.TRL1.get(),
+                                                                POI.TRL1Entry.get()
 
-    }
+                                                ))
+                                                .andThen(autoCommands.APToIntake(POI.HELPL1.get(),
+                                                                POI.HELPL1Entry.get(),
+                                                                Meters.of(2.0),
+                                                                POI.BALLL3.get(),
+                                                                POI.BALLL2Entry.get(),
+                                                                Meters.of(0.15),
+                                                                Seconds.of(0.5)))
+                                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                                                POI.HELPL2Entry.get(),
+                                                                Meters.of(2.1),
+                                                                POI.TRL1.get(),
+                                                                POI.TRL1Entry.get()
 
-    // ============= FLEXIBLE AUTO BUILDER =============
+                                                ))));
 
-    /**
-     * Build any auto with command sequence flexibility
-     * 
-     * @param name      Auto name
-     * @param startPose Starting pose (auto-resets odometry)
-     * @param commands  Any sequence of commands (AP, choreo, actions, etc.)
-     */
-    private Command auto(String name, Pose2d startPose, Command command) {
-        return factory.resetOdometry((Optional.of(startPose)), false).andThen(new ScheduleCommand(command));
-    }
+                // Auto-register
+                autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
+
+        }
+
+        // ============= FLEXIBLE AUTO BUILDER =============
+
+        /**
+         * Build any auto with command flexibility
+         * 
+         * @param startPose Starting pose (auto-resets odometry)
+         * @param command   Any sequence of commands (AP, choreo, actions, etc.)
+         */
+        private Command auto(Pose2d startPose, Command command) {
+                return factory.resetOdometry((Optional.of(startPose)), false).andThen(new ScheduleCommand(command));
+        }
 
 }
