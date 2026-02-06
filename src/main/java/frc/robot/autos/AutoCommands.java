@@ -123,7 +123,7 @@ public class AutoCommands {
                         Distance intakePoseTolerance,
                         Time driveTime) {
                 return Commands.sequence(
-                                // TO DO: ADD HOOD CLAMPING REQUIREMENT
+                                // TO DO: ADD HOOD CLAMPING REQUIREMENT,INTAKE
                                 choreoCommand.until(
                                                 TriggerUtil.isWithinRadius(
                                                                 () -> helpPose.getTranslation(),
