@@ -33,6 +33,7 @@ public class AutoAlign extends Command {
 
         protected final APTarget m_target;
         protected final CommandSwerveDrivetrain m_drivetrain;
+        protected final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric();
         protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                         .withDriveRequestType(DriveRequestType.Velocity)
@@ -96,7 +97,10 @@ public class AutoAlign extends Command {
 
         @Override
         public void end(boolean interrupted) {
-                
+                m_drivetrain.setControl(m_driveRequest
+                                .withVelocityX(0)
+                                .withVelocityY(0)
+                                .withRotationalRate(0));
         }
 
         @Override

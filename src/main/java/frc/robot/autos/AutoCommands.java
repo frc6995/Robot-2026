@@ -214,7 +214,8 @@ public class AutoCommands {
         public Command Score() {
                 return Commands.parallel(
                                 m_hood.autoHoodAngle(),
-                                m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
-                                m_Spindexer.setVelocity(() -> SpindexerS.SpindexerConstants.kVelocity));
+                               m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
+                               m_Spindexer.setVelocity(() -> SpindexerS.SpindexerConstants.kVelocity)
+                              );
         }
 }

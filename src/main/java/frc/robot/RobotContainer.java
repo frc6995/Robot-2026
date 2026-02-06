@@ -103,6 +103,7 @@ public class RobotContainer {
 
     }
 
+     
     public double xButtonPressedTime = 0;
 
     private void configureBindings() {
@@ -116,6 +117,7 @@ public class RobotContainer {
                             var rotationSpeed = -joystick.getRightX() * 2 * Math.PI;
 
                             if (DriverStation.isAutonomous()) {
+                               
                                 return m_driveRequest.withVelocityX(0).withVelocityY(0)
                                         .withRotationalRate(0);
                             }
@@ -149,4 +151,5 @@ public class RobotContainer {
 
     }
 
+    
 }

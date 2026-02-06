@@ -71,7 +71,8 @@ public class Autos {
                         IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS m_indexer,
                         SpindexerS m_spindexer) {
                 this.factory = factory;
-                autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, null, null);
+                autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, m_indexer,
+                                m_spindexer);
                 this.m_hood = hood;
                 this.m_intakePivot = intakePivot;
                 this.m_intakeRoller = intakeRoller;
@@ -99,6 +100,7 @@ public class Autos {
                                                 Seconds.of(0.5)
 
                                 )
+
                                                 .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
                                                                 POI.HELPL2Entry.get(),
                                                                 Meters.of(1.4),
@@ -106,6 +108,7 @@ public class Autos {
                                                                 POI.TRL1Entry.get()
 
                                                 ))
+                                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))
                                                 .andThen(autoCommands.APToIntake(POI.HELPL1.get(),
                                                                 POI.HELPL1Entry.get(),
                                                                 Meters.of(2.0),
@@ -119,7 +122,8 @@ public class Autos {
                                                                 POI.TRL1.get(),
                                                                 POI.TRL1Entry.get()
 
-                                                ))));
+                                                ))
+                                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
 
                 autos.put("Choreo-test", () -> auto(POI.TRL1.get(),
                                 autoCommands.choreoToIntake(run, POI.HELPL1.get(),
