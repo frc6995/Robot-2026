@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
@@ -30,6 +31,9 @@ public class IndexerS extends SubsystemBase {
         public static final int kStatorCurrentLimit = 120; 
         public static final int kSupplyCurrentLimit = 80; 
         public static final int kGearRatio = 5;
+            // Setpoints
+        public static final Voltage kIntakeVoltage = Volts.of(6.7);
+
     }
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.OPEN_LOOP)

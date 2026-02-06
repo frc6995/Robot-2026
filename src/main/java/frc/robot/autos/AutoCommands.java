@@ -16,9 +16,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.HoodS;
+import frc.robot.subsystems.IndexerS;
 import frc.robot.subsystems.IntakePivotS;
 import frc.robot.subsystems.IntakeRollerS;
+import frc.robot.subsystems.SpindexerS;
 import frc.robot.subsystems.TurretS;
+import frc.robot.subsystems.IndexerS.IndexerConstants;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
 import frc.robot.util.TriggerCommand;
@@ -36,30 +39,38 @@ public class AutoCommands {
         private final IntakePivotS m_intakePivot;
         private final IntakeRollerS m_intakeRoller;
         private final TurretS m_turret;
+        private final IndexerS m_indexer;
+        private final SpindexerS m_Spindexer;
 
         SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
                         .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
                         .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
         public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
-                        IntakeRollerS intakeRoller, TurretS turret) {
+                        IntakeRollerS intakeRoller, TurretS turret,IndexerS indexer, SpindexerS spindexer) {
                 this.m_drivebase = drivebase;
                 this.autos = autos;
                 this.m_hood = hood;
                 this.m_intakePivot = intakePivot;
                 this.m_intakeRoller = intakeRoller;
                 this.m_turret = turret;
+                this.m_indexer = indexer;
+                this.m_Spindexer = spindexer;
         }
 
         /**
          * Creates a routine that intakes from the center line
-         * @param helpPose Pose to go through on the way to the final pose to intake
-         * @param helpPoseEntryAngle 
-         * @param helpPoseTolerance Minimum radius for robot to be in from helpPose that triggers the next command
-         * @param intakePose Pose to go through before slowDriveForward
+         * 
+         * @param helpPose             Pose to go through on the way to the final pose
+         *                             to intake
+         * @param helpPoseEntryAngle
+         * @param helpPoseTolerance    Minimum radius for robot to be in from helpPose
+         *                             that triggers the next command
+         * @param intakePose           Pose to go through before slowDriveForward
          * @param intakePoseEntryAngle
-         * @param intakePoseTolerance Mnimum radius for robot to be in from intakePose that triggers the next command
-         * @param driveTime Time to drive forward collecting fuel
+         * @param intakePoseTolerance  Mnimum radius for robot to be in from intakePose
+         *                             that triggers the next command
+         * @param driveTime            Time to drive forward collecting fuel
          * @return command that intakes from the center line
          */
         public Command autoToIntake(
@@ -91,10 +102,13 @@ public class AutoCommands {
 
         /**
          * Creates a command that intakes from the center line
-         * @param helpPose Pose to go through on the way to the final pose for scoring
-         * @param helpPoseEntryAngle 
-         * @param helpPoseTolerance  Minimum radius for robot to be in from helpPose that triggers the next command
-         * @param targetpose Final pose to drive to for scoring
+         * 
+         * @param helpPose             Pose to go through on the way to the final pose
+         *                             for scoring
+         * @param helpPoseEntryAngle
+         * @param helpPoseTolerance    Minimum radius for robot to be in from helpPose
+         *                             that triggers the next command
+         * @param targetpose           Final pose to drive to for scoring
          * @param targetPoseEntryAngle
          * @return command that intakes from the center line
          */
@@ -118,5 +132,12 @@ public class AutoCommands {
                 return Commands.parallel(
                                 m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kCWLimit),
                                 m_intakeRoller.setVoltage(() -> IntakeRollerS.rollerConstants.kIntakeVoltage));
+        }
+        //auto hood angle command
+        public Command Score() {
+                return Commands.parallel(
+                                m_hood.autoHoodAngle(),
+                                m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
+                                m_Spindexer.setVelocity(()-> SpindexerS.SpindexerConstants.kVelocity));
         }
 }
