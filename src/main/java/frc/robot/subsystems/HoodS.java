@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -59,6 +60,7 @@ public class HoodS extends SubsystemBase {
     public static final Angle kLowerLimit = Degrees.of(12.5); // CW Limit
     public static final Angle kUpperLimit = Degrees.of(40); // CCW Limit
     public static final Angle kStowAngle = kLowerLimit;
+    public static final Angle kTolerance = Degrees.of(5);
     public static final double[][] kAngleData = {
         // Distance (Meters), Angle(Degrees)
         { 1, 12.5 },
@@ -156,11 +158,24 @@ public class HoodS extends SubsystemBase {
 
   public Command autoHoodAngle() {
     return setAngle(
-        () -> Degrees.of(table.get(robotPose.get().getTranslation().getDistance(POI.HUB1.get().getTranslation()))));
+        () -> getAutoHoodAngle());
   }
 
   public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
     return clampAngle(targetAngle, HoodConstants.kLowerLimit, shouldApplyDynamicLimit.getAsBoolean() ? HoodConstants.kStowAngle : HoodConstants.kUpperLimit);
+  }
+
+  public boolean isHoodReady() {
+    var setpoint = getSetpoint();
+    return hood.getAngle().isNear(setpoint.isPresent() ? setpoint.get() : HoodConstants.kStowAngle, HoodConstants.kTolerance);
+  }
+
+  public Angle getAutoHoodAngle() {
+    return Degrees.of(table.get(robotPose.get().getTranslation().getDistance(POI.HUB1.get().getTranslation())));
+  }
+
+  public Optional<Angle> getSetpoint() {
+    return hood.getMechanismSetpoint();
   }
 
   @Override

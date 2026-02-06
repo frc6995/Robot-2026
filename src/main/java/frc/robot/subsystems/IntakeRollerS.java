@@ -46,7 +46,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.motorcontrollers.SmartMotorController;
 
 public class IntakeRollerS extends SubsystemBase{
-    public class rollerConstants {
+    public class IntakeRollerConstants {
 
     public static final double kP = 0;
     public static final double kI = 0;
@@ -79,36 +79,41 @@ public class IntakeRollerS extends SubsystemBase{
 private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
   .withControlMode(ControlMode.OPEN_LOOP)
   // Feedback Constants (PID Constants)
-  .withClosedLoopController(rollerConstants.kP, rollerConstants.kI, rollerConstants.kD, 
-  DegreesPerSecond.of(rollerConstants.kVelocity), 
-  DegreesPerSecondPerSecond.of(rollerConstants.kAcceleration))
-  .withSimClosedLoopController(rollerConstants.kSimP, rollerConstants.kSimI, rollerConstants.kSimD,
-  DegreesPerSecond.of(rollerConstants.kSimVelocity), 
-  DegreesPerSecondPerSecond.of(rollerConstants.kSimAcceleration))
+  .withClosedLoopController(IntakeRollerConstants.kP, IntakeRollerConstants.kI, IntakeRollerConstants.kD, 
+  DegreesPerSecond.of(IntakeRollerConstants.kVelocity), 
+  DegreesPerSecondPerSecond.of(IntakeRollerConstants.kAcceleration))
+  .withSimClosedLoopController(IntakeRollerConstants.kSimP, IntakeRollerConstants.kSimI, IntakeRollerConstants.kSimD,
+  DegreesPerSecond.of(IntakeRollerConstants.kSimVelocity), 
+  DegreesPerSecondPerSecond.of(IntakeRollerConstants.kSimAcceleration))
   // Feedforward Constants
-  .withFeedforward(new SimpleMotorFeedforward(rollerConstants.kS, rollerConstants.kV, rollerConstants.kA))
-  .withSimFeedforward(new SimpleMotorFeedforward(rollerConstants.kS, rollerConstants.kV, rollerConstants.kA))
+  .withFeedforward(new SimpleMotorFeedforward(IntakeRollerConstants.kS, IntakeRollerConstants.kV, IntakeRollerConstants.kA))
+  .withSimFeedforward(new SimpleMotorFeedforward(IntakeRollerConstants.kS, IntakeRollerConstants.kV, IntakeRollerConstants.kA))
   // Telemetry name and verbosity level
   .withTelemetry("RollerMotor", TelemetryVerbosity.HIGH)
   // Gearing from the motor rotor to final shaft.
   // In this example GearBox.fromReductionStages(3,4) is the same as GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your motor.
   // You could also use .withGearing(12) which does the same thing.
-  .withGearing(new MechanismGearing(GearBox.fromReductionStages(rollerConstants.kReduction)))  // Motor properties to prevent over currenting.
-  .withMotorInverted(rollerConstants.kMotorInverted)
+  .withGearing(new MechanismGearing(GearBox.fromReductionStages(IntakeRollerConstants.kReduction)))  // Motor properties to prevent over currenting.
+  .withMotorInverted(IntakeRollerConstants.kMotorInverted)
   .withIdleMode(MotorMode.BRAKE)
-  .withStatorCurrentLimit(Amps.of(rollerConstants.kStatorCurrentLimit));
+  .withStatorCurrentLimit(Amps.of(IntakeRollerConstants.kStatorCurrentLimit));
 
-  private TalonFX motor = new TalonFX(rollerConstants.kCANID);
+  private TalonFX motor = new TalonFX(IntakeRollerConstants.kCANID);
 
   private SmartMotorController talonFXSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig); 
 
  public Command setVoltage(Supplier<Voltage> volts) {
-        return Commands.runOnce(() -> motor.setVoltage(volts.get().in(Volts)));
-    }
+        return Commands.run(() -> motor.setVoltage(volts.get().in(Volts)));
+  }
 
-    public Current getCurrent() {
-        return motor.getSupplyCurrent().getValue();
-    }
+  public Command setVoltage(Voltage volts) {
+    return Commands.runOnce(() -> motor.setVoltage(volts.in(Volts)));
+  }
+
+
+  public Current getCurrent() {
+      return motor.getSupplyCurrent().getValue();
+  }
   
     @Override
   public void periodic() {

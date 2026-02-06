@@ -76,6 +76,7 @@ public class TurretS extends SubsystemBase {
         public static Angle kStartAngle = Degrees.of(150);
         public static Angle kCWLimit = Degrees.of(-180);
         public static Angle kCCWLimit = kStartAngle;
+        public static Angle kTolernace = Degrees.of(5);
 
         public static double kReduction = 50.0;
         public static double kStatorLimit = 80.0;
@@ -167,6 +168,11 @@ public class TurretS extends SubsystemBase {
 
     public Optional<Angle> getSetpoint() {
         return m_turret.getMechanismSetpoint();
+    }
+
+    public boolean atSetpoint() {
+        var refOpt = getSetpoint();
+        return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolernace);
     }
 
     public Current getSupplyCurrent() {

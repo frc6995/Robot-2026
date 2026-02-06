@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.generated.ChoreoVars;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.FlyWheelS;
 import frc.robot.subsystems.HoodS;
 import frc.robot.subsystems.IndexerS;
 import frc.robot.subsystems.IntakePivotS;
@@ -24,6 +25,7 @@ import frc.robot.util.AutoAlign;
 import frc.robot.generated.ChoreoTraj;
 import frc.robot.util.ChoreoVariables;
 import frc.robot.util.POI;
+import yams.mechanisms.velocity.FlyWheel;
 import frc.robot.RobotContainer;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -54,6 +56,7 @@ public class Autos {
     private final TurretS m_turret;
     private final IndexerS m_indexer;
     private final SpindexerS m_spindexer;
+    private final FlyWheelS m_FlyWheel;
     /*
      * . CHOREO AUTO EXAMPLE
      * 
@@ -69,9 +72,9 @@ public class Autos {
      * }
      */
     public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
-            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer) {
+            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer,FlyWheelS flyWheel) {
         this.factory = factory;
-        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer);
+        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer,flyWheel);
         this.m_hood = hood;
         this.m_intakePivot = intakePivot;
         this.m_intakeRoller = intakeRoller;
@@ -79,6 +82,7 @@ public class Autos {
         this.m_drivebase = drive;
         this.m_indexer = indexer;
         this.m_spindexer = spindexer;
+        this.m_FlyWheel = flyWheel;
         // ============= DEFINE AUTOS =============
         Command run = factory.trajectoryCmd("Poses");
 

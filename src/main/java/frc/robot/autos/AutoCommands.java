@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.FlyWheelS;
 import frc.robot.subsystems.HoodS;
 import frc.robot.subsystems.IndexerS;
 import frc.robot.subsystems.IntakePivotS;
@@ -41,13 +42,14 @@ public class AutoCommands {
         private final TurretS m_turret;
         private final IndexerS m_indexer;
         private final SpindexerS m_Spindexer;
+        private final FlyWheelS m_flywheel;
 
         SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
                         .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
                         .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
         public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
-                        IntakeRollerS intakeRoller, TurretS turret,IndexerS indexer, SpindexerS spindexer) {
+                        IntakeRollerS intakeRoller, TurretS turret,IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel) {
                 this.m_drivebase = drivebase;
                 this.autos = autos;
                 this.m_hood = hood;
@@ -56,6 +58,7 @@ public class AutoCommands {
                 this.m_turret = turret;
                 this.m_indexer = indexer;
                 this.m_Spindexer = spindexer;
+                this.m_flywheel = flyWheel;
         }
 
         /**
@@ -131,13 +134,17 @@ public class AutoCommands {
         public Command fuelIntake() {
                 return Commands.parallel(
                                 m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kCWLimit),
-                                m_intakeRoller.setVoltage(() -> IntakeRollerS.rollerConstants.kIntakeVoltage));
+                                m_intakeRoller.setVoltage(() -> IntakeRollerS.IntakeRollerConstants.kIntakeVoltage));
         }
         //auto hood angle command
         public Command Score() {
-                return Commands.parallel(
-                                m_hood.autoHoodAngle(),
+                return Commands.sequence(
+                        m_hood.autoHoodAngle(),
+                        Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint() && m_flywheel.atSetpoint()),
+                        Commands.parallel(
                                 m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
-                                m_Spindexer.setVelocity(()-> SpindexerS.SpindexerConstants.kVelocity));
+                                m_Spindexer.setVelocity(()-> SpindexerS.SpindexerConstants.kVelocity)
+                        )
+                );
         }
 }

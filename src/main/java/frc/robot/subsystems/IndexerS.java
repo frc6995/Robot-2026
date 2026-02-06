@@ -70,5 +70,8 @@ public class IndexerS extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
     m_indexerController.simIterate();
+
+
+    
   }
 }
