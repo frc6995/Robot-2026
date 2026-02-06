@@ -68,9 +68,9 @@ public class Autos {
          * }
          */
         public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
-                        IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret) {
+                        IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS m_indexer, SpindexerS m_spindexer) {
                 this.factory = factory;
-                autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret);
+                autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, null, null);
                 this.m_hood = hood;
                 this.m_intakePivot = intakePivot;
                 this.m_intakeRoller = intakeRoller;
