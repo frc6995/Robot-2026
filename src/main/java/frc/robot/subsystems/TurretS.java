@@ -157,6 +157,10 @@ public class TurretS extends SubsystemBase {
         return m_turret.setAngle(angle);
     }
 
+    public Command setAngle(Supplier<Angle> angle) {
+        return m_turret.setAngle(angle);
+    }
+
     public Angle getAngle() {
         return m_turret.getAngle();
     }
