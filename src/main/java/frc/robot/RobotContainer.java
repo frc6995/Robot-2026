@@ -198,8 +198,8 @@ public class RobotContainer {
         // joystick.leftTrigger().whileTrue();
 
         // joystick.x();
-        joystick.a().onTrue(m_outside_climb_pivot.setAngle(()->Degrees.of(90)));
-        joystick.b().onTrue(m_outside_climb_pivot.setAngle(()->Degrees.of(45)));
+        joystick.leftBumper().onTrue(m_outside_climb_pivot.setAngle(()->Degrees.of(90)));
+        joystick.rightBumper().onTrue(m_outside_climb_pivot.setAngle(()->Degrees.of(45)));
         joystick.x().onTrue(m_outside_climb_extenstion.setHeight(()->Meters.of(2)));
         joystick.y().onTrue(m_outside_climb_extenstion.setHeight(()->Meters.of(3)));
 

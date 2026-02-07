@@ -164,7 +164,8 @@ public class ClimbConstants {
         // =======Pivot=======
 
         // PID constants
-        public static final double kPAngle = 0;
+       // PID constants
+        public static final double kPAngle = 50;
         public static final double KIAngle = 0;
         public static final double kDAngle = 0;
         // Feedforward Constants
@@ -173,7 +174,7 @@ public class ClimbConstants {
         public static final double kGAngle = 0;
         public static final double kAAngle = 0;
         // Sim PID Constants
-        public static final double kSimPAngle = 0;
+        public static final double kSimPAngle = 50;
         public static final double kSimIAngle = 0;
         public static final double kSimDAngle = 0;
         // Sim FeedFoward Constants
@@ -184,16 +185,16 @@ public class ClimbConstants {
 
         // =======Extension=======
 
-        public static final double kPExtension = 0;
+        public static final double kPExtension = 50;
         public static final double KIExtension = 0;
         public static final double kDExtension = 0;
         // Feedforward Constants
-        public static final double kSExtension = 0;
+        public static final double kSExtension = 50;
         public static final double kGExtension = 0;
         public static final double kVExtension = 0;
         public static final double kAExtension = 0;
         // Sim PID Constants
-        public static final double kSimPExtension = 0;
+        public static final double kSimPExtension = 50;
         public static final double kSimIExtension = 0;
         public static final double kSimDExtension = 0;
         // Sim FeedFoward Constants
@@ -207,31 +208,31 @@ public class ClimbConstants {
         public static final int kInnerMotorCANID = 52;
         public static final int k1FollowMotorCANID = 53;
         // Motor Config Constants
-        public static final AngularVelocity kVelocity = DegreesPerSecond.of(0);
-        public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(0);
-        public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(0);
-        public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(0);
-        public static final boolean kInvertLeadMotor = false;
+        public static final AngularVelocity kVelocity = DegreesPerSecond.of(180);
+        public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(180);
+        public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(90);
+        public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(90);
+        public static final boolean kInvertLeadMotor = true;
         public static final boolean kInvertFollowMotor = false;
         public static final double kSupplyCurrentLimit = 40;
         public static final double kStatorCurrentLimit = 80;
-        public static final double kMechCircumference = 0;
-        public static final double kReduction = 0;
-        public static final double kMinHeight = 0;
-        public static final double kMaxHeight = 0;
-        public static final double kMOI = 0;
-        public static final Distance kLength = Inches.of(0);
+        public static final double kMechCircumference = 1;
+        public static final double kReduction = 5;
+        public static final double kMinHeight = 5;
+        public static final double kMaxHeight = 10;
+        public static final double kMOI = 1;
+        public static final Distance kLength = Inches.of(10);
         public static final Angle kLowerLimit = Degrees.of(0);
-        public static final Angle kUpperLimit = Degrees.of(0);
-        public static final Angle kStartingAngle = Degrees.of(0);
+        public static final Angle kUpperLimit = Degrees.of(100);
+        public static final Angle kStartingAngle = Degrees.of(00);
         // Sim Constants
         public static final double kHeight = 1;
         public static final double kMass = 100;
         // Setpoints
-        public static final Distance kFullExtension = Inches.of(0);
-        public static final Distance kL1 = Inches.of(0);
-        public static final Distance kL2 = Inches.of(0);
-        public static final Distance kL3 = Inches.of(0);
+        public static final Distance kFullExtension = Inches.of(5);
+        public static final Distance kL1 = Inches.of(1);
+        public static final Distance kL2 = Inches.of(2);
+        public static final Distance kL3 = Inches.of(3);
 
         public static final ClimbExtensionConstantsRecord kExtensionConstants = new ClimbExtensionConstantsRecord(
                 kPExtension,
@@ -300,22 +301,22 @@ public class ClimbConstants {
     }
 
     public record ClimbExtensionConstantsRecord(
-            double kP,
-            double kI,
-            double kD,
-            double kS,
-            double kG,
-            double kV,
-            double kA,
+            double kPExtension,
+            double KIExtension,
+            double kDExtension,
+            double kSExtension,
+            double kGExtension,
+            double kVExtension,
+            double kAExtension,
             // Sim PID Constants
-            double kSimP,
-            double kSimI,
-            double kSimD,
+            double kSimPExtension,
+            double kSimIExtension,
+            double kSimDExtension,
             // Sim FeedFoward Constants
-            double kSimS,
-            double kSimG,
-            double kSimV,
-            double kSimA,
+            double kSimSExtension,
+            double kSimGExtension,
+            double kSimVExtension,
+            double kSimAExtension,
             // CAN IDs
             int kOuterMotorCANID,
             int kInnerMotorCANID,
@@ -341,27 +342,27 @@ public class ClimbConstants {
 
     public record ClimbPivotConstantsRecord(
             // Profiled PID Constants
-            double kP,
-            double kI,
-            double kD,
+            double kPAngle,
+            double KIAngle,
+            double kDAngle,
             AngularVelocity kVelocity,
             AngularAcceleration kAcceleration,
             // Feeforward Constants
-            double kS,
-            double kG,
-            double kV,
-            double kA,
+            double kSAngle,
+            double kGAngle,
+            double kVAngle,
+            double kAAngle,
             // Sim Profiled PID
-            double kSimP,
-            double kSimI,
-            double kSimD,
+            double kSimPAngle,
+            double kSimIAngle,
+            double kSimDAngle,
             AngularVelocity kSimVelocity,
             AngularAcceleration kSimAcceleration,
             // Sim Feedforward
-            double kSimS,
-            double kSimG,
-            double kSimV,
-            double kSimA,
+            double kSimSAngle,
+            double kSimGAngle,
+            double kSimVAngle,
+            double kSimAAngle,
             // Motor Configs
             double kSupplyCurrentLimit,
             double kStatorCurrentLimit,

@@ -57,11 +57,11 @@ public class ClimbPivotS extends SubsystemBase {
       smcConfig = new SmartMotorControllerConfig(this)
             .withControlMode(ControlMode.CLOSED_LOOP)
             // feedback
-            .withClosedLoopController(constants.kP(), constants.kI(), constants.kD())
-            .withSimClosedLoopController(constants.kSimP(), constants.kSimI(), constants.kSimD())
+            .withClosedLoopController(constants.kPAngle(), constants.KIAngle(), constants.kDAngle())
+            .withSimClosedLoopController(constants.kSimPAngle(), constants.kSimIAngle(), constants.kSimDAngle())
             // feedforward
-            .withFeedforward(new ArmFeedforward(constants.kS(), constants.kG(), constants.kV()))
-            .withSimFeedforward(new ArmFeedforward(constants.kSimS(), constants.kSimG(), constants.kSimV()))
+            .withFeedforward(new ArmFeedforward(constants.kSAngle(), constants.kGAngle(), constants.kVAngle()))
+            .withSimFeedforward(new ArmFeedforward(constants.kSimSAngle(), constants.kSimGAngle(), constants.kSimVAngle()))
             // telemetry
             .withTelemetry("Climb Pivot Motor", TelemetryVerbosity.HIGH)
             // gearing
@@ -71,7 +71,7 @@ public class ClimbPivotS extends SubsystemBase {
             .withIdleMode(MotorMode.BRAKE)
             .withStatorCurrentLimit(Amps.of(constants.kStatorCurrentLimit()));
 
-      talon = new TalonFX(constants.kOuterMotorCANID());
+      talon = new TalonFX(constants.kInnerMotorCANID());
 
       talonSmartMotorController = new TalonFXWrapper(talon, DCMotor.getKrakenX44(1), smcConfig);
 
