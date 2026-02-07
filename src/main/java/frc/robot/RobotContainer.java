@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -68,7 +69,7 @@ public class RobotContainer {
     private final IntakePivotS m_intakepivot = new IntakePivotS();
     private final IntakeRollerS m_intakeroller = new IntakeRollerS();
     private final SpindexerS m_spindexer = new SpindexerS();
-    private final TurretS m_turret = new TurretS();
+    private final TurretS m_turret = new TurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakepivot,
             m_intakeroller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
@@ -163,7 +164,7 @@ public class RobotContainer {
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
         m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
-
+        m_turret.setDefaultCommand(m_turret.aimAtHub());
         // start button home turret
         joystick.start()
                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
@@ -187,9 +188,7 @@ public class RobotContainer {
                         m_hood.resetEncoder()),
                 () -> DriverStation.isEnabled()));
 
-         joystick.a().onTrue(m_turret.driveToHome());
-
-        // joystick.x();
+        joystick.a().onTrue(m_turret.driveToHome());
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 

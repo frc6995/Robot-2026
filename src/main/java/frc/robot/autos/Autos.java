@@ -95,7 +95,7 @@ public class Autos {
                                 POI.BALLL2.get(),
                                 POI.BALLL2Entry.get(),
                                 Meters.of(0.15),
-                                Seconds.of(0.5)
+                                Seconds.of(5)
 
                 )
 
