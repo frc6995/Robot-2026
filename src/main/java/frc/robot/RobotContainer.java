@@ -146,7 +146,8 @@ public class RobotContainer {
         joystick.leftTrigger().onTrue(m_hood.setAngle(()->Degrees.of(12.5)));
         joystick.rightTrigger().onTrue(m_turret.setAngle(()->Degrees.of(-180)));
         joystick.rightBumper().onTrue(m_turret.setAngle(()->Degrees.of(150)));
-        
+        joystick.start().onTrue(m_spindexer.setVoltage(()->Volts.of(10)));
+        joystick.back().onTrue(m_spindexer.setVoltage(()->Volts.of(-10)));
         m_drivetrain.registerTelemetry(logger::telemeterize);
 
     }

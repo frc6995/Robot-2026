@@ -47,12 +47,12 @@ public class HoodS extends SubsystemBase {
       // CAN IDs
     public static final int kCANID = 42;
       // PID-FF Constants
-    public static final double kP = 50;
+    public static final double kP = 15;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kS = 0;
       // Sim PID-FF Constants
-    public static final double kSimP = 50;
+    public static final double kSimP = 15;
     public static final double kSimI = 0;
     public static final double kSimD = 0;
     public static final double kSimS = 0;

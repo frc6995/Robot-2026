@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
 
 import java.util.function.Supplier;
 
@@ -26,6 +27,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.RobotVisualizer;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.motorcontrollers.SmartMotorController;
@@ -41,7 +43,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class SpindexerS extends SubsystemBase {
     public class SpindexerConstants {
         // CAN IDs
-        public static final int kCANID = 41;
+        public static final int kCANID = 32;
         // Profiled PID Constants
         public static final int kP = 0;
         public static final int kI = 0;
@@ -124,8 +126,9 @@ public class SpindexerS extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    double currentAngleRad = m_spindexerMotor.getPosition().getValue().in(Radians);
+    RobotVisualizer.updateSpindexer(currentAngleRad);
     m_spindexerController.updateTelemetry();
-
   }
 
   @Override
