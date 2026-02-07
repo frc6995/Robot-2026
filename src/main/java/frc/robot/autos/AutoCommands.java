@@ -1,6 +1,7 @@
 package frc.robot.autos;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -14,6 +15,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FlyWheelS;
 import frc.robot.subsystems.HoodS;
@@ -22,6 +24,7 @@ import frc.robot.subsystems.IntakePivotS;
 import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.subsystems.SpindexerS;
 import frc.robot.subsystems.TurretS;
+import frc.robot.subsystems.HoodS.HoodConstants;
 import frc.robot.subsystems.IndexerS.IndexerConstants;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
@@ -61,6 +64,7 @@ public class AutoCommands {
                 this.m_flywheel = flyWheel;
         }
 
+        // Create a trigger that watches your condition
         /**
          * Creates a routine that intakes from the center line
          * 
@@ -76,7 +80,7 @@ public class AutoCommands {
          * @param driveTime            Time to drive forward collecting fuel
          * @return command that intakes from the center line
          */
-        public Command autoToIntake(
+        public Command APToIntake(
                         Pose2d helpPose,
                         Rotation2d helpPoseEntryAngle,
                         Distance helpPoseTolerance,
@@ -85,21 +89,65 @@ public class AutoCommands {
                         Distance intakePoseTolerance,
                         Time driveTime) {
 
-                return Commands.sequence(
-                                // TO DO: ADD HOOD CLAMPING REQUIREMENT, INTAKE ROLLERS
-                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
-                                                TriggerUtil.isWithinRadius(
-                                                                () -> helpPose.getTranslation(),
-                                                                () -> m_drivebase.state.Pose,
-                                                                () -> helpPoseTolerance)),
-                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
-                                                TriggerUtil.isWithinRadius(
-                                                                () -> intakePose.getTranslation(),
-                                                                () -> m_drivebase.state.Pose,
-                                                                () -> intakePoseTolerance)),
+                return Commands.deadline(
+                                Commands.sequence(
+                                        Commands.waitUntil(() -> m_hood.isHoodSafe()),
+                                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> intakePose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> intakePoseTolerance)),
 
-                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
-                                                .withTimeout(driveTime)));
+                                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
+                                                                .withTimeout(driveTime))),
+                                fuelIntake());
+        }
+
+        /**
+         * Command that returns robot from intake that starts with Choreo path
+         * 
+         * @param choreoCommand        Choreo command to start with
+         * @param helpPose             Pose to invoke tolerance (radius) from for
+         *                             stoping the choreo path
+         * @param helpPoseTolerance    Tolerance (radius) from help pose for stoping the
+         *                             choreo path
+         * @param intakePose           Pose to go through before slowDriveForward
+         * @param intakePoseEntryAngle
+         * @param intakePoseTolerance  Minimum radius for robot to be in from intakePose
+         *                             that triggers the next command
+         * @param driveTime            Time to drive forward collecting fuel
+         * @return Command that returns robot from intake that starts with Choreo path
+         */
+        public Command choreoToIntake(
+                        Command choreoCommand,
+                        Pose2d helpPose,
+                        Distance helpPoseTolerance,
+                        Pose2d intakePose,
+                        Rotation2d intakePoseEntryAngle,
+                        Distance intakePoseTolerance,
+                        Time driveTime) {
+                return Commands.deadline(
+                                Commands.sequence(
+                                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
+                                                choreoCommand.until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> intakePose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> intakePoseTolerance)),
+
+                                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
+                                                                .withTimeout(driveTime))),
+                                fuelIntake());
 
         }
 
@@ -115,14 +163,43 @@ public class AutoCommands {
          * @param targetPoseEntryAngle
          * @return command that intakes from the center line
          */
-        public Command autoBackFromIntake(Pose2d helpPose,
+        public Command APBackFromIntake(Pose2d helpPose,
                         Rotation2d helpPoseEntryAngle,
                         Distance helpPoseTolerance,
                         Pose2d targetpose,
                         Rotation2d targetPoseEntryAngle) {
-                // TO DO: ADD HOOD UNCLAMPING REQUIREMENT
                 return Commands.sequence(
+                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                 new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> helpPose.getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> helpPoseTolerance)),
+                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase));
+
+        }
+
+        /**
+         * Command that returns robot from intake that starts with Choreo path
+         * 
+         * @param choreoCommand        Choreo command to start with
+         * @param helpPose             Pose to invoke tolerance (radius) from for
+         *                             stoping the choreo path
+         * @param helpPose             Tolerance (radius) from help pose for stoping the
+         *                             choreo path
+         * @param targetpose           Target pose to autoallign to
+         * @param targetPoseEntryAngle
+         * @return Command that returns robot from intake that starts with a Choreo path
+         */
+        public Command choreoBackFromIntake(
+                        Command choreoCommand,
+                        Pose2d helpPose,
+                        Distance helpPoseTolerance,
+                        Pose2d targetpose,
+                        Rotation2d targetPoseEntryAngle) {
+                return Commands.sequence(
+                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
+                                choreoCommand.until(
                                                 TriggerUtil.isWithinRadius(
                                                                 () -> helpPose.getTranslation(),
                                                                 () -> m_drivebase.state.Pose,
@@ -136,7 +213,8 @@ public class AutoCommands {
                                 m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kCWLimit),
                                 m_intakeRoller.setVoltage(() -> IntakeRollerS.IntakeRollerConstants.kIntakeVoltage));
         }
-        //auto hood angle command
+
+        // auto hood angle command
         public Command Score() {
                 return Commands.sequence(
                         m_hood.autoHoodAngle(),

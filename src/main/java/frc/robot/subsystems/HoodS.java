@@ -76,7 +76,7 @@ public class HoodS extends SubsystemBase {
     public static final Double kMOI = 0.05;
       // Hood Safety Constants
     public static final Distance kSafetyOverride_NoSpeed = Meters.of(1.5);
-    public static final Distance kSafetyOverride_Final = Meters.of(0.5);
+    public static final Distance kSafetyOverride_Final = Meters.of(0.01);
     public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.2);
   }
 
@@ -163,6 +163,10 @@ public class HoodS extends SubsystemBase {
 
   public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
     return clampAngle(targetAngle, HoodConstants.kLowerLimit, shouldApplyDynamicLimit.getAsBoolean() ? HoodConstants.kStowAngle : HoodConstants.kUpperLimit);
+  }
+
+  public boolean isHoodSafe() {
+    return hood.getAngle().isNear(HoodConstants.kStowAngle, HoodConstants.kTolerance);
   }
 
   public boolean isHoodReady() {
