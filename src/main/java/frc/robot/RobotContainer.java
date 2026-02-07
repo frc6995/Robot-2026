@@ -26,6 +26,8 @@ import choreo.auto.AutoFactory;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ClimbExtensionS;
+import frc.robot.subsystems.ClimbPivotS;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FlyWheelS;
 import frc.robot.subsystems.HoodS;
@@ -37,7 +39,10 @@ import frc.robot.subsystems.TurretS;
 import frc.robot.subsystems.IntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.IntakeRollerS.IntakeRollerConstants;
 import frc.robot.util.AutoAlignFixedHeading;
+import frc.robot.util.ClimbConstants;
 import frc.robot.util.Telemetry;
+import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
+import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
@@ -60,6 +65,10 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
 
+    private ClimbPivotConstantsRecord m_pivot_constants = ClimbConstants.OuterClimbConstants.kPivotConstants;
+    private ClimbExtensionConstantsRecord m_extension_constants = ClimbConstants.OuterClimbConstants.kExtensionConstants;
+
+
     private final FlyWheelS m_flywheel = new FlyWheelS();
     private final HoodS m_hood = new HoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
     private final IndexerS m_indexer = new IndexerS();
@@ -67,6 +76,8 @@ public class RobotContainer {
     private final IntakeRollerS m_intakeroller = new IntakeRollerS();
     private final SpindexerS m_spindexer = new SpindexerS();
     private final TurretS m_turret = new TurretS();
+    private final ClimbPivotS m_outside_climb_pivot = new ClimbPivotS(m_pivot_constants);
+    private final ClimbExtensionS m_outside_climb_extenstion = new ClimbExtensionS(m_extension_constants);
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakepivot,
             m_intakeroller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
@@ -187,6 +198,11 @@ public class RobotContainer {
         // joystick.leftTrigger().whileTrue();
 
         // joystick.x();
+        joystick.a().onTrue(m_outside_climb_pivot.setAngle(()->Degrees.of(90)));
+        joystick.b().onTrue(m_outside_climb_pivot.setAngle(()->Degrees.of(45)));
+        joystick.x().onTrue(m_outside_climb_extenstion.setHeight(()->Meters.of(2)));
+        joystick.y().onTrue(m_outside_climb_extenstion.setHeight(()->Meters.of(3)));
+
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
