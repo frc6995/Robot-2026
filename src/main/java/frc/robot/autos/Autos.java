@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.generated.ChoreoVars;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.FlyWheelS;
 import frc.robot.subsystems.HoodS;
 import frc.robot.subsystems.IndexerS;
 import frc.robot.subsystems.IntakePivotS;
@@ -24,6 +25,7 @@ import frc.robot.util.AutoAlign;
 import frc.robot.generated.ChoreoTraj;
 import frc.robot.util.ChoreoVariables;
 import frc.robot.util.POI;
+import yams.mechanisms.velocity.FlyWheel;
 import frc.robot.RobotContainer;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -44,97 +46,92 @@ public class Autos {
 
         }
 
-        private final AutoCommands autoCommands;
-        private final AutoFactory factory;
-        private final CommandSwerveDrivetrain m_drivebase;
-        private final Map<String, Supplier<Command>> autos = new LinkedHashMap<>();
-        private final HoodS m_hood;
-        private final IntakePivotS m_intakePivot;
-        private final IntakeRollerS m_intakeRoller;
-        private final TurretS m_turret;
+    private final AutoCommands autoCommands;
+    private final AutoFactory factory;
+    private final CommandSwerveDrivetrain m_drivebase;
+    private final Map<String, Supplier<Command>> autos = new LinkedHashMap<>();
+    private final HoodS m_hood;
+    private final IntakePivotS m_intakePivot;
+    private final IntakeRollerS m_intakeRoller;
+    private final TurretS m_turret;
+    private final IndexerS m_indexer;
+    private final SpindexerS m_spindexer;
+    private final FlyWheelS m_FlyWheel;
+    /*
+     * . CHOREO AUTO EXAMPLE
+     * 
+     * String choreoAutoName = "Choreo Auto";
+     * 
+     * public AutoRoutine choreoAuto() {
+     * final AutoRoutine routine = factory.newRoutine(choreoAutoName);
+     * final AutoTrajectory traj = routine.trajectory("OP");
+     * routine.active().onTrue(
+     * traj.resetOdometry()
+     * .andThen(traj.cmd()));
+     * return routine;
+     * }
+     */
+    public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
+            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel) {
+        this.factory = factory;
+        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer,flyWheel);
+        this.m_hood = hood;
+        this.m_intakePivot = intakePivot;
+        this.m_intakeRoller = intakeRoller;
+        this.m_turret = turret;
+        this.m_drivebase = drive;
+        this.m_indexer = indexer;
+        this.m_spindexer = spindexer;
+        this.m_FlyWheel = flyWheel;
+        // ============= DEFINE AUTOS =============
+        Command run = factory.trajectoryCmd("Poses");
 
-        /*
-         * . CHOREO AUTO EXAMPLE
-         * 
-         * String choreoAutoName = "Choreo Auto";
-         * 
-         * public AutoRoutine choreoAuto() {
-         * final AutoRoutine routine = factory.newRoutine(choreoAutoName);
-         * final AutoTrajectory traj = routine.trajectory("OP");
-         * routine.active().onTrue(
-         * traj.resetOdometry()
-         * .andThen(traj.cmd()));
-         * return routine;
-         * }
-         */
-        public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
-                        IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS m_indexer,
-                        SpindexerS m_spindexer) {
-                this.factory = factory;
-                autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, m_indexer,
-                                m_spindexer);
-                this.m_hood = hood;
-                this.m_intakePivot = intakePivot;
-                this.m_intakeRoller = intakeRoller;
-                this.m_turret = turret;
-                this.m_drivebase = drive;
+        // ============= DEFINE AUTOS =============
 
-                // ============= CHOREO COMMANDS =============
+        autos.put("L center-line 2x", () -> auto(POI.TRL1.get(),
+                autoCommands.APToIntake(POI.HELPL1.get(),
+                                POI.HELPL1Entry.get(),
+                                Meters.of(2.0),
+                                POI.BALLL2.get(),
+                                POI.BALLL2Entry.get(),
+                                Meters.of(0.15),
+                                Seconds.of(0.5)
 
-                // To intake
-                // Back to start
-                // To climb
-                Command rightClimb = factory.trajectoryCmd("ClimbTest");
+                )
 
-                // Other
-                Command run = factory.trajectoryCmd("Poses");
+                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                                POI.HELPL2Entry.get(),
+                                                Meters.of(1.4),
+                                                POI.TRL1.get(),
+                                                POI.TRL1Entry.get()
 
-                // ============= DEFINE AUTOS =============
-
-                autos.put("L center-line 2x", () -> auto(POI.TRL1.get(),
-                                autoCommands.APToIntake(POI.HELPL1.get(),
+                                ))
+                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))
+                                .andThen(autoCommands.APToIntake(POI.HELPL1.get(),
                                                 POI.HELPL1Entry.get(),
                                                 Meters.of(2.0),
-                                                POI.BALLL2.get(),
+                                                POI.BALLL3.get(),
                                                 POI.BALLL2Entry.get(),
                                                 Meters.of(0.15),
-                                                Seconds.of(0.5)
+                                                Seconds.of(0.5)))
+                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                                POI.HELPL2Entry.get(),
+                                                Meters.of(2.1),
+                                                POI.TRL1.get(),
+                                                POI.TRL1Entry.get()
 
-                                )
+                                ))
+                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
 
-                                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                                                POI.HELPL2Entry.get(),
-                                                                Meters.of(1.4),
-                                                                POI.TRL1.get(),
-                                                                POI.TRL1Entry.get()
-
-                                                ))
-                                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))
-                                                .andThen(autoCommands.APToIntake(POI.HELPL1.get(),
-                                                                POI.HELPL1Entry.get(),
-                                                                Meters.of(2.0),
-                                                                POI.BALLL3.get(),
-                                                                POI.BALLL2Entry.get(),
-                                                                Meters.of(0.15),
-                                                                Seconds.of(0.5)))
-                                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                                                POI.HELPL2Entry.get(),
-                                                                Meters.of(2.1),
-                                                                POI.TRL1.get(),
-                                                                POI.TRL1Entry.get()
-
-                                                ))
-                                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
-
-                autos.put("Choreo climb test", () -> auto(POI.TRL1.get(),
-                                autoCommands.choreoL1Climb(rightClimb,
-                                                POI.CL1.get(),
-                                                Meters.of(1.5),
-                                                POI.CL1.get()
-
-                                )));
-                // Auto-register
-                autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
+        autos.put("Choreo-test", () -> auto(POI.TRL1.get(),
+                        autoCommands.choreoToIntake(run, POI.HELPL1.get(),
+                                        Meters.of(2.0),
+                                        POI.BALLL2.get(),
+                                        POI.BALLL2Entry.get(),
+                                        Meters.of(0.15),
+                                        Seconds.of(0.5))));
+        // Auto-register
+        autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
 
         }
 

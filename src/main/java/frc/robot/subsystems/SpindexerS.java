@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
@@ -118,6 +119,11 @@ public class SpindexerS extends SubsystemBase {
 
     public Command setVelocity(Supplier<AngularVelocity> angularVelocity) {
         return Commands.runOnce(() -> m_spindexerController.setVelocity(angularVelocity.get()));
+    }
+
+    public Command resetEncoder() {
+        return runOnce(() -> m_spindexerController.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
     }
 
     

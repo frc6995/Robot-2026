@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -12,6 +14,9 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.lang.StackWalker.Option;
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import yams.mechanisms.config.FlyWheelConfig;
@@ -62,6 +67,8 @@ public class FlyWheelS extends SubsystemBase {
     public static final double kMass = 1;
       // Setpoints
     public static final AngularVelocity kMaxSpeed = RotationsPerSecond.of(4400.0 / 60.0);
+    public static final AngularVelocity kShootSpeed = RotationsPerSecond.of(3000 / 60.0);
+    public static final AngularVelocity kTolerance = RotationsPerSecond.of(2);
   }
 
     // Motors
@@ -105,6 +112,8 @@ public class FlyWheelS extends SubsystemBase {
 
   private FlyWheel m_shooter = new FlyWheel(shooterConfig);
 
+  private Optional<AngularVelocity> setpoint = Optional.empty(); 
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -118,7 +127,14 @@ public class FlyWheelS extends SubsystemBase {
   }
 
   public Command setVelocity(Supplier<AngularVelocity> speed) {
-    return m_shooter.setSpeed(speed);
+    return m_shooter.setSpeed(new Supplier<AngularVelocity>() {
+      @Override
+      public AngularVelocity get() {
+          var spd = speed.get();
+          setpoint = Optional.of(spd);
+          return spd;
+      }
+    });
   }
 
   public Command setVoltage(Supplier<Voltage> voltage) {
@@ -129,9 +145,22 @@ public class FlyWheelS extends SubsystemBase {
     return m_shooter.getSpeed();
   }
 
+  public Optional<AngularVelocity> getSetpoint() {
+    return setpoint;
+  }
+
+  public boolean atSetpoint() {
+    return setpoint.isPresent() && getVelocity().isNear(setpoint.get(), FlywheelConstants.kTolerance);
+  }
+
   public Current getCurrent() {
     var currentOptional = m_shooter.getMotorController().getSupplyCurrent();
 
     return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
   }
+
+  public Command resetEncoder() {
+    return runOnce(() -> m_motorController.setEncoderPosition(Degrees.of(0))).ignoringDisable(true);
+  } 
+
 }

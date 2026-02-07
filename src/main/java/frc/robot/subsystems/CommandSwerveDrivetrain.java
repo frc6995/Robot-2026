@@ -437,4 +437,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                          .withWheelForceFeedforwardsY(sample.moduleForcesY()));
     }
 
+    public double calculateThetaPID(Rotation2d target) {
+        return m_pathThetaController.calculate(target.getDegrees(), state.Pose.getRotation().getDegrees());
+    }
 }

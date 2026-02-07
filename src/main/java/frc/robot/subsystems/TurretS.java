@@ -7,19 +7,13 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.io.ObjectInputFilter.Config;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -31,14 +25,10 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
-import yams.mechanisms.config.MechanismPositionConfig;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
@@ -76,6 +66,7 @@ public class TurretS extends SubsystemBase {
         public static Angle kStartAngle = Degrees.of(150);
         public static Angle kCWLimit = Degrees.of(-180);
         public static Angle kCCWLimit = kStartAngle;
+        public static Angle kTolernace = Degrees.of(5);
 
         public static double kReduction = 50.0;
         public static double kStatorLimit = 80.0;
@@ -169,8 +160,18 @@ public class TurretS extends SubsystemBase {
         return m_turret.getMechanismSetpoint();
     }
 
+    public boolean atSetpoint() {
+        var refOpt = getSetpoint();
+        return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolernace);
+    }
+
     public Current getSupplyCurrent() {
         return m_turretMotor.getSupplyCurrent().getValue();
+    }
+
+    public Command resetEncoder() {
+        return runOnce(() -> turretMotorSMC.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
     }
 
     public Command driveToHome() {
