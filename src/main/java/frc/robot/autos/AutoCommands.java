@@ -25,6 +25,7 @@ import frc.robot.subsystems.SpindexerS;
 import frc.robot.subsystems.TurretS;
 import frc.robot.subsystems.HoodS.HoodConstants;
 import frc.robot.subsystems.IndexerS.IndexerConstants;
+import frc.robot.subsystems.IntakePivotS.IntakePivotConstants;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
 import frc.robot.util.TriggerCommand;
@@ -88,7 +89,9 @@ public class AutoCommands {
 
                 return Commands.deadline(
                                 Commands.sequence(
-                                        Commands.waitUntil(() -> m_hood.isHoodSafe()),
+                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
+                                                m_turret.driveToHome(),
+                                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                                 new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
@@ -130,6 +133,8 @@ public class AutoCommands {
                         Time driveTime) {
                 return Commands.deadline(
                                 Commands.sequence(
+                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
+                                                m_turret.driveToHome(),
                                                 Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                                 choreoCommand.until(
                                                                 TriggerUtil.isWithinRadius(
@@ -205,6 +210,39 @@ public class AutoCommands {
 
         }
 
+        /**
+         * Command that drives robot to ladder starting with Choreo command and climbs
+         * to L1
+         * 
+         * @param choreoCommand        Choreo command to start with
+         * @param helpPose             Pose to invoke tolerance (radius) from for
+         *                             stoping the choreo path
+         * @param helpPose             Tolerance (radius) from help pose for stoping the
+         *                             choreo path
+         * @param targetpose           Target pose to autoallign to
+         * @param targetPoseEntryAngle
+         * @return Command that returns robot from intake that starts with a Choreo path
+         */
+        public Command choreoL1Climb(
+                        Command choreoCommand,
+                        Pose2d helpPose,
+                        Distance helpPoseTolerance,
+                        Pose2d targetpose) {
+                return Commands.parallel(
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kCCWLimit),
+                                Commands.sequence(
+
+                                                choreoCommand.until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(targetpose, m_drivebase)
+                                // ADD CLIMB COMMAND
+                                ));
+
+        }
+
         public Command fuelIntake() {
                 return Commands.parallel(
                                 m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kCWLimit),
@@ -215,8 +253,7 @@ public class AutoCommands {
         public Command Score() {
                 return Commands.parallel(
                                 m_hood.autoHoodAngle(),
-                               m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
-                               m_Spindexer.setVelocity(() -> SpindexerS.SpindexerConstants.kVelocity)
-                              );
+                                m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
+                                m_Spindexer.setVelocity(() -> SpindexerS.SpindexerConstants.kVelocity));
         }
 }

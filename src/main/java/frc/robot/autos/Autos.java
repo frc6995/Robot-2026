@@ -84,6 +84,7 @@ public class Autos {
                 // To intake
                 // Back to start
                 // To climb
+                Command rightClimb = factory.trajectoryCmd("ClimbTest");
 
                 // Other
                 Command run = factory.trajectoryCmd("Poses");
@@ -125,13 +126,13 @@ public class Autos {
                                                 ))
                                                 .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
 
-                autos.put("Choreo-test", () -> auto(POI.TRL1.get(),
-                                autoCommands.choreoToIntake(run, POI.HELPL1.get(),
-                                                Meters.of(2.0),
-                                                POI.BALLL2.get(),
-                                                POI.BALLL2Entry.get(),
-                                                Meters.of(0.15),
-                                                Seconds.of(0.5))));
+                autos.put("Choreo climb test", () -> auto(POI.TRL1.get(),
+                                autoCommands.choreoL1Climb(rightClimb,
+                                                POI.CL1.get(),
+                                                Meters.of(1.5),
+                                                POI.CL1.get()
+
+                                )));
                 // Auto-register
                 autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
 
