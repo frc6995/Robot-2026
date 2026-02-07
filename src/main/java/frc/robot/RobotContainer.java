@@ -187,7 +187,7 @@ public class RobotContainer {
                         m_hood.resetEncoder()),
                 () -> DriverStation.isEnabled()));
 
-        // joystick.leftTrigger().whileTrue();
+         joystick.a().onTrue(m_turret.driveToHome());
 
         // joystick.x();
 
