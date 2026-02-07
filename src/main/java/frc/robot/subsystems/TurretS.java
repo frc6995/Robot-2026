@@ -178,8 +178,8 @@ public class TurretS extends SubsystemBase {
         return Commands.sequence(
                 setVoltage(TurretConstants.kHomingDrive)
                         .until(() -> getSupplyCurrent().magnitude() > TurretConstants.kHomingCurrentThreshold),
-                this.runOnce(() -> m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true)).withTimeout(6.0)
-                .andThen(setVoltage(Volts.of(0)));
+                this.runOnce(() -> m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true))
+                .andThen(setVoltage(Volts.of(0))).withTimeout(2.0);
     }
 
 }

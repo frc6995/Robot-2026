@@ -53,7 +53,8 @@ public class AutoCommands {
                         .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
         public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
-                        IntakeRollerS intakeRoller, TurretS turret,IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel) {
+                        IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer,
+                        FlyWheelS flyWheel) {
                 this.m_drivebase = drivebase;
                 this.autos = autos;
                 this.m_hood = hood;
@@ -92,9 +93,7 @@ public class AutoCommands {
 
                 return Commands.deadline(
                                 Commands.sequence(
-                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
-                                                m_turret.driveToHome(),
-                                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
+
                                                 new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
@@ -108,7 +107,9 @@ public class AutoCommands {
 
                                                 (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
                                                                 .withTimeout(driveTime))),
-                                fuelIntake());
+                                Commands.parallel(fuelIntake(),
+                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
+                                                m_turret.driveToHome()));
         }
 
         /**
@@ -254,9 +255,13 @@ public class AutoCommands {
 
         // auto hood angle command
         public Command Score() {
-                return Commands.parallel(
+                return Commands.sequence(
                                 m_hood.autoHoodAngle(),
-                                m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
-                                m_Spindexer.setVelocity(() -> SpindexerS.SpindexerConstants.kVelocity));
+                                Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint()
+                                                && m_flywheel.atSetpoint()),
+                                Commands.parallel(
+                                                m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
+                                                m_Spindexer.setVelocity(
+                                                                () -> SpindexerS.SpindexerConstants.kVelocity)));
         }
 }

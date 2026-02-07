@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -34,6 +35,7 @@ import frc.robot.subsystems.IntakePivotS;
 import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.subsystems.SpindexerS;
 import frc.robot.subsystems.TurretS;
+import frc.robot.subsystems.FlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.IntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.IntakeRollerS.IntakeRollerConstants;
 import frc.robot.util.AutoAlignFixedHeading;
@@ -160,6 +162,7 @@ public class RobotContainer {
 
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
+        m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
 
         // start button home turret
         joystick.start()

@@ -60,7 +60,7 @@ public class HoodS extends SubsystemBase {
     public static final Angle kLowerLimit = Degrees.of(12.5); // CW Limit
     public static final Angle kUpperLimit = Degrees.of(40); // CCW Limit
     public static final Angle kStowAngle = kLowerLimit;
-    public static final Angle kTolerance = Degrees.of(5);
+    public static final Angle kTolerance = Degrees.of(2);
     public static final double[][] kAngleData = {
         // Distance (Meters), Angle(Degrees)
         { 1, 12.5 },

@@ -47,7 +47,7 @@ public class FlyWheelS extends SubsystemBase {
     public static final double kV = 0;
     public static final double kA = 0;
       // Sim PID Constants
-    public static final double kSimP = 0;
+    public static final double kSimP = 60;
     public static final double kSimI = 0;
     public static final double kSimD = 0;
       // Sim Feedforward Constants
