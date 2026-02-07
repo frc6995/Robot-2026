@@ -161,7 +161,7 @@ public class RobotContainer {
 
         // start button home turret
         joystick.start()
-                .onTrue(Commands.either(m_turret.driveToHome(), Commands.none(), () -> DriverStation.isEnabled()));
+                .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
         // select button home all, reset on disable
         joystick.back().onTrue(Commands.either(
                 Commands.parallel(
@@ -186,7 +186,7 @@ public class RobotContainer {
 
         // joystick.x();
 
-        joystick.povCenter().negate().whileTrue(driveIntakeRelativePOV());
+        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
         // 😢pain
         m_drivetrain.registerTelemetry(logger::telemeterize);
