@@ -178,6 +178,11 @@ public class HoodS extends SubsystemBase {
     return hood.getMechanismSetpoint();
   }
 
+  public Command resetEncoder() {
+        return runOnce(() -> talonSmartMotorController.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
+    }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

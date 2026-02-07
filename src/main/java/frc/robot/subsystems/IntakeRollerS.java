@@ -3,46 +3,28 @@ package frc.robot.subsystems;
 
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
-
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
-import yams.mechanisms.SmartMechanism;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.remote.TalonFXSWrapper;
 import yams.motorcontrollers.remote.TalonFXWrapper;
-import yams.telemetry.SmartMotorControllerTelemetry.BooleanTelemetryField;
-import yams.telemetry.SmartMotorControllerTelemetry.DoubleTelemetryField;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.motorcontrollers.SmartMotorController;
 
 public class IntakeRollerS extends SubsystemBase{
@@ -114,6 +96,11 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
   public Current getCurrent() {
       return motor.getSupplyCurrent().getValue();
   }
+
+  public Command resetEncoder() {
+        return runOnce(() -> talonFXSmartMotorController.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
+    }
   
     @Override
   public void periodic() {

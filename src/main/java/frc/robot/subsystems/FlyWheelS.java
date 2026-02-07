@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -156,4 +158,9 @@ public class FlyWheelS extends SubsystemBase {
 
     return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
   }
+
+  public Command resetEncoder() {
+    return runOnce(() -> m_motorController.setEncoderPosition(Degrees.of(0))).ignoringDisable(true);
+  } 
+
 }

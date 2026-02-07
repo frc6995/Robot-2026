@@ -154,6 +154,11 @@ public class IntakePivotS extends SubsystemBase {
     return intakePivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   }
 
+  public Command resetEncoder() {
+        return runOnce(() -> IntakeSMC.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
+    }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

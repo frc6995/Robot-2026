@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
@@ -57,6 +58,11 @@ public class IndexerS extends SubsystemBase {
         var currentOptional = m_indexerController.getSupplyCurrent();
 
         return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
+    }
+
+    public Command resetEncoder() {
+        return runOnce(() -> m_indexerController.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
     }
 
     @Override
