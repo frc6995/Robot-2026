@@ -3,10 +3,12 @@ package frc.robot.util;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ClimbConstants {
     // PID Constants
-    public static double kP = 0;
+    public static final double kP = 0;
     public static final double KI = 0;
     public static final double kD = 0;
     // Feedforward Constants
@@ -42,7 +44,9 @@ public class ClimbConstants {
     public record ClimbConstantsRecord(
             double kP,
             double kI,
-            double kD, double kS,
+            double kD,
+            double kS,
+            double kG,
             double kV,
             double kA,
             // Sim PID Constants
@@ -51,6 +55,7 @@ public class ClimbConstants {
             double kSimD,
             // Sim FeedFoward Constants
             double kSimS,
+            double kSimG,
             double kSimV,
             double kSimA,
             // CAN IDs
@@ -62,6 +67,14 @@ public class ClimbConstants {
             boolean kInvertFollowMotor,
             double kSupplyCurrentLimit,
             double kStatorCurrentLimit,
+            double kMechCircumference,
+            LinearVelocity kVelocity,
+            LinearAcceleration kAcceleration,
+            LinearVelocity kSimVelocity,
+            LinearAcceleration kSimAcceleration,
+            double kReduction,
+            double kMinHeight,
+            double kMaxHeight,
             // Sim Constants
             double kHeight,
             double kMass,
