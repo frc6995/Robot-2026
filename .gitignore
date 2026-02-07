@@ -185,3 +185,10 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
+build.gradle
+gradle.properties
+gradlew
+gradlew.bat 
+settings.gradle
+simgui.json
+simgui-ds.json
