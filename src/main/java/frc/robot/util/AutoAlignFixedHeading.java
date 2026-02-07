@@ -44,7 +44,7 @@ public class AutoAlignFixedHeading extends AutoAlign {
         this.m_heading = drivetrain.state.Pose.getRotation();
     }
 
-    private static Rotation2d cardinalizeHeading(Rotation2d heading) {
+    public static Rotation2d cardinalizeHeading(Rotation2d heading) {
         double hdegrees = heading.getDegrees();
         if (hdegrees >= -135 && hdegrees < -45) {
             return Rotation2d.fromDegrees(-90);

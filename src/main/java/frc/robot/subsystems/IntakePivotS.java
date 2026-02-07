@@ -141,6 +141,10 @@ public class IntakePivotS extends SubsystemBase {
     return intakePivot.setAngle(angle);
   }
 
+  public Command setAngle(Angle angle) {
+    return intakePivot.setAngle(angle);
+  }
+
   public Command setVoltage(Supplier<Voltage> volts) {
     return intakePivot.setVoltage(volts);
   }
@@ -151,6 +155,11 @@ public class IntakePivotS extends SubsystemBase {
   public Command sysId() {
     return intakePivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   }
+
+  public Command resetEncoder() {
+        return runOnce(() -> IntakeSMC.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
+    }
 
   @Override
   public void periodic() {

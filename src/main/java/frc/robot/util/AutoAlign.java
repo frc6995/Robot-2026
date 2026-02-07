@@ -33,6 +33,7 @@ public class AutoAlign extends Command {
 
         protected final APTarget m_target;
         protected final CommandSwerveDrivetrain m_drivetrain;
+        protected final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric();
         protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                         .withDriveRequestType(DriveRequestType.Velocity)
@@ -74,8 +75,8 @@ public class AutoAlign extends Command {
                 this.m_drivetrain = drivetrain;
 
                 APProfile kProfile = new APProfile(constraints)
-                                .withErrorXY(Centimeters.of(2))
-                                .withErrorTheta(Degrees.of(0.5))
+                                .withErrorXY(Centimeters.of(5))
+                                .withErrorTheta(Degrees.of(1.5))
                                 .withBeelineRadius(Centimeters.of(8));
 
                 kAutopilot = new Autopilot(kProfile);
@@ -96,7 +97,10 @@ public class AutoAlign extends Command {
 
         @Override
         public void end(boolean interrupted) {
-                System.out.println("AutoAlign ended" + (interrupted ? " due to interruption." : "."));
+                m_drivetrain.setControl(m_driveRequest
+                                .withVelocityX(0)
+                                .withVelocityY(0)
+                                .withRotationalRate(0));
         }
 
         @Override
