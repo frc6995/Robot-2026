@@ -16,6 +16,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.ClimbConstants.ClimbConstantsRecord;
+import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -41,6 +43,14 @@ import edu.wpi.first.units.measure.Voltage;
 
 
 public class ClimbPivotS extends SubsystemBase {
-    
+    private ClimbPivotConstantsRecord m_constants;
+
+     private SmartMotorControllerConfig smcConfig;
+
+     public ClimbPivotS(ClimbPivotConstantsRecord constants){
+        this.m_constants = constants;
+        SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+        .withControlMode(ControlMode.CLOSED_LOOP);
+     }
 
 }

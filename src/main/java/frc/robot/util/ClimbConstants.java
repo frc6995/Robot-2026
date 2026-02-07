@@ -1,8 +1,13 @@
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 
@@ -83,6 +88,45 @@ public class ClimbConstants {
             AngularVelocity kL1,
             AngularVelocity kL2,
             AngularVelocity kL3) {
+
+    }
+
+    public record ClimbPivotConstantsRecord(
+            int kCANID,
+            // Profiled PID Constants
+            double kP,
+            double kI,
+            double kD,
+            AngularVelocity kVelocity,
+            AngularAcceleration kAcceleration,
+            // Feeforward Constants
+            double kS,
+            double kG,
+            double kV,
+            double kA,
+            // Sim Profiled PID
+            double kSimP,
+            double kSimI,
+            double kSimD,
+            AngularVelocity kSimVelocity,
+            AngularAcceleration kSimAcceleration,
+            // Sim Feedforward
+            double kSimS,
+            double kSimG,
+            double kSimV,
+            double kSimA,
+            // Motor Configs
+            double kSupplyCurrentLimit,
+            double kStatorCurrentLimit,
+            // Physical Properties
+            double kMOI,
+            Distance kLength,
+            double kReduction,
+            // Setpoints and Stops
+            Angle kCWLimit,
+            Angle kCCWLimit,
+            Angle kFuelIntakeAngle,
+            Angle kStowAngle) {
 
     }
 
