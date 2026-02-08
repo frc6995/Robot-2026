@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
@@ -59,6 +60,11 @@ public class IndexerS extends SubsystemBase {
         return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
     }
 
+    public Command resetEncoder() {
+        return runOnce(() -> m_indexerController.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
+    }
+
     @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -70,5 +76,8 @@ public class IndexerS extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
     m_indexerController.simIterate();
+
+
+    
   }
 }
