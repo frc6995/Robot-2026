@@ -42,8 +42,4 @@ public class RobotVisualizer {
         components[2] = TURRET_LOCATION.transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, 0, turretRadians)));
         layoutPub.set(components);
     }
-    public static void updateSpindexer(double spindexerRadians){
-        components[3] = SPINDEXER_LOCATION.transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, 0, spindexerRadians)));
-        layoutPub.set(components);
-    }
 }

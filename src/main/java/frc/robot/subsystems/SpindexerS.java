@@ -127,7 +127,7 @@ public class SpindexerS extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     double currentAngleRad = m_spindexerMotor.getPosition().getValue().in(Radians);
-    RobotVisualizer.updateSpindexer(currentAngleRad);
+
     m_spindexerController.updateTelemetry();
   }
 
