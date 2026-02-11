@@ -95,7 +95,7 @@ public class Autos {
                                 POI.BALLL2.get(),
                                 POI.BALLL2Entry.get(),
                                 Meters.of(0.15),
-                                Seconds.of(5)
+                                Seconds.of(0.5)
 
                 )
 
@@ -119,6 +119,7 @@ public class Autos {
                                                 Meters.of(2.1),
                                                 POI.TRL1.get(),
                                                 POI.TRL1Entry.get()
+                                        
 
                                 ))
                                 .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
