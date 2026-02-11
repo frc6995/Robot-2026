@@ -108,8 +108,8 @@ public class AutoCommands {
                                                 (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
                                                                 .withTimeout(driveTime))),
                                 Commands.parallel(fuelIntake(),
-                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
-                                                m_turret.driveToHome()));
+                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit)
+                                                ));
         }
 
         /**

@@ -73,6 +73,7 @@ public class TurretS extends SubsystemBase {
         public static double kSimA = 0.0;
         public static AngularVelocity kSimVelocity = DegreesPerSecond.of(200.0);
         public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(200.0);
+        public static Rotation2d kStowedAngle = Rotation2d.fromDegrees(90);
 
         
         public static Rotation2d kCWLimit = Rotation2d.fromDegrees(-165);
@@ -97,10 +98,12 @@ public class TurretS extends SubsystemBase {
 
     private Supplier<Pose2d> robotPose;
     private Supplier<ChassisSpeeds> robotSpeeds;
+    private Supplier<Boolean> isIntakeDeployed;
 
-    public TurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
+    public TurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Supplier<Boolean> isIntakeDeployed) {
         this.robotPose = robotPose;
         this.robotSpeeds = robotSpeeds;
+        this.isIntakeDeployed = isIntakeDeployed;
     }
 
     private final TalonFX m_turretMotor = new TalonFX(TurretConstants.kCANID, TunerConstants.kCANBus);
@@ -175,6 +178,10 @@ public class TurretS extends SubsystemBase {
 
     public Command setAngle(Supplier<Rotation2d> angle) {
         return m_turret.setAngle(() -> rotationClamp(angle.get(), TurretConstants.kCWLimit, TurretConstants.kCCWLimit).getMeasure());
+    }
+
+    public Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle) {
+        return () -> isIntakeDeployed.get() ? rotationClamp(angle.get(), TurretConstants.kCWLimit, TurretConstants.kCCWLimit) : rotationClamp(angle.get(), TurretConstants.kStowedAngle.minus(TurretConstants.kTolerance), TurretConstants.kStowedAngle.plus(TurretConstants.kTolerance));
     }
 
     public Angle getAngle() {

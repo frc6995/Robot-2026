@@ -70,7 +70,7 @@ public class RobotContainer {
     private final IntakePivotS m_intakepivot = new IntakePivotS();
     private final IntakeRollerS m_intakeroller = new IntakeRollerS();
     private final SpindexerS m_spindexer = new SpindexerS();
-    private final TurretS m_turret = new TurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final TurretS m_turret = new TurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> false);
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakepivot,
             m_intakeroller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
@@ -199,6 +199,8 @@ public class RobotContainer {
 
         // 😢pain
         m_drivetrain.registerTelemetry(logger::telemeterize);
+
+        RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
 
     }
 
