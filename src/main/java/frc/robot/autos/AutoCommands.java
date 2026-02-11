@@ -233,7 +233,7 @@ public class AutoCommands {
                         Distance helpPoseTolerance,
                         Pose2d targetpose) {
                 return Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotConstants.kCCWLimit),
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
                                 Commands.sequence(
 
                                                 choreoCommand.until(
@@ -249,7 +249,7 @@ public class AutoCommands {
 
         public Command fuelIntake() {
                 return Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kCWLimit),
+                                m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kLowerLimit),
                                 m_intakeRoller.setVoltage(() -> IntakeRollerS.IntakeRollerConstants.kIntakeVoltage));
         }
 

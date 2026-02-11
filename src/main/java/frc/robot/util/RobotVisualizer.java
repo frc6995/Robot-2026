@@ -1,5 +1,7 @@
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -13,14 +15,15 @@ public class RobotVisualizer {
 
     final static double INTAKE_X = Units.inchesToMeters(10.625);
     final static double INTAKE_Z = Units.inchesToMeters(8.875);
-    final static Pose3d INTAKE_PIVOT_LOCATION = new Pose3d(INTAKE_X, 0, INTAKE_Z, Rotation3d.kZero);
-    final static double HOOD_X = Units.inchesToMeters(0);
-    final static double HOOD_Z = Units.inchesToMeters(19);
-    final static Pose3d HOOD_LOCATION = new Pose3d(HOOD_X, 0, HOOD_Z, Rotation3d.kZero);
+    final static Pose3d INTAKE_PIVOT_LOCATION = new Pose3d(INTAKE_X, 0, INTAKE_Z, new Rotation3d(Degrees.of(180),Degrees.of(0),Degrees.of(0)));
+    final static double HOOD_X = Units.inchesToMeters(3.5);
+    final static double HOOD_Z = Units.inchesToMeters(20.5);
+    final static Pose3d HOOD_LOCATION = new Pose3d(HOOD_X, 0, HOOD_Z, new Rotation3d(Degrees.of(180),Degrees.of(0),Degrees.of(0)));
     final static double TURRET_X = Units.inchesToMeters(0);
-    final static double TURRET_Z = Units.inchesToMeters(0);
-    final static Pose3d TURRET_LOCATION = new Pose3d(TURRET_X, 0, TURRET_Z, Rotation3d.kZero);
+    final static double TURRET_Z = Units.inchesToMeters(16);
+    final static Pose3d TURRET_LOCATION = new Pose3d(TURRET_X, 0, TURRET_Z, new Rotation3d(Degrees.of(0),Degrees.of(0),Degrees.of(-90)));
 
+    private static double hoodAngleRadians = 0;
 
     private static Pose3d[] components = new Pose3d[] {Pose3d.kZero, Pose3d.kZero, Pose3d.kZero, Pose3d.kZero};
     private static final StructArrayPublisher<Pose3d> layoutPub = NetworkTableInstance.getDefault()
@@ -28,17 +31,18 @@ public class RobotVisualizer {
             .publish();
     public static Pose3d[] getComponents() {return components;}
     public static void updateIntake(double intakeRadians){
-        components[0] = INTAKE_PIVOT_LOCATION.transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, -intakeRadians, 0)));
+        components[0] = INTAKE_PIVOT_LOCATION.transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, intakeRadians, 0)));
         layoutPub.set(components);
     }
 
-    public static void updateHood(double turretRadians){
-        components[1] = HOOD_LOCATION.rotateAround(TURRET_LOCATION.getTranslation(), new Rotation3d(Rotation2d.fromRadians(turretRadians)));
-        components[2] = TURRET_LOCATION.transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, 0, turretRadians)));
+    public static void updateTurret(double turretRadians){
+        components[2] = HOOD_LOCATION.rotateAround(TURRET_LOCATION.getTranslation(), new Rotation3d(0, 0, turretRadians)).transformBy(
+            new Transform3d(0,0,0, new Rotation3d(0, hoodAngleRadians, 0))
+        );
+        components[1] = TURRET_LOCATION.transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, 0, turretRadians)));
         layoutPub.set(components);
     }
-        public static void updateTurret(double hoodRadians){
-        components[1] = HOOD_LOCATION.transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(hoodRadians, 0, 0)));
-        layoutPub.set(components);
+    public static void updateHood(double hoodRadians){
+        hoodAngleRadians = -hoodRadians;
     }
 }

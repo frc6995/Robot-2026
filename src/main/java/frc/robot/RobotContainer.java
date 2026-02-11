@@ -37,6 +37,7 @@ import frc.robot.subsystems.IntakeRollerS;
 import frc.robot.subsystems.SpindexerS;
 import frc.robot.subsystems.TurretS;
 import frc.robot.subsystems.FlyWheelS.FlywheelConstants;
+import frc.robot.subsystems.HoodS.HoodConstants;
 import frc.robot.subsystems.IntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.IntakeRollerS.IntakeRollerConstants;
 import frc.robot.util.AutoAlignFixedHeading;
@@ -134,11 +135,11 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         // A intake toggle
-        joystick.a().onTrue(new SequentialCommandGroup(
-                Commands.runOnce(() -> intakeState = !intakeState),
-                m_intakepivot.setAngle(
-                        () -> intakeState ? IntakePivotConstants.kFuelIntakeAngle : IntakePivotConstants.kStowAngle),
-                m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));
+        joystick.a().whileTrue(
+                m_intakepivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle));
+        joystick.y().whileTrue(
+                m_intakepivot.setAngle(() -> IntakePivotConstants.kStowAngle));
+                // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));
 
         // B button align to cardinal direction
         joystick.b().whileTrue(
@@ -165,6 +166,8 @@ public class RobotContainer {
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
         m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
         m_turret.setDefaultCommand(m_turret.aimAtHub());
+        m_hood.setDefaultCommand(m_hood.setAngle(()->HoodConstants.kLowerLimit));
+
         // start button home turret
         joystick.start()
                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
@@ -189,6 +192,8 @@ public class RobotContainer {
                 () -> DriverStation.isEnabled()));
 
         joystick.a().onTrue(m_turret.driveToHome());
+        joystick.x().whileTrue(m_hood.autoHoodAngle());
+
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 

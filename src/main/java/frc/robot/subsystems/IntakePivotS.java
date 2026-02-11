@@ -80,10 +80,10 @@ public class IntakePivotS extends SubsystemBase {
     public static final Distance kLength = Inches.of(5.6);
     public static final double kReduction = 57.5;
       // Setpoints and Stops
-    public static final Angle kCWLimit = Degrees.of(-25);
-    public static final Angle kCCWLimit = Degrees.of(146);
-    public static final Angle kFuelIntakeAngle= Degrees.of(-25);
-    public static final Angle kStowAngle = Degrees.of(146);
+    public static final Angle kLowerLimit = Degrees.of(0);
+    public static final Angle kUpperLimit = Degrees.of(120);
+    public static final Angle kFuelIntakeAngle= kLowerLimit;
+    public static final Angle kStowAngle = kUpperLimit;
   }
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -117,7 +117,7 @@ public class IntakePivotS extends SubsystemBase {
   private ArmConfig intakeCfg = new ArmConfig(IntakeSMC)
       // Soft limit is applied to the SmartMotorControllers PID
 
-      .withHardLimit(IntakePivotConstants.kCWLimit, IntakePivotConstants.kCCWLimit)
+      .withHardLimit(IntakePivotConstants.kLowerLimit, IntakePivotConstants.kUpperLimit)
       // Starting position is where your arm starts
       .withStartingPosition(IntakePivotConstants.kStowAngle)
 

@@ -141,7 +141,7 @@ public class TurretS extends SubsystemBase {
     @Override
     public void periodic() {
         double currentAngleRad = m_turret.getAngle().in(Radians);
-        RobotVisualizer.updateHood(currentAngleRad);
+        RobotVisualizer.updateTurret(currentAngleRad);
         m_turret.updateTelemetry();
         
     }
