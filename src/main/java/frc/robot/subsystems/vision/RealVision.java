@@ -25,7 +25,7 @@ import limelight.networktables.LimelightPoseEstimator.BotPose;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.networktables.LimelightSettings.LEDMode;
 
-public class RealVision implements Vision {
+public class RealVision extends Vision {
     public static class VisionConstants {
         public static final String[] LL_IDS = {
             "limelight-frontll"

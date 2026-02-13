@@ -33,7 +33,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 
-public class RealFlyWheelS implements FlyWheelS {
+public class RealFlyWheelS extends FlyWheelS {
   public static class FlywheelConstants {
       // PID Constants
     public static final double kP = 0;

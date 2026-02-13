@@ -4,7 +4,7 @@ import java.util.List;
 
 import limelight.networktables.PoseEstimate;
 
-public interface Vision {
-    public void periodic();
-    public List<PoseEstimate> getAllEstimates();
+public abstract class Vision {
+    public abstract void periodic();
+    public abstract List<PoseEstimate> getAllEstimates();
 }

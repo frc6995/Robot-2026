@@ -22,7 +22,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class RealIndexerS implements IndexerS {
+public class RealIndexerS extends IndexerS {
     public class IndexerConstants {
             // CAN IDs
         public static final int kCAN_ID = 31; 

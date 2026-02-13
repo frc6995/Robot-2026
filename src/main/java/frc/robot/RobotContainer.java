@@ -78,7 +78,7 @@ public class RobotContainer {
     private final FlyWheelS m_flywheel = new RealFlyWheelS();
     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
     private final IndexerS m_indexer = new RealIndexerS();
-    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
+    private final RealIntakePivotS m_intakePivot = new RealIntakePivotS();
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     private final SpindexerS m_spindexer = new RealSpindexerS();
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());

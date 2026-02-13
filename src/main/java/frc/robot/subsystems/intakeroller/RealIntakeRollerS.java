@@ -26,7 +26,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 import yams.motorcontrollers.SmartMotorController;
 
-public class RealIntakeRollerS implements IntakeRollerS {
+public class RealIntakeRollerS extends IntakeRollerS {
     public class IntakeRollerConstants {
 
     public static final double kP = 0;

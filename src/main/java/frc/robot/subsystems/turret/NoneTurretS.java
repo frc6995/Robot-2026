@@ -15,7 +15,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-public class NoneTurretS implements TurretS {
+public class NoneTurretS extends TurretS {
 
     @Override
     public Command setAngle(Supplier<Rotation2d> angle) {

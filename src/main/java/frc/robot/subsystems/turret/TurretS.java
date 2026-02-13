@@ -11,23 +11,24 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public interface TurretS extends Subsystem {
-    public Command setAngle(Supplier<Rotation2d> angle);
-    public Command setAngle(Rotation2d angle);
-    public Command setVoltage(Supplier<Voltage> voltage);
-    public Command setVoltage(Voltage voltage);
-    public Command sysId();
-    public Command resetEncoder();
-    public Command aimAtFieldPose(Supplier<Translation2d> targetLocation, Supplier<Pose2d> drivebasePose);
-    public Command aimAtHub();
-    public Command setAngleFieldRelative(Supplier<Rotation2d> targetFieldRelativeAngle,Supplier<Rotation2d> drivebaseAngle);
-    public Command driveToHome();
+public abstract class TurretS extends SubsystemBase {
+    public abstract Command setAngle(Supplier<Rotation2d> angle);
+    public abstract Command setAngle(Rotation2d angle);
+    public abstract Command setVoltage(Supplier<Voltage> voltage);
+    public abstract Command setVoltage(Voltage voltage);
+    public abstract Command sysId();
+    public abstract Command resetEncoder();
+    public abstract Command aimAtFieldPose(Supplier<Translation2d> targetLocation, Supplier<Pose2d> drivebasePose);
+    public abstract Command aimAtHub();
+    public abstract Command setAngleFieldRelative(Supplier<Rotation2d> targetFieldRelativeAngle,Supplier<Rotation2d> drivebaseAngle);
+    public abstract Command driveToHome();
 
-    public Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle);
-    public Optional<Angle> getSetpoint();
-    public Angle getAngle();
-    public boolean atSetpoint();
-    public Current getCurrent();
+    public abstract Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle);
+    public abstract Optional<Angle> getSetpoint();
+    public abstract Angle getAngle();
+    public abstract boolean atSetpoint();
+    public abstract Current getCurrent();
 
 }

@@ -6,11 +6,12 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public interface IntakeRollerS extends Subsystem {
-    public Command setVoltage(Supplier<Voltage> voltage);
-    public Command setVoltage(Voltage voltage);
-    public Command resetEncoder();
+public abstract class IntakeRollerS extends SubsystemBase {
+    public abstract Command setVoltage(Supplier<Voltage> voltage);
+    public abstract Command setVoltage(Voltage voltage);
+    public abstract Command resetEncoder();
 
-    public Current getCurrent();
+    public abstract Current getCurrent();
 }

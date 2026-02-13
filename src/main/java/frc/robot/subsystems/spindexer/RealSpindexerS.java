@@ -36,7 +36,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 /**
  * A class to control the primary rotating component of the Dye Rotor
  */
-public class RealSpindexerS implements SpindexerS {
+public class RealSpindexerS extends SpindexerS {
     public class SpindexerConstants {
         // CAN IDs
         public static final int kCANID = 32;

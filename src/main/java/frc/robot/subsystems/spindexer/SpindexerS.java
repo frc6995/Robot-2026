@@ -7,11 +7,12 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public interface SpindexerS extends Subsystem {
-    public Command setVoltage(Supplier<Voltage> voltage);
-    public Command setVelocity(Supplier<AngularVelocity> speed);
-    public Command resetEncoder();
+public abstract class SpindexerS extends SubsystemBase {
+    public abstract Command setVoltage(Supplier<Voltage> voltage);
+    public abstract Command setVelocity(Supplier<AngularVelocity> speed);
+    public abstract Command resetEncoder();
 
-    public Current getCurrent();
+    public abstract Current getCurrent();
 }

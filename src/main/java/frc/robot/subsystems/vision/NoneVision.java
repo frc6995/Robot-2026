@@ -5,7 +5,7 @@ import java.util.List;
 
 import limelight.networktables.PoseEstimate;
 
-public class NoneVision implements Vision {
+public class NoneVision extends Vision {
     ArrayList<PoseEstimate> estimates = new ArrayList<PoseEstimate>();
 
     @Override

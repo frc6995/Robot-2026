@@ -9,7 +9,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-public class NoneIntakeRollerS implements IntakeRollerS {
+public class NoneIntakeRollerS extends IntakeRollerS {
 
     @Override
     public Command setVoltage(Supplier<Voltage> voltage) {

@@ -46,7 +46,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class RealTurretS implements TurretS {
+public class RealTurretS extends TurretS {
     public static class TurretConstants {
         public static int kCANID = 41;
 

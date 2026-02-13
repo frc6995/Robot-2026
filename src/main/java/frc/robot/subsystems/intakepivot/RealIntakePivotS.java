@@ -27,6 +27,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.RobotVisualizer;
 import yams.gearing.GearBox;
@@ -40,7 +41,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class RealIntakePivotS implements IntakePivotS {
+public class RealIntakePivotS extends IntakePivotS {
   public class IntakePivotConstants {
       // CAN IDs
     public static final int kCANID = 21;
@@ -158,10 +159,8 @@ public class RealIntakePivotS implements IntakePivotS {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    super.periodic();
     intakePivot.updateTelemetry();
-    double currentAngleRad = intakePivot.getAngle().in(Radians);
-    RobotVisualizer.updateIntake(currentAngleRad);
   }
 
   @Override

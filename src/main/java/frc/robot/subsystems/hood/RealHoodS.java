@@ -43,7 +43,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class RealHoodS implements HoodS {
+public class RealHoodS extends HoodS {
   public class HoodConstants {
       // CAN IDs
     public static final int kCANID = 42;
