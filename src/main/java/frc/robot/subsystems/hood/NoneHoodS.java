@@ -63,4 +63,9 @@ public class NoneHoodS extends HoodS{
         return true;
     }
     
+    @Override
+    public void setDefaultCommand(Command defaultCommand) {
+        defaultCommand.addRequirements(this);
+        super.setDefaultCommand(defaultCommand);
+    }
 }

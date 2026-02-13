@@ -26,21 +26,27 @@ import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
+import frc.robot.subsystems.flywheel.NoneFlyWheelS;
 import frc.robot.subsystems.flywheel.RealFlyWheelS;
 import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.hood.HoodS;
+import frc.robot.subsystems.hood.NoneHoodS;
 import frc.robot.subsystems.hood.RealHoodS;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.indexer.IndexerS;
+import frc.robot.subsystems.indexer.NoneIndexerS;
 import frc.robot.subsystems.indexer.RealIndexerS;
 import frc.robot.subsystems.intakepivot.IntakePivotS;
 import frc.robot.subsystems.intakepivot.NoneIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
+import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
+import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
+import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.RealVision;
@@ -75,13 +81,15 @@ public class RobotContainer {
         TunerConstants.BackRight
     );
 
-    private final FlyWheelS m_flywheel = new RealFlyWheelS();
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    private final IndexerS m_indexer = new RealIndexerS();
-    private final RealIntakePivotS m_intakePivot = new RealIntakePivotS();
-    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
-    private final SpindexerS m_spindexer = new RealSpindexerS();
-    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final FlyWheelS m_flywheel = new NoneFlyWheelS();
+//     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new NoneHoodS();
+    private final IndexerS m_indexer = new NoneIndexerS();
+    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
+    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
+    private final SpindexerS m_spindexer = new NoneSpindexerS();
+//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final TurretS m_turret = new NoneTurretS();
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 

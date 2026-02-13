@@ -28,12 +28,12 @@ import limelight.networktables.LimelightSettings.LEDMode;
 public class RealVision extends Vision {
     public static class VisionConstants {
         public static final String[] LL_IDS = {
-            "limelight-frontll"
+            "limelight-climb"
         };
         public static final Pose3d[] LL_OFFSETS = {
             new Pose3d( // frontLL
                 new Translation3d(-0.0254,-0.0254,0.4826),
-                new Rotation3d())
+                new Rotation3d( -7.52, 21.07, 20))
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 

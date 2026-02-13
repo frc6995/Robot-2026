@@ -46,4 +46,9 @@ public class NoneIntakePivotS extends IntakePivotS {
         return false;
     }
     
+    @Override
+    public void setDefaultCommand(Command defaultCommand) {
+        defaultCommand.addRequirements(this);
+        super.setDefaultCommand(defaultCommand);
+    }
 }

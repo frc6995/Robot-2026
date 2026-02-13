@@ -32,4 +32,9 @@ public class NoneSpindexerS extends SpindexerS {
         return Amps.of(-6995);
     }
     
+    @Override
+    public void setDefaultCommand(Command defaultCommand) {
+        defaultCommand.addRequirements(this);
+        super.setDefaultCommand(defaultCommand);
+    }
 }
