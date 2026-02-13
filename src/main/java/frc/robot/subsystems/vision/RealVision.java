@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 
@@ -25,7 +25,7 @@ import limelight.networktables.LimelightPoseEstimator.BotPose;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.networktables.LimelightSettings.LEDMode;
 
-public class Vision {
+public class RealVision implements Vision {
     public static class VisionConstants {
         public static final String[] LL_IDS = {
             "limelight-frontll"
@@ -48,7 +48,7 @@ public class Vision {
 
     private final BooleanPublisher headingSeededPublisher;
 
-    public Vision(Pigeon2 gyro) {
+    public RealVision(Pigeon2 gyro) {
         this.gyro = gyro;
         limelights = new VisionModule[VisionConstants.LL_IDS.length];
 

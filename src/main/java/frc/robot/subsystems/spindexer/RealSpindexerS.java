@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.spindexer;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -7,12 +7,10 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -23,12 +21,9 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.RobotVisualizer;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.motorcontrollers.SmartMotorController;
@@ -41,7 +36,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 /**
  * A class to control the primary rotating component of the Dye Rotor
  */
-public class SpindexerS extends SubsystemBase {
+public class RealSpindexerS implements SpindexerS {
     public class SpindexerConstants {
         // CAN IDs
         public static final int kCANID = 32;
@@ -104,8 +99,8 @@ public class SpindexerS extends SubsystemBase {
      * @return A {@link edu.wpi.first.wpilibj2.command.Command Command} to send the
      *         specified voltage to the motor.
      */
-    public Command setVoltage(Supplier<Voltage> volts) {
-        return Commands.runOnce(() -> m_spindexerController.setVoltage(volts.get()));
+    public Command setVoltage(Supplier<Voltage> voltage) {
+        return Commands.runOnce(() -> m_spindexerController.setVoltage(voltage.get()));
     }
 
     /**
@@ -119,8 +114,8 @@ public class SpindexerS extends SubsystemBase {
         return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
     }
 
-    public Command setVelocity(Supplier<AngularVelocity> angularVelocity) {
-        return Commands.runOnce(() -> m_spindexerController.setVelocity(angularVelocity.get()));
+    public Command setVelocity(Supplier<AngularVelocity> speed) {
+        return Commands.runOnce(() -> m_spindexerController.setVelocity(speed.get()));
     }
 
     public Command resetEncoder() {
@@ -132,7 +127,7 @@ public class SpindexerS extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double currentAngleRad = m_spindexerMotor.getPosition().getValue().in(Radians);
+    // double currentAngleRad = m_spindexerMotor.getPosition().getValue().in(Radians);
 
     m_spindexerController.updateTelemetry();
   }

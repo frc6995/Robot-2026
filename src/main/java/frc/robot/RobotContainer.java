@@ -11,16 +11,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import choreo.auto.AutoChooser;
@@ -29,17 +25,25 @@ import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.FlyWheelS;
-import frc.robot.subsystems.HoodS;
-import frc.robot.subsystems.IndexerS;
-import frc.robot.subsystems.IntakePivotS;
-import frc.robot.subsystems.IntakeRollerS;
-import frc.robot.subsystems.SpindexerS;
-import frc.robot.subsystems.TurretS;
-import frc.robot.subsystems.FlyWheelS.FlywheelConstants;
-import frc.robot.subsystems.HoodS.HoodConstants;
-import frc.robot.subsystems.IntakePivotS.IntakePivotConstants;
-import frc.robot.subsystems.IntakeRollerS.IntakeRollerConstants;
+import frc.robot.subsystems.flywheel.FlyWheelS;
+import frc.robot.subsystems.flywheel.RealFlyWheelS;
+import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
+import frc.robot.subsystems.hood.HoodS;
+import frc.robot.subsystems.hood.RealHoodS;
+import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
+import frc.robot.subsystems.indexer.IndexerS;
+import frc.robot.subsystems.indexer.RealIndexerS;
+import frc.robot.subsystems.intakepivot.IntakePivotS;
+import frc.robot.subsystems.intakepivot.NoneIntakePivotS;
+import frc.robot.subsystems.intakepivot.RealIntakePivotS;
+import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
+import frc.robot.subsystems.intakeroller.IntakeRollerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
+import frc.robot.subsystems.spindexer.RealSpindexerS;
+import frc.robot.subsystems.spindexer.SpindexerS;
+import frc.robot.subsystems.turret.RealTurretS;
+import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.vision.RealVision;
 import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.Telemetry;
 
@@ -62,17 +66,24 @@ public class RobotContainer {
 
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
-    public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
+        true,
+        TunerConstants.DrivetrainConstants,
+        TunerConstants.FrontLeft,
+        TunerConstants.FrontRight,
+        TunerConstants.BackLeft,
+        TunerConstants.BackRight
+    );
 
-    private final FlyWheelS m_flywheel = new FlyWheelS();
-    private final HoodS m_hood = new HoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    private final IndexerS m_indexer = new IndexerS();
-    private final IntakePivotS m_intakepivot = new IntakePivotS();
-    private final IntakeRollerS m_intakeroller = new IntakeRollerS();
-    private final SpindexerS m_spindexer = new SpindexerS();
-    private final TurretS m_turret = new TurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> false);
-    private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakepivot,
-            m_intakeroller, m_turret, m_indexer, m_spindexer, m_flywheel);
+    private final FlyWheelS m_flywheel = new RealFlyWheelS();
+    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final IndexerS m_indexer = new RealIndexerS();
+    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
+    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
+    private final SpindexerS m_spindexer = new RealSpindexerS();
+    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
+            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -90,7 +101,7 @@ public class RobotContainer {
         SmartDashboard.putData("Visualzer", VISUALIZER);
 
         autoFactory = m_drivetrain.createAutoFactory();
-        autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakepivot, m_intakeroller, m_turret,
+        autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
                 m_indexer, m_spindexer, m_flywheel);
         SmartDashboard.putData("Auto Mode", m_chooser);
         configureBindings();
@@ -136,9 +147,9 @@ public class RobotContainer {
 
         // A intake toggle
         joystick.a().whileTrue(
-                m_intakepivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle));
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle));
         joystick.y().whileTrue(
-                m_intakepivot.setAngle(() -> IntakePivotConstants.kStowAngle));
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
                 // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));
 
         // B button align to cardinal direction
@@ -177,16 +188,16 @@ public class RobotContainer {
                         m_turret.driveToHome(),
                         m_flywheel.resetEncoder(),
                         m_spindexer.resetEncoder(),
-                        m_intakeroller.resetEncoder(),
-                        m_intakepivot.resetEncoder(),
+                        m_intakeRoller.resetEncoder(),
+                        m_intakePivot.resetEncoder(),
                         m_indexer.resetEncoder(),
                         m_hood.resetEncoder()),
                 Commands.parallel(
                         m_turret.resetEncoder(),
                         m_flywheel.resetEncoder(),
                         m_spindexer.resetEncoder(),
-                        m_intakeroller.resetEncoder(),
-                        m_intakepivot.resetEncoder(),
+                        m_intakeRoller.resetEncoder(),
+                        m_intakePivot.resetEncoder(),
                         m_indexer.resetEncoder(),
                         m_hood.resetEncoder()),
                 () -> DriverStation.isEnabled()));

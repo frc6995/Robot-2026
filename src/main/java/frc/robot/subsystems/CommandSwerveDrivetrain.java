@@ -41,7 +41,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.vision.NoneVision;
+import frc.robot.subsystems.vision.RealVision;
+import frc.robot.subsystems.vision.Vision;
 
 /**
  * 
@@ -145,17 +147,43 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * through
      * getters in the classes.
      *
+     * @param enableVision        Whether or not to enable vision
+     * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
+     * @param modules             Constants for each specific module
+     */
+    public CommandSwerveDrivetrain(
+            boolean enableVision,
+            SwerveDrivetrainConstants drivetrainConstants,
+            SwerveModuleConstants<?, ?, ?>... modules
+            ) {
+        super(drivetrainConstants, modules);
+        if (Utils.isSimulation()) {
+            startSimThread();
+        }
+        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
+    }
+
+    /**
+     * Constructs a CTRE SwerveDrivetrain using the specified constants.
+     * <p>
+     * This constructs the underlying hardware devices, so users should not
+     * construct
+     * the devices themselves. If they need the devices, they can access them
+     * through
+     * getters in the classes.
+     *
      * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
      * @param modules             Constants for each specific module
      */
     public CommandSwerveDrivetrain(
             SwerveDrivetrainConstants drivetrainConstants,
-            SwerveModuleConstants<?, ?, ?>... modules) {
+            SwerveModuleConstants<?, ?, ?>... modules
+            ) {
         super(drivetrainConstants, modules);
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        m_vision = Robot.isReal() ? new Vision(m_gyro) : null;
+        this.m_vision = Robot.isReal() ? new RealVision(m_gyro) : new NoneVision();
     }
 
     /**
@@ -174,6 +202,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param modules                 Constants for each specific module
      */
     public CommandSwerveDrivetrain(
+            boolean enableVision,
             SwerveDrivetrainConstants drivetrainConstants,
             double odometryUpdateFrequency,
             SwerveModuleConstants<?, ?, ?>... modules) {
@@ -181,7 +210,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        m_vision = Robot.isReal() ? new Vision(m_gyro) : null;
+        
+        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
     }
 
     public Rotation2d getGyroRotation() {
@@ -220,6 +250,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param modules                   Constants for each specific module
      */
     public CommandSwerveDrivetrain(
+            boolean enableVision,
             SwerveDrivetrainConstants drivetrainConstants,
             double odometryUpdateFrequency,
             Matrix<N3, N1> odometryStandardDeviation,
@@ -230,7 +261,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        m_vision = Robot.isReal() ? new Vision(m_gyro) : null;
+        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
     }
 
     @NotLogged

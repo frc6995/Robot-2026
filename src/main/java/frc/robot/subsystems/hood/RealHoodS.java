@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -26,8 +26,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.POI;
 import frc.robot.util.RobotVisualizer;
@@ -43,7 +43,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class HoodS extends SubsystemBase {
+public class RealHoodS implements HoodS {
   public class HoodConstants {
       // CAN IDs
     public static final int kCANID = 42;
@@ -123,7 +123,7 @@ public class HoodS extends SubsystemBase {
   private Supplier<ChassisSpeeds> robotSpeeds;
   private BooleanSupplier shouldApplyDynamicLimit;
 
-  public HoodS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
+  public RealHoodS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
     this.robotPose = robotPose;
     this.robotSpeeds = robotSpeeds;
 
@@ -151,8 +151,8 @@ public class HoodS extends SubsystemBase {
     return hood.setAngle(() -> applyDynamicLimits(angle.get(), robotPose.get()));
   }
 
-  public Command set(Supplier<Double> voltage) {
-    return hood.set(voltage);
+  public Command setVoltage(Supplier<Voltage> voltage) {
+    return hood.setVoltage(voltage);
   }
 
   public Command sysId() {

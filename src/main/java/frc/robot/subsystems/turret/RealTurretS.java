@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -32,9 +31,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.RobotVisualizer;
 import frc.robot.util.POI;
@@ -49,8 +46,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class TurretS extends SubsystemBase {
-
+public class RealTurretS implements TurretS {
     public static class TurretConstants {
         public static int kCANID = 41;
 
@@ -100,7 +96,7 @@ public class TurretS extends SubsystemBase {
     private Supplier<ChassisSpeeds> robotSpeeds;
     private Supplier<Boolean> isIntakeDeployed;
 
-    public TurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Supplier<Boolean> isIntakeDeployed) {
+    public RealTurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Supplier<Boolean> isIntakeDeployed) {
         this.robotPose = robotPose;
         this.robotSpeeds = robotSpeeds;
         this.isIntakeDeployed = isIntakeDeployed;
@@ -154,6 +150,18 @@ public class TurretS extends SubsystemBase {
         m_turret.simIterate();
     }
 
+    public Command setAngle(Supplier<Rotation2d> angle) {
+        return m_turret.setAngle(() -> rotationClamp(angle.get(), TurretConstants.kCWLimit, TurretConstants.kCCWLimit).getMeasure());
+    }
+
+    public Command setAngle(Rotation2d angle) {
+        return m_turret.setAngle(angle.getMeasure());
+    }
+
+    public Command setVoltage(Supplier<Voltage> voltageSupplier) {
+        return m_turret.setVoltage(voltageSupplier);
+    }
+
     /**
      * Sets the turret motor voltage.
      * 
@@ -164,21 +172,10 @@ public class TurretS extends SubsystemBase {
         return m_turret.setVoltage(voltage);
     }
 
-    public Command setVoltage(Supplier<Voltage> voltageSupplier) {
-        return m_turret.setVoltage(voltageSupplier);
-    }
-
     public Command sysId() {
         return m_turret.sysId(Volts.of(3), Volts.of(3).per(Second), Second.of(30));
     }
 
-    public Command setAngle(Rotation2d angle) {
-        return m_turret.setAngle(angle.getMeasure());
-    }
-
-    public Command setAngle(Supplier<Rotation2d> angle) {
-        return m_turret.setAngle(() -> rotationClamp(angle.get(), TurretConstants.kCWLimit, TurretConstants.kCCWLimit).getMeasure());
-    }
 
     public Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle) {
         return () -> isIntakeDeployed.get() ? rotationClamp(angle.get(), TurretConstants.kCWLimit, TurretConstants.kCCWLimit) : rotationClamp(angle.get(), TurretConstants.kStowedAngle.minus(TurretConstants.kTolerance), TurretConstants.kStowedAngle.plus(TurretConstants.kTolerance));
@@ -197,7 +194,7 @@ public class TurretS extends SubsystemBase {
         return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolerance.getMeasure());
     }
 
-    public Current getSupplyCurrent() {
+    public Current getCurrent() {
         return m_turretMotor.getSupplyCurrent().getValue();
     }
 
@@ -245,7 +242,7 @@ public class TurretS extends SubsystemBase {
     public Command driveToHome() {
         return Commands.sequence(
                 setVoltage(TurretConstants.kHomingDrive)
-                        .until(() -> getSupplyCurrent().magnitude() > TurretConstants.kHomingCurrentThreshold),
+                        .until(() -> getCurrent().in(Amps) > TurretConstants.kHomingCurrentThreshold),
                 this.runOnce(() -> m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true))
                 .andThen(setVoltage(Volts.of(0))).withTimeout(2.0);
     }

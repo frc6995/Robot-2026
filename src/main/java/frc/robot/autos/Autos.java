@@ -1,41 +1,26 @@
 package frc.robot.autos;
 
-import choreo.Choreo;
 import choreo.auto.AutoFactory;
-import choreo.auto.AutoRoutine;
-import choreo.auto.AutoTrajectory;
-import com.therekrab.autopilot.APConstraints;
-import com.therekrab.autopilot.APTarget;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
-import frc.robot.generated.ChoreoVars;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.FlyWheelS;
-import frc.robot.subsystems.HoodS;
-import frc.robot.subsystems.IndexerS;
-import frc.robot.subsystems.IntakePivotS;
-import frc.robot.subsystems.IntakeRollerS;
-import frc.robot.subsystems.SpindexerS;
-import frc.robot.subsystems.TurretS;
-import frc.robot.util.AllianceFlipUtil;
-import frc.robot.util.AutoAlign;
-import frc.robot.generated.ChoreoTraj;
-import frc.robot.util.ChoreoVariables;
+import frc.robot.subsystems.flywheel.FlyWheelS;
+import frc.robot.subsystems.hood.HoodS;
+import frc.robot.subsystems.indexer.IndexerS;
+import frc.robot.subsystems.intakepivot.IntakePivotS;
+import frc.robot.subsystems.intakeroller.IntakeRollerS;
+import frc.robot.subsystems.spindexer.SpindexerS;
+import frc.robot.subsystems.turret.TurretS;
 import frc.robot.util.POI;
-import yams.mechanisms.velocity.FlyWheel;
 import frc.robot.RobotContainer;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class Autos {

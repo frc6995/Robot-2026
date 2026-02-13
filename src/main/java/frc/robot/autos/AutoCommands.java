@@ -1,40 +1,29 @@
 package frc.robot.autos;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.FlyWheelS;
-import frc.robot.subsystems.HoodS;
-import frc.robot.subsystems.IndexerS;
-import frc.robot.subsystems.IntakePivotS;
-import frc.robot.subsystems.IntakeRollerS;
-import frc.robot.subsystems.SpindexerS;
-import frc.robot.subsystems.TurretS;
-import frc.robot.subsystems.HoodS.HoodConstants;
-import frc.robot.subsystems.IndexerS.IndexerConstants;
-import frc.robot.subsystems.IntakePivotS.IntakePivotConstants;
+import frc.robot.subsystems.flywheel.FlyWheelS;
+import frc.robot.subsystems.hood.HoodS;
+import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
+import frc.robot.subsystems.indexer.IndexerS;
+import frc.robot.subsystems.indexer.RealIndexerS.IndexerConstants;
+import frc.robot.subsystems.intakepivot.IntakePivotS;
+import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
+import frc.robot.subsystems.intakeroller.IntakeRollerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
+import frc.robot.subsystems.spindexer.SpindexerS;
+import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.spindexer.RealSpindexerS.SpindexerConstants;
 import frc.robot.util.AutoAlign;
-import frc.robot.util.POI;
-import frc.robot.util.TriggerCommand;
 import frc.robot.util.TriggerUtil;
-
-import static edu.wpi.first.units.Units.Meter;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.wpilibj2.command.Commands.*; // Static import for WPILib Commands
 
 public class AutoCommands {
         // You need these dependencies passed in
@@ -249,8 +238,8 @@ public class AutoCommands {
 
         public Command fuelIntake() {
                 return Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kLowerLimit),
-                                m_intakeRoller.setVoltage(() -> IntakeRollerS.IntakeRollerConstants.kIntakeVoltage));
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit),
+                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage));
         }
 
         // auto hood angle command
@@ -262,6 +251,6 @@ public class AutoCommands {
                                 Commands.parallel(
                                                 m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
                                                 m_Spindexer.setVelocity(
-                                                                () -> SpindexerS.SpindexerConstants.kVelocity)));
+                                                                () -> SpindexerConstants.kVelocity)));
         }
 }

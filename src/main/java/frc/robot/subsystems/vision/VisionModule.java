@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.vision;
 
 import java.util.Optional;
 
@@ -7,7 +7,7 @@ import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructPublisher;
-import frc.robot.subsystems.Vision.VisionConstants;
+import frc.robot.subsystems.vision.RealVision.VisionConstants;
 import limelight.Limelight;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.LimelightSettings.LEDMode;
@@ -52,7 +52,7 @@ public class VisionModule {
     }
 
     /**
-     * Must be called periodically in {@link frc.robot.subsystems.Vision#periodic()}
+     * Must be called periodically in {@link frc.robot.subsystems.vision.RealVision#periodic()}
      */
     public void periodic() {
         updateTelemetry();
