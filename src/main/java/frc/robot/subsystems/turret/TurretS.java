@@ -21,6 +21,8 @@ public abstract class TurretS extends SubsystemBase {
     public abstract Command sysId();
     public abstract Command resetEncoder();
     public abstract Command aimAtFieldPose(Supplier<Translation2d> targetLocation, Supplier<Pose2d> drivebasePose);
+    @SuppressWarnings("unchecked")
+    public abstract Command aimAtClosestPose(Supplier<Pose2d> drivebasePose, Supplier<Translation2d>... translations);
     public abstract Command aimAtHub();
     public abstract Command setAngleFieldRelative(Supplier<Rotation2d> targetFieldRelativeAngle,Supplier<Rotation2d> drivebaseAngle);
     public abstract Command driveToHome();
