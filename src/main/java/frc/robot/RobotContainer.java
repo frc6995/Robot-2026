@@ -86,7 +86,7 @@ public class RobotContainer {
 //     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
     private final HoodS m_hood = new NoneHoodS();
     private final IndexerS m_indexer = new NoneIndexerS();
-    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
+    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
     private final SpindexerS m_spindexer = new NoneSpindexerS();
 //     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
@@ -213,6 +213,8 @@ public class RobotContainer {
 
         joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
+        joystick.leftTrigger().onTrue(m_intakePivot.setAngle(()->Degrees.of(60)));
+        joystick.leftBumper().onTrue(m_intakePivot.setAngle(()->Degrees.of(10)));
 
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());

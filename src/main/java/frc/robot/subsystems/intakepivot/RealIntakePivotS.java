@@ -49,8 +49,8 @@ public class RealIntakePivotS extends IntakePivotS {
     public static final double kP = 56;
     public static final double kI = 0;
     public static final double kD = 0.2;
-    public static final AngularVelocity kVelocity = DegreesPerSecond.of(2880);
-    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1440);
+    public static final AngularVelocity kVelocity = DegreesPerSecond.of(180);
+    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(90);
       // Feeforward Constants
     public static final double kS = 0;
     public static final double kG = 1.210;
@@ -60,8 +60,8 @@ public class RealIntakePivotS extends IntakePivotS {
     public static final double kSimP = 56;
     public static final double kSimI = 0;
     public static final double kSimD = 0.2;
-    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(2880);
-    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(1440);
+    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(180);
+    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(90);
       // Sim Feedforward
     public static final double kSimS = 0;
     public static final double kSimG = 1.210;
