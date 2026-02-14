@@ -26,6 +26,7 @@ public class VisionModule {
 
     private final NetworkTable moduleSubTable;
 
+    private final StructPublisher<Pose3d> robotToCameraPublisher;
     private final StructPublisher<Pose3d> estimatePublisher;
     private final BooleanPublisher isActivePublisher;
     private final StringPublisher modePublisher;
@@ -42,7 +43,7 @@ public class VisionModule {
         limelight.getSettings()
             .withLimelightLEDMode(LEDMode.PipelineControl)
             .withCameraOffset(offset)
-            .withImuMode(ImuMode.InternalImu)
+            .withImuMode(ImuMode.ExternalImu)
             .save();
         
         mt1PoseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
@@ -52,11 +53,13 @@ public class VisionModule {
 
             // Publishers for Limelight data
         moduleSubTable = visionTable.getSubTable(limelightID);
+        robotToCameraPublisher = moduleSubTable.getStructTopic("CameraOffset", Pose3d.struct).publish();
         estimatePublisher = moduleSubTable.getStructTopic("PoseEstimate", Pose3d.struct).publish();
         isActivePublisher = moduleSubTable.getBooleanTopic("IsActive").publish();
         modePublisher = moduleSubTable.getStringTopic("LastEstimateMode").publish();
         defaultModePublisher = moduleSubTable.getStringTopic("DefaultEstimateMode").publish();
 
+        robotToCameraPublisher.accept(offset);
         defaultModePublisher.setDefault(defaultMode.name());
     }
 

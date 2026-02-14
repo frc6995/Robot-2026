@@ -1,14 +1,19 @@
 package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -31,7 +36,7 @@ public class RealVision extends Vision {
         public static final Pose3d[] LL_OFFSETS = {
             new Pose3d( // climb
                 new Translation3d(Inches.of(-10.925),Inches.of(10.750),Inches.of(8.820)),
-                new Rotation3d(Degrees.of(180-7.52), Degrees.of(180-21.07), Degrees.of(20)))
+                new Rotation3d(Degrees.of(7.52), Degrees.of(21.07), Degrees.of(180+20)))
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
@@ -40,7 +45,8 @@ public class RealVision extends Vision {
     }
     private VisionModule[] limelights;
 
-    private final Pigeon2 gyro;
+    private final Supplier<Rotation3d> gyroRotation;
+    private final Consumer<Rotation3d> resetRotation;
 
     private final NetworkTable visionTable;
 
@@ -49,8 +55,10 @@ public class RealVision extends Vision {
     private final BooleanPublisher headingSeededPublisher;
     private final StructPublisher<Pose3d> seededPosePublisher;
 
-    public RealVision(Pigeon2 gyro) {
-        this.gyro = gyro;
+    public RealVision(Supplier<Rotation3d> gyroRotation, Consumer<Rotation3d> resetRotation) {
+        this.gyroRotation = gyroRotation;
+        this.resetRotation = resetRotation;
+        
         limelights = new VisionModule[VisionConstants.LL_IDS.length];
 
         visionTable = NetworkTableInstance.getDefault().getTable("Vision");
@@ -71,7 +79,7 @@ public class RealVision extends Vision {
         if(!headingSeeded) {
             var initialEstimate = limelights[0].getPoseMT1();
             
-            if(initialEstimate.isEmpty()) return;
+            if(initialEstimate.isEmpty()|| initialEstimate.get().pose.getTranslation().getDistance(new Translation3d()) < 0.05) return;
 
             var initialPose = initialEstimate.get().pose;
 
@@ -79,12 +87,12 @@ public class RealVision extends Vision {
                 limelight.seedOrientation(new Orientation3d(
                     initialPose.getRotation(), 
                     new AngularVelocity3d(
-                        gyro.getAngularVelocityXWorld().getValue(),
-                        gyro.getAngularVelocityYWorld().getValue(),
-                        gyro.getAngularVelocityZWorld().getValue())));
+                        DegreesPerSecond.of(0),
+                        DegreesPerSecond.of(0),
+                        DegreesPerSecond.of(0))));
             }
 
-            gyro.setYaw(initialPose.getRotation().getMeasureZ());
+            resetRotation.accept(initialPose.getRotation());
             seededPosePublisher.accept(initialPose);
             headingSeeded = true;
         } else {
@@ -93,11 +101,11 @@ public class RealVision extends Vision {
                 
                 limelight.seedOrientation(
                     new Orientation3d(
-                        gyro.getRotation3d(),
+                        gyroRotation.get(),
                         new AngularVelocity3d(
-                            gyro.getAngularVelocityXWorld().getValue(),
-                            gyro.getAngularVelocityYWorld().getValue(),
-                            gyro.getAngularVelocityZWorld().getValue()
+                            DegreesPerSecond.of(0),
+                            DegreesPerSecond.of(0),
+                            DegreesPerSecond.of(0)
                         )
                     )
                 );

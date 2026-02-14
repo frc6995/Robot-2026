@@ -161,7 +161,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
+        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+            () -> this.getRotation3d(),
+            (rot) -> this.resetRotation(rot.toRotation2d())
+        );
     }
 
     /**
@@ -184,7 +187,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = Robot.isReal() ? new RealVision(m_gyro) : new NoneVision();
+        this.m_vision = Robot.isSimulation() ? new NoneVision() : new RealVision(
+            () -> this.getRotation3d(),
+            (rot) -> this.resetRotation(rot.toRotation2d())
+        );
     }
 
     /**
@@ -212,7 +218,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         
-        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
+        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+            () -> this.getRotation3d(),
+            (rot) -> this.resetRotation(rot.toRotation2d())
+        );
     }
 
     public Rotation2d getGyroRotation() {
@@ -262,7 +271,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
+        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+            () -> this.getRotation3d(),
+            (rot) -> this.resetRotation(rot.toRotation2d())
+        );
     }
 
     @NotLogged
@@ -364,7 +376,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
  
         var estimates = m_vision.getAllEstimates();
         for(var estimate : estimates) {
-            addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);
+             addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);
         }
     }
 

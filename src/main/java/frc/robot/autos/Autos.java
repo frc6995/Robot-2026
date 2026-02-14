@@ -75,11 +75,10 @@ public class Autos {
 
         autos.put("L center-line 2x", () -> auto(POI.TRL1.get(),
                 autoCommands.APToIntake(POI.HELPL1.get(),
-                                POI.HELPL1Entry.get(),
-                                Meters.of(2.0),
+                                Meters.of(2.5),
                                 POI.BALLL2.get(),
                                 POI.BALLL2Entry.get(),
-                                Meters.of(0.15),
+                                Meters.of(1.0),
                                 Seconds.of(0.5)
 
                 )
@@ -93,7 +92,6 @@ public class Autos {
                                 ))
                                 .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))
                                 .andThen(autoCommands.APToIntake(POI.HELPL1.get(),
-                                                POI.HELPL1Entry.get(),
                                                 Meters.of(2.0),
                                                 POI.BALLL3.get(),
                                                 POI.BALLL2Entry.get(),

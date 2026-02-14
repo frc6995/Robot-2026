@@ -73,7 +73,6 @@ public class AutoCommands {
          */
         public Command APToIntake(
                         Pose2d helpPose,
-                        Rotation2d helpPoseEntryAngle,
                         Distance helpPoseTolerance,
                         Pose2d intakePose,
                         Rotation2d intakePoseEntryAngle,
@@ -83,7 +82,7 @@ public class AutoCommands {
                 return Commands.deadline(
                                 Commands.sequence(
 
-                                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
+                                                new AutoAlign(helpPose, m_drivebase).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,

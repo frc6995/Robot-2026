@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import choreo.auto.AutoChooser;
@@ -51,7 +54,9 @@ import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.RealVision;
+import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
+import frc.robot.util.POI;
 import frc.robot.util.Telemetry;
 
 public class RobotContainer {
@@ -82,15 +87,15 @@ public class RobotContainer {
         TunerConstants.BackRight
     );
 
-    private final FlyWheelS m_flywheel = new RealFlyWheelS();
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-//     private final HoodS m_hood = new NoneHoodS();
-    private final IndexerS m_indexer = new RealIndexerS();
-    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
-    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
-    private final SpindexerS m_spindexer = new RealSpindexerS();
-    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-//     private final TurretS m_turret = new NoneTurretS();
+    private final FlyWheelS m_flywheel = new NoneFlyWheelS();
+//     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new NoneHoodS();
+    private final IndexerS m_indexer = new NoneIndexerS();
+    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
+    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
+    private final SpindexerS m_spindexer = new NoneSpindexerS();
+//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final TurretS m_turret = new NoneTurretS();
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
@@ -183,7 +188,6 @@ public class RobotContainer {
                 ));
 
         // right trigger hold to score
-        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
         m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
         m_turret.setDefaultCommand(m_turret.aimAtHub());
         m_hood.setDefaultCommand(m_hood.setAngle(()->HoodConstants.kLowerLimit));
@@ -213,6 +217,10 @@ public class RobotContainer {
 
         joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
+        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
+
+        joystick.y().whileTrue(Commands.deferredProxy(() -> new AutoAlign(POI.CL1.get(), m_drivetrain)));
+        
 
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
