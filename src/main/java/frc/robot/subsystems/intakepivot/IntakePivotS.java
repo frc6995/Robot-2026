@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Radians;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,9 +18,9 @@ public abstract class IntakePivotS extends SubsystemBase {
     public abstract Command setVoltage(Supplier<Voltage> voltage);
     public abstract Command sysId();
     public abstract Command resetEncoder();
-
+    @Logged
     public abstract boolean isIntakeDeployed();
-
+    @Logged
     public abstract Angle getAngle();
 
     @Override

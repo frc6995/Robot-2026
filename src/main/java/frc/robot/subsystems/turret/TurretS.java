@@ -3,6 +3,7 @@ package frc.robot.subsystems.turret;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -27,8 +28,11 @@ public abstract class TurretS extends SubsystemBase {
 
     public abstract Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle);
     public abstract Optional<Angle> getSetpoint();
+    @Logged
     public abstract Angle getAngle();
+    @Logged
     public abstract boolean atSetpoint();
+    @Logged
     public abstract Current getCurrent();
 
 }
