@@ -33,8 +33,8 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.util.RobotVisualizer;
 import frc.robot.util.POI;
+import frc.robot.util.RobotVisualizer;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -57,18 +57,18 @@ public class RealTurretS extends TurretS {
         public static double kG = 0.0;
         public static double kV = 0.0;
         public static double kA = 0.0;
-        public static AngularVelocity kVelocity = DegreesPerSecond.of(200.0);
-        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(200.0);
+        public static AngularVelocity kVelocity = DegreesPerSecond.of(180.0);
+        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(360.0);
 
-        public static double kSimP = 40;
+        public static double kSimP = 30;
         public static double kSimI = 0.0;
         public static double kSimD = 0.0;
         public static double kSimS = 0.0;
         public static double kSimG = 0.0;
-        public static double kSimV = 0.0;
+        public static double kSimV = 4.0;
         public static double kSimA = 0.0;
-        public static AngularVelocity kSimVelocity = DegreesPerSecond.of(200.0);
-        public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(200.0);
+        public static AngularVelocity kSimVelocity = DegreesPerSecond.of(180.0);
+        public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(360.0);
         public static Rotation2d kStowedAngle = Rotation2d.fromDegrees(90);
 
         
@@ -88,7 +88,7 @@ public class RealTurretS extends TurretS {
 
         // WIP
         public static MomentOfInertia kMOI = Units.KilogramSquareMeters.of(0.1); // kg*m^2
-        public static Distance kRadius = Units.Inches.of(4.0); // Radius of the Turret from center
+        public static Distance kRadius = Units.Inches.of(3.1875); // Radius of the Turret from center
 
     }
 
@@ -133,7 +133,7 @@ public class RealTurretS extends TurretS {
           //  .withWrapping(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
             
             // WIP
-            .withMOI(Meters.of(0.25), Pounds.of(4));
+            .withMOI(Units.Inches.of(3.1875), Pounds.of(14.245));
             
     private final Pivot m_turret = new Pivot(m_config);
 

@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -88,8 +89,8 @@ public class RobotContainer {
     private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
     private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
     private final SpindexerS m_spindexer = new NoneSpindexerS();
-//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-    private final TurretS m_turret = new NoneTurretS();
+    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+   // private final TurretS m_turret = new NoneTurretS();
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
@@ -212,6 +213,9 @@ public class RobotContainer {
 
         joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
+        joystick.leftTrigger().onTrue(m_turret.setAngle(()->Rotation2d.fromDegrees(100)));
+        joystick.leftBumper().onTrue(m_turret.setAngle(()->Rotation2d.fromDegrees(-100)));
+        
 
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
