@@ -46,7 +46,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class RealHoodS extends HoodS {
   public class HoodConstants {
       // CAN IDs
-    public static final int kCANID = 42;
+    public static final int kCANID = 52;
       // PID-FF Constants
     public static final double kP = 15;
     public static final double kI = 0;

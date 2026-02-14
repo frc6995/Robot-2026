@@ -44,7 +44,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class RealIntakePivotS extends IntakePivotS {
   public class IntakePivotConstants {
       // CAN IDs
-    public static final int kCANID = 21;
+    public static final int kCANID = 31;
       // Profiled PID Constants
     public static final double kP = 56;
     public static final double kI = 0;

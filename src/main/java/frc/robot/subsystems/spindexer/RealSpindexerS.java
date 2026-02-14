@@ -39,7 +39,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class RealSpindexerS extends SpindexerS {
     public class SpindexerConstants {
         // CAN IDs
-        public static final int kCANID = 32;
+        public static final int kCANID = 42;
         // Profiled PID Constants
         public static final int kP = 0;
         public static final int kI = 0;

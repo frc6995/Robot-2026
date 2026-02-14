@@ -25,7 +25,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class RealIndexerS extends IndexerS {
     public class IndexerConstants {
             // CAN IDs
-        public static final int kCAN_ID = 31; 
+        public static final int kCAN_ID = 41; 
             // Motor Properties
         public static final boolean kInverted = false;
         public static final int kStatorCurrentLimit = 120; 

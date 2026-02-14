@@ -95,15 +95,6 @@ public class Telemetry {
     private final double[] m_poseArray = new double[3];
     private final double[] m_moduleStatesArray = new double[8];
     private final double[] m_moduleTargetsArray = new double[8];
-
-    public static void addIntake(MechanismLigament2d intake) {
-     MECH_VISUALIZER_ROOT.append(intake);
-
-    }
-
-    public static void addIntakeRollers(MechanismLigament2d rollers) {
-        MECH_VISUALIZER_ROOT.append(rollers);
-    }
     
     /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
     public void telemeterize(SwerveDriveState state) {

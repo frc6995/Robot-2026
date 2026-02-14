@@ -23,8 +23,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class AutoAlign extends Command {
 
         public static class AutoAlignConstants {
-                private static final double DEFAULT_ACCELERATION = 6;
-                private static final double DEFAULT_JERK = 15;
+                private static final double DEFAULT_ACCELERATION = 22;
+                private static final double DEFAULT_JERK = 3;
 
                 public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(DEFAULT_ACCELERATION, DEFAULT_JERK);
         }
@@ -37,7 +37,7 @@ public class AutoAlign extends Command {
         protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                         .withDriveRequestType(DriveRequestType.Velocity)
-                        .withHeadingPID(4, 0, 0); // Replace with constants later
+                        .withHeadingPID(6, 0, 0); // Replace with constants later
 
         protected SwerveDriveState swerveState = new SwerveDriveState();
 

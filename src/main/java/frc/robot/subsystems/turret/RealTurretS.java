@@ -48,7 +48,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class RealTurretS extends TurretS {
     public static class TurretConstants {
-        public static int kCANID = 41;
+        public static int kCANID = 51;
 
         public static double kP = 0;
         public static double kI = 0.0;
