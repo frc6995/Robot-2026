@@ -213,7 +213,8 @@ public class RobotContainer {
 
         joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
-
+        joystick.leftTrigger().onTrue(m_hood.setAngle(()->Degrees.of(15)));
+        joystick.leftBumper().onTrue(m_hood.setAngle(()->Degrees.of(30)));
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
