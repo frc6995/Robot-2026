@@ -10,6 +10,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.subsystems.vision.RealVision.VisionConstants;
 import limelight.Limelight;
 import limelight.networktables.Orientation3d;
+import limelight.networktables.LimelightSettings.ImuMode;
 import limelight.networktables.LimelightSettings.LEDMode;
 import limelight.networktables.PoseEstimate;
 import limelight.networktables.LimelightPoseEstimator.BotPose;
@@ -37,6 +38,7 @@ public class VisionModule {
         limelight.getSettings()
             .withLimelightLEDMode(LEDMode.PipelineControl)
             .withCameraOffset(offset)
+            .withImuMode(ImuMode.InternalImu)
             .save();
 
         defaultMode = VisionConstants.kDefaultMode;

@@ -44,6 +44,7 @@ import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.subsystems.vision.NoneVision;
 import frc.robot.subsystems.vision.RealVision;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.RealVision.VisionConstants;
 
 /**
  * 
@@ -56,7 +57,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    private final Pigeon2 m_gyro = new Pigeon2(75, TunerConstants.kCANBus);
+    private final Pigeon2 m_gyro = new Pigeon2(TunerConstants.DrivetrainConstants.Pigeon2Id, TunerConstants.kCANBus);
 
     private final Vision m_vision;
 
@@ -358,8 +359,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-
-        if(m_vision == null) return;
 
         m_vision.periodic();
  

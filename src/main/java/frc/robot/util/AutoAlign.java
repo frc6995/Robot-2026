@@ -23,7 +23,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class AutoAlign extends Command {
 
         public static class AutoAlignConstants {
-                private static final double DEFAULT_ACCELERATION = 20;
+                private static final double DEFAULT_ACCELERATION = 6;
                 private static final double DEFAULT_JERK = 15;
 
                 public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(DEFAULT_ACCELERATION, DEFAULT_JERK);
