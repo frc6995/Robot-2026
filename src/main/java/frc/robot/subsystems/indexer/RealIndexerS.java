@@ -1,6 +1,11 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.indexer;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -8,7 +13,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.motorcontrollers.SmartMotorController;
@@ -18,15 +22,18 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class IndexerS extends SubsystemBase {
+public class RealIndexerS extends IndexerS {
     public class IndexerConstants {
             // CAN IDs
-        public static final int kCAN_ID = 31; 
+        public static final int kCAN_ID = 41; 
             // Motor Properties
         public static final boolean kInverted = false;
         public static final int kStatorCurrentLimit = 120; 
         public static final int kSupplyCurrentLimit = 80; 
         public static final int kGearRatio = 5;
+            // Setpoints
+        public static final Voltage kIntakeVoltage = Volts.of(6.7);
+
     }
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.OPEN_LOOP)
@@ -42,14 +49,19 @@ public class IndexerS extends SubsystemBase {
     private TalonFX m_indexerMotor = new TalonFX(IndexerConstants.kCAN_ID);
     private SmartMotorController m_indexerController = new TalonFXWrapper(m_indexerMotor, DCMotor.getKrakenX44(1),smcConfig);
 
-    public Command setVoltage(Voltage volts) {  
-        return Commands.runOnce(() -> m_indexerController.setVoltage(volts));
+    public Command setVoltage(Supplier<Voltage> voltage) {  
+        return Commands.runOnce(() -> m_indexerController.setVoltage(voltage.get()));
     }
 
     public Current getCurrent() {
         var currentOptional = m_indexerController.getSupplyCurrent();
 
         return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
+    }
+
+    public Command resetEncoder() {
+        return runOnce(() -> m_indexerController.setEncoderPosition(
+                Degrees.of(0))).ignoringDisable(true);
     }
 
     @Override
@@ -63,5 +75,8 @@ public class IndexerS extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
     m_indexerController.simIterate();
+
+
+    
   }
 }
