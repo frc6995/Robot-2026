@@ -172,7 +172,7 @@ public class RobotContainer {
                             var xSpeed = -joystick.getLeftY() * 4.2;
                             var ySpeed = -joystick.getLeftX() * 4.2;
                             var rotSpeed = m_drivetrain.calculateThetaPID(
-                                    AutoAlignFixedHeading.cardinalizeHeading(m_drivetrain.state.Pose.getRotation()));
+                                    AutoAlignFixedHeading.cardinalizeHeadingNS(m_drivetrain.state.Pose.getRotation()));
 
                             return m_driveRequest
                                     .withVelocityX(
