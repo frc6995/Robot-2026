@@ -61,13 +61,13 @@ public class Robot extends TimedRobot {
               })
           .onlyWhile(DriverStation::isAutonomousEnabled)
           .schedule();
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    }
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
       // schedule the autonomous command (example)
       if (m_autonomousCommand != null) {
         CommandScheduler.getInstance().schedule(m_autonomousCommand);
       }
-    }
   }
 
   @Override

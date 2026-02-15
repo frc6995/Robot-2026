@@ -23,8 +23,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class AutoAlign extends Command {
 
         public static class AutoAlignConstants {
-                private static final double DEFAULT_ACCELERATION = 15;
-                private static final double DEFAULT_JERK = 12;
+                private static final double DEFAULT_ACCELERATION = 22;
+                private static final double DEFAULT_JERK = 3;
 
                 public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(DEFAULT_ACCELERATION, DEFAULT_JERK);
         }
@@ -33,10 +33,11 @@ public class AutoAlign extends Command {
 
         protected final APTarget m_target;
         protected final CommandSwerveDrivetrain m_drivetrain;
+        protected final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric();
         protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                         .withDriveRequestType(DriveRequestType.Velocity)
-                        .withHeadingPID(4, 0, 0); // Replace with constants later
+                        .withHeadingPID(6, 0, 0); // Replace with constants later
 
         protected SwerveDriveState swerveState = new SwerveDriveState();
 
@@ -74,8 +75,8 @@ public class AutoAlign extends Command {
                 this.m_drivetrain = drivetrain;
 
                 APProfile kProfile = new APProfile(constraints)
-                                .withErrorXY(Centimeters.of(2))
-                                .withErrorTheta(Degrees.of(0.5))
+                                .withErrorXY(Centimeters.of(5))
+                                .withErrorTheta(Degrees.of(1.5))
                                 .withBeelineRadius(Centimeters.of(8));
 
                 kAutopilot = new Autopilot(kProfile);
@@ -92,6 +93,14 @@ public class AutoAlign extends Command {
                                 .withVelocityX(out.vx())
                                 .withVelocityY(out.vy())
                                 .withTargetDirection(out.targetAngle()));
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+                m_drivetrain.setControl(m_driveRequest
+                                .withVelocityX(0)
+                                .withVelocityY(0)
+                                .withRotationalRate(0));
         }
 
         @Override

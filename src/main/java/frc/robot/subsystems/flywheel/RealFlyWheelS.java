@@ -2,15 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
@@ -29,7 +33,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 
-public class FlyWheelS extends SubsystemBase {
+public class RealFlyWheelS extends FlyWheelS {
   public static class FlywheelConstants {
       // PID Constants
     public static final double kP = 0;
@@ -40,7 +44,7 @@ public class FlyWheelS extends SubsystemBase {
     public static final double kV = 0;
     public static final double kA = 0;
       // Sim PID Constants
-    public static final double kSimP = 0;
+    public static final double kSimP = 60;
     public static final double kSimI = 0;
     public static final double kSimD = 0;
       // Sim Feedforward Constants
@@ -48,8 +52,8 @@ public class FlyWheelS extends SubsystemBase {
     public static final double kSimV = 0;
     public static final double kSimA = 0;
       // CAN IDs
-    public static final int kLeadMotorCANID = 43;
-    public static final int kFollowMotorCANID = 44;
+    public static final int kLeadMotorCANID = 53;
+    public static final int kFollowMotorCANID = 54;
       // Motor Config Constants
     public static final boolean kInvertLeadMotor = true;
     public static final boolean kInvertFollowMotor = false;
@@ -60,6 +64,8 @@ public class FlyWheelS extends SubsystemBase {
     public static final double kMass = 1;
       // Setpoints
     public static final AngularVelocity kMaxSpeed = RotationsPerSecond.of(4400.0 / 60.0);
+    public static final AngularVelocity kShootSpeed = RotationsPerSecond.of(3000 / 60.0);
+    public static final AngularVelocity kTolerance = RotationsPerSecond.of(2);
   }
 
     // Motors
@@ -103,6 +109,8 @@ public class FlyWheelS extends SubsystemBase {
 
   private FlyWheel m_shooter = new FlyWheel(shooterConfig);
 
+  private Optional<AngularVelocity> setpoint = Optional.empty(); 
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -115,11 +123,18 @@ public class FlyWheelS extends SubsystemBase {
     m_shooter.simIterate();
   }
 
-  public Command setVelocity(AngularVelocity speed) {
-    return m_shooter.setSpeed(speed);
+  public Command setVelocity(Supplier<AngularVelocity> speed) {
+    return m_shooter.setSpeed(new Supplier<AngularVelocity>() {
+      @Override
+      public AngularVelocity get() {
+          var spd = speed.get();
+          setpoint = Optional.of(spd);
+          return spd;
+      }
+    });
   }
 
-  public Command setVoltage(Voltage voltage) {
+  public Command setVoltage(Supplier<Voltage> voltage) {
     return m_shooter.setVoltage(voltage);
   }
 
@@ -127,9 +142,22 @@ public class FlyWheelS extends SubsystemBase {
     return m_shooter.getSpeed();
   }
 
+  public Optional<AngularVelocity> getSetpoint() {
+    return setpoint;
+  }
+
+  public boolean atSetpoint() {
+    return setpoint.isPresent() && getVelocity().isNear(setpoint.get(), FlywheelConstants.kTolerance);
+  }
+
   public Current getCurrent() {
     var currentOptional = m_shooter.getMotorController().getSupplyCurrent();
 
     return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
   }
+
+  public Command resetEncoder() {
+    return runOnce(() -> m_motorController.setEncoderPosition(Degrees.of(0))).ignoringDisable(true);
+  } 
+
 }
