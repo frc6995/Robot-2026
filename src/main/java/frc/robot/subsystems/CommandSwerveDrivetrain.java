@@ -15,6 +15,7 @@ import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import com.therekrab.autopilot.APTarget;
 
@@ -437,4 +438,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                          .withWheelForceFeedforwardsY(sample.moduleForcesY()));
     }
 
+    public double calculateThetaPID(Rotation2d target) {
+        return m_pathThetaController.calculate(state.Pose.getRotation().getRadians(), target.getRadians());
+    }
 }
