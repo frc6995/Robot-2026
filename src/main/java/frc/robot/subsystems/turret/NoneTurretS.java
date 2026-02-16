@@ -75,8 +75,8 @@ public class NoneTurretS extends TurretS {
     }
 
     @Override
-    public Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle) {
-        return () -> Rotation2d.fromDegrees(0);
+    public Supplier<Angle> applyDynamicLimits(Supplier<Angle> angle) {
+        return () -> Degrees.zero();
     }
 
     @Override

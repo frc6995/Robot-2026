@@ -27,6 +27,7 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
+import frc.robot.generated.ChoreoVars;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
@@ -163,7 +164,7 @@ public class RobotContainer {
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle));
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
-                // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));
+                // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.zero())));
 
         // B button align to cardinal direction
         joystick.b().whileTrue(
@@ -195,6 +196,7 @@ public class RobotContainer {
         joystick.start()
                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
         // select button home all, reset on disable
+        // JS: This could be one parallel group, with m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
         joystick.back().onTrue(Commands.either(
                 Commands.parallel(
                         m_turret.driveToHome(),
@@ -217,8 +219,8 @@ public class RobotContainer {
         joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
-
-        joystick.y().whileTrue(Commands.deferredProxy(() -> new AutoAlign(POI.CL1.get(), m_drivetrain)));
+        
+        joystick.y().whileTrue(AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
         
 
 
@@ -226,7 +228,7 @@ public class RobotContainer {
 
         // 😢pain
         m_drivetrain.registerTelemetry(logger::telemeterize);
-
+        // JS: Why is this a deferred proxy?
         RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
 
     }

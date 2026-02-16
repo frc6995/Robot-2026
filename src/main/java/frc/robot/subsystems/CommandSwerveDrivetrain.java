@@ -191,6 +191,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             () -> this.getRotation3d(),
             (rot) -> this.resetRotation(rot.toRotation2d())
         );
+        // JS: Replace with this(!Robot.isSimulation(), drivetrainConstants, modules)
     }
 
     /**
@@ -480,6 +481,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public double calculateThetaPID(Rotation2d target) {
+        // JS: this is still a bug, inputs to calculate should be in radians
         return m_pathThetaController.calculate(target.getDegrees(), state.Pose.getRotation().getDegrees());
     }
 }

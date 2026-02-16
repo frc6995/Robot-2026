@@ -75,11 +75,11 @@ public class RealIntakePivotS extends IntakePivotS {
     public static final Distance kLength = Inches.of(5.6);
     public static final double kReduction = 57.5;
       // Setpoints and Stops
-    public static final Angle kLowerLimit = Degrees.of(0);
+    public static final Angle kLowerLimit = Degrees.zero();
     public static final Angle kUpperLimit = Degrees.of(120);
     public static final Angle kFuelIntakeAngle= kLowerLimit;
     public static final Angle kStowAngle = kUpperLimit;
-    public static final Angle kTolerance = Degrees.of(0);
+    public static final Angle kTolerance = Degrees.zero();
   }
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -154,7 +154,7 @@ public class RealIntakePivotS extends IntakePivotS {
 
   public Command resetEncoder() {
         return runOnce(() -> IntakeSMC.setEncoderPosition(
-                Degrees.of(0))).ignoringDisable(true);
+                Degrees.zero())).ignoringDisable(true);
     }
 
   @Override

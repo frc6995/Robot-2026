@@ -1,4 +1,4 @@
-
+// JS: Recommend fully using the FlyWheel class, even if it's just going to be voltage control. 
 package frc.robot.subsystems.intakeroller;
 
 
@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
+import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
@@ -82,13 +83,12 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
   private TalonFX motor = new TalonFX(IntakeRollerConstants.kCANID);
 
   private SmartMotorController talonFXSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig); 
-
- public Command setVoltage(Supplier<Voltage> volts) {
-        return Commands.run(() -> motor.setVoltage(volts.get().in(Volts)));
+  public Command setVoltage(Supplier<Voltage> volts) {
+    return run(() -> motor.setVoltage(volts.get().in(Volts)));
   }
 
   public Command setVoltage(Voltage volts) {
-    return Commands.runOnce(() -> motor.setVoltage(volts.in(Volts)));
+    return runOnce(() -> motor.setVoltage(volts.in(Volts)));
   }
 
 
