@@ -40,7 +40,7 @@ public class RealVision extends Vision {
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
-        // public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.5, 0.5, 999999);
+        public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.00001, 0.000001, 999999);
 
     }
     private VisionModule[] limelights;

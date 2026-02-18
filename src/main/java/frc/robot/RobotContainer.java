@@ -48,6 +48,7 @@ import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
@@ -89,12 +90,12 @@ public class RobotContainer {
 
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
      private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-   // private final HoodS m_hood = new NoneHoodS();
+    //private final HoodS m_hood = new NoneHoodS();
     private final IndexerS m_indexer = new NoneIndexerS();
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
-    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
+    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     private final SpindexerS m_spindexer = new NoneSpindexerS();
-     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
    // private final TurretS m_turret = new NoneTurretS();
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
@@ -218,9 +219,11 @@ public class RobotContainer {
 
         //joystick.a().onTrue(m_turret.driveToHome());
         joystick.a().onTrue(m_intakePivot.setAngle(IntakePivotConstants.kLowerLimit));
-        joystick.x().whileTrue(m_hood.autoHoodAngle());
+       // joystick.x().whileTrue(m_hood.autoHoodAngle());
+
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
-        
+        joystick.x().onTrue(m_intakeRoller.setVoltage(IntakeRollerConstants.kDefaultIntake));
+        joystick.x().onFalse(m_intakeRoller.setVoltage(Volts.zero()));
         joystick.y().onTrue(m_intakePivot.setAngle(IntakePivotConstants.kUpperLimit));
        // joystick.y().whileTrue(AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
         
