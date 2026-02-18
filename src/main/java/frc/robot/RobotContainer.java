@@ -235,17 +235,6 @@ public class RobotContainer {
                         m_hood.resetEncoder()),
                 () -> DriverStation.isEnabled()));
 
-        joystick.a().onTrue(m_turret.driveToHome());
-        joystick.x().whileTrue(m_hood.autoHoodAngle());
-        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
-
-        joystick.y().whileTrue(Commands.deferredProxy(() -> new AutoAlign(POI.CL1.get(), m_drivetrain)));
-        
-
-
-        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
-
-                // 😢pain
         m_drivetrain.registerTelemetry(logger::telemeterize);
 
         RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
