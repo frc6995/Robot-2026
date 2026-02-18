@@ -82,12 +82,12 @@ public class AutoCommands {
                 return Commands.deadline(
                                 Commands.sequence(
 
-                                                new AutoAlign(helpPose, m_drivebase).until(
+                                                AutoAlign.toAlliance(helpPose, m_drivebase).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
                                                                                 () -> helpPoseTolerance)),
-                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
+                                              AutoAlign.toAlliance(intakePose, intakePoseEntryAngle, m_drivebase).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> intakePose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
@@ -133,7 +133,7 @@ public class AutoCommands {
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
                                                                                 () -> helpPoseTolerance)),
-                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
+                                                AutoAlign.toAlliance(intakePose, intakePoseEntryAngle, m_drivebase).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> intakePose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
@@ -164,12 +164,12 @@ public class AutoCommands {
                         Rotation2d targetPoseEntryAngle) {
                 return Commands.sequence(
                                 Commands.waitUntil(() -> m_hood.isHoodSafe()),
-                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
+                               AutoAlign.toAlliance(helpPose, helpPoseEntryAngle, m_drivebase).until(
                                                 TriggerUtil.isWithinRadius(
                                                                 () -> helpPose.getTranslation(),
                                                                 () -> m_drivebase.state.Pose,
                                                                 () -> helpPoseTolerance)),
-                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase));
+                               AutoAlign.toAlliance(targetpose, targetPoseEntryAngle, m_drivebase));
 
         }
 
@@ -198,7 +198,7 @@ public class AutoCommands {
                                                                 () -> helpPose.getTranslation(),
                                                                 () -> m_drivebase.state.Pose,
                                                                 () -> helpPoseTolerance)),
-                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase));
+                               AutoAlign.toAlliance(targetpose, targetPoseEntryAngle, m_drivebase));
 
         }
 
@@ -229,7 +229,7 @@ public class AutoCommands {
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
                                                                                 () -> helpPoseTolerance)),
-                                                new AutoAlign(targetpose, m_drivebase)
+                                                AutoAlign.toAlliance(targetpose, m_drivebase)
                                 // ADD CLIMB COMMAND
                                 ));
 
