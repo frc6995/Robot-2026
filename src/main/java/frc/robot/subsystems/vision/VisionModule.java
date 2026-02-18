@@ -58,6 +58,7 @@ public class VisionModule {
         isActivePublisher = moduleSubTable.getBooleanTopic("IsActive").publish();
         modePublisher = moduleSubTable.getStringTopic("LastEstimateMode").publish();
         defaultModePublisher = moduleSubTable.getStringTopic("DefaultEstimateMode").publish();
+        
 
         robotToCameraPublisher.accept(offset);
         defaultModePublisher.setDefault(defaultMode.name());
