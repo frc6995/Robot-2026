@@ -1,39 +1,29 @@
 package frc.robot.autos;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.FlyWheelS;
-import frc.robot.subsystems.HoodS;
-import frc.robot.subsystems.IndexerS;
-import frc.robot.subsystems.IntakePivotS;
-import frc.robot.subsystems.IntakeRollerS;
-import frc.robot.subsystems.SpindexerS;
-import frc.robot.subsystems.TurretS;
-import frc.robot.subsystems.HoodS.HoodConstants;
-import frc.robot.subsystems.IndexerS.IndexerConstants;
+import frc.robot.subsystems.flywheel.FlyWheelS;
+import frc.robot.subsystems.hood.HoodS;
+import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
+import frc.robot.subsystems.indexer.IndexerS;
+import frc.robot.subsystems.indexer.RealIndexerS.IndexerConstants;
+import frc.robot.subsystems.intakepivot.IntakePivotS;
+import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
+import frc.robot.subsystems.intakeroller.IntakeRollerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
+import frc.robot.subsystems.spindexer.SpindexerS;
+import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.spindexer.RealSpindexerS.SpindexerConstants;
 import frc.robot.util.AutoAlign;
-import frc.robot.util.POI;
-import frc.robot.util.TriggerCommand;
 import frc.robot.util.TriggerUtil;
-
-import static edu.wpi.first.units.Units.Meter;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.wpilibj2.command.Commands.*; // Static import for WPILib Commands
 
 public class AutoCommands {
         // You need these dependencies passed in
@@ -52,7 +42,8 @@ public class AutoCommands {
                         .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
         public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
-                        IntakeRollerS intakeRoller, TurretS turret,IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel) {
+                        IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer,
+                        FlyWheelS flyWheel) {
                 this.m_drivebase = drivebase;
                 this.autos = autos;
                 this.m_hood = hood;
@@ -82,7 +73,6 @@ public class AutoCommands {
          */
         public Command APToIntake(
                         Pose2d helpPose,
-                        Rotation2d helpPoseEntryAngle,
                         Distance helpPoseTolerance,
                         Pose2d intakePose,
                         Rotation2d intakePoseEntryAngle,
@@ -91,8 +81,8 @@ public class AutoCommands {
 
                 return Commands.deadline(
                                 Commands.sequence(
-                                        Commands.waitUntil(() -> m_hood.isHoodSafe()),
-                                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
+
+                                                new AutoAlign(helpPose, m_drivebase).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
@@ -105,7 +95,9 @@ public class AutoCommands {
 
                                                 (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
                                                                 .withTimeout(driveTime))),
-                                fuelIntake());
+                                Commands.parallel(fuelIntake(),
+                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit)
+                                                ));
         }
 
         /**
@@ -133,6 +125,8 @@ public class AutoCommands {
                         Time driveTime) {
                 return Commands.deadline(
                                 Commands.sequence(
+                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
+                                                m_turret.driveToHome(),
                                                 Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                                 choreoCommand.until(
                                                                 TriggerUtil.isWithinRadius(
@@ -208,21 +202,54 @@ public class AutoCommands {
 
         }
 
+        /**
+         * Command that drives robot to ladder starting with Choreo command and climbs
+         * to L1
+         * 
+         * @param choreoCommand        Choreo command to start with
+         * @param helpPose             Pose to invoke tolerance (radius) from for
+         *                             stoping the choreo path
+         * @param helpPose             Tolerance (radius) from help pose for stoping the
+         *                             choreo path
+         * @param targetpose           Target pose to autoallign to
+         * @param targetPoseEntryAngle
+         * @return Command that returns robot from intake that starts with a Choreo path
+         */
+        public Command choreoL1Climb(
+                        Command choreoCommand,
+                        Pose2d helpPose,
+                        Distance helpPoseTolerance,
+                        Pose2d targetpose) {
+                return Commands.parallel(
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
+                                Commands.sequence(
+
+                                                choreoCommand.until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(targetpose, m_drivebase)
+                                // ADD CLIMB COMMAND
+                                ));
+
+        }
+
         public Command fuelIntake() {
                 return Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotS.IntakePivotConstants.kCWLimit),
-                                m_intakeRoller.setVoltage(() -> IntakeRollerS.IntakeRollerConstants.kIntakeVoltage));
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit),
+                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage));
         }
 
         // auto hood angle command
         public Command Score() {
                 return Commands.sequence(
-                        m_hood.autoHoodAngle(),
-                        Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint() && m_flywheel.atSetpoint()),
-                        Commands.parallel(
-                                m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
-                                m_Spindexer.setVelocity(()-> SpindexerS.SpindexerConstants.kVelocity)
-                        )
-                );
+                                m_hood.autoHoodAngle(),
+                                Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint()
+                                                && m_flywheel.atSetpoint()),
+                                Commands.parallel(
+                                                m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
+                                                m_Spindexer.setVelocity(
+                                                                () -> SpindexerConstants.kVelocity)));
         }
 }
