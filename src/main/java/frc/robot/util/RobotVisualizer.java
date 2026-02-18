@@ -13,8 +13,8 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class RobotVisualizer {
 
-    final static double INTAKE_X = Units.inchesToMeters(10.625);
-    final static double INTAKE_Z = Units.inchesToMeters(8.875);
+        final static double INTAKE_X = Units.inchesToMeters(11.5); // 11.5 with AP's config file
+    final static double INTAKE_Z = Units.inchesToMeters(7.85); // 7.85 with AP's config file
     final static Pose3d INTAKE_PIVOT_LOCATION = new Pose3d(INTAKE_X, 0, INTAKE_Z, new Rotation3d(Degrees.of(180),Degrees.zero(),Degrees.zero()));
     final static double HOOD_X = Units.inchesToMeters(3.5);
     final static double HOOD_Z = Units.inchesToMeters(20.5);
