@@ -152,6 +152,9 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
 
+        // robot relative driving with D-pad
+        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
+
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -161,10 +164,6 @@ public class RobotContainer {
         // A intake toggle
         joystick.a().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle));
-        joystick.y().whileTrue(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
-                // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));
-
         // B button align to cardinal direction
         joystick.b().whileTrue(
                 m_drivetrain.applyRequest(
@@ -185,11 +184,13 @@ public class RobotContainer {
                                             rotSpeed);
                         } // Drive counterclockwise with negative X (left)
                 ));
+        joystick.x().whileTrue(m_hood.autoHoodAngle());
+        joystick.y().whileTrue(
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
+                // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));
 
         // right trigger hold to score
-        m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
-        m_turret.setDefaultCommand(m_turret.aimAtHub());
-        m_hood.setDefaultCommand(m_hood.setAngle(()->HoodConstants.kLowerLimit));
+        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
 
         // start button home turret
         joystick.start()
@@ -214,17 +215,10 @@ public class RobotContainer {
                         m_hood.resetEncoder()),
                 () -> DriverStation.isEnabled()));
 
-        joystick.a().onTrue(m_turret.driveToHome());
-        joystick.x().whileTrue(m_hood.autoHoodAngle());
-        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
+        m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
+        m_turret.setDefaultCommand(m_turret.aimAtHub());
+        m_hood.setDefaultCommand(m_hood.setAngle(()->HoodConstants.kLowerLimit));
 
-        joystick.y().whileTrue(Commands.deferredProxy(() -> new AutoAlign(POI.CL1.get(), m_drivetrain)));
-        
-
-
-        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
-
-        // 😢pain
         m_drivetrain.registerTelemetry(logger::telemeterize);
 
         RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
