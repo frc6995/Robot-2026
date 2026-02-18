@@ -216,11 +216,13 @@ public class RobotContainer {
                         m_hood.resetEncoder()),
                 () -> DriverStation.isEnabled()));
 
-        joystick.a().onTrue(m_turret.driveToHome());
+        //joystick.a().onTrue(m_turret.driveToHome());
+        joystick.a().onTrue(m_intakePivot.setAngle(IntakePivotConstants.kLowerLimit));
         joystick.x().whileTrue(m_hood.autoHoodAngle());
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
         
-        joystick.y().whileTrue(AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
+        joystick.y().onTrue(m_intakePivot.setAngle(IntakePivotConstants.kUpperLimit));
+       // joystick.y().whileTrue(AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
         
 
 
