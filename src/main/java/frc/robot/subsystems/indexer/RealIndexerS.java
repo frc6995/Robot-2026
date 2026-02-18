@@ -50,7 +50,7 @@ public class RealIndexerS extends IndexerS {
     private SmartMotorController m_indexerController = new TalonFXWrapper(m_indexerMotor, DCMotor.getKrakenX44(1),smcConfig);
 
     public Command setVoltage(Supplier<Voltage> voltage) {  
-        return Commands.runOnce(() -> m_indexerController.setVoltage(voltage.get()));
+        return runOnce(() -> m_indexerController.setVoltage(voltage.get()));
     }
 
     public Current getCurrent() {
@@ -61,7 +61,7 @@ public class RealIndexerS extends IndexerS {
 
     public Command resetEncoder() {
         return runOnce(() -> m_indexerController.setEncoderPosition(
-                Degrees.of(0))).ignoringDisable(true);
+                Degrees.zero())).ignoringDisable(true);
     }
 
     @Override

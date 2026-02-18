@@ -1,14 +1,30 @@
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.Meters;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import choreo.util.ChoreoAllianceFlipUtil;
+import choreo.util.FieldSize;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class AllianceFlipUtil {
-    public static double FIELD_WIDTH = Units.feetToMeters(26.0) + Units.inchesToMeters(5.0);
-    public static double FIELD_LENGTH = Units.feetToMeters(54.3);
+    public static double FIELD_WIDTH = FieldSize.FIELD_WIDTH_M;
+    public static double FIELD_LENGTH = FieldSize.FIELD_LENGTH_M;
+    
 
     public static boolean isRedAlliance() {
         var alliance = DriverStation.getAlliance();
@@ -33,4 +49,37 @@ public class AllianceFlipUtil {
             return p;
         return new Pose2d(flipTranslation(p.getTranslation()), flipRotation(p.getRotation()));
     }
+
+    public static Command command(Command blueCommand, Command redCommand, Command neitherCommand) {
+        var options = Map.of(
+                Optional.of(Alliance.Red), redCommand,
+                Optional.of(Alliance.Blue), blueCommand,
+                Optional.empty(), neitherCommand);
+        
+        return Commands.select(options, DriverStation::getAlliance);
+    }
+    public static Command command(Command blueCommand, Command redCommand) {
+        var neitherCommand = Commands.none();
+        neitherCommand.addRequirements(blueCommand.getRequirements());
+        var options = Map.of(
+                Optional.of(Alliance.Red), redCommand,
+                Optional.of(Alliance.Blue), blueCommand,
+                Optional.empty(), neitherCommand);
+        
+        return Commands.select(options, DriverStation::getAlliance);
+    }
+
+    public static <T> Supplier<T> constant(T blue, T red) {
+        return ()->DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? blue : red;
+    }
+    public static Supplier<Rotation2d> flipped(Rotation2d blue) {return constant(blue, ChoreoAllianceFlipUtil.flip(blue));}
+    public static Supplier<Translation2d> flipped(Translation2d blue) {return constant(blue, ChoreoAllianceFlipUtil.flip(blue));}
+    public static Supplier<Pose2d> flipped(Pose2d blue) {return constant(blue, ChoreoAllianceFlipUtil.flip(blue));}
+    public static Command flippedCommand(Function<Pose2d, Command> supplier, Pose2d blue) {
+        return command(supplier.apply(blue), supplier.apply(ChoreoAllianceFlipUtil.flip(blue)));
+    }
+    public static Command flippedCommand(BiFunction<Pose2d, Rotation2d, Command> supplier, Pose2d bluePose, Rotation2d blueRotation) {
+        return command(supplier.apply(bluePose, blueRotation), supplier.apply(ChoreoAllianceFlipUtil.flip(bluePose), ChoreoAllianceFlipUtil.flip(blueRotation)));
+    }
+    // JS: implement more helpers as needed.
 }

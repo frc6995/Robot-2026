@@ -14,11 +14,16 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import org.opencv.core.Rect2d;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import choreo.util.FieldSize;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -28,10 +33,12 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.POI;
 import frc.robot.util.RobotVisualizer;
 import frc.robot.util.TriggerUtil;
+import frc.robot.util.UnitUtil;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -120,31 +127,40 @@ public class RealHoodS extends HoodS {
   private Pivot hood = new Pivot(hoodCfg);
 
   private Supplier<Pose2d> robotPose;
+  private Supplier<Translation2d> robotTranslation;
   private Supplier<ChassisSpeeds> robotSpeeds;
   private BooleanSupplier shouldApplyDynamicLimit;
 
   public RealHoodS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
     this.robotPose = robotPose;
+    this.robotTranslation = ()->robotPose.get().getTranslation();
     this.robotSpeeds = robotSpeeds;
 
+    
     this.shouldApplyDynamicLimit = 
       TriggerUtil.or(
-        TriggerUtil.and(
-          TriggerUtil.isWithinZone(
-            () -> new Translation2d(POI.kOriginToTrench.get().minus(HoodConstants.kSafetyOverride_NoSpeed), Meters.of(0)),
-            () -> new Translation2d(POI.kOriginToTrench.get().plus(HoodConstants.kSafetyOverride_NoSpeed), Meters.of(AllianceFlipUtil.FIELD_LENGTH)),
-            robotPose),
-          () -> Math.abs(robotSpeeds.get().vxMetersPerSecond) > HoodConstants.kSafetyOverrideVelocity.in(MetersPerSecond)
-        ),
-        TriggerUtil.isWithinZone(
-          () -> new Translation2d(POI.kOriginToTrench.get().minus(HoodConstants.kSafetyOverride_Final), Meters.of(0)),
-          () -> new Translation2d(POI.kOriginToTrench.get().plus(HoodConstants.kSafetyOverride_Final), Meters.of(AllianceFlipUtil.FIELD_LENGTH)),
-          robotPose));
+        makeShouldApplyDynamicLimit(POI.kOriginToTrenchBlue, robotTranslation),
+        makeShouldApplyDynamicLimit(POI.kOriginToTrenchRed, robotTranslation));
     
     for(double[] entry : HoodConstants.kAngleData){
       table.put(entry[0], entry[1]);
       
     }
+  }
+
+  private Trigger makeShouldApplyDynamicLimit(Distance distanceToTrench, Supplier<Translation2d> robotTranslation) {
+      Pose2d trenchCenter = new Pose2d(new Translation2d(distanceToTrench, Meters.of(AllianceFlipUtil.FIELD_WIDTH).div(2)), Rotation2d.kZero);
+      Rectangle2d trenchSafety = new Rectangle2d(
+          trenchCenter, HoodConstants.kSafetyOverride_NoSpeed.times(2), FieldSize.FIELD_WIDTH
+        );
+      
+      Rectangle2d trench = new Rectangle2d(trenchCenter, HoodConstants.kSafetyOverride_Final.times(2), FieldSize.FIELD_WIDTH);
+      final var kSafetyOverrideVelocity = HoodConstants.kSafetyOverrideVelocity.in(MetersPerSecond);
+      return new Trigger(
+        ()-> {
+          var translation = robotTranslation.get();
+          return (Math.abs(robotSpeeds.get().vxMetersPerSecond) > kSafetyOverrideVelocity && trenchSafety.contains(translation)) || trench.contains(translation);
+        });
   }
 
   public Command setAngle(Supplier<Angle> angle) {
@@ -165,7 +181,7 @@ public class RealHoodS extends HoodS {
   }
 
   public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
-    return clampAngle(targetAngle, HoodConstants.kLowerLimit, shouldApplyDynamicLimit.getAsBoolean() ? HoodConstants.kStowAngle : HoodConstants.kUpperLimit);
+    return UnitUtil.clamp(targetAngle, HoodConstants.kLowerLimit, shouldApplyDynamicLimit.getAsBoolean() ? HoodConstants.kStowAngle : HoodConstants.kUpperLimit);
   }
 
   public boolean isHoodSafe() {
@@ -187,7 +203,7 @@ public class RealHoodS extends HoodS {
 
   public Command resetEncoder() {
         return runOnce(() -> talonSmartMotorController.setEncoderPosition(
-                Degrees.of(0))).ignoringDisable(true);
+                Degrees.zero())).ignoringDisable(true);
     }
 
   @Override
@@ -204,14 +220,4 @@ public class RealHoodS extends HoodS {
     hood.simIterate();
   }
 
-
-  private static Angle clampAngle(Angle value, Angle low, Angle high) {
-    return Degrees.of(
-      MathUtil.clamp(
-        value.in(Degrees),
-        low.in(Degrees),
-        high.in(Degrees)
-      )
-    );
-  }
 }

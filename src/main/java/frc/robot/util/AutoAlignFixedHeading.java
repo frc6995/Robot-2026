@@ -18,6 +18,14 @@ public class AutoAlignFixedHeading extends AutoAlign {
     public AutoAlignFixedHeading(Pose2d targetPose, Rotation2d entryAngle, CommandSwerveDrivetrain drivetrain, Rotation2d heading) {
         super(targetPose, entryAngle, drivetrain);
         this.m_heading = heading;
+        if (m_cardinalize) {
+            m_realTarget = new APTarget(new Pose2d(
+                    m_target.getReference().getTranslation(), 
+                            cardinalizeHeading(m_heading)));
+        }
+        else {
+            m_realTarget = m_target;
+        }
     }
 
     public AutoAlignFixedHeading(Pose2d targetPose, CommandSwerveDrivetrain drivetrain, Rotation2d heading) {
@@ -66,17 +74,7 @@ public class AutoAlignFixedHeading extends AutoAlign {
     @Override
         public void execute() {
                 swerveState = m_drivetrain.getState();
-                APResult out;
-                if (m_cardinalize) {
-                    m_realTarget = new APTarget(new Pose2d(
-                            m_target.getReference().getTranslation().getX(), m_target.getReference().getY(), 
-                                    cardinalizeHeading(m_heading)));
-                    out = kAutopilot.calculate(swerveState.Pose, swerveState.Speeds, m_realTarget);
-                }
-                else {
-                    m_realTarget = m_target;
-                    out = kAutopilot.calculate(swerveState.Pose, swerveState.Speeds, m_target);
-                }
+                APResult out = kAutopilot.calculate(swerveState.Pose, swerveState.Speeds, m_realTarget);
 
                 m_drivetrain.setControl(m_request
                         .withVelocityX(out.vx())

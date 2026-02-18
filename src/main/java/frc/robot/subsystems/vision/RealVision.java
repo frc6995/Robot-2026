@@ -75,6 +75,10 @@ public class RealVision extends Vision {
         }
     }
 
+    private final AngularVelocity3d zeroAngularVelocity = new AngularVelocity3d(
+                        DegreesPerSecond.zero(),
+                        DegreesPerSecond.zero(),
+                        DegreesPerSecond.zero());
     public void periodic() {
         if(!headingSeeded) {
             var initialEstimate = limelights[0].getPoseMT1();
@@ -86,10 +90,7 @@ public class RealVision extends Vision {
             for(VisionModule limelight : limelights) {
                 limelight.seedOrientation(new Orientation3d(
                     initialPose.getRotation(), 
-                    new AngularVelocity3d(
-                        DegreesPerSecond.of(0),
-                        DegreesPerSecond.of(0),
-                        DegreesPerSecond.of(0))));
+                    zeroAngularVelocity));
             }
 
             resetRotation.accept(initialPose.getRotation());
@@ -102,11 +103,7 @@ public class RealVision extends Vision {
                 limelight.seedOrientation(
                     new Orientation3d(
                         gyroRotation.get(),
-                        new AngularVelocity3d(
-                            DegreesPerSecond.of(0),
-                            DegreesPerSecond.of(0),
-                            DegreesPerSecond.of(0)
-                        )
+                        zeroAngularVelocity
                     )
                 );
             }

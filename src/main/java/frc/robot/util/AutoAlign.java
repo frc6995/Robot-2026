@@ -3,6 +3,9 @@ package frc.robot.util;
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.Map;
+import java.util.Optional;
+
 import com.therekrab.autopilot.Autopilot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -14,14 +17,25 @@ import com.therekrab.autopilot.APProfile;
 import com.therekrab.autopilot.APTarget;
 import com.therekrab.autopilot.Autopilot.APResult;
 
+import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.autos.Autos.AutoConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class AutoAlign extends Command {
-
+        public static Command toAlliance(Pose2d bluePose, Rotation2d blueEntryAngle, CommandSwerveDrivetrain drivetrain) {
+                return AllianceFlipUtil.flippedCommand((pose, rotation)->
+                        new AutoAlign(pose, rotation, drivetrain),
+                        bluePose, blueEntryAngle);
+        }
+        public static Command toAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
+                return AllianceFlipUtil.flippedCommand((pose)->new AutoAlign(pose, drivetrain), bluePose);
+        }
         public static class AutoAlignConstants {
                 private static final double DEFAULT_ACCELERATION = 22;
                 private static final double DEFAULT_JERK = 3;
@@ -40,6 +54,7 @@ public class AutoAlign extends Command {
                         .withHeadingPID(6, 0, 0); // Replace with constants later
 
         protected SwerveDriveState swerveState = new SwerveDriveState();
+
 
         /**
          * Uses default constraints, beeline path

@@ -124,13 +124,10 @@ public class RealFlyWheelS extends FlyWheelS {
   }
 
   public Command setVelocity(Supplier<AngularVelocity> speed) {
-    return m_shooter.setSpeed(new Supplier<AngularVelocity>() {
-      @Override
-      public AngularVelocity get() {
+    return m_shooter.setSpeed(() -> {
           var spd = speed.get();
           setpoint = Optional.of(spd);
           return spd;
-      }
     });
   }
 
@@ -157,7 +154,7 @@ public class RealFlyWheelS extends FlyWheelS {
   }
 
   public Command resetEncoder() {
-    return runOnce(() -> m_motorController.setEncoderPosition(Degrees.of(0))).ignoringDisable(true);
+    return runOnce(() -> m_motorController.setEncoderPosition(Degrees.zero())).ignoringDisable(true);
   } 
 
 }
