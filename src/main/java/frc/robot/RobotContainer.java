@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
@@ -87,15 +88,23 @@ public class RobotContainer {
         TunerConstants.BackRight
     );
 
+    @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
+    @Logged(name = "Hood")
 //     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
     private final HoodS m_hood = new NoneHoodS();
+    @Logged(name = "Indexer")
     private final IndexerS m_indexer = new NoneIndexerS();
+    @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
-    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
+    @Logged(name = "IntakeRoller")
+    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
+    @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new NoneSpindexerS();
+    @Logged(name = "Turret")
 //     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
     private final TurretS m_turret = new NoneTurretS();
+
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
@@ -122,7 +131,7 @@ public class RobotContainer {
 
     }
 
-     
+
     public double xButtonPressedTime = 0;
     public boolean intakeState = false;
 
@@ -137,7 +146,7 @@ public class RobotContainer {
                             var rotationSpeed = MathUtil.applyDeadband(-joystick.getRightX(), 0.1) * 2 * Math.PI;
 
                             if (DriverStation.isAutonomous()) {
-                               
+
                                 return m_driveRequest.withVelocityX(0).withVelocityY(0)
                                         .withRotationalRate(0);
                             }
@@ -182,7 +191,7 @@ public class RobotContainer {
                             var xSpeed = -joystick.getLeftY() * 4.2;
                             var ySpeed = -joystick.getLeftX() * 4.2;
                             var rotSpeed = m_drivetrain.calculateThetaPID(
-                                    AutoAlignFixedHeading.cardinalizeHeading(m_drivetrain.state.Pose.getRotation()));
+                                    AutoAlignFixedHeading.cardinalizeHeadingNS(m_drivetrain.state.Pose.getRotation()));
 
                             return m_driveRequest
                                     .withVelocityX(
@@ -226,10 +235,17 @@ public class RobotContainer {
                         m_hood.resetEncoder()),
                 () -> DriverStation.isEnabled()));
 
-        m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
-        m_turret.setDefaultCommand(m_turret.aimAtHub());
-        m_hood.setDefaultCommand(m_hood.setAngle(()->HoodConstants.kLowerLimit));
+        joystick.a().onTrue(m_turret.driveToHome());
+        joystick.x().whileTrue(m_hood.autoHoodAngle());
+        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
 
+        joystick.y().whileTrue(Commands.deferredProxy(() -> new AutoAlign(POI.CL1.get(), m_drivetrain)));
+        
+
+
+        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
+
+                // 😢pain
         m_drivetrain.registerTelemetry(logger::telemeterize);
 
         RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
@@ -256,5 +272,5 @@ public class RobotContainer {
 
     }
 
-    
+
 }
