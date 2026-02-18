@@ -13,15 +13,15 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class RobotVisualizer {
 
-    final static double INTAKE_X = Units.inchesToMeters(10.625);
-    final static double INTAKE_Z = Units.inchesToMeters(8.875);
-    final static Pose3d INTAKE_PIVOT_LOCATION = new Pose3d(INTAKE_X, 0, INTAKE_Z, new Rotation3d(Degrees.of(180),Degrees.of(0),Degrees.of(0)));
+        final static double INTAKE_X = Units.inchesToMeters(11.5); // 11.5 with AP's config file
+    final static double INTAKE_Z = Units.inchesToMeters(7.85); // 7.85 with AP's config file
+    final static Pose3d INTAKE_PIVOT_LOCATION = new Pose3d(INTAKE_X, 0, INTAKE_Z, new Rotation3d(Degrees.of(180),Degrees.zero(),Degrees.zero()));
     final static double HOOD_X = Units.inchesToMeters(3.5);
     final static double HOOD_Z = Units.inchesToMeters(20.5);
-    final static Pose3d HOOD_LOCATION = new Pose3d(HOOD_X, 0, HOOD_Z, new Rotation3d(Degrees.of(180),Degrees.of(0),Degrees.of(0)));
+    final static Pose3d HOOD_LOCATION = new Pose3d(HOOD_X, 0, HOOD_Z, new Rotation3d(Degrees.of(180),Degrees.zero(),Degrees.zero()));
     final static double TURRET_X = Units.inchesToMeters(0);
     final static double TURRET_Z = Units.inchesToMeters(16);
-    final static Pose3d TURRET_LOCATION = new Pose3d(TURRET_X, 0, TURRET_Z, new Rotation3d(Degrees.of(0),Degrees.of(0),Degrees.of(-90)));
+    final static Pose3d TURRET_LOCATION = new Pose3d(TURRET_X, 0, TURRET_Z, new Rotation3d(Degrees.zero(),Degrees.zero(),Degrees.of(-90)));
 
     private static double hoodAngleRadians = 0;
 

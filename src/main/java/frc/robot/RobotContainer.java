@@ -28,6 +28,7 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
+import frc.robot.generated.ChoreoVars;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
@@ -48,6 +49,7 @@ import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
@@ -216,6 +218,7 @@ public class RobotContainer {
         joystick.start()
                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
         // select button home all, reset on disable
+        // JS: This could be one parallel group, with m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
         joystick.back().onTrue(Commands.either(
                 Commands.parallel(
                         m_turret.driveToHome(),
@@ -236,7 +239,7 @@ public class RobotContainer {
                 () -> DriverStation.isEnabled()));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
-
+        // JS: Why is this a deferred proxy?
         RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
 
     }

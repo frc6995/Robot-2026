@@ -41,7 +41,7 @@ public class RealVision extends Vision {
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
-        // public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.5, 0.5, 999999);
+        public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.00001, 0.000001, 999999);
 
     }
     private static final AngularVelocity3d zeroAngularVelocity3d = new AngularVelocity3d(
@@ -80,7 +80,11 @@ public class RealVision extends Vision {
             seededPosePublisher.accept(Pose3d.kZero);
         }
     }
-    
+
+    private final AngularVelocity3d zeroAngularVelocity = new AngularVelocity3d(
+                        DegreesPerSecond.zero(),
+                        DegreesPerSecond.zero(),
+                        DegreesPerSecond.zero());
     public void periodic() {
         estimates.clear();
         if(!headingSeeded) {
@@ -92,9 +96,8 @@ public class RealVision extends Vision {
 
             for(VisionModule limelight : limelights) {
                 limelight.seedOrientation(new Orientation3d(
-                    initialPose.getRotation(),
-                    zeroAngularVelocity3d 
-                    ));
+                    initialPose.getRotation(), 
+                    zeroAngularVelocity));
             }
 
             resetRotation.accept(initialPose.getRotation());
@@ -107,15 +110,9 @@ public class RealVision extends Vision {
                 limelight.seedOrientation(
                     new Orientation3d(
                         gyroRotation.get(),
-                        zeroAngularVelocity3d
+                        zeroAngularVelocity
                     )
                 );
-
-                var est = limelight.getPose();
-
-                if(est.isPresent()) {
-                    estimates.add(est.get());
-                }
             }
         }
         headingSeededPublisher.accept(headingSeeded);

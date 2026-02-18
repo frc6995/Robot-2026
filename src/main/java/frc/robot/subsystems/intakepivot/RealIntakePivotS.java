@@ -46,40 +46,39 @@ public class RealIntakePivotS extends IntakePivotS {
       // CAN IDs
     public static final int kCANID = 31;
       // Profiled PID Constants
-    public static final double kP = 56;
+    public static final double kP = 40;
     public static final double kI = 0;
-    public static final double kD = 0.2;
-    public static final AngularVelocity kVelocity = DegreesPerSecond.of(180);
-    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(90);
+    public static final double kD = 0.12;
+    public static final AngularVelocity kVelocity = DegreesPerSecond.of(1000);
+    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1000);
       // Feeforward Constants
     public static final double kS = 0;
-    public static final double kG = 1.210;
-    public static final double kV = 0.928;
-    public static final double kA = 0.16;
+    public static final double kG = 0.28;
+    public static final double kV = 6.5;
+    public static final double kA = 0.2;
       // Sim Profiled PID
-    public static final double kSimP = 20;
-    public static final double kSimI = 0;
-    public static final double kSimD = 0.12;
-    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(180);
-    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(90);
-      // Sim Feedforward
-    public static final double kSimS = 0;
-    public static final double kSimG = 0.28;
-    public static final double kSimV = 6.83;
-    public static final double kSimA = 0.03;
+    // public static final double kSimP = 20;
+    // public static final double kSimI = 0;
+    // public static final double kSimD = 0.12;
+
+    //   // Sim Feedforward
+    // public static final double kSimS = 0;
+    // public static final double kSimG = 0.28;
+    // public static final double kSimV = 6.83;
+    // public static final double kSimA = 0.03;
       // Motor Configs
-    public static final double kSupplyCurrentLimit = 80;
+    public static final double kSupplyCurrentLimit = 15;
     public static final double kStatorCurrentLimit = 120;
       // Physical Properties
     public static final double kMOI = 0.05;
     public static final Distance kLength = Inches.of(5.6);
     public static final double kReduction = 57.5;
       // Setpoints and Stops
-    public static final Angle kLowerLimit = Degrees.of(0);
+    public static final Angle kLowerLimit = Degrees.of(2);
     public static final Angle kUpperLimit = Degrees.of(120);
-    public static final Angle kFuelIntakeAngle= kLowerLimit;
+    public static final Angle kFuelIntakeAngle = kLowerLimit;
     public static final Angle kStowAngle = kUpperLimit;
-    public static final Angle kTolerance = Degrees.of(5);
+    public static final Angle kTolerance = Degrees.zero();
   }
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -89,18 +88,18 @@ public class RealIntakePivotS extends IntakePivotS {
       IntakePivotConstants.kVelocity, 
       IntakePivotConstants.kAcceleration)
       // can be seperate for sim:
-      .withSimClosedLoopController(IntakePivotConstants.kSimP, IntakePivotConstants.kSimI, IntakePivotConstants.kSimD,
-          IntakePivotConstants.kSimVelocity,
-          IntakePivotConstants.kSimAcceleration)
+    // .withSimClosedLoopController(IntakePivotConstants.kSimP, IntakePivotConstants.kSimI, IntakePivotConstants.kSimD,
+     //     IntakePivotConstants.kVelocity,
+      //    IntakePivotConstants.kAcceleration)
       // Feedforward Constants
       .withFeedforward(
           new ArmFeedforward(IntakePivotConstants.kS, IntakePivotConstants.kG, IntakePivotConstants.kV, IntakePivotConstants.kA))
-      .withSimFeedforward(
-          new ArmFeedforward(IntakePivotConstants.kSimS, IntakePivotConstants.kSimG, IntakePivotConstants.kSimV, IntakePivotConstants.kSimA))
+    //  .withSimFeedforward(
+    //      new ArmFeedforward(IntakePivotConstants.kSimS, IntakePivotConstants.kSimG, IntakePivotConstants.kSimV, IntakePivotConstants.kSimA))
       // Telemetry name and verbosity level
       .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(IntakePivotConstants.kReduction)))
-      .withMotorInverted(false)
+      .withMotorInverted(true)
       .withIdleMode(MotorMode.BRAKE)
       .withStatorCurrentLimit(Amps.of(IntakePivotConstants.kStatorCurrentLimit));
 
@@ -154,7 +153,7 @@ public class RealIntakePivotS extends IntakePivotS {
 
   public Command resetEncoder() {
         return runOnce(() -> IntakeSMC.setEncoderPosition(
-                Degrees.of(0))).ignoringDisable(true);
+                Degrees.zero())).ignoringDisable(true);
     }
 
   @Override

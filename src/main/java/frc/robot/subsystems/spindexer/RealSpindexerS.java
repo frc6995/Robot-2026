@@ -100,7 +100,7 @@ public class RealSpindexerS extends SpindexerS {
      *         specified voltage to the motor.
      */
     public Command setVoltage(Supplier<Voltage> voltage) {
-        return Commands.runOnce(() -> m_spindexerController.setVoltage(voltage.get()));
+        return runOnce(() -> m_spindexerController.setVoltage(voltage.get()));
     }
 
     /**
@@ -115,12 +115,12 @@ public class RealSpindexerS extends SpindexerS {
     }
 
     public Command setVelocity(Supplier<AngularVelocity> speed) {
-        return Commands.runOnce(() -> m_spindexerController.setVelocity(speed.get()));
+        return runOnce(() -> m_spindexerController.setVelocity(speed.get()));
     }
 
     public Command resetEncoder() {
         return runOnce(() -> m_spindexerController.setEncoderPosition(
-                Degrees.of(0))).ignoringDisable(true);
+                Degrees.zero())).ignoringDisable(true);
     }
 
     

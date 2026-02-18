@@ -192,6 +192,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             () -> this.getRotation3d(),
             (rot) -> this.resetRotation(rot.toRotation2d())
         );
+        // JS: Replace with this(!Robot.isSimulation(), drivetrainConstants, modules)
     }
 
     /**
@@ -377,7 +378,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
  
         var estimates = m_vision.getAllEstimates();
         for(var estimate : estimates) {
-             addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);
+             addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, VisionConstants.kVisionStdDevs);
         }
     }
 
