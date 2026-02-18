@@ -47,6 +47,7 @@ import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
@@ -162,8 +163,18 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         // A intake toggle
-        joystick.a().whileTrue(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle));
+        joystick.a().onTrue(
+                Commands.either(
+                        // if deployed, turn off rollers
+                        m_intakeRoller.setVoltage(() -> Volts.of(0)),
+                        // if not deployed, deploy and run rollers
+                        Commands.parallel(
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle),
+                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage)
+                        ),
+                        () -> m_intakePivot.isIntakeDeployed()
+                ));
+                
         // B button align to cardinal direction
         joystick.b().whileTrue(
                 m_drivetrain.applyRequest(
@@ -184,10 +195,10 @@ public class RobotContainer {
                                             rotSpeed);
                         } // Drive counterclockwise with negative X (left)
                 ));
-        joystick.x().whileTrue(m_hood.autoHoodAngle());
+        // X: climb
+        // Y: stow intake
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
-                // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));
 
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
