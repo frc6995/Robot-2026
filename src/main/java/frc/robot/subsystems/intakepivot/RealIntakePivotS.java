@@ -49,24 +49,24 @@ public class RealIntakePivotS extends IntakePivotS {
     public static final double kP = 56;
     public static final double kI = 0;
     public static final double kD = 0.2;
-    public static final AngularVelocity kVelocity = DegreesPerSecond.of(2880);
-    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1440);
+    public static final AngularVelocity kVelocity = DegreesPerSecond.of(180);
+    public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(90);
       // Feeforward Constants
     public static final double kS = 0;
     public static final double kG = 1.210;
     public static final double kV = 0.928;
     public static final double kA = 0.16;
       // Sim Profiled PID
-    public static final double kSimP = 56;
+    public static final double kSimP = 20;
     public static final double kSimI = 0;
-    public static final double kSimD = 0.2;
-    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(2880);
-    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(1440);
+    public static final double kSimD = 0.12;
+    public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(180);
+    public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(90);
       // Sim Feedforward
     public static final double kSimS = 0;
-    public static final double kSimG = 1.210;
-    public static final double kSimV = 0.928;
-    public static final double kSimA = 0.16;
+    public static final double kSimG = 0.28;
+    public static final double kSimV = 6.83;
+    public static final double kSimA = 0.03;
       // Motor Configs
     public static final double kSupplyCurrentLimit = 80;
     public static final double kStatorCurrentLimit = 120;
