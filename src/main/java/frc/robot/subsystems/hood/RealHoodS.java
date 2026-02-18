@@ -1,10 +1,11 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -25,10 +26,11 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.POI;
+import frc.robot.util.RobotVisualizer;
 import frc.robot.util.TriggerUtil;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -41,17 +43,17 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class HoodS extends SubsystemBase {
+public class RealHoodS extends HoodS {
   public class HoodConstants {
       // CAN IDs
-    public static final int kCANID = 42;
+    public static final int kCANID = 52;
       // PID-FF Constants
-    public static final double kP = 0;
+    public static final double kP = 15;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kS = 0;
       // Sim PID-FF Constants
-    public static final double kSimP = 50;
+    public static final double kSimP = 15;
     public static final double kSimI = 0;
     public static final double kSimD = 0;
     public static final double kSimS = 0;
@@ -60,7 +62,7 @@ public class HoodS extends SubsystemBase {
     public static final Angle kLowerLimit = Degrees.of(12.5); // CW Limit
     public static final Angle kUpperLimit = Degrees.of(40); // CCW Limit
     public static final Angle kStowAngle = kLowerLimit;
-    public static final Angle kTolerance = Degrees.of(5);
+    public static final Angle kTolerance = Degrees.of(2);
     public static final double[][] kAngleData = {
         // Distance (Meters), Angle(Degrees)
         { 1, 12.5 },
@@ -121,7 +123,7 @@ public class HoodS extends SubsystemBase {
   private Supplier<ChassisSpeeds> robotSpeeds;
   private BooleanSupplier shouldApplyDynamicLimit;
 
-  public HoodS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
+  public RealHoodS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
     this.robotPose = robotPose;
     this.robotSpeeds = robotSpeeds;
 
@@ -141,6 +143,7 @@ public class HoodS extends SubsystemBase {
     
     for(double[] entry : HoodConstants.kAngleData){
       table.put(entry[0], entry[1]);
+      
     }
   }
 
@@ -148,8 +151,8 @@ public class HoodS extends SubsystemBase {
     return hood.setAngle(() -> applyDynamicLimits(angle.get(), robotPose.get()));
   }
 
-  public Command set(Supplier<Double> voltage) {
-    return hood.set(voltage);
+  public Command setVoltage(Supplier<Voltage> voltage) {
+    return hood.setVoltage(voltage);
   }
 
   public Command sysId() {
@@ -190,6 +193,8 @@ public class HoodS extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    double currentAngleRad = hood.getAngle().in(Radians);
+    RobotVisualizer.updateHood(currentAngleRad);
     hood.updateTelemetry();
   }
 

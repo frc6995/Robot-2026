@@ -2,21 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.lang.StackWalker.Option;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import yams.mechanisms.config.FlyWheelConfig;
@@ -36,7 +33,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 
-public class FlyWheelS extends SubsystemBase {
+public class RealFlyWheelS extends FlyWheelS {
   public static class FlywheelConstants {
       // PID Constants
     public static final double kP = 0;
@@ -47,7 +44,7 @@ public class FlyWheelS extends SubsystemBase {
     public static final double kV = 0;
     public static final double kA = 0;
       // Sim PID Constants
-    public static final double kSimP = 0;
+    public static final double kSimP = 60;
     public static final double kSimI = 0;
     public static final double kSimD = 0;
       // Sim Feedforward Constants
@@ -55,8 +52,8 @@ public class FlyWheelS extends SubsystemBase {
     public static final double kSimV = 0;
     public static final double kSimA = 0;
       // CAN IDs
-    public static final int kLeadMotorCANID = 43;
-    public static final int kFollowMotorCANID = 44;
+    public static final int kLeadMotorCANID = 53;
+    public static final int kFollowMotorCANID = 54;
       // Motor Config Constants
     public static final boolean kInvertLeadMotor = true;
     public static final boolean kInvertFollowMotor = false;

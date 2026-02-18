@@ -62,7 +62,7 @@ public class POI {
         public static final Supplier<Rotation2d> testEntry = () -> AllianceFlipUtil
                         .flipRotation(new Rotation2d(Degrees.of(-90)));
 
-                            // ============= TRANSLATIONS =============
+// ============= TRANSLATIONS =============
     // ============= DISTANCES =============
     private static final Distance kOriginToTrenchBlue = Meters.of(4.6);
     private static final Distance kOriginToTrenchRed = Meters.of(11.9);
