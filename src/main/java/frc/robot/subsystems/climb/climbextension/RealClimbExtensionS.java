@@ -1,12 +1,9 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.climb.climbextension;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
@@ -29,7 +26,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class ClimbExtensionS extends SubsystemBase {
+public class RealClimbExtensionS extends ClimbExtensionS {
     private ClimbExtensionConstantsRecord m_constants;
 
     TalonFX talon;
@@ -38,7 +35,7 @@ public class ClimbExtensionS extends SubsystemBase {
     private Elevator m_elevator;
     private ElevatorConfig elevconfig;
 
-    public ClimbExtensionS(ClimbExtensionConstantsRecord constants) {
+    public RealClimbExtensionS(ClimbExtensionConstantsRecord constants) {
         this.m_constants = constants;
         smcConfig = new SmartMotorControllerConfig(this)
                 .withControlMode(ControlMode.CLOSED_LOOP)
@@ -112,6 +109,10 @@ public class ClimbExtensionS extends SubsystemBase {
      */
     public void setHeightSetpoint(Supplier<Distance> height) {
         m_elevator.setHeight(height);
+    }
+
+    public Command resetEncoder() {
+        return runOnce(() -> talonSmartMotorController.setEncoderPosition(Meters.of(0))).ignoringDisable(true);
     }
 
     /**

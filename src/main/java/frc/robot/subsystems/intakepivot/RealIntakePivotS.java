@@ -137,6 +137,10 @@ public class RealIntakePivotS extends IntakePivotS {
     return intakePivot.setAngle(angle);
   }
 
+  public Command setAngle(Angle angle) {
+    return intakePivot.setAngle(angle);
+  }
+
   public Command setVoltage(Supplier<Voltage> volts) {
     return intakePivot.setVoltage(volts);
   }

@@ -29,8 +29,6 @@ import choreo.auto.AutoFactory;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ClimbExtensionS;
-import frc.robot.subsystems.ClimbPivotS;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.NoneFlyWheelS;
