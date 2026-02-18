@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -48,7 +49,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class RealTurretS extends TurretS {
     public static class TurretConstants {
-        public static int kCANID = 41;
+        public static int kCANID = 51;
 
         public static double kP = 0;
         public static double kI = 0.0;
@@ -221,6 +222,18 @@ public class RealTurretS extends TurretS {
                 };
             },
             () -> drivebasePose.get().getRotation());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Command aimAtClosestPose(Supplier<Pose2d> drivebasePose, Supplier<Translation2d>... translations) {
+        
+        return aimAtFieldPose(() -> {
+            var trs = new Pose2d[translations.length];
+            for(int i = 0; i < translations.length; i++) {
+                trs[i] = new Pose2d(translations[i].get(), new Rotation2d());
+            }
+            return drivebasePose.get().nearest(Set.of(trs)).getTranslation();
+        }, drivebasePose); 
     }
 
     public Command aimAtHub() {

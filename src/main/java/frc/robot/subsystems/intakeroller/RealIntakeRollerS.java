@@ -39,7 +39,7 @@ public class RealIntakeRollerS extends IntakeRollerS {
     public static final double kVelocity = 0;
     public static final double kAcceleration = 0;
     public static final int kReduction = 3;
-    public static final int kCANID = 22;
+    public static final int kCANID = 32;
     public static final double kStatorCurrentLimit = 100;
     public static final boolean kMotorInverted = false;
 

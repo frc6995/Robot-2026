@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import choreo.auto.AutoChooser;
@@ -52,7 +55,9 @@ import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.RealVision;
+import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
+import frc.robot.util.POI;
 import frc.robot.util.Telemetry;
 
 public class RobotContainer {
@@ -75,13 +80,12 @@ public class RobotContainer {
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
-            true,
-            TunerConstants.DrivetrainConstants,
-            TunerConstants.FrontLeft,
-            TunerConstants.FrontRight,
-            TunerConstants.BackLeft,
-            TunerConstants.BackRight
-        );
+        TunerConstants.DrivetrainConstants,
+        TunerConstants.FrontLeft,
+        TunerConstants.FrontRight,
+        TunerConstants.BackLeft,
+        TunerConstants.BackRight
+    );
 
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
@@ -91,9 +95,9 @@ public class RobotContainer {
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new NoneIndexerS();
     @Logged(name = "IntakePivot")
-    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
+    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
-    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
+    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
@@ -177,7 +181,7 @@ public class RobotContainer {
                             var xSpeed = -joystick.getLeftY() * 4.2;
                             var ySpeed = -joystick.getLeftX() * 4.2;
                             var rotSpeed = m_drivetrain.calculateThetaPID(
-                                    AutoAlignFixedHeading.cardinalizeHeading(m_drivetrain.state.Pose.getRotation()));
+                                    AutoAlignFixedHeading.cardinalizeHeadingNS(m_drivetrain.state.Pose.getRotation()));
 
                             return m_driveRequest
                                     .withVelocityX(
@@ -192,7 +196,6 @@ public class RobotContainer {
                 ));
 
         // right trigger hold to score
-        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
         m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
         m_turret.setDefaultCommand(m_turret.aimAtHub());
         m_hood.setDefaultCommand(m_hood.setAngle(()->HoodConstants.kLowerLimit));
@@ -222,6 +225,10 @@ public class RobotContainer {
 
         joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
+        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
+
+        joystick.y().whileTrue(Commands.deferredProxy(() -> new AutoAlign(POI.CL1.get(), m_drivetrain)));
+        
 
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());

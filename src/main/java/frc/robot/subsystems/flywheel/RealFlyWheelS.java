@@ -52,8 +52,8 @@ public class RealFlyWheelS extends FlyWheelS {
     public static final double kSimV = 0;
     public static final double kSimA = 0;
       // CAN IDs
-    public static final int kLeadMotorCANID = 43;
-    public static final int kFollowMotorCANID = 44;
+    public static final int kLeadMotorCANID = 53;
+    public static final int kFollowMotorCANID = 54;
       // Motor Config Constants
     public static final boolean kInvertLeadMotor = true;
     public static final boolean kInvertFollowMotor = false;

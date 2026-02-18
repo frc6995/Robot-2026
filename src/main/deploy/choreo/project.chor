@@ -97,6 +97,20 @@
      "val":0.0
     }
    },
+   "CLT":{
+    "x":{
+     "exp":"1.7536717653274536 m",
+     "val":1.7536717653274536
+    },
+    "y":{
+     "exp":"4.1464056968688965 m",
+     "val":4.1464056968688965
+    },
+    "heading":{
+     "exp":"0 deg",
+     "val":0.0
+    }
+   },
    "DEPOT":{
     "x":{
      "exp":"0.4840870499610901 m",
@@ -113,8 +127,8 @@
    },
    "HELPL1":{
     "x":{
-     "exp":"7.376036262512207 m",
-     "val":7.376036262512207
+     "exp":"8.976036262512206 m",
+     "val":8.976036262512206
     },
     "y":{
      "exp":"TRL1.y",
@@ -142,7 +156,7 @@
    "HELPR1":{
     "x":{
      "exp":"HELPL1.x",
-     "val":7.376036262512207
+     "val":8.976036262512206
     },
     "y":{
      "exp":"fieldWidth - HELPL1.y",
@@ -267,7 +281,7 @@
  },
  "generationFeatures":[],
  "codegen":{
-  "root":"../../java/frc/robot/generated",
+  "root":"..\\..\\java\\frc\\robot\\generated",
   "genVars":true,
   "genTrajData":true,
   "useChoreoLib":true

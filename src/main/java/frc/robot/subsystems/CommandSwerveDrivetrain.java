@@ -15,6 +15,7 @@ import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import com.therekrab.autopilot.APTarget;
 
@@ -161,7 +162,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
+        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+            () -> this.getRotation3d(),
+            (rot) -> this.resetRotation(rot.toRotation2d())
+        );
     }
 
     /**
@@ -184,7 +188,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = Robot.isReal() ? new RealVision(m_gyro) : new NoneVision();
+        this.m_vision = Robot.isSimulation() ? new NoneVision() : new RealVision(
+            () -> this.getRotation3d(),
+            (rot) -> this.resetRotation(rot.toRotation2d())
+        );
     }
 
     /**
@@ -212,7 +219,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         
-        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
+        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+            () -> this.getRotation3d(),
+            (rot) -> this.resetRotation(rot.toRotation2d())
+        );
     }
 
     public Rotation2d getGyroRotation() {
@@ -262,7 +272,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = enableVision ? new RealVision(m_gyro) : new NoneVision();
+        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+            () -> this.getRotation3d(),
+            (rot) -> this.resetRotation(rot.toRotation2d())
+        );
     }
 
     @NotLogged
@@ -364,7 +377,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
  
         var estimates = m_vision.getAllEstimates();
         for(var estimate : estimates) {
-            addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);
+             addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds);
         }
     }
 
@@ -468,6 +481,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public double calculateThetaPID(Rotation2d target) {
-        return m_pathThetaController.calculate(target.getDegrees(), state.Pose.getRotation().getDegrees());
+        return m_pathThetaController.calculate(state.Pose.getRotation().getRadians(), target.getRadians());
     }
 }

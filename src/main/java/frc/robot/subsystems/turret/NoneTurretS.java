@@ -52,6 +52,12 @@ public class NoneTurretS extends TurretS {
         return Commands.none();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Command aimAtClosestPose(Supplier<Pose2d> drivebasePose, Supplier<Translation2d>... translations) {
+        return Commands.none();
+    }
+
     @Override
     public Command aimAtHub() {
         return Commands.none();
