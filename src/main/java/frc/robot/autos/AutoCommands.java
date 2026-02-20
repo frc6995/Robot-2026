@@ -1,6 +1,7 @@
 package frc.robot.autos;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.therekrab.autopilot.APProfile;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

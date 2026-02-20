@@ -28,99 +28,115 @@ import frc.robot.autos.Autos.AutoConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class AutoAlign extends Command {
-        public static Command toAlliance(Pose2d bluePose, Rotation2d blueEntryAngle, CommandSwerveDrivetrain drivetrain) {
-                return AllianceFlipUtil.flippedCommand((pose, rotation)->
-                        new AutoAlign(pose, rotation, drivetrain),
-                        bluePose, blueEntryAngle);
-        }
-        public static Command toAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
-                return AllianceFlipUtil.flippedCommand((pose)->new AutoAlign(pose, drivetrain), bluePose);
-        }
-        public static class AutoAlignConstants {
-                private static final double DEFAULT_ACCELERATION = 22;
-                private static final double DEFAULT_JERK = 3;
+    public static Command defaultToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
+            CommandSwerveDrivetrain drivetrain) {
+        return AllianceFlipUtil.flippedCommand(
+                (pose, rotation) -> new AutoAlign(pose, rotation, drivetrain),
+                bluePose, blueEntryAngle);
+    }
 
-                public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(DEFAULT_ACCELERATION, DEFAULT_JERK);
-        }
+    public static Command climbDefaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
+        return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain), bluePose);
+    }
 
-        protected final Autopilot kAutopilot;
+    public static Command defaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
+        return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain), bluePose);
+    }
 
-        protected final APTarget m_target;
-        protected final CommandSwerveDrivetrain m_drivetrain;
-        protected final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric();
-        protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
-                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                        .withDriveRequestType(DriveRequestType.Velocity)
-                        .withHeadingPID(6, 0, 0); // Replace with constants later
+    public static class AutoAlignConstants {
+        private static final double kDefaultAcceleration = 3;
+        private static final double kDefaultJerk = 6;
 
-        protected SwerveDriveState swerveState = new SwerveDriveState();
+        private static final double kClimbAcceleration = 20;
+        private static final double kClimbJerk = 3;
 
+        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(kDefaultAcceleration, kDefaultJerk);
+        public static APConstraints CLIMB_CONSTRAINTS = new APConstraints(kClimbAcceleration, kClimbJerk);
 
-        /**
-         * Uses default constraints, beeline path
-         * 
-         * @param targetPose Pose2d to align to
-         * @param drivetrain Drivetrain subsystem
-         */
-        public AutoAlign(Pose2d targetPose, CommandSwerveDrivetrain drivetrain) {
-                this(new APTarget(targetPose), drivetrain, AutoAlignConstants.DEFAULT_CONSTRAINTS);
-        }
+    }
 
-        /**
-         * Uses default constraints, path respects entry angle
-         * 
-         * @param targetPose Pose2d to align to
-         * @param entryAngle Entry angle to modify approach
-         * @param drivetrain Drivetrain subsystem
-         */
-        public AutoAlign(Pose2d targetPose, Rotation2d entryAngle, CommandSwerveDrivetrain drivetrain) {
-                this(new APTarget(targetPose).withEntryAngle(entryAngle), drivetrain,
-                                AutoAlignConstants.DEFAULT_CONSTRAINTS);
-        }
+    static APProfile kDefaultProfile = new APProfile(AutoAlignConstants.DEFAULT_CONSTRAINTS)
+            .withErrorXY(Centimeters.of(6))
+            .withErrorTheta(Degrees.of(1.5))
+            .withBeelineRadius(Centimeters.of(8));
 
-        /**
-         * Auto allign constructor needing all parameters
-         * 
-         * @param targetPose  Pose2d to align to
-         * @param constraints Entry angle to modify approach
-         * @param drivetrain  Drivetrain subsystem
-         */
-        public AutoAlign(APTarget target, CommandSwerveDrivetrain drivetrain, APConstraints constraints) {
-                this.m_target = target;
-                this.m_drivetrain = drivetrain;
+    static APProfile kClimbProfile = new APProfile(AutoAlignConstants.CLIMB_CONSTRAINTS)
+            .withErrorXY(Centimeters.of(6))
+            .withErrorTheta(Degrees.of(1.5))
+            .withBeelineRadius(Centimeters.of(8));
 
-                APProfile kProfile = new APProfile(constraints)
-                                .withErrorXY(Centimeters.of(2))
-                                .withErrorTheta(Degrees.of(1.5))
-                                .withBeelineRadius(Centimeters.of(8));
+    protected final Autopilot kAutopilot;
 
-                kAutopilot = new Autopilot(kProfile);
+    protected final APTarget m_target;
+    protected final CommandSwerveDrivetrain m_drivetrain;
+    protected final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric();
+    protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
+            .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+            .withDriveRequestType(DriveRequestType.Velocity)
+            .withHeadingPID(6, 0, 0); // Replace with constants later
 
-                addRequirements(drivetrain);
-        }
+    protected SwerveDriveState swerveState = new SwerveDriveState();
 
-        @Override
-        public void execute() {
-                swerveState = m_drivetrain.getState();
-                APResult out = kAutopilot.calculate(swerveState.Pose, swerveState.Speeds, m_target);
+    /**
+     * Uses default constraints, beeline path
+     * 
+     * @param targetPose Pose2d to align to
+     * @param drivetrain Drivetrain subsystem
+     */
+    public AutoAlign(Pose2d targetPose, CommandSwerveDrivetrain drivetrain) {
+        this(new APTarget(targetPose), drivetrain, kDefaultProfile);
+    }
 
-                m_drivetrain.setControl(m_request
-                                .withVelocityX(out.vx())
-                                .withVelocityY(out.vy())
-                                .withTargetDirection(out.targetAngle()));
-        }
+    /**
+     * Uses default constraints, path respects entry angle
+     * 
+     * @param targetPose Pose2d to align to
+     * @param entryAngle Entry angle to modify approach
+     * @param drivetrain Drivetrain subsystem
+     */
+    public AutoAlign(Pose2d targetPose, Rotation2d entryAngle, CommandSwerveDrivetrain drivetrain) {
+        this(new APTarget(targetPose).withEntryAngle(entryAngle), drivetrain,
+                kDefaultProfile);
+    }
 
-        @Override
-        public void end(boolean interrupted) {
-                m_drivetrain.setControl(m_driveRequest
-                                .withVelocityX(0)
-                                .withVelocityY(0)
-                                .withRotationalRate(0));
-        }
+    /**
+     * Auto allign constructor needing all parameters
+     * 
+     * @param targetPose  Pose2d to align to
+     * @param constraints Entry angle to modify approach
+     * @param drivetrain  Drivetrain subsystem
+     */
+    public AutoAlign(APTarget target, CommandSwerveDrivetrain drivetrain, APProfile profile) {
+        this.m_target = target;
+        this.m_drivetrain = drivetrain;
 
-        @Override
-        public boolean isFinished() {
-                return kAutopilot.atTarget(m_drivetrain.getState().Pose, m_target);
-        }
+        kAutopilot = new Autopilot(profile);
+
+        addRequirements(drivetrain);
+    }
+
+    @Override
+    public void execute() {
+        swerveState = m_drivetrain.getState();
+        APResult out = kAutopilot.calculate(swerveState.Pose, swerveState.Speeds, m_target);
+
+        m_drivetrain.setControl(m_request
+                .withVelocityX(out.vx())
+                .withVelocityY(out.vy())
+                .withTargetDirection(out.targetAngle()));
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        m_drivetrain.setControl(m_driveRequest
+                .withVelocityX(0)
+                .withVelocityY(0)
+                .withRotationalRate(0));
+    }
+
+    @Override
+    public boolean isFinished() {
+        return kAutopilot.atTarget(m_drivetrain.getState().Pose, m_target);
+    }
 
 }

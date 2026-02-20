@@ -82,21 +82,21 @@ public class Autos {
                         Meters.of(2.5),
                         POI.BALLL2.get(),
                         POI.BALLL2Entry.get(),
-                        Meters.of(1.0),
+                        Meters.of(0.4),
                         Seconds.of(0.5)
 
                 )
 
                         .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
                                 POI.HELPL2Entry.get(),
-                                Meters.of(1.4),
+                                Meters.of(2.0),
                                 POI.TRL1.get(),
                                 POI.TRL1Entry.get()
 
                         ))
                         .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))
                         .andThen(autoCommands.APToIntake(POI.HELPL1.get(),
-                                Meters.of(2.0),
+                                Meters.of(3.0),
                                 POI.BALLL3.get(),
                                 POI.BALLL2Entry.get(),
                                 Meters.of(0.15),

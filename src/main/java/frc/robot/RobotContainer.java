@@ -210,7 +210,7 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
         joystick.leftBumper().whileTrue(
-            AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain)
+            AutoAlign.defaultToAlliance(ChoreoVars.Poses.CL1, m_drivetrain)
         );
         
         // X: climb
@@ -222,7 +222,7 @@ public class RobotContainer {
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
 
                 joystick.leftBumper().whileTrue(
-            AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain)
+            AutoAlign.defaultToAlliance(ChoreoVars.Poses.CL1, m_drivetrain)
         );
 
         // start button home turret
