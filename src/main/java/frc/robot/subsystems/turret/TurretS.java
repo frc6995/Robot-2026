@@ -28,7 +28,7 @@ public abstract class TurretS extends SubsystemBase {
     public abstract Command setAngleFieldRelative(Supplier<Rotation2d> targetFieldRelativeAngle,Supplier<Rotation2d> drivebaseAngle);
     public abstract Command driveToHome();
 
-    public abstract Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle);
+    public abstract Supplier<Angle> applyDynamicLimits(Supplier<Angle> angle);
     public abstract Optional<Angle> getSetpoint();
     @Logged
     public abstract Angle getAngle();
