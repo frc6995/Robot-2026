@@ -41,7 +41,7 @@ public class RealVision extends Vision {
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
-        public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.00001, 0.000001, 999999);
+        public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.00001, 0.000001, 0.00001);
 
     }
     private static final AngularVelocity3d zeroAngularVelocity3d = new AngularVelocity3d(
@@ -88,20 +88,20 @@ public class RealVision extends Vision {
     public void periodic() {
         estimates.clear();
         if(!headingSeeded) {
-            var initialEstimate = limelights[0].getPoseMT1();
+            // var initialEstimate = limelights[0].getPoseMT1();
             
-            if(initialEstimate.isEmpty()|| initialEstimate.get().pose.getTranslation().getDistance(new Translation3d()) < 0.05) return;
+            // if(initialEstimate.isEmpty()|| initialEstimate.get().pose.getTranslation().getDistance(new Translation3d()) < 0.05) return;
 
-            var initialPose = initialEstimate.get().pose;
+            // var initialPose = initialEstimate.get().pose;
 
-            for(VisionModule limelight : limelights) {
-                limelight.seedOrientation(new Orientation3d(
-                    initialPose.getRotation(), 
-                    zeroAngularVelocity));
-            }
+            // for(VisionModule limelight : limelights) {
+            //     limelight.seedOrientation(new Orientation3d(
+            //         initialPose.getRotation(), 
+            //         zeroAngularVelocity));
+            // }
 
-            resetRotation.accept(initialPose.getRotation());
-            seededPosePublisher.accept(initialPose);
+            // resetRotation.accept(initialPose.getRotation());
+            // seededPosePublisher.accept(initialPose);
             headingSeeded = true;
         } else {
             for(VisionModule limelight : limelights) {
@@ -113,6 +113,11 @@ public class RealVision extends Vision {
                         zeroAngularVelocity
                     )
                 );
+                var estSupp = limelight.getPose();
+
+                if(estSupp.isPresent()) {
+                    estimates.add(estSupp.get());
+                }
             }
         }
         headingSeededPublisher.accept(headingSeeded);

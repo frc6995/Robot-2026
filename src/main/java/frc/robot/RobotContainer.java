@@ -206,6 +206,10 @@ public class RobotContainer {
                                             rotSpeed);
                         } // Drive counterclockwise with negative X (left)
                 ));
+        joystick.leftBumper().whileTrue(
+            AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain)
+        );
+        
         // X: climb
         // Y: stow intake
         joystick.y().whileTrue(
