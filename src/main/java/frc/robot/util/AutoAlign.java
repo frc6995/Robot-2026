@@ -90,7 +90,7 @@ public class AutoAlign extends Command {
                 this.m_drivetrain = drivetrain;
 
                 APProfile kProfile = new APProfile(constraints)
-                                .withErrorXY(Centimeters.of(5))
+                                .withErrorXY(Centimeters.of(2))
                                 .withErrorTheta(Degrees.of(1.5))
                                 .withBeelineRadius(Centimeters.of(8));
 
