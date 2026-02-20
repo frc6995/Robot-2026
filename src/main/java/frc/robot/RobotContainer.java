@@ -177,17 +177,8 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         // A intake toggle
-        joystick.a().onTrue(
-                Commands.either(
-                        // if deployed, turn off rollers
-                        m_intakeRoller.setVoltage(() -> Volts.of(0)),
-                        // if not deployed, deploy and run rollers
-                        Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle),
-                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage)
-                        ),
-                        () -> m_intakePivot.isIntakeDeployed()
-                ));
+        joystick.a().onTrue(m_AutoCommands.fuelIntake()
+               );
                 
         // B button align to cardinal direction
         joystick.b().whileTrue(
@@ -216,7 +207,9 @@ public class RobotContainer {
         // X: climb
         // Y: stow intake
         joystick.y().whileTrue(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
+            Commands.parallel(
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
+                m_intakeRoller.setVoltage(Volts.of(0))));
 
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());

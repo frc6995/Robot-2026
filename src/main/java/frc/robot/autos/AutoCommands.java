@@ -1,5 +1,7 @@
 package frc.robot.autos;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.therekrab.autopilot.APProfile;
 
@@ -8,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -237,9 +240,16 @@ public class AutoCommands {
         }
 
         public Command fuelIntake() {
-                return Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit),
-                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage));
+             return   Commands.either(
+                        // if deployed, turn off rollers
+                        m_intakeRoller.setVoltage(Volts.of(0)),
+                        // if not deployed, deploy and run rollers
+                        Commands.parallel(
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle),
+                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage)
+                        ),
+                        () -> m_intakePivot.isIntakeDeployed()
+                );
         }
 
         // auto hood angle command
