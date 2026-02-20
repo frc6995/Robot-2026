@@ -60,8 +60,11 @@ import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.RealVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
+import frc.robot.util.ClimbConstants;
 import frc.robot.util.POI;
 import frc.robot.util.Telemetry;
+import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
+import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
@@ -217,6 +220,10 @@ public class RobotContainer {
 
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
+
+                joystick.leftBumper().whileTrue(
+            AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain)
+        );
 
         // start button home turret
         joystick.start()
