@@ -217,6 +217,10 @@ public class RobotContainer {
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
 
+                joystick.leftBumper().whileTrue(
+            AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain)
+        );
+
         // start button home turret
         joystick.start()
                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
