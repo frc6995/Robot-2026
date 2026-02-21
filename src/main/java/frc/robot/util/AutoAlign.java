@@ -84,7 +84,7 @@ public class AutoAlign extends Command {
     protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
             .withDriveRequestType(DriveRequestType.Velocity)
-            .withHeadingPID(6, 0, 0); // Replace with constants later
+            .withHeadingPID(5, 0, 0); // Replace with constants later
 
     protected SwerveDriveState swerveState = new SwerveDriveState();
 

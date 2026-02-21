@@ -79,10 +79,10 @@ public class Autos {
 
         autos.put("L center-line 1x tune", () -> auto(POI.TRL1.get(),
                 autoCommands.APToIntake(POI.HELPL1.get(),
-                        Meters.of(2.5),
+                        Meters.of(3.5),
                         POI.BALLL2.get(),
                         POI.BALLL2Entry.get(),
-                        Meters.of(0.02),
+                        Meters.of(0.12),
                         Seconds.of(1.0)
 
                 )
