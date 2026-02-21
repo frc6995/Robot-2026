@@ -1,5 +1,7 @@
 package frc.robot.autos;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -10,6 +12,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.climb.climbpivot.ClimbPivotS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
@@ -36,6 +39,7 @@ public class AutoCommands {
         private final IndexerS m_indexer;
         private final SpindexerS m_Spindexer;
         private final FlyWheelS m_flywheel;
+        private final ClimbPivotS m_climbPivot;
 
         SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
                         .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
@@ -43,7 +47,7 @@ public class AutoCommands {
 
         public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
                         IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer,
-                        FlyWheelS flyWheel) {
+                        FlyWheelS flyWheel, ClimbPivotS climbPivot) {
                 this.m_drivebase = drivebase;
                 this.autos = autos;
                 this.m_hood = hood;
@@ -53,6 +57,7 @@ public class AutoCommands {
                 this.m_indexer = indexer;
                 this.m_Spindexer = spindexer;
                 this.m_flywheel = flyWheel;
+                this.m_climbPivot = climbPivot;
         }
 
         // Create a trigger that watches your condition
@@ -251,5 +256,10 @@ public class AutoCommands {
                                                 m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
                                                 m_Spindexer.setVelocity(
                                                                 () -> SpindexerConstants.kVelocity)));
+        }
+        public Command climbL1() {
+            return Commands.sequence(
+                m_climbPivot.setAngle(()->Degrees.of(30))
+            );
         }
 }

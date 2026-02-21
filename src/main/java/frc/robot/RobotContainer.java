@@ -120,7 +120,7 @@ public class RobotContainer {
     private final TurretS m_turret = new NoneTurretS();
 
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
+            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbPivot);
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -139,7 +139,7 @@ public class RobotContainer {
 
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
-                m_indexer, m_spindexer, m_flywheel);
+                m_indexer, m_spindexer, m_flywheel, m_climbPivot);
         SmartDashboard.putData("Auto Mode", m_chooser);
         configureBindings();
 

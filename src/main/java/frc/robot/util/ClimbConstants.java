@@ -91,6 +91,7 @@ public class ClimbConstants {
         public static final Distance kL1 = Inches.of(1);
         public static final Distance kL2 = Inches.of(2);
         public static final Distance kL3 = Inches.of(3);
+        public static final Angle kL1PrepAngle = Degrees.of(30);
 
         public static final ClimbExtensionConstantsRecord kExtensionConstants = new ClimbExtensionConstantsRecord(
                 kPExtension,
@@ -155,7 +156,8 @@ public class ClimbConstants {
                 kReduction,
                 kLowerLimit,
                 kUpperLimit,
-                kStartingAngle);
+                kStartingAngle,
+                kL1PrepAngle);
     }
 
     public static class InnerClimbConstants {
@@ -233,6 +235,7 @@ public class ClimbConstants {
         public static final Distance kL1 = Inches.of(1);
         public static final Distance kL2 = Inches.of(2);
         public static final Distance kL3 = Inches.of(3);
+        public static final Angle kL1PrepAngle = Degrees.of(30);
 
         public static final ClimbExtensionConstantsRecord kExtensionConstants = new ClimbExtensionConstantsRecord(
                 kPExtension,
@@ -297,7 +300,8 @@ public class ClimbConstants {
                 kReduction,
                 kLowerLimit,
                 kUpperLimit,
-                kStartingAngle);
+                kStartingAngle,
+                kL1PrepAngle);
     }
 
     public record ClimbExtensionConstantsRecord(
@@ -377,7 +381,8 @@ public class ClimbConstants {
             // Setpoints and Stops
             Angle kLowerLimit,
             Angle kUpperLimit,
-            Angle kStartingAngle) {
+            Angle kStartingAngle,
+            Angle kL1PrepAngle) {
 
     }
 
