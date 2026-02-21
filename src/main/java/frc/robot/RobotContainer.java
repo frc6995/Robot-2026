@@ -105,7 +105,7 @@ public class RobotContainer {
         @Logged(name = "IntakeRoller")
         private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
         @Logged(name = "Spindexer")
-        private final SpindexerS m_spindexer = new NoneSpindexerS();
+        private final SpindexerS m_spindexer = new RealSpindexerS();
         @Logged(name = "Turret")
         // private final TurretS m_turret = new RealTurretS(() ->
         // m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()->
@@ -219,7 +219,7 @@ public class RobotContainer {
 
                 joystick.leftBumper().whileTrue(
                                 AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
-                joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() -> DegreesPerSecond.of(3600)));
+                joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() -> DegreesPerSecond.of(1000)));
                 joystick.rightBumper().onFalse(m_spindexer.setVelocity(() -> DegreesPerSecond.of(0)));
 
                 // joystick.leftBumper().whileTrue(m_indexer.setVoltage(() -> Volts.of(2)));
