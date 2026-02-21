@@ -90,17 +90,17 @@ public class RobotContainer {
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
-        TunerConstants.DrivetrainConstants,
-        TunerConstants.FrontLeft,
-        TunerConstants.FrontRight,
-        TunerConstants.BackLeft,
-        TunerConstants.BackRight
-    );
+            TunerConstants.DrivetrainConstants,
+            TunerConstants.FrontLeft,
+            TunerConstants.FrontRight,
+            TunerConstants.BackLeft,
+            TunerConstants.BackRight);
 
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
     @Logged(name = "Hood")
-//     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    // private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, ()
+    // -> m_drivetrain.state.Speeds);
     private final HoodS m_hood = new NoneHoodS();
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new NoneIndexerS();
@@ -112,8 +112,11 @@ public class RobotContainer {
     private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
     private final ClimbPivotS m_climbPivot = new RealClimbPivotS(ClimbConstants.InnerClimbConstants.kPivotConstants);
-    private final ClimbExtensionS m_climbExtension = new RealClimbExtensionS(ClimbConstants.InnerClimbConstants.kExtensionConstants);
-//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final ClimbExtensionS m_climbExtension = new RealClimbExtensionS(
+            ClimbConstants.InnerClimbConstants.kExtensionConstants);
+    // private final TurretS m_turret = new RealTurretS(() ->
+    // m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()->
+    // m_intakePivot.isIntakeDeployed());
     private final TurretS m_turret = new NoneTurretS();
 
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
@@ -141,7 +144,6 @@ public class RobotContainer {
         configureBindings();
 
     }
-
 
     public double xButtonPressedTime = 0;
     public boolean intakeState = false;
@@ -190,11 +192,9 @@ public class RobotContainer {
                         // if not deployed, deploy and run rollers
                         Commands.parallel(
                                 m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle),
-                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage)
-                        ),
-                        () -> m_intakePivot.isIntakeDeployed()
-                ));
-                
+                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage)),
+                        () -> m_intakePivot.isIntakeDeployed()));
+
         // B button align to cardinal direction
         joystick.b().whileTrue(
                 m_drivetrain.applyRequest(
@@ -217,14 +217,12 @@ public class RobotContainer {
                 ));
         // X: climb
         joystick.x().onTrue(
-            Commands.parallel(
-m_climbPivot.setAngle(()->Degrees.of(30)),
-m_climbExtension.setHeight(()->Inches.of(5)),
-Commands.waitSeconds(1),
-m_climbPivot.setAngle(()->Degrees.of(0)),
-m_climbExtension.setHeight(()->Inches.of(2))
-            )
-        );
+                Commands.parallel(
+                        m_climbPivot.setAngle(() -> Degrees.of(30)),
+                        m_climbExtension.setHeight(() -> Inches.of(10)),
+                        Commands.waitSeconds(1),
+                        m_climbPivot.setAngle(() -> Degrees.of(0)),
+                        m_climbExtension.setHeight(() -> Inches.of(5))));
         // Y: stow intake
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
@@ -236,7 +234,8 @@ m_climbExtension.setHeight(()->Inches.of(2))
         joystick.start()
                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
         // select button home all, reset on disable
-        // JS: This could be one parallel group, with m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
+        // JS: This could be one parallel group, with
+        // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
         joystick.back().onTrue(Commands.either(
                 Commands.parallel(
                         m_turret.driveToHome(),
@@ -281,6 +280,5 @@ m_climbExtension.setHeight(()->Inches.of(2))
         return m_chooser.selectedCommand();
 
     }
-
 
 }
