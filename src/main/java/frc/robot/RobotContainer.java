@@ -216,14 +216,6 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
         // X: climb
-        joystick.x().onTrue(
-                Commands.parallel(
-                        m_climbPivot.setAngle(() -> Degrees.of(30)),
-                        m_climbExtension.setHeight(() -> Inches.of(10)),
-                        Commands.waitSeconds(1),
-                        m_climbPivot.setAngle(() -> Degrees.of(0)),
-                        m_climbExtension.setHeight(() -> Inches.of(5))));
-        // Y: stow intake
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 
