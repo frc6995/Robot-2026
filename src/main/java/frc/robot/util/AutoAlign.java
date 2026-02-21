@@ -29,44 +29,39 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class AutoAlign extends Command {
     // Static factory methods with profile parameters
-    public static Command defaultToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
+    public static Command defaultProfileToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
             CommandSwerveDrivetrain drivetrain) {
-        return defaultToAlliance(bluePose, blueEntryAngle, drivetrain, kDefaultProfile);
+        return defaultProfileToAlliance(bluePose, blueEntryAngle, drivetrain, kDefaultProfile);
     }
 
-    public static Command defaultToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
+    public static Command defaultProfileToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
             CommandSwerveDrivetrain drivetrain, APProfile profile) {
         return AllianceFlipUtil.flippedCommand(
                 (pose, rotation) -> new AutoAlign(pose, rotation, drivetrain, profile),
                 bluePose, blueEntryAngle);
     }
 
-    public static Command climbDefaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
-        return climbDefaultToAlliance(bluePose, drivetrain, kClimbProfile);
+    public static Command climbProfileToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
+        return climbProfileToAlliance(bluePose, drivetrain, kClimbProfile);
     }
 
-    public static Command climbDefaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain, APProfile profile) {
+    public static Command climbProfileToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain,
+            APProfile profile) {
         return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain, profile), bluePose);
     }
 
-    public static Command defaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
-        return defaultToAlliance(bluePose, drivetrain, kDefaultProfile);
+    public static Command defaultProfileToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
+        return defaultProfileToAlliance(bluePose, drivetrain, kDefaultProfile);
     }
 
-    public static Command defaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain, APProfile profile) {
+    public static Command defaultProfileToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain,
+            APProfile profile) {
         return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain, profile), bluePose);
     }
 
     public static class AutoAlignConstants {
-        private static final double kDefaultAcceleration = 3;
-        private static final double kDefaultJerk = 6;
-
-        private static final double kClimbAcceleration = 20;
-        private static final double kClimbJerk = 3;
-
-        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(kDefaultAcceleration, kDefaultJerk);
-        public static APConstraints CLIMB_CONSTRAINTS = new APConstraints(kClimbAcceleration, kClimbJerk);
-
+        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(6, 4);
+        public static APConstraints CLIMB_CONSTRAINTS = new APConstraints(20, 3);
     }
 
     // Make profiles public so they can be accessed and modified

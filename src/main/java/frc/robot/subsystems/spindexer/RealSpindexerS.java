@@ -58,7 +58,7 @@ public class RealSpindexerS extends SpindexerS {
         // Sim Constants
         public static final Mass kMass = Pounds.of(0);
         public static final Distance kRadius = Inches.of(0);
-        public static final MomentOfInertia kMOI = KilogramSquareMeters.of(0);
+        public static final MomentOfInertia kMOI = KilogramSquareMeters.of(0.1);
     }
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)

@@ -77,39 +77,6 @@ public class Autos {
 
         // ============= DEFINE AUTOS =============
 
-        autos.put("L center-line 2x", () -> auto(POI.TRL1.get(),
-                autoCommands.APToIntake(POI.HELPL1.get(),
-                        Meters.of(2.5),
-                        POI.BALLL2.get(),
-                        POI.BALLL2Entry.get(),
-                        Meters.of(0.4),
-                        Seconds.of(0.5)
-
-                )
-
-                        .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                POI.HELPL2Entry.get(),
-                                Meters.of(2.0),
-                                POI.TRL1.get(),
-                                POI.TRL1Entry.get()
-
-                        ))
-                        .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))
-                        .andThen(autoCommands.APToIntake(POI.HELPL1.get(),
-                                Meters.of(3.0),
-                                POI.BALLL3.get(),
-                                POI.BALLL2Entry.get(),
-                                Meters.of(0.15),
-                                Seconds.of(0.5)))
-                        .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                POI.HELPL2Entry.get(),
-                                Meters.of(2.1),
-                                POI.TRL1.get(),
-                                POI.TRL1Entry.get()
-
-                        ))
-                        .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
-
         autos.put("L center-line 1x tune", () -> auto(POI.TRL1.get(),
                 autoCommands.APToIntake(POI.HELPL1.get(),
                         Meters.of(2.5),
@@ -129,6 +96,46 @@ public class Autos {
                         ))
                         .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))
                        ));
+
+
+        autos.put("2x test", () -> auto(POI.TRL1.get(),
+                autoCommands.APToIntake(POI.HELPL1.get(),
+                        Meters.of(2.5),
+                        POI.BALLL2.get(),
+                        POI.BALLL2Entry.get(),
+                        Meters.of(0.4),
+                        Seconds.of(0.3)
+
+                )
+
+                        .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                POI.HELPL2Entry.get(),
+                                Meters.of(2.0),
+                                POI.TRL1.get(),
+                                POI.TRL1Entry.get()
+
+                        ))
+                        .andThen(autoCommands.Score().withTimeout(Seconds.of(2))).andThen(
+
+                        autoCommands.APToIntake(POI.HELPL1.get(),
+                        Meters.of(2.5),
+                        POI.BALLL2.get(),
+                        POI.BALLL2Entry.get(),
+                        Meters.of(0.4),
+                        Seconds.of(0.3)
+
+                ))
+
+                        .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                POI.HELPL2Entry.get(),
+                                Meters.of(2.0),
+                                POI.TRL1.get(),
+                                POI.TRL1Entry.get()
+
+                        ))
+                        .andThen(autoCommands.Score().withTimeout(Seconds.of(2)
+                       ))));
+
 
         autos.put("Choreo-test", () -> auto(POI.TRL1.get(),
                 autoCommands.choreoToIntake(run, POI.HELPL1.get(),

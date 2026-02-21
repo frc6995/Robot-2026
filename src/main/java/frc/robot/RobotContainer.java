@@ -99,13 +99,13 @@ public class RobotContainer {
         // -> m_drivetrain.state.Speeds);
         private final HoodS m_hood = new NoneHoodS();
         @Logged(name = "Indexer")
-        private final IndexerS m_indexer = new RealIndexerS();
+        private final IndexerS m_indexer = new NoneIndexerS();
         @Logged(name = "IntakePivot")
         private final IntakePivotS m_intakePivot = new RealIntakePivotS();
         @Logged(name = "IntakeRoller")
         private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
         @Logged(name = "Spindexer")
-        private final SpindexerS m_spindexer = new RealSpindexerS();
+        private final SpindexerS m_spindexer = new NoneSpindexerS();
         @Logged(name = "Turret")
         // private final TurretS m_turret = new RealTurretS(() ->
         // m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()->
@@ -207,7 +207,6 @@ public class RobotContainer {
                                                 } // Drive counterclockwise with negative X (left)
                                 ));
 
-
                 // X: climb
                 // Y: stow intake
                 joystick.y().whileTrue(
@@ -218,13 +217,13 @@ public class RobotContainer {
                 // right trigger hold to score
                 joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
 
-                // joystick.leftBumper().whileTrue(
-                //                 AutoAlign.defaultToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
+                joystick.leftBumper().whileTrue(
+                                AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
                 joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() -> DegreesPerSecond.of(3600)));
-                 joystick.rightBumper().onFalse(m_spindexer.setVelocity(() -> DegreesPerSecond.of(0)));
+                joystick.rightBumper().onFalse(m_spindexer.setVelocity(() -> DegreesPerSecond.of(0)));
 
-                joystick.leftBumper().whileTrue(m_indexer.setVoltage(() -> Volts.of(2)));
-                joystick.leftBumper().onFalse(m_indexer.setVoltage(() -> Volts.of(0)));
+                // joystick.leftBumper().whileTrue(m_indexer.setVoltage(() -> Volts.of(2)));
+                // joystick.leftBumper().onFalse(m_indexer.setVoltage(() -> Volts.of(0)));
                 // start button home turret
                 joystick.start()
                                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
