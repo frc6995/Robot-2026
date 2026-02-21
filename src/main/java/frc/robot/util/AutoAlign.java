@@ -60,7 +60,7 @@ public class AutoAlign extends Command {
     }
 
     public static class AutoAlignConstants {
-        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(6, 4);
+        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(11, 6);
         public static APConstraints CLIMB_CONSTRAINTS = new APConstraints(20, 3);
     }
 

@@ -29,12 +29,12 @@
    },
    "BALLL2":{
     "x":{
-     "exp":"8.105791759490968 m",
-     "val":8.105791759490968
+     "exp":"7.905791759490969 m",
+     "val":7.905791759490969
     },
     "y":{
-     "exp":"5.821913242340088 m",
-     "val":5.821913242340088
+     "exp":"6.991913242340088 m",
+     "val":6.991913242340088
     },
     "heading":{
      "exp":"-90 deg",
@@ -281,7 +281,7 @@
  },
  "generationFeatures":[],
  "codegen":{
-  "root":"..\\..\\java\\frc\\robot\\generated",
+  "root":"../../java/frc/robot/generated",
   "genVars":true,
   "genTrajData":true,
   "useChoreoLib":true
