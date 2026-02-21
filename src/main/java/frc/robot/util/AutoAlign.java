@@ -28,19 +28,33 @@ import frc.robot.autos.Autos.AutoConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class AutoAlign extends Command {
+    // Static factory methods with profile parameters
     public static Command defaultToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
             CommandSwerveDrivetrain drivetrain) {
+        return defaultToAlliance(bluePose, blueEntryAngle, drivetrain, kDefaultProfile);
+    }
+
+    public static Command defaultToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
+            CommandSwerveDrivetrain drivetrain, APProfile profile) {
         return AllianceFlipUtil.flippedCommand(
-                (pose, rotation) -> new AutoAlign(pose, rotation, drivetrain),
+                (pose, rotation) -> new AutoAlign(pose, rotation, drivetrain, profile),
                 bluePose, blueEntryAngle);
     }
 
     public static Command climbDefaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
-        return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain), bluePose);
+        return climbDefaultToAlliance(bluePose, drivetrain, kClimbProfile);
+    }
+
+    public static Command climbDefaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain, APProfile profile) {
+        return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain, profile), bluePose);
     }
 
     public static Command defaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
-        return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain), bluePose);
+        return defaultToAlliance(bluePose, drivetrain, kDefaultProfile);
+    }
+
+    public static Command defaultToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain, APProfile profile) {
+        return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain, profile), bluePose);
     }
 
     public static class AutoAlignConstants {
@@ -55,12 +69,13 @@ public class AutoAlign extends Command {
 
     }
 
-    static APProfile kDefaultProfile = new APProfile(AutoAlignConstants.DEFAULT_CONSTRAINTS)
+    // Make profiles public so they can be accessed and modified
+    public static APProfile kDefaultProfile = new APProfile(AutoAlignConstants.DEFAULT_CONSTRAINTS)
             .withErrorXY(Centimeters.of(6))
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));
 
-    static APProfile kClimbProfile = new APProfile(AutoAlignConstants.CLIMB_CONSTRAINTS)
+    public static APProfile kClimbProfile = new APProfile(AutoAlignConstants.CLIMB_CONSTRAINTS)
             .withErrorXY(Centimeters.of(6))
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));
@@ -69,6 +84,7 @@ public class AutoAlign extends Command {
 
     protected final APTarget m_target;
     protected final CommandSwerveDrivetrain m_drivetrain;
+    protected final APProfile m_profile; // Store the profile being used
     protected final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric();
     protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
@@ -84,7 +100,18 @@ public class AutoAlign extends Command {
      * @param drivetrain Drivetrain subsystem
      */
     public AutoAlign(Pose2d targetPose, CommandSwerveDrivetrain drivetrain) {
-        this(new APTarget(targetPose), drivetrain, kDefaultProfile);
+        this(targetPose, drivetrain, kDefaultProfile);
+    }
+
+    /**
+     * Uses default constraints, beeline path with custom profile
+     * 
+     * @param targetPose Pose2d to align to
+     * @param drivetrain Drivetrain subsystem
+     * @param profile    APProfile to use for this alignment
+     */
+    public AutoAlign(Pose2d targetPose, CommandSwerveDrivetrain drivetrain, APProfile profile) {
+        this(new APTarget(targetPose), drivetrain, profile);
     }
 
     /**
@@ -95,24 +122,54 @@ public class AutoAlign extends Command {
      * @param drivetrain Drivetrain subsystem
      */
     public AutoAlign(Pose2d targetPose, Rotation2d entryAngle, CommandSwerveDrivetrain drivetrain) {
-        this(new APTarget(targetPose).withEntryAngle(entryAngle), drivetrain,
-                kDefaultProfile);
+        this(targetPose, entryAngle, drivetrain, kDefaultProfile);
     }
 
     /**
-     * Auto allign constructor needing all parameters
+     * Uses custom profile, path respects entry angle
      * 
-     * @param targetPose  Pose2d to align to
-     * @param constraints Entry angle to modify approach
-     * @param drivetrain  Drivetrain subsystem
+     * @param targetPose Pose2d to align to
+     * @param entryAngle Entry angle to modify approach
+     * @param drivetrain Drivetrain subsystem
+     * @param profile    APProfile to use for this alignment
+     */
+    public AutoAlign(Pose2d targetPose, Rotation2d entryAngle, CommandSwerveDrivetrain drivetrain, APProfile profile) {
+        this(new APTarget(targetPose).withEntryAngle(entryAngle), drivetrain, profile);
+    }
+
+    /**
+     * Auto align constructor with full parameters
+     * 
+     * @param target     APTarget to align to
+     * @param drivetrain Drivetrain subsystem
+     * @param profile    APProfile to use for this alignment
      */
     public AutoAlign(APTarget target, CommandSwerveDrivetrain drivetrain, APProfile profile) {
         this.m_target = target;
         this.m_drivetrain = drivetrain;
+        this.m_profile = profile;
 
         kAutopilot = new Autopilot(profile);
 
         addRequirements(drivetrain);
+    }
+
+    /**
+     * Creates a new AutoAlign with a modified version of the current profile
+     * Useful for runtime adjustments
+     * 
+     * @param profileModifier Function to modify the profile
+     */
+    public AutoAlign withModifiedProfile(java.util.function.Function<APProfile, APProfile> profileModifier) {
+        APProfile modifiedProfile = profileModifier.apply(m_profile);
+        return new AutoAlign(m_target, m_drivetrain, modifiedProfile);
+    }
+
+    /**
+     * Gets the current profile being used
+     */
+    public APProfile getProfile() {
+        return m_profile;
     }
 
     @Override
