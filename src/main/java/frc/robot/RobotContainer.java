@@ -31,6 +31,10 @@ import frc.robot.autos.Autos;
 import frc.robot.generated.ChoreoVars;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
+import frc.robot.subsystems.climb.climbextension.RealClimbExtensionS;
+import frc.robot.subsystems.climb.climbpivot.ClimbPivotS;
+import frc.robot.subsystems.climb.climbpivot.RealClimbPivotS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.NoneFlyWheelS;
 import frc.robot.subsystems.flywheel.RealFlyWheelS;
@@ -107,6 +111,8 @@ public class RobotContainer {
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
+    private final ClimbPivotS m_climbPivot = new RealClimbPivotS(ClimbConstants.InnerClimbConstants.kPivotConstants);
+    private final ClimbExtensionS m_climbExtension = new RealClimbExtensionS(ClimbConstants.InnerClimbConstants.kExtensionConstants);
 //     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
     private final TurretS m_turret = new NoneTurretS();
 
@@ -210,6 +216,15 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
         // X: climb
+        joystick.x().onTrue(
+            Commands.parallel(
+m_climbPivot.setAngle(()->Degrees.of(30)),
+m_climbExtension.setHeight(()->Inches.of(5)),
+Commands.waitSeconds(1),
+m_climbPivot.setAngle(()->Degrees.of(0)),
+m_climbExtension.setHeight(()->Inches.of(2))
+            )
+        );
         // Y: stow intake
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
