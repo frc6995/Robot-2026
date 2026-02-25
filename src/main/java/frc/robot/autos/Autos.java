@@ -56,10 +56,10 @@ public class Autos {
      * return routine;
      * }
      */
-    public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
+    public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
             IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel) {
         this.factory = factory;
-        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer,flyWheel);
+        this.autoCommands = autoCommands;
         this.m_hood = hood;
         this.m_intakePivot = intakePivot;
         this.m_intakeRoller = intakeRoller;

@@ -110,7 +110,7 @@ public class RobotContainer {
 //     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
     private final TurretS m_turret = new NoneTurretS();
 
-    private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
+    private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
     private final AutoFactory autoFactory;
@@ -129,7 +129,7 @@ public class RobotContainer {
         SmartDashboard.putData("Visualzer", VISUALIZER);
 
         autoFactory = m_drivetrain.createAutoFactory();
-        autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
+        autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
                 m_indexer, m_spindexer, m_flywheel);
         SmartDashboard.putData("Auto Mode", m_chooser);
         setDefaultCommands();
@@ -222,7 +222,7 @@ public class RobotContainer {
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 
         // right trigger hold to score
-        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
+        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
                 joystick.leftBumper().whileTrue(
             AutoAlign.toAlliance(ChoreoVars.Poses.CL1, m_drivetrain)
@@ -233,24 +233,15 @@ public class RobotContainer {
                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
         // select button home all, reset on disable
         // JS: This could be one parallel group, with m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
-        joystick.back().onTrue(Commands.either(
-                Commands.parallel(
-                        m_turret.driveToHome(),
-                        m_flywheel.resetEncoder(),
-                        m_spindexer.resetEncoder(),
-                        m_intakeRoller.resetEncoder(),
-                        m_intakePivot.resetEncoder(),
-                        m_indexer.resetEncoder(),
-                        m_hood.resetEncoder()),
-                Commands.parallel(
-                        m_turret.resetEncoder(),
-                        m_flywheel.resetEncoder(),
-                        m_spindexer.resetEncoder(),
-                        m_intakeRoller.resetEncoder(),
-                        m_intakePivot.resetEncoder(),
-                        m_indexer.resetEncoder(),
-                        m_hood.resetEncoder()),
-                () -> DriverStation.isEnabled()));
+        joystick.back().onTrue(Commands.parallel(
+                m_turret.driveToHome().onlyIf(()->DriverStation.isEnabled()),
+                m_turret.resetEncoder().onlyIf(()->DriverStation.isDisabled()),
+                m_flywheel.resetEncoder(),
+                m_spindexer.resetEncoder(),
+                m_intakeRoller.resetEncoder(),
+                m_intakePivot.resetEncoder(),
+                m_indexer.resetEncoder(),
+                m_hood.resetEncoder()));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
         // JS: Why is this a deferred proxy?
