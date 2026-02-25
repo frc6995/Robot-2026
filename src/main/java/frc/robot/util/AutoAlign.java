@@ -62,7 +62,7 @@ public class AutoAlign extends Command {
     public static class AutoAlignConstants {
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)
-        public static APConstraints ACCELERATION_LIMITED_CONSTRAINTS = new APConstraints(4, 11, 6);
+        public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(2, 11, 6);
         public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(11, 6);
         public static APConstraints CLIMB_CONSTRAINTS = new APConstraints(20, 3);
     }
@@ -78,8 +78,8 @@ public class AutoAlign extends Command {
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));
 
-    public static APProfile kAccelerationLimitedProfile = new APProfile(
-            AutoAlignConstants.ACCELERATION_LIMITED_CONSTRAINTS)
+    public static APProfile kVelocityLimitedProfile = new APProfile(
+            AutoAlignConstants.VELOCITY_LIMITED_CONSTRAINTS)
             .withErrorXY(Centimeters.of(6))
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));
