@@ -58,6 +58,8 @@ import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.apriltag.RealATVision;
+import frc.robot.subsystems.vision.detection.NoneODVision;
+import frc.robot.subsystems.vision.detection.ObjectVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.ClimbConstants;
@@ -116,8 +118,11 @@ public class RobotContainer {
         // m_intakePivot.isIntakeDeployed());
         private final TurretS m_turret = new NoneTurretS();
 
+        @Logged(name = "ObjectDetection")
+        private final ObjectVision m_objectVision = new NoneODVision(()->m_drivetrain.state.Pose);
+
         private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-                        m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
+                        m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
 
         private final AutoFactory autoFactory;
         private Mechanism2d VISUALIZER;
@@ -137,7 +142,7 @@ public class RobotContainer {
                 autoFactory = m_drivetrain.createAutoFactory();
                 autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,
                                 m_turret,
-                                m_indexer, m_spindexer, m_flywheel);
+                                m_indexer, m_spindexer, m_flywheel, m_objectVision);
                 SmartDashboard.putData("Auto Mode", m_chooser);
                 configureBindings();
 

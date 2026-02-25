@@ -25,6 +25,7 @@ import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.vision.detection.ObjectVision;
 import frc.robot.subsystems.spindexer.RealSpindexerS.SpindexerConstants;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.TriggerUtil;
@@ -40,6 +41,7 @@ public class AutoCommands {
         private final IndexerS m_indexer;
         private final SpindexerS m_Spindexer;
         private final FlyWheelS m_flywheel;
+        private final ObjectVision m_objectVision;
 
         SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
                         .withDriveRequestType(com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.Velocity)
@@ -47,7 +49,7 @@ public class AutoCommands {
 
         public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
                         IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer,
-                        FlyWheelS flyWheel) {
+                        FlyWheelS flyWheel, ObjectVision objectVision) {
                 this.m_drivebase = drivebase;
                 this.autos = autos;
                 this.m_hood = hood;
@@ -57,6 +59,7 @@ public class AutoCommands {
                 this.m_indexer = indexer;
                 this.m_Spindexer = spindexer;
                 this.m_flywheel = flyWheel;
+                this.m_objectVision = objectVision;
         }
 
         // Create a trigger that watches your condition
@@ -221,6 +224,13 @@ public class AutoCommands {
                                 // ADD CLIMB COMMAND
                                 ));
 
+        }
+
+        public Command APToAverageFuelPose() {
+            return Commands.parallel(
+                new AutoAlign(new Pose2d(m_objectVision.getAverageObjectLocation().get(), new Rotation2d()), m_drivebase),
+                fuelIntake()
+            );
         }
 
         public Command fuelIntake() {

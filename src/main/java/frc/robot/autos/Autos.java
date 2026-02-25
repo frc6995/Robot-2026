@@ -13,6 +13,7 @@ import frc.robot.subsystems.intakepivot.IntakePivotS;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.vision.detection.ObjectVision;
 import frc.robot.util.POI;
 import frc.robot.RobotContainer;
 
@@ -43,6 +44,7 @@ public class Autos {
     private final IndexerS m_indexer;
     private final SpindexerS m_spindexer;
     private final FlyWheelS m_FlyWheel;
+    private final ObjectVision m_objectVision;
 
     /*
      * . CHOREO AUTO EXAMPLE
@@ -60,10 +62,10 @@ public class Autos {
      */
     public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
             IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer,
-            SpindexerS spindexer, FlyWheelS flyWheel) {
+            SpindexerS spindexer, FlyWheelS flyWheel, ObjectVision objectVision) {
         this.factory = factory;
         autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer,
-                flyWheel);
+                flyWheel, objectVision);
         this.m_hood = hood;
         this.m_intakePivot = intakePivot;
         this.m_intakeRoller = intakeRoller;
@@ -72,6 +74,7 @@ public class Autos {
         this.m_indexer = indexer;
         this.m_spindexer = spindexer;
         this.m_FlyWheel = flyWheel;
+        this.m_objectVision = objectVision;
         // ============= DEFINE AUTOS =============
         Command run = factory.trajectoryCmd("Poses");
 
