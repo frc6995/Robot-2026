@@ -86,16 +86,18 @@ public class AutoCommands {
                 return Commands.deadline(
                                 Commands.sequence(
 
-                                                new AutoAlign(helpPose, m_drivebase).until(
-                                                                TriggerUtil.isWithinRadius(
-                                                                                () -> helpPose.getTranslation(),
-                                                                                () -> m_drivebase.state.Pose,
-                                                                                () -> helpPoseTolerance)),
-                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
-                                                                TriggerUtil.isWithinRadius(
-                                                                                () -> intakePose.getTranslation(),
-                                                                                () -> m_drivebase.state.Pose,
-                                                                                () -> intakePoseTolerance)),
+                                                new AutoAlign(helpPose, m_drivebase,
+                                                                AutoAlign.kAccelerationLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> helpPose.getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
+                                                                AutoAlign.kAccelerationLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> intakePose.getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> intakePoseTolerance)),
 
                                                 (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
                                                                 .withTimeout(driveTime))),
@@ -136,11 +138,12 @@ public class AutoCommands {
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
                                                                                 () -> helpPoseTolerance)),
-                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
-                                                                TriggerUtil.isWithinRadius(
-                                                                                () -> intakePose.getTranslation(),
-                                                                                () -> m_drivebase.state.Pose,
-                                                                                () -> intakePoseTolerance)),
+                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
+                                                                AutoAlign.kAccelerationLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> intakePose.getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> intakePoseTolerance)),
 
                                                 (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
                                                                 .withTimeout(driveTime))),
@@ -167,11 +170,12 @@ public class AutoCommands {
                         Rotation2d targetPoseEntryAngle) {
                 return Commands.sequence(
                                 Commands.waitUntil(() -> m_hood.isHoodSafe()),
-                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
-                                                TriggerUtil.isWithinRadius(
-                                                                () -> helpPose.getTranslation(),
-                                                                () -> m_drivebase.state.Pose,
-                                                                () -> helpPoseTolerance)),
+                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase,
+                                                AutoAlign.kAccelerationLimitedProfile).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
                                 new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase));
 
         }
@@ -217,7 +221,7 @@ public class AutoCommands {
                                 m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
                                 Commands.sequence(
 
-                                                new AutoAlign(targetpose, m_drivebase)
+                                                new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile)
                                 // ADD CLIMB COMMAND
                                 ));
 
