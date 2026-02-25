@@ -3,6 +3,7 @@ package frc.robot.autos;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.climb.climbpivot.ClimbPivotS;
@@ -59,9 +60,9 @@ public class Autos {
      * }
      */
     public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
-            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel, ClimbPivotS climbPivot) {
+            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel) {
         this.factory = factory;
-        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer,flyWheel,climbPivot);
+        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer,flyWheel, climbPivot);
         this.m_hood = hood;
         this.m_intakePivot = intakePivot;
         this.m_intakeRoller = intakeRoller;
@@ -74,51 +75,76 @@ public class Autos {
         // ============= DEFINE AUTOS =============
         Command run = factory.trajectoryCmd("Poses");
 
-        // ============= DEFINE AUTOS =============
+                // ============= DEFINE AUTOS =============
 
-        autos.put("L center-line 2x", () -> auto(POI.TRL1.get(),
-                autoCommands.APToIntake(POI.HELPL1.get(),
-                                Meters.of(2.5),
-                                POI.BALLL2.get(),
-                                POI.BALLL2Entry.get(),
-                                Meters.of(1.0),
-                                Seconds.of(0.5)
+                autos.put("L center-line 1x tune", () -> auto(POI.TRL1.get(),
+                                autoCommands.APToIntake(POI.HELPL1.get(),
+                                                Meters.of(3.7),
+                                                POI.BALLL2.get(),
+                                                POI.BALLL2Entry.get(),
+                                                Meters.of(0.12),
+                                                POI.STOPL1.get()
 
-                )
+                                )
 
-                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                                POI.HELPL2Entry.get(),
-                                                Meters.of(1.4),
-                                                POI.TRL1.get(),
-                                                POI.TRL1Entry.get()
+                                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                                                POI.HELPL2Entry.get(),
+                                                                Meters.of(2.0),
+                                                                POI.TRL1.get(),
+                                                                POI.TRL1Entry.get()
 
-                                ))
-                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))
-                                .andThen(autoCommands.APToIntake(POI.HELPL1.get(),
+                                                ))
+                                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
+
+                autos.put("2x test", () -> auto(POI.TRL1.get(),
+                                autoCommands.APToIntake(POI.HELPL1.get(),
+                                                Meters.of(2.5),
+                                                POI.BALLL2.get(),
+                                                POI.BALLL2Entry.get(),
+                                                Meters.of(0.4),
+                                                POI.STOPL1.get()
+
+                                )
+
+                                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                                                POI.HELPL2Entry.get(),
+                                                                Meters.of(2.0),
+                                                                POI.TRL1.get(),
+                                                                POI.TRL1Entry.get()
+
+                                                ))
+                                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2))).andThen(
+
+                                                                autoCommands.APToIntake(POI.HELPL1.get(),
+                                                                                Meters.of(2.5),
+                                                                                POI.BALLL2.get(),
+                                                                                POI.BALLL2Entry.get(),
+                                                                                Meters.of(0.4),
+                                                                                POI.STOPL1.get()
+
+                                                                ))
+
+                                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                                                POI.HELPL2Entry.get(),
+                                                                Meters.of(2.0),
+                                                                POI.TRL1.get(),
+                                                                POI.TRL1Entry.get()
+
+                                                ))
+                                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
+
+                autos.put("Choreo-test", () -> auto(POI.TRL1.get(),
+                                autoCommands.choreoToIntake(run, POI.HELPL1.get(),
                                                 Meters.of(2.0),
-                                                POI.BALLL3.get(),
+                                                POI.BALLL2.get(),
                                                 POI.BALLL2Entry.get(),
                                                 Meters.of(0.15),
-                                                Seconds.of(0.5)))
-                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                                POI.HELPL2Entry.get(),
-                                                Meters.of(2.1),
-                                                POI.TRL1.get(),
-                                                POI.TRL1Entry.get()
-                                        
+                                                Seconds.of(0.5))));
 
-                                ))
-                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2)))));
-
-        autos.put("Choreo-test", () -> auto(POI.TRL1.get(),
-                        autoCommands.choreoToIntake(run, POI.HELPL1.get(),
-                                        Meters.of(2.0),
-                                        POI.BALLL2.get(),
-                                        POI.BALLL2Entry.get(),
-                                        Meters.of(0.15),
-                                        Seconds.of(0.5))));
-        // Auto-register
-        autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
+                autos.put("Seeding-test", () -> auto(POI.CL1.get(),
+                                Commands.none()));
+                // Auto-register
+                autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
 
         }
 

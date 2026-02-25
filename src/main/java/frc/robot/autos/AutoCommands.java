@@ -1,14 +1,18 @@
 package frc.robot.autos;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.therekrab.autopilot.APProfile;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -26,6 +30,7 @@ import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.spindexer.RealSpindexerS.SpindexerConstants;
 import frc.robot.util.AutoAlign;
+import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
 
 public class AutoCommands {
@@ -73,7 +78,7 @@ public class AutoCommands {
          * @param intakePoseEntryAngle
          * @param intakePoseTolerance  Mnimum radius for robot to be in from intakePose
          *                             that triggers the next command
-         * @param driveTime            Time to drive forward collecting fuel
+         * @param stopPose             Pose to drive slowly towards while intaking
          * @return command that intakes from the center line
          */
         public Command APToIntake(
@@ -82,27 +87,59 @@ public class AutoCommands {
                         Pose2d intakePose,
                         Rotation2d intakePoseEntryAngle,
                         Distance intakePoseTolerance,
-                        Time driveTime) {
+                        Pose2d stopPose) {
 
                 return Commands.deadline(
                                 Commands.sequence(
 
-                                                new AutoAlign(helpPose, m_drivebase).until(
-                                                                TriggerUtil.isWithinRadius(
-                                                                                () -> helpPose.getTranslation(),
-                                                                                () -> m_drivebase.state.Pose,
-                                                                                () -> helpPoseTolerance)),
-                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
-                                                                TriggerUtil.isWithinRadius(
-                                                                                () -> intakePose.getTranslation(),
-                                                                                () -> m_drivebase.state.Pose,
-                                                                                () -> intakePoseTolerance)),
-
-                                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
-                                                                .withTimeout(driveTime))),
+                                                new AutoAlign(helpPose, m_drivebase,
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> helpPose.getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> intakePose.getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> intakePoseTolerance)),
+                                                new AutoAlign(stopPose, m_drivebase,
+                                                                AutoAlign.kSlowDriveProfile)),
                                 Commands.parallel(fuelIntake(),
-                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit)
-                                                ));
+                                                m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
+        }
+
+        /**
+         * Creates a routine that intakes at the depot
+         * 
+         * @param helpPose             Pose to go through on the way to the final pose
+         *                             to intake
+         * @param helpPoseEntryAngle
+         */
+
+        public Command APtoDepot(Pose2d helpPose, Distance helpPoseTolerance) {
+                return Commands.deadline(
+                                Commands.sequence(
+
+                                                new AutoAlign(helpPose, m_drivebase,
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> helpPose.getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(),
+                                                                m_drivebase,
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> POI.DEPOT_START
+                                                                                                                .get()
+                                                                                                                .getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> Meters.of(0.2))),
+                                                new AutoAlign(POI.DEPOT_END.get(), m_drivebase,
+                                                                AutoAlign.kSlowDriveProfile)),
+                                Commands.parallel(fuelIntake()));
         }
 
         /**
@@ -138,11 +175,12 @@ public class AutoCommands {
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
                                                                                 () -> helpPoseTolerance)),
-                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase).until(
-                                                                TriggerUtil.isWithinRadius(
-                                                                                () -> intakePose.getTranslation(),
-                                                                                () -> m_drivebase.state.Pose,
-                                                                                () -> intakePoseTolerance)),
+                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> intakePose.getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> intakePoseTolerance)),
 
                                                 (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
                                                                 .withTimeout(driveTime))),
@@ -169,12 +207,14 @@ public class AutoCommands {
                         Rotation2d targetPoseEntryAngle) {
                 return Commands.sequence(
                                 Commands.waitUntil(() -> m_hood.isHoodSafe()),
-                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase).until(
-                                                TriggerUtil.isWithinRadius(
-                                                                () -> helpPose.getTranslation(),
-                                                                () -> m_drivebase.state.Pose,
-                                                                () -> helpPoseTolerance)),
-                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase));
+                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase,
+                                                AutoAlign.kHighJerkProfile).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
+                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase,
+                                                AutoAlign.kDefaultVelocityLimitedProfile));
 
         }
 
@@ -208,33 +248,18 @@ public class AutoCommands {
         }
 
         /**
-         * Command that drives robot to ladder starting with Choreo command and climbs
-         * to L1
+         * Command that aligns to target pose and climbs
          * 
-         * @param choreoCommand        Choreo command to start with
-         * @param helpPose             Pose to invoke tolerance (radius) from for
-         *                             stoping the choreo path
-         * @param helpPose             Tolerance (radius) from help pose for stoping the
-         *                             choreo path
-         * @param targetpose           Target pose to autoallign to
-         * @param targetPoseEntryAngle
-         * @return Command that returns robot from intake that starts with a Choreo path
+         * @param targetpose Target pose to autoallign to
+         * @return Command that aligns to target pose and climbs
          */
-        public Command choreoL1Climb(
-                        Command choreoCommand,
-                        Pose2d helpPose,
-                        Distance helpPoseTolerance,
+        public Command APL1Climb(
                         Pose2d targetpose) {
                 return Commands.parallel(
                                 m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
                                 Commands.sequence(
 
-                                                choreoCommand.until(
-                                                                TriggerUtil.isWithinRadius(
-                                                                                () -> helpPose.getTranslation(),
-                                                                                () -> m_drivebase.state.Pose,
-                                                                                () -> helpPoseTolerance)),
-                                                new AutoAlign(targetpose, m_drivebase)
+                                                new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile)
                                 // ADD CLIMB COMMAND
                                 ));
 
@@ -242,8 +267,9 @@ public class AutoCommands {
 
         public Command fuelIntake() {
                 return Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit),
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle),
                                 m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage));
+
         }
 
         // auto hood angle command

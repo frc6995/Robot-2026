@@ -78,7 +78,7 @@ public class RealIntakePivotS extends IntakePivotS {
     public static final Angle kUpperLimit = Degrees.of(120);
     public static final Angle kFuelIntakeAngle = kLowerLimit;
     public static final Angle kStowAngle = kUpperLimit;
-    public static final Angle kTolerance = Degrees.zero();
+    public static final Angle kTolerance = Degrees.of(20);
   }
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
