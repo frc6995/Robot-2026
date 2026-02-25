@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
@@ -14,6 +15,7 @@ import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.util.POI;
+import frc.robot.util.TriggerUtil;
 import frc.robot.RobotContainer;
 
 import static edu.wpi.first.units.Units.Meters;
@@ -91,7 +93,7 @@ public class Autos {
                                                 .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
                                                                 POI.HELPL2Entry.get(),
                                                                 Meters.of(2.0),
-                                                                POI.TRL1.get(),
+                                                                POI.DEPOT_HELP.get(),
                                                                 POI.TRL1Entry.get()
 
                                                 ))
@@ -141,6 +143,44 @@ public class Autos {
                                                 POI.BALLL2Entry.get(),
                                                 Meters.of(0.15),
                                                 Seconds.of(0.5))));
+
+                autos.put("DEPOT L center-line 1x tune",
+                                () -> auto(POI.TRL1.get(),
+
+                                                autoCommands.APToIntake(POI.HELPL1.get(),
+                                                                Meters.of(3.7),
+                                                                POI.BALLL2.get(),
+                                                                POI.BALLL2Entry.get(),
+                                                                Meters.of(0.12),
+                                                                POI.STOPL1.get()
+
+                                                )
+
+                                                                .andThen(autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                                                                                POI.HELPL2Entry.get(),
+                                                                                Meters.of(2.0),
+                                                                                POI.DEPOT_HELP.get(),
+                                                                                POI.TRL1Entry.get()
+
+                                                                )).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> POI.TRL1.get()
+                                                                                                                .getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> Meters.of(0.3)))
+                                                                .andThen(autoCommands.Score().withTimeout(Seconds.of(2))
+                                                                                .alongWith(autoCommands.APtoDepot(
+                                                                                                POI.DEPOT_HELP.get(),
+                                                                                                Meters.of(1.5))))));
+
+                autos.put("Depot test", () -> {
+                        SequentialCommandGroup c = new SequentialCommandGroup();
+
+                        c.addCommands(factory.resetOdometry(Optional.of(POI.TRL1.get()), false));
+                        c.addCommands(autoCommands.APtoDepot(POI.DEPOT_HELP.get(), Meters.of(1.0)));
+
+                        return c;
+                });
 
                 autos.put("Seeding-test", () -> auto(POI.CL1.get(),
                                 Commands.none()));
