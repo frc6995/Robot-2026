@@ -236,6 +236,8 @@ public class ClimbConstants {
         public static final Distance kL2 = Inches.of(2);
         public static final Distance kL3 = Inches.of(3);
         public static final Angle kL1PrepAngle = Degrees.of(30);
+        public static final Angle kL1ReadyAngle = Degrees.of(0);
+        public static final Angle kTolerance = Degrees.of(2);
 
         public static final ClimbExtensionConstantsRecord kExtensionConstants = new ClimbExtensionConstantsRecord(
                 kPExtension,

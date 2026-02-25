@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.climb.climbpivot.ClimbPivotS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
@@ -60,9 +61,9 @@ public class Autos {
      * }
      */
     public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
-            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel) {
+            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel, ClimbPivotS climbPivot, ClimbExtensionS climbExtension) {
         this.factory = factory;
-        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer,flyWheel, climbPivot);
+        autoCommands = new AutoCommands(drive, this, hood, intakePivot, intakeRoller, turret, indexer, spindexer,flyWheel, climbPivot, climbExtension);
         this.m_hood = hood;
         this.m_intakePivot = intakePivot;
         this.m_intakeRoller = intakeRoller;

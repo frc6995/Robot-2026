@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
+import frc.robot.util.ClimbConstants;
 import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 
 import yams.mechanisms.config.ArmConfig;
@@ -88,6 +89,11 @@ public class RealClimbPivotS extends ClimbPivotS {
 
   public Optional<Angle> getSetpoint() {
     return climbArm.getMechanismSetpoint();
+  }
+
+  public boolean isStingerReady() {
+    var setpoint = getSetpoint();
+    return climbArm.getAngle().isNear(setpoint.isPresent() ? setpoint.get() : ClimbConstants.InnerClimbConstants.kL1ReadyAngle, ClimbConstants.InnerClimbConstants.kTolerance);
   }
 
     public Command resetEncoder() {

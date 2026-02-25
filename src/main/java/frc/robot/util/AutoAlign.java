@@ -80,7 +80,7 @@ public class AutoAlign extends Command {
             .withBeelineRadius(Centimeters.of(8));
 
     public static APProfile kClimbProfile = new APProfile(AutoAlignConstants.CLIMB_CONSTRAINTS)
-            .withErrorXY(Centimeters.of(6))
+            .withErrorXY(Centimeters.of(2))
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));
 

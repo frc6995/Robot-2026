@@ -17,6 +17,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -120,7 +121,7 @@ public class RobotContainer {
     private final TurretS m_turret = new NoneTurretS();
 
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbPivot);
+            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbPivot, m_climbExtension);
 
         private final AutoFactory autoFactory;
         private Mechanism2d VISUALIZER;
@@ -139,7 +140,7 @@ public class RobotContainer {
 
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
-                m_indexer, m_spindexer, m_flywheel, m_climbPivot);
+                m_indexer, m_spindexer, m_flywheel, m_climbPivot, m_climbExtension);
         SmartDashboard.putData("Auto Mode", m_chooser);
         configureBindings();
 
@@ -219,6 +220,7 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
         // X: climb
+        //joystick.x().onTrue()
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 
@@ -255,6 +257,8 @@ public class RobotContainer {
                 RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
 
         }
+
+        
 
         private RobotCentric m_robotCentricRequest = new RobotCentric().withDriveRequestType(DriveRequestType.Velocity);
 
