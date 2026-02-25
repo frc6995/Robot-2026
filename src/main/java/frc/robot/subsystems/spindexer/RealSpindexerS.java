@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
@@ -51,7 +52,7 @@ public class RealSpindexerS extends SpindexerS {
         public static final double kD = 0;
         public static final AngularVelocity kVelocity = DegreesPerSecond.of(900);
         public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(90000000);
-
+        public static final Voltage kVoltage = Volts.of(4);
         // Feedforward Constants
         public static final double kS = 0;
         // Motor Properties

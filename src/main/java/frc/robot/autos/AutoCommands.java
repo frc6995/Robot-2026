@@ -238,7 +238,7 @@ public class AutoCommands {
                                                 && m_flywheel.atSetpoint()),
                                 Commands.parallel(
                                                 m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
-                                                m_Spindexer.setVelocity(
-                                                                () -> SpindexerConstants.kVelocity)));
+                                                m_Spindexer.setVoltage(
+                                                                () -> SpindexerConstants.kVoltage)));
         }
 }
