@@ -48,6 +48,7 @@ import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
+import frc.robot.subsystems.led.RealledS;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
@@ -95,6 +96,7 @@ public class RobotContainer {
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
     private final SpindexerS m_spindexer = new NoneSpindexerS();
+    private final RealledS m_RealledS = new RealledS();
 
 //     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
     private final TurretS m_turret = new NoneTurretS();

@@ -30,8 +30,8 @@ public class LEDTT extends TimedRobot {
     /* color can be constructed from RGBW, a WPILib Color/Color8Bit, HSV, or hex */
     private final int CANdleID = 1;
 
-    private static final RGBWColor kGreen = new RGBWColor(0, 255, 0, 0);
-    private static final RGBWColor kWhite = new RGBWColor(Color.kWhite).scaleBrightness(0.5);
+    public static final RGBWColor kGreen = new RGBWColor(0, 255, 0, 0);
+    public static final RGBWColor kWhite = new RGBWColor(Color.kWhite).scaleBrightness(0.5);
     private static final RGBWColor kViolet = RGBWColor.fromHSV(Degrees.of(270), 0.9, 0.8);
     private static final RGBWColor kRed = RGBWColor.fromHex("#D9000000").orElseThrow();
 
