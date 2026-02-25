@@ -1,5 +1,6 @@
 package frc.robot.autos;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.spindexer.RealSpindexerS.SpindexerConstants;
 import frc.robot.util.AutoAlign;
+import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
 
 public class AutoCommands {
@@ -72,7 +74,7 @@ public class AutoCommands {
          * @param intakePoseEntryAngle
          * @param intakePoseTolerance  Mnimum radius for robot to be in from intakePose
          *                             that triggers the next command
-         * @param stopPose            Pose to drive slowly towards while intaking
+         * @param stopPose             Pose to drive slowly towards while intaking
          * @return command that intakes from the center line
          */
         public Command APToIntake(
@@ -102,6 +104,38 @@ public class AutoCommands {
                                                                 AutoAlign.kSlowDriveProfile)),
                                 Commands.parallel(fuelIntake(),
                                                 m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
+        }
+
+        /**
+         * Creates a routine that intakes at the depot
+         * 
+         * @param helpPose             Pose to go through on the way to the final pose
+         *                             to intake
+         * @param helpPoseEntryAngle
+         */
+
+        public Command APtoDepot(Pose2d helpPose, Distance helpPoseTolerance) {
+                return Commands.deadline(
+                                Commands.sequence(
+
+                                                new AutoAlign(helpPose, m_drivebase,
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> helpPose.getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> helpPoseTolerance)),
+                                                new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(),
+                                                                m_drivebase,
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                                                                TriggerUtil.isWithinRadius(
+                                                                                                () -> POI.DEPOT_START
+                                                                                                                .get()
+                                                                                                                .getTranslation(),
+                                                                                                () -> m_drivebase.state.Pose,
+                                                                                                () -> Meters.of(0.2))),
+                                                new AutoAlign(POI.DEPOT_END.get(), m_drivebase,
+                                                                AutoAlign.kSlowDriveProfile)),
+                                Commands.parallel(fuelIntake()));
         }
 
         /**

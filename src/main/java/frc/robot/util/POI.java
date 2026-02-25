@@ -37,8 +37,11 @@ public class POI {
     // Climb poses
     public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
 
+    // Depot poses
+    public static final Supplier<Pose2d> DEPOT_START = flipped(ChoreoVars.Poses.DEPOTSTART);
+    public static final Supplier<Pose2d> DEPOT_END = flipped(ChoreoVars.Poses.DEPOTEND);
+
     // Other poses
-    public static final Supplier<Pose2d> DEPOT = flipped(ChoreoVars.Poses.DEPOT);
     public static final Supplier<Pose2d> STA1 = flipped(ChoreoVars.Poses.STA1);
     public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
 
@@ -58,6 +61,7 @@ public class POI {
     // Climb pose rotations
     // Other rotations
     public static final Supplier<Rotation2d> testEntry = flipped(new Rotation2d(Degrees.of(-90)));
+    public static final Supplier<Rotation2d> depotStartEntry = flipped(new Rotation2d(Degrees.of(180)));
 
     // ============= TRANSLATIONS =============
     // ============= DISTANCES =============
