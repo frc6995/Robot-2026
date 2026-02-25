@@ -126,7 +126,6 @@ public class AutoCommands {
                 return Commands.deadline(
                                 Commands.sequence(
                                                 m_hood.setAngle(() -> HoodConstants.kLowerLimit),
-                                                m_turret.driveToHome(),
                                                 Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                                 choreoCommand.until(
                                                                 TriggerUtil.isWithinRadius(

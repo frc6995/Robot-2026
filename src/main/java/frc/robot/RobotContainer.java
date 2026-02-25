@@ -132,6 +132,7 @@ public class RobotContainer {
         autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
                 m_indexer, m_spindexer, m_flywheel);
         SmartDashboard.putData("Auto Mode", m_chooser);
+        setDefaultCommands();
         configureBindings();
 
     }
@@ -139,6 +140,12 @@ public class RobotContainer {
 
     public double xButtonPressedTime = 0;
     public boolean intakeState = false;
+
+    private void setDefaultCommands() {
+        m_turret.setDefaultCommand(m_turret.aimAtHub());
+        m_hood.setDefaultCommand(m_hood.autoHoodAngle());
+        
+    }
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
