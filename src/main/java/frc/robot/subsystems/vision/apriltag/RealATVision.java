@@ -1,19 +1,15 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.vision.apriltag;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -22,19 +18,18 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.networktables.StructPublisher;
 import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.PoseEstimate;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 
-public class RealVision extends Vision {
-    public static class VisionConstants {
-        public static final String[] LL_IDS = {
+public class RealATVision extends AprilTagVision {
+    public static class ATVisionConstants {
+        public static final String[] kCameraIDs = {
             "limelight-climb"
         };
-        public static final Pose3d[] LL_OFFSETS = {
+        public static final Pose3d[] kCameraOffsets = {
             new Pose3d( // climb
                 new Translation3d(Inches.of(-10.925),Inches.of(10.750),Inches.of(8.820)),
                 new Rotation3d(Degrees.of(7.52), Degrees.of(20), Degrees.of(180+22.5)))
@@ -49,7 +44,7 @@ public class RealVision extends Vision {
                         DegreesPerSecond.of(0),
                         DegreesPerSecond.of(0));
 
-    private VisionModule[] limelights;
+    private AprilTagModule[] limelights;
 
     private final Supplier<Rotation3d> gyroRotation;
     private final Consumer<Rotation3d> resetRotation;
@@ -58,26 +53,26 @@ public class RealVision extends Vision {
 
     private boolean headingSeeded = false;
 
-    private final BooleanPublisher headingSeededPublisher;
-    private final StructPublisher<Pose3d> seededPosePublisher;
+    // private final BooleanPublisher headingSeededPublisher;
+    // private final StructPublisher<Pose3d> seededPosePublisher;
 
-    public RealVision(Supplier<Rotation3d> gyroRotation, Consumer<Rotation3d> resetRotation) {
+    public RealATVision(Supplier<Rotation3d> gyroRotation, Consumer<Rotation3d> resetRotation) {
         this.gyroRotation = gyroRotation;
         this.resetRotation = resetRotation;
         
-        limelights = new VisionModule[VisionConstants.LL_IDS.length];
+        limelights = new AprilTagModule[ATVisionConstants.kCameraIDs.length];
 
-        visionTable = NetworkTableInstance.getDefault().getTable("Vision");
-        headingSeededPublisher = visionTable.getBooleanTopic("HeadingSeeded").publish();
-        seededPosePublisher = visionTable.getStructTopic("SeededPose", Pose3d.struct).publish();
+        visionTable = NetworkTableInstance.getDefault().getTable("Vision/AprilTag");
+        // headingSeededPublisher = visionTable.getBooleanTopic("HeadingSeeded").publish();
+        // seededPosePublisher = visionTable.getStructTopic("SeededPose", Pose3d.struct).publish();
 
         for(int i = 0; i < limelights.length; i++) {
-            limelights[i] = new VisionModule(VisionConstants.LL_IDS[i], VisionConstants.LL_OFFSETS[i], visionTable);
+            limelights[i] = new AprilTagModule(ATVisionConstants.kCameraIDs[i], ATVisionConstants.kCameraOffsets[i], visionTable);
         }
 
-        if(VisionConstants.kDefaultMode == EstimationMode.MEGATAG1) {
+        if(ATVisionConstants.kDefaultMode == EstimationMode.MEGATAG1) {
             headingSeeded = true;
-            seededPosePublisher.accept(Pose3d.kZero);
+            // seededPosePublisher.accept(Pose3d.kZero);
         }
     }
 
@@ -104,7 +99,7 @@ public class RealVision extends Vision {
             // seededPosePublisher.accept(initialPose);
             headingSeeded = true;
         } else {
-            for(VisionModule limelight : limelights) {
+            for(AprilTagModule limelight : limelights) {
                 limelight.periodic();
                 
                 limelight.seedOrientation(
@@ -120,7 +115,7 @@ public class RealVision extends Vision {
                 }
             }
         }
-        headingSeededPublisher.accept(headingSeeded);
+        // headingSeededPublisher.accept(headingSeeded);
     }
 
     @Override

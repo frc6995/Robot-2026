@@ -57,7 +57,7 @@ import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
-import frc.robot.subsystems.vision.RealVision;
+import frc.robot.subsystems.vision.apriltag.RealATVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.ClimbConstants;
@@ -65,8 +65,12 @@ import frc.robot.util.POI;
 import frc.robot.util.Telemetry;
 import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
 import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
+        public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.HIGH;
+
+
         private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                       // speed
         private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per

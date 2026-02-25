@@ -1,11 +1,11 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.vision.apriltag;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import limelight.networktables.PoseEstimate;
 
-public abstract class Vision {
+public abstract class AprilTagVision {
     protected ArrayList<PoseEstimate> estimates = new ArrayList<PoseEstimate>(0);
 
     public abstract void periodic();

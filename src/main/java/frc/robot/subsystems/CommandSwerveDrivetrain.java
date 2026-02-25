@@ -42,10 +42,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.subsystems.vision.NoneVision;
-import frc.robot.subsystems.vision.RealVision;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.RealVision.VisionConstants;
+import frc.robot.subsystems.vision.apriltag.NoneATVision;
+import frc.robot.subsystems.vision.apriltag.RealATVision;
+import frc.robot.subsystems.vision.apriltag.AprilTagVision;
+import frc.robot.subsystems.vision.apriltag.RealATVision.ATVisionConstants;
 
 /**
  * 
@@ -60,7 +60,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private final Pigeon2 m_gyro = new Pigeon2(TunerConstants.DrivetrainConstants.Pigeon2Id, TunerConstants.kCANBus);
 
-    private final Vision m_vision;
+    private final AprilTagVision m_vision;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -162,7 +162,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+        this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
             () -> this.getRotation3d(),
             (rot) -> this.resetRotation(rot.toRotation2d())
         );
@@ -188,7 +188,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = Robot.isSimulation() ? new NoneVision() : new RealVision(
+        this.m_vision = Robot.isSimulation() ? new NoneATVision() : new RealATVision(
             () -> this.getRotation3d(),
             (rot) -> this.resetRotation(rot.toRotation2d())
         );
@@ -220,7 +220,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         
-        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+        this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
             () -> this.getRotation3d(),
             (rot) -> this.resetRotation(rot.toRotation2d())
         );
@@ -273,7 +273,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = !enableVision ? new NoneVision() : new RealVision(
+        this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
             () -> this.getRotation3d(),
             (rot) -> this.resetRotation(rot.toRotation2d())
         );
@@ -378,7 +378,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
  
         var estimates = m_vision.getAllEstimates();
         for(var estimate : estimates) {
-             addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, VisionConstants.kVisionStdDevs);
+             addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.kVisionStdDevs);
         }
     }
 
