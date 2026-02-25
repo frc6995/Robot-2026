@@ -16,11 +16,14 @@ import static frc.robot.util.AllianceFlipUtil.flipped;
 public class POI {
     // ============= POSES =============
 
-    // Center line intake poses
+    // Center line intake start poses
     public static final Supplier<Pose2d> BALLL1 = flipped(ChoreoVars.Poses.BALLL1);
     public static final Supplier<Pose2d> BALLR1 = flipped(ChoreoVars.Poses.BALLR1);
     public static final Supplier<Pose2d> BALLL2 = flipped(ChoreoVars.Poses.BALLL2);
     public static final Supplier<Pose2d> BALLL3 = flipped(ChoreoVars.Poses.BALLL3);
+
+    // Center line intake stop poses
+    public static final Supplier<Pose2d> STOPL1 = flipped(ChoreoVars.Poses.STOPL1);
 
     // Auto start poses
     public static final Supplier<Pose2d> TRL1 = flipped(ChoreoVars.Poses.TRL1);

@@ -62,6 +62,7 @@ public class AutoAlign extends Command {
     public static class AutoAlignConstants {
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)
+        public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(0.5, 11, 20);
         public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(2, 11, 6);
         public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(11, 6);
         public static APConstraints CLIMB_CONSTRAINTS = new APConstraints(20, 3);
@@ -82,6 +83,12 @@ public class AutoAlign extends Command {
             AutoAlignConstants.VELOCITY_LIMITED_CONSTRAINTS)
             .withErrorXY(Centimeters.of(6))
             .withErrorTheta(Degrees.of(1.5))
+            .withBeelineRadius(Centimeters.of(8));
+    
+    public static APProfile kSlowDriveProfile = new APProfile(
+            AutoAlignConstants.SLOW_DRIVE_CONSTRAINTS)
+            .withErrorXY(Centimeters.of(8))
+            .withErrorTheta(Degrees.of(2.5))
             .withBeelineRadius(Centimeters.of(8));
 
     protected final Autopilot kAutopilot;

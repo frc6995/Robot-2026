@@ -72,7 +72,7 @@ public class AutoCommands {
          * @param intakePoseEntryAngle
          * @param intakePoseTolerance  Mnimum radius for robot to be in from intakePose
          *                             that triggers the next command
-         * @param driveTime            Time to drive forward collecting fuel
+         * @param stopPose            Pose to drive slowly towards while intaking
          * @return command that intakes from the center line
          */
         public Command APToIntake(
@@ -81,7 +81,7 @@ public class AutoCommands {
                         Pose2d intakePose,
                         Rotation2d intakePoseEntryAngle,
                         Distance intakePoseTolerance,
-                        Time driveTime) {
+                        Pose2d stopPose) {
 
                 return Commands.deadline(
                                 Commands.sequence(
@@ -98,9 +98,8 @@ public class AutoCommands {
                                                                                                 () -> intakePose.getTranslation(),
                                                                                                 () -> m_drivebase.state.Pose,
                                                                                                 () -> intakePoseTolerance)),
-
-                                                (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
-                                                                .withTimeout(driveTime))),
+                                                new AutoAlign(stopPose, m_drivebase,
+                                                                AutoAlign.kSlowDriveProfile)),
                                 Commands.parallel(fuelIntake(),
                                                 m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
         }
@@ -176,7 +175,8 @@ public class AutoCommands {
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
                                                                                 () -> helpPoseTolerance)),
-                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase, AutoAlign.kVelocityLimitedProfile));
+                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase,
+                                                AutoAlign.kVelocityLimitedProfile));
 
         }
 

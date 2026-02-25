@@ -28,6 +28,7 @@ public final class ChoreoVars {
         public static final Pose2d STA1 = new Pose2d(0.474, 0.661, Rotation2d.kZero);
         public static final Pose2d TRL1 = new Pose2d(4.403, 7.513, Rotation2d.kZero);
         public static final Pose2d TRR1 = new Pose2d(4.403, 195.329, Rotation2d.kZero);
+        public static final Pose2d STOPL1 = new Pose2d(8.154, 4.586, Rotation2d.fromRadians(4.712));
 
         private Poses() {}
     }
