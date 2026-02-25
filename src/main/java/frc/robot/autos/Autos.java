@@ -83,23 +83,12 @@ public class Autos {
 
         autos.put("L center-line 1x tune",
                 () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(
-                            autoCommands.APToIntake(POI.HELPL1.get(),
-                                    Meters.of(3.7),
-                                    POI.BALLL2.get(),
-                                    POI.BALLL2Entry.get(),
-                                    Meters.of(0.12),
-                                    POI.STOPL1.get()));
-                    c.addCommands(
-                            autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                    POI.HELPL2Entry.get(),
-                                    Meters.of(2.0),
-                                    POI.DEPOT_HELP.get(),
-                                    POI.TRL1Entry.get()
+                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(3.7), POI.BALLL2.get(),
+                            POI.BALLL2Entry.get(), Meters.of(0.12), POI.STOPL1.get()));
 
-                            ));
-                    c.addCommands(
-                            autoCommands.Score().withTimeout(Seconds.of(2)));
+                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
+                            POI.DEPOT_HELP.get(), POI.TRL1Entry.get()));
+                    c.addCommands(autoCommands.Score().withTimeout(Seconds.of(2)));
                 }));
 
         autos.put("2x test",
