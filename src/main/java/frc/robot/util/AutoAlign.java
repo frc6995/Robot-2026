@@ -60,11 +60,16 @@ public class AutoAlign extends Command {
     }
 
     public static class AutoAlignConstants {
+        public static double DEFAULT_MAX_VELOCITY = 2.0;
+        public static double DEFAULT_ACCELERATION = 11.0;
+        public static double DEFAULT_JERK = 6.0;
+
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)
-        public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(0.5, 11, 20);
-        public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(2, 11, 6);
-        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(11, 6);
+        public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(0.5, DEFAULT_ACCELERATION, 20);
+        public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, DEFAULT_JERK);
+        public static APConstraints HIGH_JERK_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, 30);
+        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(DEFAULT_ACCELERATION, DEFAULT_JERK);
         public static APConstraints CLIMB_CONSTRAINTS = new APConstraints(20, 3);
     }
 
@@ -79,8 +84,14 @@ public class AutoAlign extends Command {
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));
 
-    public static APProfile kVelocityLimitedProfile = new APProfile(
+    public static APProfile kDefaultVelocityLimitedProfile = new APProfile(
             AutoAlignConstants.VELOCITY_LIMITED_CONSTRAINTS)
+            .withErrorXY(Centimeters.of(6))
+            .withErrorTheta(Degrees.of(1.5))
+            .withBeelineRadius(Centimeters.of(8));
+
+        public static APProfile kHighJerkProfile = new APProfile(
+            AutoAlignConstants.HIGH_JERK_CONSTRAINTS)
             .withErrorXY(Centimeters.of(6))
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));

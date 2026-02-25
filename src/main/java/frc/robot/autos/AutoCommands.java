@@ -87,13 +87,13 @@ public class AutoCommands {
                                 Commands.sequence(
 
                                                 new AutoAlign(helpPose, m_drivebase,
-                                                                AutoAlign.kVelocityLimitedProfile).until(
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
                                                                                 TriggerUtil.isWithinRadius(
                                                                                                 () -> helpPose.getTranslation(),
                                                                                                 () -> m_drivebase.state.Pose,
                                                                                                 () -> helpPoseTolerance)),
                                                 new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
-                                                                AutoAlign.kVelocityLimitedProfile).until(
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
                                                                                 TriggerUtil.isWithinRadius(
                                                                                                 () -> intakePose.getTranslation(),
                                                                                                 () -> m_drivebase.state.Pose,
@@ -138,7 +138,7 @@ public class AutoCommands {
                                                                                 () -> m_drivebase.state.Pose,
                                                                                 () -> helpPoseTolerance)),
                                                 new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
-                                                                AutoAlign.kVelocityLimitedProfile).until(
+                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
                                                                                 TriggerUtil.isWithinRadius(
                                                                                                 () -> intakePose.getTranslation(),
                                                                                                 () -> m_drivebase.state.Pose,
@@ -170,13 +170,13 @@ public class AutoCommands {
                 return Commands.sequence(
                                 Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                 new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase,
-                                                AutoAlign.kVelocityLimitedProfile).until(
+                                                AutoAlign.kHighJerkProfile).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
                                                                                 () -> helpPoseTolerance)),
                                 new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase,
-                                                AutoAlign.kVelocityLimitedProfile));
+                                                AutoAlign.kDefaultVelocityLimitedProfile));
 
         }
 
