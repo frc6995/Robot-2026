@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.autos.AutoCommands;
@@ -35,8 +36,10 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.NoneFlyWheelS;
+import frc.robot.subsystems.flywheel.RealFlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.NoneHoodS;
+import frc.robot.subsystems.hood.RealHoodS;
 import frc.robot.subsystems.indexer.IndexerS;
 import frc.robot.subsystems.indexer.NoneIndexerS;
 import frc.robot.subsystems.intakepivot.IntakePivotS;
@@ -48,6 +51,7 @@ import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.NoneTurretS;
+import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
@@ -83,10 +87,10 @@ public class RobotContainer {
     );
 
     @Logged(name = "Flywheel")
-    private final FlyWheelS m_flywheel = new NoneFlyWheelS();
+    private final FlyWheelS m_flywheel = new RealFlyWheelS();
     @Logged(name = "Hood")
-//     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    private final HoodS m_hood = new NoneHoodS();
+    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    //private final HoodS m_hood = new NoneHoodS();
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new NoneIndexerS();
     @Logged(name = "IntakePivot")
@@ -96,8 +100,8 @@ public class RobotContainer {
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
-//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-    private final TurretS m_turret = new NoneTurretS();
+    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    //private final TurretS m_turret = new NoneTurretS();
 
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
@@ -122,15 +126,22 @@ public class RobotContainer {
     public RobotContainer() {
 
         m_drivetrain.resetOdometry(new Pose2d());
+
+        cachedShot = m_shooterController.calculate();
         VISUALIZER = logger.MECH_VISUALIZER;
 
         SmartDashboard.putData("Visualzer", VISUALIZER);
-
+        
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
                 m_indexer, m_spindexer, m_flywheel);
         SmartDashboard.putData("Auto Mode", m_chooser);
         configureBindings();
+
+
+
+        
+        
 
     }
 
@@ -181,8 +192,14 @@ public class RobotContainer {
         );
 
         m_flywheel.setDefaultCommand(
-                m_flywheel.runSOTF(shooterSupplier)
-        );
+        new RunCommand(
+                () -> {
+                cachedShot = m_shooterController.calculate(); // update cached shot
+                m_flywheel.runSOTF(() -> cachedShot).schedule(); // run velocity command
+                },
+                m_flywheel
+        )
+);
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 

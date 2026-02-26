@@ -43,11 +43,11 @@ public class ShooterController {
     }
     private void populateLUTs() {
 
-        rpmMap.put(1.0, 3000.0);
-        rpmMap.put(2.0, 3400.0);
-        rpmMap.put(3.0, 3800.0);
-        rpmMap.put(4.0, 4200.0);
-        rpmMap.put(5.0, 4600.0);
+        rpmMap.put(1.0, 2800.0);
+        rpmMap.put(2.0, 3200.0);
+        rpmMap.put(3.0, 3600.0);
+        rpmMap.put(4.0, 4000.0);
+        rpmMap.put(5.0, 4400.0);
 
         hoodMap.put(1.0, 12.5);
         hoodMap.put(2.0, 18.0);
