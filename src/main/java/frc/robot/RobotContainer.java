@@ -4,7 +4,10 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
@@ -12,6 +15,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,11 +26,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import choreo.auto.AutoChooser;
-import choreo.auto.AutoFactory;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
 import frc.robot.generated.ChoreoVars;
@@ -33,38 +35,25 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.NoneFlyWheelS;
-import frc.robot.subsystems.flywheel.RealFlyWheelS;
-import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.NoneHoodS;
-import frc.robot.subsystems.hood.RealHoodS;
-import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.indexer.IndexerS;
 import frc.robot.subsystems.indexer.NoneIndexerS;
-import frc.robot.subsystems.indexer.RealIndexerS;
 import frc.robot.subsystems.intakepivot.IntakePivotS;
-import frc.robot.subsystems.intakepivot.NoneIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
-import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
-import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
-import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.NoneTurretS;
-import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
-import frc.robot.subsystems.vision.RealVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
-import frc.robot.util.ClimbConstants;
 import frc.robot.util.POI;
+import frc.robot.util.ShooterController;
 import frc.robot.util.Telemetry;
-import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
-import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
@@ -117,6 +106,15 @@ public class RobotContainer {
     private Mechanism2d VISUALIZER;
     private final Autos autoRoutines;
     public final AutoChooser m_chooser = new AutoChooser();
+    private final ShooterController m_shooterController =
+    new ShooterController(
+        () -> m_drivetrain.state.Pose,
+        () -> m_drivetrain.state.Speeds,
+        POI.HUB1
+    );
+    private ShooterController.ShooterCommand cachedShot;
+    private final Supplier<ShooterController.ShooterCommand> shooterSupplier =
+        () -> cachedShot;
 
     private final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.Velocity);
@@ -166,7 +164,25 @@ public class RobotContainer {
                                             rotationSpeed);
                         } // Drive counterclockwise with negative X (left)
                 ));
+        // m_turret.setDefaultCommand(m_turret.aimAtHub());
+        // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
+        m_drivetrain.setDefaultCommand(
+                m_drivetrain.getDefaultCommand()
+                        .alongWith(
+                        Commands.run(() -> cachedShot = m_shooterController.calculate())
+                        )
+        );
+        m_turret.setDefaultCommand(
+                m_turret.runSOTF(shooterSupplier)
+        );
 
+        m_hood.setDefaultCommand(
+                m_hood.runSOTF(shooterSupplier, () -> m_drivetrain.state.Pose)
+        );
+
+        m_flywheel.setDefaultCommand(
+                m_flywheel.runSOTF(shooterSupplier)
+        );
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
