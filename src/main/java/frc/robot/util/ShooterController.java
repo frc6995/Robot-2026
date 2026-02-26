@@ -28,7 +28,7 @@ public class ShooterController {
     private static final double RPM_CORRECTION_GAIN = 0.7;   // bias small corrections to RPM
     private static final double HOOD_CORRECTION_GAIN = 0.3;
 
-    private static final double LATENCY_SECONDS = 0.15; // adjust later
+    private static final double LATENCY_SECONDS = 0.02; // adjust later
 
     public ShooterController(
         Supplier<Pose2d> robotPose,
