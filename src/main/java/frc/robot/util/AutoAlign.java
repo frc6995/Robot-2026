@@ -60,7 +60,16 @@ public class AutoAlign extends Command {
     }
 
     public static class AutoAlignConstants {
-        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(11, 6);
+        public static double DEFAULT_MAX_VELOCITY = 3.5;
+        public static double DEFAULT_ACCELERATION = 18.0;
+        public static double DEFAULT_JERK = 10.0;
+
+        // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
+        // jerk)
+        public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(0.5, DEFAULT_ACCELERATION, 20);
+        public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, DEFAULT_JERK);
+        public static APConstraints HIGH_JERK_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, 30);
+        public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(DEFAULT_ACCELERATION, DEFAULT_JERK);
         public static APConstraints CLIMB_CONSTRAINTS = new APConstraints(20, 3);
     }
 
@@ -75,6 +84,24 @@ public class AutoAlign extends Command {
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));
 
+    public static APProfile kDefaultVelocityLimitedProfile = new APProfile(
+            AutoAlignConstants.VELOCITY_LIMITED_CONSTRAINTS)
+            .withErrorXY(Centimeters.of(6))
+            .withErrorTheta(Degrees.of(1.5))
+            .withBeelineRadius(Centimeters.of(8));
+
+        public static APProfile kHighJerkProfile = new APProfile(
+            AutoAlignConstants.HIGH_JERK_CONSTRAINTS)
+            .withErrorXY(Centimeters.of(6))
+            .withErrorTheta(Degrees.of(1.5))
+            .withBeelineRadius(Centimeters.of(8));
+    
+    public static APProfile kSlowDriveProfile = new APProfile(
+            AutoAlignConstants.SLOW_DRIVE_CONSTRAINTS)
+            .withErrorXY(Centimeters.of(8))
+            .withErrorTheta(Degrees.of(2.5))
+            .withBeelineRadius(Centimeters.of(8));
+
     protected final Autopilot kAutopilot;
 
     protected final APTarget m_target;
@@ -84,7 +111,7 @@ public class AutoAlign extends Command {
     protected final SwerveRequest.FieldCentricFacingAngle m_request = new SwerveRequest.FieldCentricFacingAngle()
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
             .withDriveRequestType(DriveRequestType.Velocity)
-            .withHeadingPID(6, 0, 0); // Replace with constants later
+            .withHeadingPID(5, 0, 0); // Replace with constants later
 
     protected SwerveDriveState swerveState = new SwerveDriveState();
 
