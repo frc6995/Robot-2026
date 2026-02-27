@@ -220,7 +220,7 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
         // X: climb
-        //joystick.x().onTrue()
+        joystick.x().whileTrue(m_AutoCommands.L1Climb(POI.CL1.get()));
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 

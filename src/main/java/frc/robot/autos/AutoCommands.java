@@ -264,15 +264,14 @@ public class AutoCommands {
      * @return Command that aligns to target pose and climbs
      */
     public Command L1Climb(
-            Pose2d targetpose, Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
-        return Commands.race(
+            Pose2d targetpose) {
+        return Commands.sequence(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
-                setClimber(()->Degrees.of(0),()->Inches.of(8)));
-                Commands.sequence(
-
-                        new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
-                        m_climbPivot.setAngle(() -> Degrees.of(0)),
-                        m_climbExtension.setHeight(() -> Inches.of(5)));
+                Commands.parallel(
+                        setClimber(()->Degrees.of(0),()->Inches.of(8)),
+                        new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile)),
+                m_climbPivot.setAngle(() -> Degrees.of(0)),
+                m_climbExtension.setHeight(() -> Inches.of(5)));
 
     }
 

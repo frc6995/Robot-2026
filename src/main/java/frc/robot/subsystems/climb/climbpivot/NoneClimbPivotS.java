@@ -1,6 +1,9 @@
 package frc.robot.subsystems.climb.climbpivot;
 
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -22,6 +25,14 @@ public class NoneClimbPivotS extends ClimbPivotS {
     @Override
     public Command resetEncoder() {
         return Commands.none();
+    }
+    @Override
+    public Optional<Angle> getSetpoint() {
+        return Optional.empty();
+    }
+    @Override
+    public boolean isStingerReady() {
+        return false;
     }
 
 }
