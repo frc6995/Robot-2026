@@ -93,10 +93,10 @@ public class Autos {
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
 
-                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(2.5), POI.BALLL2.get(),
-                            POI.BALLL2Entry.get(), Meters.of(0.4), POI.STOPL1.get()));
+                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(3.5), POI.BALLL3.get(),
+                            POI.BALLL2Entry.get(), Meters.of(0.1), POI.STOPL2.get()));
 
-                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
+                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2CloseEntry.get(), Meters.of(2.0),
                             POI.TRL1.get(), POI.TRL1Entry.get()));
 
                     c.addCommands((autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)));

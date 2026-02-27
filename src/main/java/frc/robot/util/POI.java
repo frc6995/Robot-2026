@@ -24,6 +24,7 @@ public class POI {
 
     // Center line intake stop poses
     public static final Supplier<Pose2d> STOPL1 = flipped(ChoreoVars.Poses.STOPL1);
+    public static final Supplier<Pose2d> STOPL2 = flipped(ChoreoVars.Poses.STOPL2);
 
     // Auto start poses
     public static final Supplier<Pose2d> TRL1 = flipped(ChoreoVars.Poses.TRL1);
@@ -40,8 +41,7 @@ public class POI {
     // Depot poses
     public static final Supplier<Pose2d> DEPOT_START = flipped(ChoreoVars.Poses.DEPOTSTART);
     public static final Supplier<Pose2d> DEPOT_END = flipped(ChoreoVars.Poses.DEPOTEND);
-   public static final Supplier<Pose2d> DEPOT_HELP = flipped(ChoreoVars.Poses.HELPD1);
-
+    public static final Supplier<Pose2d> DEPOT_HELP = flipped(ChoreoVars.Poses.HELPD1);
 
     // Other poses
     public static final Supplier<Pose2d> STA1 = flipped(ChoreoVars.Poses.STA1);
@@ -51,6 +51,7 @@ public class POI {
 
     // Center line intake pose rotations
     public static final Supplier<Rotation2d> BALLL2Entry = flipped(new Rotation2d(Degrees.of(-35)));
+    public static final Supplier<Rotation2d> BALLL2CloseEntry = flipped(new Rotation2d(Degrees.of(0)));
 
     // Auto start pose rotations
     public static final Supplier<Rotation2d> TRL1Entry = flipped(new Rotation2d(Degrees.of(180)));
@@ -60,6 +61,8 @@ public class POI {
     public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));
     public static final Supplier<Rotation2d> HELPR1Entry = flipped(new Rotation2d(Degrees.of(-30)));
     public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(160)));
+    public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
+
     // Climb pose rotations
     // Other rotations
     public static final Supplier<Rotation2d> testEntry = flipped(new Rotation2d(Degrees.of(-90)));

@@ -37,7 +37,7 @@ public class RealVision extends Vision {
         public static final Pose3d[] LL_OFFSETS = {
             new Pose3d( // climb
                 new Translation3d(Inches.of(-10.925),Inches.of(10.750),Inches.of(8.820)),
-                new Rotation3d(Degrees.of(7.52), Degrees.of(20), Degrees.of(180+22.5)))
+                new Rotation3d(Degrees.of(7.52), Degrees.of(20.0), Degrees.of(180+17.5)))
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
