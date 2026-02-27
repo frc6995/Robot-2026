@@ -2,6 +2,7 @@ package frc.robot.autos;
 
 import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
@@ -30,8 +31,7 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static double DEFAULT_ACCELERATION = 15;
-        private static double DEFAULT_JERK = 12;
+        private static Time kDefaultAutoScoreTime = Seconds.of(2.0);
 
     }
 
@@ -62,31 +62,36 @@ public class Autos {
         this.m_indexer = indexer;
         this.m_spindexer = spindexer;
         this.m_FlyWheel = flyWheel;
-        // ============= DEFINE AUTOS =============
+
+        // ============= PREDEFINED HELPERS =============
+        Supplier<Command> defaultAPToCenterLineCommandLeft = () -> autoCommands.APToIntake(POI.HELPL1.get(),
+                Meters.of(3.5),
+                POI.BALLL2.get(), POI.BALLL2Entry.get(), Meters.of(0.12), POI.STOPL1.get());
+
+        Supplier<Command> defaultAPBackToStartCommandLeft = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),
+                POI.HELPL2Entry.get(), Meters.of(1.8),
+                POI.TRL1.get(), POI.TRL1Entry.get());
+
+        // ============= CHOREO PATHS =============
         Command run = factory.trajectoryCmd("Poses");
 
         // ============= DEFINE AUTOS =============
-
         autos.put("L center-line 1x tune",
                 () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(3.7), POI.BALLL2.get(),
-                            POI.BALLL2Entry.get(), Meters.of(0.12), POI.STOPL1.get()));
+                    c.addCommands(defaultAPToCenterLineCommandLeft.get());
 
-                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
-                            POI.DEPOT_HELP.get(), POI.TRL1Entry.get()));
+                    c.addCommands(defaultAPBackToStartCommandLeft.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(Seconds.of(2)));
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
         autos.put("2x test",
                 () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(2.5), POI.BALLL2.get(),
-                            POI.BALLL2Entry.get(), Meters.of(0.4), POI.STOPL1.get()));
+                    c.addCommands(defaultAPToCenterLineCommandLeft.get());
 
-                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
-                            POI.TRL1.get(), POI.TRL1Entry.get()));
+                    c.addCommands(defaultAPBackToStartCommandLeft.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(Seconds.of(2)));
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
 
                     c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(2.5), POI.BALLL2.get(),
                             POI.BALLL2Entry.get(), Meters.of(0.4), POI.STOPL1.get()));
@@ -94,36 +99,33 @@ public class Autos {
                     c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
                             POI.TRL1.get(), POI.TRL1Entry.get()));
 
-                    c.addCommands((autoCommands.Score().withTimeout(Seconds.of(2))));
+                    c.addCommands((autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)));
                 }));
-
-        autos.put("Choreo-test", () -> auto(POI.TRL1.get(), c -> {
-            c.addCommands(autoCommands.choreoToIntake(run, POI.HELPL1.get(), Meters.of(2.0), POI.BALLL2.get(),
-                    POI.BALLL2Entry.get(), Meters.of(0.15), Seconds.of(0.5)));
-        }));
 
         autos.put("DEPOT L center-line 1x tune",
                 () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(3.7), POI.BALLL2.get(),
-                            POI.BALLL2Entry.get(), Meters.of(0.12), POI.STOPL1.get()));
+                    c.addCommands(defaultAPToCenterLineCommandLeft.get());
 
-                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
-                            POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
+                    c.addCommands(autoCommands
+                            .APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(1.2),
+                                    POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
                             .until(
                                     TriggerUtil.isWithinRadius(
-                                            () -> POI.TRL1.get()
+                                            () -> POI.DEPOT_HELP.get()
                                                     .getTranslation(),
                                             () -> m_drivebase.state.Pose,
-                                            () -> Meters.of(0.3))));
+                                            () -> Meters.of(1.7))));
 
-                    c.addCommands(autoCommands.Score().withTimeout(Seconds.of(2))
-                            .alongWith(autoCommands.APtoDepot(POI.DEPOT_HELP.get(), Meters.of(1.5))));
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
+                            .alongWith(autoCommands.APtoDepot()));
                 }));
 
-        autos.put("Depot test", () -> auto(POI.TRL1.get(), c -> {
-            c.addCommands(autoCommands.APtoDepot(POI.DEPOT_HELP.get(), Meters.of(1.0)));
+         autos.put("Depot test", () -> auto(POI.TRL1.get(), c -> {
+             c.addCommands(autoCommands.APtoDepot());
 
-        }));
+            c.addCommands(autoCommands.APtoDepot());
+
+         }));
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
@@ -132,7 +134,6 @@ public class Autos {
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
 
     }
-
     // ============= FLEXIBLE AUTO BUILDER =============
 
     /**
@@ -145,7 +146,7 @@ public class Autos {
     private Command auto(Pose2d startPose, Consumer<SequentialCommandGroup> builder) {
         SequentialCommandGroup group = new SequentialCommandGroup();
 
-        // Add odometry reset first
+        // Odometry reset first
         group.addCommands(factory.resetOdometry(Optional.of(startPose), false));
 
         // Let the builder add more commands

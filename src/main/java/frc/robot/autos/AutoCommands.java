@@ -101,13 +101,9 @@ public class AutoCommands {
      * @param helpPoseEntryAngle
      */
 
-    public Command APtoDepot(Pose2d helpPose, Distance helpPoseTolerance) {
+    public Command APtoDepot() {
         return Commands.deadline(
                 Commands.sequence(
-                        new AutoAlign(helpPose, m_drivebase,
-                                AutoAlign.kDefaultVelocityLimitedProfile).until(
-                                        TriggerUtil.isWithinRadius(() -> helpPose.getTranslation(),
-                                                () -> m_drivebase.state.Pose, () -> helpPoseTolerance)),
                         new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(), m_drivebase,
                                 AutoAlign.kDefaultVelocityLimitedProfile).until(
                                         TriggerUtil.isWithinRadius(
@@ -119,51 +115,6 @@ public class AutoCommands {
                 Commands.parallel(fuelIntake()));
     }
 
-    /**
-     * Command that returns robot from intake that starts with Choreo path
-     * 
-     * @param choreoCommand        Choreo command to start with
-     * @param helpPose             Pose to invoke tolerance (radius) from for
-     *                             stoping the choreo path
-     * @param helpPoseTolerance    Tolerance (radius) from help pose for stoping the
-     *                             choreo path
-     * @param intakePose           Pose to go through before slowDriveForward
-     * @param intakePoseEntryAngle
-     * @param intakePoseTolerance  Minimum radius for robot to be in from intakePose
-     *                             that triggers the next command
-     * @param driveTime            Time to drive forward collecting fuel
-     * @return Command that returns robot from intake that starts with Choreo path
-     */
-    public Command choreoToIntake(
-            Command choreoCommand,
-            Pose2d helpPose,
-            Distance helpPoseTolerance,
-            Pose2d intakePose,
-            Rotation2d intakePoseEntryAngle,
-            Distance intakePoseTolerance,
-            Time driveTime) {
-        return Commands.deadline(
-                Commands.sequence(
-                        m_hood.setAngle(() -> HoodConstants.kLowerLimit),
-                        m_turret.driveToHome(),
-                        Commands.waitUntil(() -> m_hood.isHoodSafe()),
-                        choreoCommand.until(
-                                TriggerUtil.isWithinRadius(
-                                        () -> helpPose.getTranslation(),
-                                        () -> m_drivebase.state.Pose,
-                                        () -> helpPoseTolerance)),
-                        new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
-                                AutoAlign.kDefaultVelocityLimitedProfile).until(
-                                        TriggerUtil.isWithinRadius(
-                                                () -> intakePose.getTranslation(),
-                                                () -> m_drivebase.state.Pose,
-                                                () -> intakePoseTolerance)),
-
-                        (m_drivebase.applyRequest(() -> m_intakeDriveRequest)
-                                .withTimeout(driveTime))),
-                fuelIntake());
-
-    }
 
     /**
      * Creates a command that intakes from the center line

@@ -62,7 +62,7 @@ public class AutoAlign extends Command {
     public static class AutoAlignConstants {
         public static double DEFAULT_MAX_VELOCITY = 2.0;
         public static double DEFAULT_ACCELERATION = 11.0;
-        public static double DEFAULT_JERK = 6.0;
+        public static double DEFAULT_JERK = 10.0;
 
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)
