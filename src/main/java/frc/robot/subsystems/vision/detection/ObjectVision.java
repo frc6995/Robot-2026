@@ -1,6 +1,8 @@
 package frc.robot.subsystems.vision.detection;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -9,21 +11,69 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.BaseUnits;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.vision.detection.RealODVision.ODVisionConstants;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public abstract class ObjectVision {
     protected ArrayList<GamePiece> gamePieces = new ArrayList<GamePiece>();
     protected Supplier<Pose2d> robotPose;
+    protected Timer timer = new Timer();
 
-    protected record GamePiece(Translation2d translation, double detectionTime) {}
+    protected StructArrayPublisher<Pose2d> objectPoses;
+    protected StructPublisher<Pose2d> averageObjectPose;
+    protected StructPublisher<Pose2d> bestObjectPose;
+
+    protected static record GamePiece(Translation2d translation, double detectionTime) {}
+    public static class Cluster {
+        double sumX = 0.0;
+        double sumY = 0.0;
+        int count = 0;
+
+        public void add(GamePiece piece) {
+            sumX += piece.translation.getX();
+            sumY += piece.translation.getY();
+            count++;
+        }
+
+        public Translation2d getCenter() {
+            return new Translation2d(
+                sumX / count,
+                sumY / count
+            );
+        }
+    }
 
     protected ObjectVision(Supplier<Pose2d> robotPose) {
         this.robotPose = robotPose;
+        timer.start();
+
+        var table = NetworkTableInstance.getDefault().getTable("Vision/Object-Detection/" + ODVisionConstants.kCameraID);
+        objectPoses = table.getStructArrayTopic("Object Poses", Pose2d.struct).publish();
+        averageObjectPose = table.getStructTopic("Average Pose", Pose2d.struct).publish();
+        bestObjectPose = table.getStructTopic("Best Pose", Pose2d.struct).publish();
     }
 
     public abstract void update();
+
+    protected void updateTelemetry() {
+        if(RobotContainer.kTelemetryVerbosity == TelemetryVerbosity.HIGH) {
+            objectPoses.accept(getObjectPoses().toArray(new Pose2d[gamePieces.size()]));
+        }
+        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
+            var avgOpt = getAverageObjectLocation();
+            averageObjectPose.accept(avgOpt.isPresent() ? new Pose2d(avgOpt.get(), Rotation2d.kZero) : Pose2d.kZero);
+
+            var bestOpt = getBestObjectLocation();
+            bestObjectPose.accept(bestOpt.isPresent() ? new Pose2d(bestOpt.get(), Rotation2d.kZero) : Pose2d.kZero);
+        }
+    }
 
     public List<GamePiece> getDetectedObjects() {
         return gamePieces;
@@ -58,6 +108,48 @@ public abstract class ObjectVision {
         }
 
         return Optional.of(currentBest.translation);
+    }
+
+    protected List<Cluster> getClusters() {
+        ArrayList<Cluster> clusters = new ArrayList<Cluster>();
+        
+        int n = gamePieces.size();
+        boolean[] visited = new boolean[n];
+
+        for(int i = 0; i < n; i++) {
+            if(visited[i]) continue;
+
+            Cluster c = new Cluster();
+            Deque<Integer> stack = new ArrayDeque<>();
+            stack.push(i);
+            visited[i] = true;
+
+            while (!stack.isEmpty()) {
+                int j = stack.pop();
+                var piece = gamePieces.get(j);
+
+                c.add(piece);
+
+                for (int k = 0; k < n; k++) {
+                    if (visited[k]) continue;
+
+                    var piece2 = gamePieces.get(k);
+                    double dx = piece.translation.getX() - piece2.translation.getX();
+                    double dy = piece.translation.getY() - piece2.translation.getY();
+
+                    if (dx*dx + dy*dy < ODVisionConstants.kClusterTolerance) {
+                        visited[k] = true;
+                        stack.push(k);
+                    }
+                }
+            }
+
+            if(c.count >= 2) {
+                clusters.add(c);
+            }
+        }
+
+        return clusters;
     }
 
         // Based off algorithm from FRC 1678

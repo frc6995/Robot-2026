@@ -1,6 +1,8 @@
 package frc.robot.subsystems.vision.detection;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.function.Supplier;
 
 import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
@@ -27,23 +29,16 @@ public class RealODVision extends ObjectVision {
             new Rotation3d()
         );
         public static final Distance kGamePieceDiameter = Inches.of(5.91);
+
+        private static final Distance kClusterRadius = Inches.of(20);
+
+        public static final double kClusterTolerance = Math.pow(kClusterRadius.in(Meters), 2);
     }
 
     private Limelight camera = new Limelight(ODVisionConstants.kCameraID);
-    private Timer timer = new Timer();
-
-    private StructArrayPublisher<Pose2d> objectPoses;
-    private StructPublisher<Pose2d> averageObjectPose;
-    private StructPublisher<Pose2d> bestObjectPose;
 
     public RealODVision(Supplier<Pose2d> robotPose) {
         super(robotPose);
-        timer.start();
-
-        var table = NetworkTableInstance.getDefault().getTable("Vision/Object-Detection/" + ODVisionConstants.kCameraID);
-        objectPoses = table.getStructArrayTopic("Object Poses", Pose2d.struct).publish();
-        averageObjectPose = table.getStructTopic("Average Pose", Pose2d.struct).publish();
-        bestObjectPose = table.getStructTopic("Best Pose", Pose2d.struct).publish();
     }
 
     @Override
@@ -62,16 +57,5 @@ public class RealODVision extends ObjectVision {
         updateTelemetry();
     }
 
-    private void updateTelemetry() {
-        if(RobotContainer.kTelemetryVerbosity == TelemetryVerbosity.HIGH) {
-            objectPoses.accept(getObjectPoses().toArray(new Pose2d[gamePieces.size()]));
-        }
-        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
-            var avgOpt = getAverageObjectLocation();
-            averageObjectPose.accept(avgOpt.isPresent() ? new Pose2d(avgOpt.get(), Rotation2d.kZero) : Pose2d.kZero);
-
-            var bestOpt = getBestObjectLocation();
-            bestObjectPose.accept(bestOpt.isPresent() ? new Pose2d(bestOpt.get(), Rotation2d.kZero) : Pose2d.kZero);
-        }
-    }
+    
 }
