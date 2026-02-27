@@ -27,6 +27,7 @@ public abstract class ObjectVision {
     protected Timer timer = new Timer();
 
     protected StructArrayPublisher<Pose2d> objectPoses;
+    protected StructArrayPublisher<Pose2d> clusterPoses;
     protected StructPublisher<Pose2d> averageObjectPose;
     protected StructPublisher<Pose2d> bestObjectPose;
 
@@ -35,6 +36,7 @@ public abstract class ObjectVision {
         double sumX = 0.0;
         double sumY = 0.0;
         int count = 0;
+        Translation2d center = null;
 
         public void add(GamePiece piece) {
             sumX += piece.translation.getX();
@@ -43,10 +45,16 @@ public abstract class ObjectVision {
         }
 
         public Translation2d getCenter() {
-            return new Translation2d(
+            center = new Translation2d(
                 sumX / count,
                 sumY / count
             );
+            return center;
+        }
+
+        public double calculateScore(Pose2d robotPose) {
+            if(center == null) getCenter();
+            return robotPose.getTranslation().getDistance(center) * ODVisionConstants.kDistanceWeight + count * ODVisionConstants.kPieceCountWeight;
         }
     }
 
@@ -56,6 +64,7 @@ public abstract class ObjectVision {
 
         var table = NetworkTableInstance.getDefault().getTable("Vision/Object-Detection/" + ODVisionConstants.kCameraID);
         objectPoses = table.getStructArrayTopic("Object Poses", Pose2d.struct).publish();
+        clusterPoses = table.getStructArrayTopic("Cluster Poses", Pose2d.struct).publish();
         averageObjectPose = table.getStructTopic("Average Pose", Pose2d.struct).publish();
         bestObjectPose = table.getStructTopic("Best Pose", Pose2d.struct).publish();
     }
@@ -65,6 +74,10 @@ public abstract class ObjectVision {
     protected void updateTelemetry() {
         if(RobotContainer.kTelemetryVerbosity == TelemetryVerbosity.HIGH) {
             objectPoses.accept(getObjectPoses().toArray(new Pose2d[gamePieces.size()]));
+            var clusters = getClusters();
+            var poses = new ArrayList<Pose2d>(clusters.size());
+            clusters.forEach((cluster) -> poses.add(new Pose2d(cluster.getCenter(), Rotation2d.kZero)));
+            clusterPoses.accept(poses.toArray(new Pose2d[poses.size()]));
         }
         if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
             var avgOpt = getAverageObjectLocation();
@@ -151,6 +164,10 @@ public abstract class ObjectVision {
 
         return clusters;
     }
+
+    // public Optional<Cluster> getBestCluster() {
+    //     return 
+    // }
 
         // Based off algorithm from FRC 1678
     protected static Translation2d getRobotToObject(double tx, double ty) {

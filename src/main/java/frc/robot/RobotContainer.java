@@ -118,7 +118,7 @@ public class RobotContainer {
         // m_intakePivot.isIntakeDeployed());
         private final TurretS m_turret = new NoneTurretS();
 
-        @Logged(name = "ObjectDetection")
+        // @Logged(name = "ObjectDetection")
         private final ObjectVision m_objectVision = new NoneODVision(()->m_drivetrain.state.Pose);
 
         private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
@@ -146,6 +146,10 @@ public class RobotContainer {
                 SmartDashboard.putData("Auto Mode", m_chooser);
                 configureBindings();
 
+        }
+
+        public void periodic() {
+                m_objectVision.update();
         }
 
         public double xButtonPressedTime = 0;

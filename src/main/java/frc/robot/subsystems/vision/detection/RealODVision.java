@@ -33,6 +33,9 @@ public class RealODVision extends ObjectVision {
         private static final Distance kClusterRadius = Inches.of(20);
 
         public static final double kClusterTolerance = Math.pow(kClusterRadius.in(Meters), 2);
+
+        public static final double kDistanceWeight = 0;
+        public static final double kPieceCountWeight = 0;
     }
 
     private Limelight camera = new Limelight(ODVisionConstants.kCameraID);
@@ -56,6 +59,5 @@ public class RealODVision extends ObjectVision {
 
         updateTelemetry();
     }
-
     
 }
