@@ -112,8 +112,8 @@ public class RobotContainer {
         // m_intakePivot.isIntakeDeployed());
         private final TurretS m_turret = new NoneTurretS();
 
-        private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-                        m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
+    private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
+            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
         private final AutoFactory autoFactory;
         private Mechanism2d VISUALIZER;
@@ -130,47 +130,47 @@ public class RobotContainer {
 
                 SmartDashboard.putData("Visualzer", VISUALIZER);
 
-                autoFactory = m_drivetrain.createAutoFactory();
-                autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,
-                                m_turret,
-                                m_indexer, m_spindexer, m_flywheel);
-                SmartDashboard.putData("Auto Mode", m_chooser);
-                configureBindings();
+        autoFactory = m_drivetrain.createAutoFactory();
+        autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
+                m_indexer, m_spindexer, m_flywheel);
+        SmartDashboard.putData("Auto Mode", m_chooser);
+        setDefaultCommands();
+        configureBindings();
 
         }
 
         public double xButtonPressedTime = 0;
         public boolean intakeState = false;
 
-        private void configureBindings() {
-                // Note that X is defined as forward according to WPILib convention,
-                // and Y is defined as to the left according to WPILib convention.
-                m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-                                m_drivetrain.applyRequest(
-                                                () -> {
-                                                        var xSpeed = MathUtil.applyDeadband(-joystick.getLeftY(), 0.1)
-                                                                        * 4.2;
-                                                        var ySpeed = MathUtil.applyDeadband(-joystick.getLeftX(), 0.1)
-                                                                        * 4.2;
-                                                        var rotationSpeed = MathUtil.applyDeadband(
-                                                                        -joystick.getRightX(), 0.1) * 2 * Math.PI;
+        private void setDefaultCommands() {
+                m_turret.setDefaultCommand(m_turret.aimAtHub());
+                m_hood.setDefaultCommand(m_hood.autoHoodAngle());
+                
+        }
 
-                                                        if (DriverStation.isAutonomous()) {
-
-                                                                return m_driveRequest.withVelocityX(0).withVelocityY(0)
-                                                                                .withRotationalRate(0);
-                                                        }
-                                                        return m_driveRequest
-                                                                        .withVelocityX(
-                                                                                        xSpeed) // Drive forward with
-                                                                                                // negative Y (forward)
-                                                                        .withVelocityY(
-                                                                                        ySpeed) // Drive left with
-                                                                                                // negative X (left)
-                                                                        .withRotationalRate(
-                                                                                        rotationSpeed);
-                                                } // Drive counterclockwise with negative X (left)
-                                ));
+    private void configureBindings() {
+        // Note that X is defined as forward according to WPILib convention,
+        // and Y is defined as to the left according to WPILib convention.
+        m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+                m_drivetrain.applyRequest(
+                        () -> {
+                                var xSpeed = MathUtil.applyDeadband(-joystick.getLeftY(), 0.1) * 4.2;
+                                var ySpeed = MathUtil.applyDeadband(-joystick.getLeftX(), 0.1) * 4.2;
+                                var rotationSpeed = MathUtil.applyDeadband(-joystick.getRightX(), 0.1) * 2 * Math.PI;
+                                if(DriverStation.isAutonomous()) {
+                                        return m_driveRequest.withVelocityX(0).withVelocityY(0)
+                                                        .withRotationalRate(0);
+                                }
+                                return m_driveRequest
+                                                .withVelocityX(
+                                                                xSpeed) // Drive forward with
+                                                                        // negative Y (forward)
+                                                .withVelocityY(
+                                                                ySpeed) // Drive left with
+                                                                        // negative X (left)
+                                                .withRotationalRate(
+                                                                rotationSpeed); // Drive counterclockwise with negative X (left)
+                        }));
 
                 // robot relative driving with D-pad
                 joystick.povCenter().whileFalse(driveIntakeRelativePOV());
@@ -182,7 +182,7 @@ public class RobotContainer {
                                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
                 // A intake toggle
-                joystick.a().onTrue(m_AutoCommands.fuelIntake());
+                joystick.a().onTrue(m_autoCommands.fuelIntake());
 
                 // B button align to cardinal direction
                 joystick.b().whileTrue(
@@ -215,39 +215,27 @@ public class RobotContainer {
                                                 m_intakeRoller.setVoltage(Volts.of(0))));
 
                 // right trigger hold to score
-                joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
+                joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
                 joystick.leftBumper().whileTrue(
                                 AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
                 joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() -> DegreesPerSecond.of(1000)));
                 joystick.rightBumper().onFalse(m_spindexer.setVelocity(() -> DegreesPerSecond.of(0)));
 
-                // joystick.leftBumper().whileTrue(m_indexer.setVoltage(() -> Volts.of(2)));
-                // joystick.leftBumper().onFalse(m_indexer.setVoltage(() -> Volts.of(0)));
-                // start button home turret
-                joystick.start()
-                                .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
-                // select button home all, reset on disable
-                // JS: This could be one parallel group, with
-                // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
-                joystick.back().onTrue(Commands.either(
-                                Commands.parallel(
-                                                m_turret.driveToHome(),
-                                                m_flywheel.resetEncoder(),
-                                                m_spindexer.resetEncoder(),
-                                                m_intakeRoller.resetEncoder(),
-                                                m_intakePivot.resetEncoder(),
-                                                m_indexer.resetEncoder(),
-                                                m_hood.resetEncoder()),
-                                Commands.parallel(
-                                                m_turret.resetEncoder(),
-                                                m_flywheel.resetEncoder(),
-                                                m_spindexer.resetEncoder(),
-                                                m_intakeRoller.resetEncoder(),
-                                                m_intakePivot.resetEncoder(),
-                                                m_indexer.resetEncoder(),
-                                                m_hood.resetEncoder()),
-                                () -> DriverStation.isEnabled()));
+        // start button home turret
+        joystick.start()
+                .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
+        // select button home all, reset on disable
+        // JS: This could be one parallel group, with m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
+        joystick.back().onTrue(Commands.parallel(
+                m_turret.driveToHome().onlyIf(()->DriverStation.isEnabled()),
+                m_turret.resetEncoder().onlyIf(()->DriverStation.isDisabled()),
+                m_flywheel.resetEncoder(),
+                m_spindexer.resetEncoder(),
+                m_intakeRoller.resetEncoder(),
+                m_intakePivot.resetEncoder(),
+                m_indexer.resetEncoder(),
+                m_hood.resetEncoder()));
 
                 m_drivetrain.registerTelemetry(logger::telemeterize);
                 // JS: Why is this a deferred proxy?
