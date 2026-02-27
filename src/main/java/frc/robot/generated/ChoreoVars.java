@@ -21,16 +21,16 @@ public final class ChoreoVars {
         public static final Pose2d BALLR1 = new Pose2d(6.917, 1.351, Rotation2d.fromRadians(0.785));
         public static final Pose2d CL1 = new Pose2d(1.586, 4.176, Rotation2d.kZero);
         public static final Pose2d CLT = new Pose2d(1.754, 4.146, Rotation2d.kZero);
-        public static final Pose2d HELPL1 = new Pose2d(8.976, 7.513, Rotation2d.kZero);
+        public static final Pose2d DEPOTEND = new Pose2d(0.555, 5.975, Rotation2d.fromRadians(3.132));
+        public static final Pose2d DEPOTSTART = new Pose2d(0.973, 5.975, Rotation2d.fromRadians(3.142));
+        public static final Pose2d HELPD1 = new Pose2d(2.61, 7.375, Rotation2d.fromRadians(3.142));
+        public static final Pose2d HELPL1 = new Pose2d(8.976, 7.3, Rotation2d.kZero);
         public static final Pose2d HELPL2 = new Pose2d(6.327, 7.355, Rotation2d.fromRadians(-1.571));
-        public static final Pose2d HELPR1 = new Pose2d(8.976, 0.539, Rotation2d.kZero);
+        public static final Pose2d HELPR1 = new Pose2d(8.976, 0.752, Rotation2d.kZero);
         public static final Pose2d STA1 = new Pose2d(0.474, 0.661, Rotation2d.kZero);
+        public static final Pose2d STOPL1 = new Pose2d(8.284, 4.586, Rotation2d.fromRadians(4.712));
         public static final Pose2d TRL1 = new Pose2d(4.403, 7.513, Rotation2d.kZero);
         public static final Pose2d TRR1 = new Pose2d(4.403, 195.329, Rotation2d.kZero);
-        public static final Pose2d STOPL1 = new Pose2d(8.284, 4.586, Rotation2d.fromRadians(4.712));
-        public static final Pose2d DEPOTSTART = new Pose2d(0.973, 5.975, Rotation2d.fromRadians(3.142));
-        public static final Pose2d DEPOTEND = new Pose2d(0.555, 5.975, Rotation2d.fromRadians(3.132));
-        public static final Pose2d HELPD1 = new Pose2d(2.61, 7.375, Rotation2d.fromRadians(3.142));
 
         private Poses() {}
     }

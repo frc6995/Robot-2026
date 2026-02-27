@@ -79,26 +79,18 @@ public class AutoCommands {
      */
     public Command APToIntake(Pose2d helpPose, Distance helpPoseTolerance, Pose2d intakePose,
             Rotation2d intakePoseEntryAngle, Distance intakePoseTolerance, Pose2d stopPose) {
-
         return Commands.deadline(
                 Commands.sequence(
-
                         new AutoAlign(helpPose, m_drivebase,
                                 AutoAlign.kDefaultVelocityLimitedProfile).until(
-                                        TriggerUtil.isWithinRadius(
-                                                () -> helpPose.getTranslation(),
-                                                () -> m_drivebase.state.Pose,
-                                                () -> helpPoseTolerance)),
+                                        TriggerUtil.isWithinRadius(() -> helpPose.getTranslation(),
+                                                () -> m_drivebase.state.Pose, () -> helpPoseTolerance)),
                         new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
                                 AutoAlign.kDefaultVelocityLimitedProfile).until(
-                                        TriggerUtil.isWithinRadius(
-                                                () -> intakePose.getTranslation(),
-                                                () -> m_drivebase.state.Pose,
-                                                () -> intakePoseTolerance)),
-                        new AutoAlign(stopPose, m_drivebase,
-                                AutoAlign.kSlowDriveProfile)),
-                Commands.parallel(fuelIntake(),
-                        m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
+                                        TriggerUtil.isWithinRadius(() -> intakePose.getTranslation(),
+                                                () -> m_drivebase.state.Pose, () -> intakePoseTolerance)),
+                        new AutoAlign(stopPose, m_drivebase, AutoAlign.kSlowDriveProfile)),
+                Commands.parallel(fuelIntake(), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
     }
 
     /**
@@ -112,20 +104,14 @@ public class AutoCommands {
     public Command APtoDepot(Pose2d helpPose, Distance helpPoseTolerance) {
         return Commands.deadline(
                 Commands.sequence(
-
                         new AutoAlign(helpPose, m_drivebase,
                                 AutoAlign.kDefaultVelocityLimitedProfile).until(
-                                        TriggerUtil.isWithinRadius(
-                                                () -> helpPose.getTranslation(),
-                                                () -> m_drivebase.state.Pose,
-                                                () -> helpPoseTolerance)),
-                        new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(),
-                                m_drivebase,
+                                        TriggerUtil.isWithinRadius(() -> helpPose.getTranslation(),
+                                                () -> m_drivebase.state.Pose, () -> helpPoseTolerance)),
+                        new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(), m_drivebase,
                                 AutoAlign.kDefaultVelocityLimitedProfile).until(
                                         TriggerUtil.isWithinRadius(
-                                                () -> POI.DEPOT_START
-                                                        .get()
-                                                        .getTranslation(),
+                                                () -> POI.DEPOT_START.get().getTranslation(),
                                                 () -> m_drivebase.state.Pose,
                                                 () -> Meters.of(0.2))),
                         new AutoAlign(POI.DEPOT_END.get(), m_drivebase,
@@ -209,34 +195,6 @@ public class AutoCommands {
 
     }
 
-    /**
-     * Command that returns robot from intake that starts with Choreo path
-     * 
-     * @param choreoCommand        Choreo command to start with
-     * @param helpPose             Pose to invoke tolerance (radius) from for
-     *                             stoping the choreo path
-     * @param helpPose             Tolerance (radius) from help pose for stoping the
-     *                             choreo path
-     * @param targetpose           Target pose to autoallign to
-     * @param targetPoseEntryAngle
-     * @return Command that returns robot from intake that starts with a Choreo path
-     */
-    public Command choreoBackFromIntake(
-            Command choreoCommand,
-            Pose2d helpPose,
-            Distance helpPoseTolerance,
-            Pose2d targetpose,
-            Rotation2d targetPoseEntryAngle) {
-        return Commands.sequence(
-                Commands.waitUntil(() -> m_hood.isHoodSafe()),
-                choreoCommand.until(
-                        TriggerUtil.isWithinRadius(
-                                () -> helpPose.getTranslation(),
-                                () -> m_drivebase.state.Pose,
-                                () -> helpPoseTolerance)),
-                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase));
-
-    }
 
     /**
      * Command that aligns to target pose and climbs
@@ -267,8 +225,7 @@ public class AutoCommands {
     public Command Score() {
         return Commands.sequence(
                 m_hood.autoHoodAngle(),
-                Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint()
-                        && m_flywheel.atSetpoint()),
+                Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint() && m_flywheel.atSetpoint()),
                 Commands.parallel(
                         m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
                         m_Spindexer.setVelocity(

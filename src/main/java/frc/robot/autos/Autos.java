@@ -47,20 +47,6 @@ public class Autos {
     private final SpindexerS m_spindexer;
     private final FlyWheelS m_FlyWheel;
 
-    /*
-     * . CHOREO AUTO EXAMPLE
-     * 
-     * String choreoAutoName = "Choreo Auto";
-     * 
-     * public AutoRoutine choreoAuto() {
-     * final AutoRoutine routine = factory.newRoutine(choreoAutoName);
-     * final AutoTrajectory traj = routine.trajectory("OP");
-     * routine.active().onTrue(
-     * traj.resetOdometry()
-     * .andThen(traj.cmd()));
-     * return routine;
-     * }
-     */
     public Autos(CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
             IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer,
             SpindexerS spindexer, FlyWheelS flyWheel) {
@@ -88,83 +74,50 @@ public class Autos {
 
                     c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
                             POI.DEPOT_HELP.get(), POI.TRL1Entry.get()));
+
                     c.addCommands(autoCommands.Score().withTimeout(Seconds.of(2)));
                 }));
 
         autos.put("2x test",
                 () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(
-                            autoCommands.APToIntake(POI.HELPL1.get(),
-                                    Meters.of(2.5),
-                                    POI.BALLL2.get(),
-                                    POI.BALLL2Entry.get(),
-                                    Meters.of(0.4),
-                                    POI.STOPL1.get()));
-                    c.addCommands(
-                            autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                    POI.HELPL2Entry.get(),
-                                    Meters.of(2.0),
-                                    POI.TRL1.get(),
-                                    POI.TRL1Entry.get()
+                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(2.5), POI.BALLL2.get(),
+                            POI.BALLL2Entry.get(), Meters.of(0.4), POI.STOPL1.get()));
 
-                            ));
-                    c.addCommands(
-                            autoCommands.Score().withTimeout(Seconds.of(2)));
-                    c.addCommands(
-                            autoCommands.APToIntake(POI.HELPL1.get(),
-                                    Meters.of(2.5),
-                                    POI.BALLL2.get(),
-                                    POI.BALLL2Entry.get(),
-                                    Meters.of(0.4),
-                                    POI.STOPL1.get()));
-                    c.addCommands(
-                            autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                                    POI.HELPL2Entry.get(),
-                                    Meters.of(2.0),
-                                    POI.TRL1.get(),
-                                    POI.TRL1Entry.get()
+                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
+                            POI.TRL1.get(), POI.TRL1Entry.get()));
 
-                            ));
-                    c.addCommands(
-                            (autoCommands.Score().withTimeout(Seconds.of(2))));
+                    c.addCommands(autoCommands.Score().withTimeout(Seconds.of(2)));
+
+                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(2.5), POI.BALLL2.get(),
+                            POI.BALLL2Entry.get(), Meters.of(0.4), POI.STOPL1.get()));
+
+                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
+                            POI.TRL1.get(), POI.TRL1Entry.get()));
+
+                    c.addCommands((autoCommands.Score().withTimeout(Seconds.of(2))));
                 }));
 
         autos.put("Choreo-test", () -> auto(POI.TRL1.get(), c -> {
-
-            c.addCommands(autoCommands.choreoToIntake(run, POI.HELPL1.get(),
-                    Meters.of(2.0),
-                    POI.BALLL2.get(),
-                    POI.BALLL2Entry.get(),
-                    Meters.of(0.15),
-                    Seconds.of(0.5)));
+            c.addCommands(autoCommands.choreoToIntake(run, POI.HELPL1.get(), Meters.of(2.0), POI.BALLL2.get(),
+                    POI.BALLL2Entry.get(), Meters.of(0.15), Seconds.of(0.5)));
         }));
 
         autos.put("DEPOT L center-line 1x tune",
                 () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(
-                            autoCommands.APToIntake(POI.HELPL1.get(),
-                                    Meters.of(3.7),
-                                    POI.BALLL2.get(),
-                                    POI.BALLL2Entry.get(),
-                                    Meters.of(0.12),
-                                    POI.STOPL1.get()
+                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(3.7), POI.BALLL2.get(),
+                            POI.BALLL2Entry.get(), Meters.of(0.12), POI.STOPL1.get()));
 
-                            ));
-                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                            POI.HELPL2Entry.get(),
-                            Meters.of(2.0),
-                            POI.DEPOT_HELP.get(),
-                            POI.TRL1Entry.get())
+                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(2.0),
+                            POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
                             .until(
                                     TriggerUtil.isWithinRadius(
                                             () -> POI.TRL1.get()
                                                     .getTranslation(),
                                             () -> m_drivebase.state.Pose,
                                             () -> Meters.of(0.3))));
+
                     c.addCommands(autoCommands.Score().withTimeout(Seconds.of(2))
-                            .alongWith(autoCommands.APtoDepot(
-                                    POI.DEPOT_HELP.get(),
-                                    Meters.of(1.5))));
+                            .alongWith(autoCommands.APtoDepot(POI.DEPOT_HELP.get(), Meters.of(1.5))));
                 }));
 
         autos.put("Depot test", () -> auto(POI.TRL1.get(), c -> {
