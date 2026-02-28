@@ -186,11 +186,12 @@ public class AutoCommands {
                         () -> {
                                 Optional<Cluster> clusterOpt = m_objectVision.getBestCluster();
                                 if(clusterOpt.isPresent()) {
-                                        var at = new AutoAlign(new Pose2d(clusterOpt.get().getCenter(), m_drivebase.getGyroRotation().plus(Rotation2d.k180deg)), m_drivebase);
-                                        return Commands.parallel(
-                                                at,
-                                                fuelIntake()
-                                        );
+                                    var clusterPose = clusterOpt.get().getCenter();
+                                    var at = new AutoAlign(new Pose2d(clusterPose, clusterPose.minus(m_drivebase.state.Pose.getTranslation()).getAngle()), m_drivebase, AutoAlign.kDefaultVelocityLimitedProfile);
+                                    return Commands.parallel(
+                                            at,
+                                            fuelIntake()
+                                    );
                                 }
                                 return Commands.none();
                         },

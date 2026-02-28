@@ -107,26 +107,51 @@ public class Autos {
 
         autos.put("L GPD 1x test",
                 () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(
-    defaultAPToCenterLineCommandLeft.get().until(
-        () -> m_objectVision.getBestCluster().isPresent() 
-        && TriggerUtil.isWithinTolerance(
-            () -> m_drivebase.state.Pose.getRotation().getDegrees(), 
-            () -> 90.0, 
-            () -> 15.0
-        ).getAsBoolean()
-    )
-);
+                    c.addCommands(defaultAPToCenterLineCommandLeft.get().until(
+                            () -> m_objectVision.getBestCluster().isPresent()
+                                    && TriggerUtil.isWithinTolerance(
+                                            () -> m_drivebase.state.Pose.getRotation().getDegrees(),
+                                            () -> 90.0,
+                                            () -> 15.0).getAsBoolean()));
 
-                    c.addCommands(autoCommands.APToBestCluster());
+                    c.addCommands(autoCommands.APToBestCluster()
+                   .withTimeout(1.5)
+                                    );
 
                     c.addCommands(defaultAPBackToStartCommandLeft.get());
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
+        autos.put("2x Left GPD #2",
+                () -> auto(POI.TRL1.get(), c -> {
+                    c.addCommands(defaultAPToCenterLineCommandLeft.get());
 
-        autos.put("2x test",
+                    c.addCommands(defaultAPBackToStartCommandLeft.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+
+                    c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(3.5), POI.BALLL3.get(),
+                            POI.BALLL2Entry.get(), Meters.of(0.1), POI.STOPL2.get())
+                            .until(() -> m_objectVision.getBestCluster().isPresent()
+                                    && TriggerUtil.isWithinTolerance(
+                                            () -> m_drivebase.state.Pose.getRotation().getDegrees(),
+                                            () -> 90.0,
+                                            () -> 15.0).getAsBoolean()));
+
+                                                                c.addCommands(autoCommands.APToBestCluster()
+                                                                               .withTimeout(1.5)
+                                                            );
+
+
+                    c.addCommands(
+                            autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2CloseEntry.get(), Meters.of(2.0),
+                                    POI.TRL1.get(), POI.TRL1Entry.get()));
+
+                    c.addCommands((autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)));
+                }));
+
+        autos.put("2x Left Preplanned",
                 () -> auto(POI.TRL1.get(), c -> {
                     c.addCommands(defaultAPToCenterLineCommandLeft.get());
 

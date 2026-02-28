@@ -13,8 +13,8 @@ public class NoneODVision extends ObjectVision {
         
         for(int i = 0; i < 15; i++) {
             Translation2d newPiece = new Translation2d(
-                (Math.random() + 1.5) * 3.0,
-                Math.random() * 3.0
+                (Math.random() + 10.0) * 1.0,
+                (Math.random()+ 2.7) * 1.0
             );
 
             gamePieces.add(
