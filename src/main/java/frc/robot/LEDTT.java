@@ -2,23 +2,8 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+//package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.configs.CANdleConfiguration;
-import com.ctre.phoenix6.controls.*;
-import com.ctre.phoenix6.hardware.CANdle;
-import com.ctre.phoenix6.signals.AnimationDirectionValue;
-import com.ctre.phoenix6.signals.RGBWColor;
-import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
-import com.ctre.phoenix6.signals.StripTypeValue;
-
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -26,21 +11,21 @@ import edu.wpi.first.wpilibj.util.Color;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class LEDTT extends TimedRobot {
+/**public class LEDTT extends TimedRobot {
     /* color can be constructed from RGBW, a WPILib Color/Color8Bit, HSV, or hex */
-    private final int CANdleID = 1;
+   // private final int CANdleID = 1;
 
-    public static final RGBWColor kGreen = new RGBWColor(0, 255, 0, 0);
-    public static final RGBWColor kWhite = new RGBWColor(Color.kWhite).scaleBrightness(0.5);
-    private static final RGBWColor kViolet = RGBWColor.fromHSV(Degrees.of(270), 0.9, 0.8);
-    private static final RGBWColor kRed = RGBWColor.fromHex("#D9000000").orElseThrow();
+    //public static final RGBWColor kGreen = new RGBWColor(0, 255, 0, 0);
+    //public static final RGBWColor kWhite = new RGBWColor(Color.kWhite).scaleBrightness(0.5);
+   // private static final RGBWColor kViolet = RGBWColor.fromHSV(Degrees.of(270), 0.9, 0.8);
+   // private static final RGBWColor kRed = RGBWColor.fromHex("#D9000000").orElseThrow();
 
     /*
      * Start and end index for LED animations.
      * 0-7 are onboard, 8-399 are an external strip.
      * CANdle supports 8 animation slots (0-7).
      */
-    private static final int kSlot0StartIdx = 8;
+   /*  private static final int kSlot0StartIdx = 8;
     private static final int kSlot0EndIdx = 37;
 
     private static final int kSlot1StartIdx = 38;
@@ -70,34 +55,34 @@ public class LEDTT extends TimedRobot {
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
-     */
-    public LEDTT() {
-        /* Configure CANdle */
+     
+    public LEDTT()
+        /* Configure CANdle 
         var cfg = new CANdleConfiguration();
-        /* set the LED strip type and brightness */
+        /* set the LED strip type and brightness 
         cfg.LED.StripType = StripTypeValue.GRB;
         cfg.LED.BrightnessScalar = 0.5;
-        /* disable status LED when being controlled */
+        /* disable status LED when being controlled 
         cfg.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Disabled;
 
         m_candle.getConfigurator().apply(cfg);
 
-        /* clear all previous animations */
+        /* clear all previous animations 
         for (int i = 0; i < 8; ++i) {
             m_candle.setControl(new EmptyAnimation(i));
         }
-        /* set the onboard LEDs to a solid color */
+        /* set the onboard LEDs to a solid color 
         m_candle.setControl(new SolidColor(0, 3).withColor(kGreen));
         m_candle.setControl(new SolidColor(4, 7).withColor(kWhite));
 
-        /* add animations to chooser for slot 0 */
+        /* add animations to chooser for slot 0 
         m_anim0Chooser.setDefaultOption("Color Flow", AnimationType.ColorFlow);
         m_anim0Chooser.addOption("Rainbow", AnimationType.Rainbow);
         m_anim0Chooser.addOption("Twinkle", AnimationType.Twinkle);
         m_anim0Chooser.addOption("Twinkle Off", AnimationType.TwinkleOff);
         m_anim0Chooser.addOption("Fire", AnimationType.Fire);
 
-        /* add animations to chooser for slot 1 */
+        /* add animations to chooser for slot 1 
         m_anim1Chooser.setDefaultOption("Larson", AnimationType.Larson);
         m_anim1Chooser.addOption("RGB Fade", AnimationType.RgbFade);
         m_anim1Chooser.addOption("Single Fade", AnimationType.SingleFade);
@@ -107,10 +92,10 @@ public class LEDTT extends TimedRobot {
         SmartDashboard.putData("Animation 0", m_anim0Chooser);
         SmartDashboard.putData("Animation 1", m_anim1Chooser);
     }
-
+    
     @Override
     public void robotPeriodic() {
-        /* if the selection for slot 0 changes, change animations */
+        /* if the selection for slot 0 changes, change animations 
         final var anim0Selection = m_anim0Chooser.getSelected();
         if (m_anim0State != anim0Selection) {
             m_anim0State = anim0Selection;
@@ -148,7 +133,7 @@ public class LEDTT extends TimedRobot {
             }
         }
 
-        /* if the selection for slot 1 changes, change animations */
+        /* if the selection for slot 1 changes, change animations 
         final var anim1Selection = m_anim1Chooser.getSelected();
         if (m_anim1State != anim1Selection) {
             m_anim1State = anim1Selection;
@@ -179,7 +164,7 @@ public class LEDTT extends TimedRobot {
                     );
                     break;
                 case Fire:
-                    /* direction can be reversed by either the Direction parameter or switching start and end */
+                    /* direction can be reversed by either the Direction parameter or switching start and end 
                     m_candle.setControl(
                         new FireAnimation(kSlot1StartIdx, kSlot1EndIdx).withSlot(1)
                             .withDirection(AnimationDirectionValue.Backward)
@@ -212,3 +197,5 @@ public class LEDTT extends TimedRobot {
     @Override
     public void simulationPeriodic() {}
 }
+
+*/

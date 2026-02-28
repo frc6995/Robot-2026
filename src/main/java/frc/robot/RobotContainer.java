@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
+import javax.crypto.KeyAgreement;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
@@ -29,6 +31,8 @@ import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import com.ctre.phoenix6.hardware.CANdle;
+
 
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.NoneFlyWheelS;
@@ -164,8 +168,8 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         // A intake toggle
-        joystick.a().whileTrue(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle));
+        joystick.a().onTrue(
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle).alongWith(m_RealledS.setColorCommand()));
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
                 // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));

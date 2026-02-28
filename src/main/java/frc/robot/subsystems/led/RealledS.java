@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.TunerConstants;
 
@@ -42,17 +43,13 @@ public class RealledS extends SubsystemBase {
 
         m_candle.getConfigurator().apply(cfg);
 
-        /* clear all previous animations */
-        for (int i = 0; i < 8; ++i) {
-            m_candle.setControl(new EmptyAnimation(i))
-            ;
-        }
-        setDefaultCommand(null);
-        /* set the onboard LEDs to a solid color */
-
     }  
 
 
+
+    public Command setColorCommand() {
+    return run(() -> m_candle.setControl(new SolidColor(0, 60).withColor(kGreen)));
+}
 
     
 }
