@@ -15,6 +15,7 @@ import frc.robot.subsystems.intakepivot.IntakePivotS;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.vision.detection.ObjectVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
@@ -47,6 +48,7 @@ public class Autos {
     private final IndexerS m_indexer;
     private final SpindexerS m_spindexer;
     private final FlyWheelS m_FlyWheel;
+    private final ObjectVision m_objectVision;
 
     /*
      * . CHOREO AUTO EXAMPLE
@@ -65,7 +67,7 @@ public class Autos {
     public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory,
             RobotContainer container, HoodS hood,
             IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer,
-            SpindexerS spindexer, FlyWheelS flyWheel) {
+            SpindexerS spindexer, FlyWheelS flyWheel, ObjectVision objectVision) {
         this.factory = factory;
         this.autoCommands = autoCommands;
         this.m_hood = hood;
@@ -76,6 +78,7 @@ public class Autos {
         this.m_indexer = indexer;
         this.m_spindexer = spindexer;
         this.m_FlyWheel = flyWheel;
+        this.m_objectVision = objectVision;
 
         // ============= PREDEFINED HELPERS =============
         Supplier<Command> defaultAPToCenterLineCommandLeft = () -> autoCommands.APToIntake(POI.HELPL1.get(),

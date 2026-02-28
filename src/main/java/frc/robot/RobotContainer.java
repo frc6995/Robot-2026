@@ -57,7 +57,10 @@ import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
-import frc.robot.subsystems.vision.RealVision;
+import frc.robot.subsystems.vision.apriltag.RealATVision;
+import frc.robot.subsystems.vision.detection.NoneODVision;
+import frc.robot.subsystems.vision.detection.ObjectVision;
+import frc.robot.subsystems.vision.detection.RealODVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.ClimbConstants;
@@ -65,8 +68,12 @@ import frc.robot.util.POI;
 import frc.robot.util.Telemetry;
 import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
 import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
+        public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.HIGH;
+
+
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                   // speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
@@ -109,8 +116,11 @@ public class RobotContainer {
 private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
 //private final TurretS m_turret = new NoneTurretS();
 
-    private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
+        // @Logged(name = "ObjectDetection")
+        private final ObjectVision m_objectVision = new RealODVision(()->m_drivetrain.state.Pose);
+
+        private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
+                        m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -130,12 +140,16 @@ private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, 
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,
                 m_turret,
-                m_indexer, m_spindexer, m_flywheel);
+                m_indexer, m_spindexer, m_flywheel, m_objectVision);
         SmartDashboard.putData("Auto Mode", m_chooser);
         setDefaultCommands();
         configureBindings();
 
-    }
+        }
+
+        public void periodic() {
+                m_objectVision.update();
+        }
 
     public double xButtonPressedTime = 0;
     public boolean intakeState = false;
@@ -212,6 +226,12 @@ private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, 
                         m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
                         m_intakeRoller.setVoltage(Volts.of(0))));
 
+                joystick.rightBumper().whileTrue(
+                        m_autoCommands.APToBestCluster()
+                );
+
+                // right trigger hold to score
+                joystick.rightTrigger().whileTrue(m_autoCommands.Score());
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 

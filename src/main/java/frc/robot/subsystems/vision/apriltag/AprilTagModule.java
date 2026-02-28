@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.vision.apriltag;
 
 import java.util.Optional;
 
@@ -7,12 +7,13 @@ import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructPublisher;
-import frc.robot.subsystems.vision.RealVision.VisionConstants;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.vision.apriltag.RealATVision.ATVisionConstants;
 import limelight.Limelight;
-import limelight.networktables.LimelightPoseEstimator;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.LimelightSettings.ImuMode;
 import limelight.networktables.LimelightSettings.LEDMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import limelight.networktables.PoseEstimate;
 import limelight.networktables.LimelightPoseEstimator.BotPose;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
@@ -21,7 +22,7 @@ import limelight.networktables.LimelightPoseEstimator.EstimationMode;
  * Wrapper class for a Yet Another Limelight Library {@link limelight.Limelight} object. 
  * Records vision data to NetworkTables for debugging. 
  */
-public class VisionModule {
+public class AprilTagModule {
     private final Limelight limelight;
 
     private final NetworkTable moduleSubTable;
@@ -35,21 +36,15 @@ public class VisionModule {
     private EstimationMode defaultMode;
     private EstimationMode lastMode;
 
-    private LimelightPoseEstimator mt1PoseEstimator;
-    private LimelightPoseEstimator mt2PoseEstimator;
-
-    public VisionModule(String limelightID, Pose3d offset, NetworkTable visionTable) {
+    public AprilTagModule(String limelightID, Pose3d offset, NetworkTable visionTable) {
         this.limelight = new Limelight(limelightID);
         limelight.getSettings()
             .withLimelightLEDMode(LEDMode.PipelineControl)
             .withCameraOffset(offset)
             .withImuMode(ImuMode.ExternalImu)
             .save();
-        
-        mt1PoseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
-        mt2PoseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
 
-        defaultMode = VisionConstants.kDefaultMode;
+        defaultMode = ATVisionConstants.kDefaultMode;
 
             // Publishers for Limelight data
         moduleSubTable = visionTable.getSubTable(limelightID);
@@ -65,7 +60,7 @@ public class VisionModule {
     }
 
     /**
-     * Must be called periodically in {@link frc.robot.subsystems.vision.RealVision#periodic()}
+     * Must be called periodically in {@link frc.robot.subsystems.vision.apriltag.RealATVision#periodic()}
      */
     public void periodic() {
         updateTelemetry();
@@ -78,11 +73,13 @@ public class VisionModule {
      * {@link limelight.networktables.LimelightPoseEstimator.EstimationMode}.
      */
     private void updateTelemetry() {
-        var poseSupp = getPose();
-        estimatePublisher.accept(poseSupp.isPresent() ? poseSupp.get().pose : new Pose3d());
-        isActivePublisher.accept(isActive());
-        modePublisher.accept(lastMode.toString());
-        defaultModePublisher.accept(defaultMode.toString());
+        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
+            var poseSupp = getPose();
+            estimatePublisher.accept(poseSupp.isPresent() ? poseSupp.get().pose : new Pose3d());
+            isActivePublisher.accept(isActive());
+            modePublisher.accept(lastMode.toString());
+            defaultModePublisher.accept(defaultMode.toString());
+        }
     }
 
     /**
@@ -97,7 +94,7 @@ public class VisionModule {
 
     /**
      * Retrieves the pose of the robot. Automatically swaps between MegaTag1 and MegaTag2 depending on the  
-     * {@link VisionModule#defaultMode}. Returns {@link java.util.Optional#empty()}
+     * {@link AprilTagModule#defaultMode}. Returns {@link java.util.Optional#empty()}
      * if there are no results.
      * 
      * @return The estimated pose if the Limelight has targets
@@ -121,8 +118,7 @@ public class VisionModule {
      */
     public Optional<PoseEstimate> getPoseMT2() {
         lastMode = EstimationMode.MEGATAG2;
-        return mt2PoseEstimator.getPoseEstimate();
-        // return BotPose.BLUE_MEGATAG2.get(limelight);
+        return BotPose.BLUE_MEGATAG2.get(limelight);
     }
 
     /**
@@ -132,8 +128,7 @@ public class VisionModule {
      */
     public Optional<PoseEstimate> getPoseMT1() {
         lastMode = EstimationMode.MEGATAG1;
-        return mt1PoseEstimator.getPoseEstimate();
-        // return BotPose.BLUE.get(limelight);
+        return BotPose.BLUE.get(limelight);
     }
 
     /**
