@@ -381,7 +381,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         var estimates = m_vision.getAllEstimates();
         for(var estimate : estimates) {
             if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.25) {
-                addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, VisionConstants.kVisionStdDevs);
+                addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.kVisionStdDevs);
             }
         }
     }
