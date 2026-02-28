@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision.detection;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
@@ -25,8 +26,8 @@ public class RealODVision extends ObjectVision {
     public static class ODVisionConstants {
         public static final String kCameraID = "limelight-front";
         public static final Pose3d kCameraOffset = new Pose3d(
-            new Translation3d(),
-            new Rotation3d()
+            new Translation3d(Inches.of(-11.25),Inches.of(0),Inches.of(20.5)),
+            new Rotation3d(Degrees.of(0),Degrees.of(-2),Degrees.of(0))
         );
         public static final Distance kGamePieceDiameter = Inches.of(5.91);
 
@@ -53,7 +54,7 @@ public class RealODVision extends ObjectVision {
             var detectorTargets = results.get().targets_Detector;
             for(var target : detectorTargets) {
                 Translation2d targetLocation = getRobotToObject(target.tx_nocrosshair, target.ty_nocrosshair);
-                gamePieces.add(new GamePiece(robotPose.get().getTranslation().plus(targetLocation), timer.get()));
+                gamePieces.add(new GamePiece(robotPose.get().getTranslation().plus(targetLocation).rotateAround(robotPose.get().getTranslation(), robotPose.get().getRotation()), timer.get()));
             }
         }
 

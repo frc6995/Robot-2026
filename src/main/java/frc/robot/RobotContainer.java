@@ -60,6 +60,7 @@ import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.apriltag.RealATVision;
 import frc.robot.subsystems.vision.detection.NoneODVision;
 import frc.robot.subsystems.vision.detection.ObjectVision;
+import frc.robot.subsystems.vision.detection.RealODVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.ClimbConstants;
@@ -119,7 +120,7 @@ public class RobotContainer {
         private final TurretS m_turret = new NoneTurretS();
 
         // @Logged(name = "ObjectDetection")
-        private final ObjectVision m_objectVision = new NoneODVision(()->m_drivetrain.state.Pose);
+        private final ObjectVision m_objectVision = new RealODVision(()->m_drivetrain.state.Pose);
 
         private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
                         m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
@@ -227,12 +228,16 @@ public class RobotContainer {
                                                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
                                                 m_intakeRoller.setVoltage(Volts.of(0))));
 
+                joystick.rightBumper().whileTrue(
+                        m_AutoCommands.APToBestCluster()
+                );
+
                 // right trigger hold to score
                 joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
 
                 joystick.leftBumper().whileTrue(
                                 AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
-                joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() -> DegreesPerSecond.of(3600)));
+                // joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() -> DegreesPerSecond.of(3600)));
                 joystick.rightBumper().onFalse(m_spindexer.setVelocity(() -> DegreesPerSecond.of(0)));
 
                 // joystick.leftBumper().whileTrue(m_indexer.setVoltage(() -> Volts.of(2)));

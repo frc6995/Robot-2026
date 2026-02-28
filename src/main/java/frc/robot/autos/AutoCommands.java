@@ -2,6 +2,9 @@ package frc.robot.autos;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.Optional;
+import java.util.Set;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.therekrab.autopilot.APProfile;
 
@@ -13,6 +16,8 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
@@ -26,6 +31,7 @@ import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.detection.ObjectVision;
+import frc.robot.subsystems.vision.detection.ObjectVision.Cluster;
 import frc.robot.subsystems.spindexer.RealSpindexerS.SpindexerConstants;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.TriggerUtil;
@@ -226,11 +232,28 @@ public class AutoCommands {
 
         }
 
-        public Command APToAverageFuelPose() {
-            return Commands.parallel(
-                new AutoAlign(new Pose2d(m_objectVision.getAverageObjectLocation().get(), new Rotation2d()), m_drivebase),
-                fuelIntake()
-            );
+        // public Command APToAverageFuelPose() {
+        //     return Commands.parallel(
+        //         new AutoAlign(new Pose2d(m_objectVision.getAverageObjectLocation().get(), new Rotation2d()), m_drivebase),
+        //         fuelIntake()
+        //     );
+        // }
+
+        public Command APToBestCluster() {
+                return Commands.defer(
+                        () -> {
+                                Optional<Cluster> clusterOpt = m_objectVision.getBestCluster();
+                                if(clusterOpt.isPresent()) {
+                                        var at = new AutoAlign(new Pose2d(clusterOpt.get().getCenter(), m_drivebase.getGyroRotation().plus(Rotation2d.k180deg)), m_drivebase);
+                                        return Commands.parallel(
+                                                at,
+                                                fuelIntake()
+                                        );
+                                }
+                                return Commands.none();
+                        },
+                        Set.of(m_intakePivot,m_intakeRoller,m_drivebase)
+                );
         }
 
         public Command fuelIntake() {

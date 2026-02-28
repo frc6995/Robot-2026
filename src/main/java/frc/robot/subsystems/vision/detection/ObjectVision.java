@@ -1,5 +1,7 @@
 package frc.robot.subsystems.vision.detection;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -165,17 +167,23 @@ public abstract class ObjectVision {
         return clusters;
     }
 
-    // public Optional<Cluster> getBestCluster() {
-    //     return 
-    // }
+    public Optional<Cluster> getBestCluster() {
+        Optional<Cluster> best = Optional.empty();
+        for(Cluster cl : getClusters()) {
+            if(best.isEmpty() || cl.calculateScore(robotPose.get()) > best.get().calculateScore(robotPose.get())) {
+                best = Optional.of(cl);
+            }
+        }
+        return best;
+    }
 
         // Based off algorithm from FRC 1678
     protected static Translation2d getRobotToObject(double tx, double ty) {
         double totalAngleY = Units.degreesToRadians(-ty) - ODVisionConstants.kCameraOffset.getRotation().getY();
-        Distance distAwayY = ODVisionConstants.kCameraOffset.getMeasureZ().minus((ODVisionConstants.kGamePieceDiameter.div(2)).div(Math.tan(totalAngleY)));
-        // Distance distAwayY = Meters.of(
-        //     (VisionConstants.LL_OFFSETS[0].getMeasureZ().in(Meters) - (ODVisionConstants.kGamePieceDiameter.in(Meters) / 2.0)) / Math.tan(totalAngleY)
-        // );
+        // Distance distAwayY = ODVisionConstants.kCameraOffset.getMeasureZ().minus((ODVisionConstants.kGamePieceDiameter.div(2)).div(Math.tan(totalAngleY)));
+        Distance distAwayY = Meters.of(
+            (ODVisionConstants.kCameraOffset.getMeasureZ().in(Meters) - (ODVisionConstants.kGamePieceDiameter.in(Meters) / 2.0)) / Math.tan(totalAngleY)
+        );
 
         Distance distHypotenuseYToGround = BaseUnits.DistanceUnit.of(Math.hypot(
 				distAwayY.in(BaseUnits.DistanceUnit),
