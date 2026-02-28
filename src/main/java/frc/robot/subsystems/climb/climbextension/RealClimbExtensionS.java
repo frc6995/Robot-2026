@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
+import frc.robot.util.RobotVisualizer;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.ElevatorConfig;
@@ -122,6 +123,8 @@ public class RealClimbExtensionS extends ClimbExtensionS {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        double currentDistanceMeter = m_elevator.getHeight().in(Meters);
+        RobotVisualizer.updateExtend(currentDistanceMeter);
         m_elevator.updateTelemetry();
     }
 

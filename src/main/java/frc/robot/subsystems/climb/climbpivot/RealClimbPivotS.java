@@ -2,6 +2,7 @@ package frc.robot.subsystems.climb.climbpivot;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -14,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.util.ClimbConstants;
 import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
-
+import frc.robot.util.RobotVisualizer;
 import yams.mechanisms.config.ArmConfig;
 import yams.mechanisms.positional.Arm;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -110,6 +111,8 @@ public class RealClimbPivotS extends ClimbPivotS {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        double currentAngleRad = climbArm.getAngle().in(Radians);
+        RobotVisualizer.updatePivot(currentAngleRad);
         climbArm.updateTelemetry();
     }
 
