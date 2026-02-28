@@ -33,7 +33,7 @@ public class RealIndexerS extends IndexerS {
         public static final int kSupplyCurrentLimit = 10; 
         public static final int kGearRatio = 5;
             // Setpoints
-        public static final Voltage kIntakeVoltage = Volts.of(6.7);
+        public static final Voltage kSlowVoltage = Volts.of(6.0);
 
     }
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -51,7 +51,7 @@ public class RealIndexerS extends IndexerS {
     private SmartMotorController m_indexerController = new TalonFXWrapper(m_indexerMotor, DCMotor.getKrakenX44(1),smcConfig);
 
     public Command setVoltage(Supplier<Voltage> voltage) {  
-        return runOnce(() -> m_indexerController.setVoltage(voltage.get()));
+        return run(() -> m_indexerController.setVoltage(voltage.get())).finallyDo(() -> m_indexerController.setVoltage(Volts.zero()));
     }
 
     public Current getCurrent() {

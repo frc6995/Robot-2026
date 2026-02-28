@@ -52,7 +52,7 @@ public class RealSpindexerS extends SpindexerS {
         public static final double kD = 0;
         public static final AngularVelocity kVelocity = DegreesPerSecond.of(900);
         public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(90000000);
-        public static final Voltage kVoltage = Volts.of(4);
+        public static final Voltage kSlowVoltage = Volts.of(2);
         // Feedforward Constants
         public static final double kS = 0;
         // Motor Properties
@@ -105,7 +105,7 @@ public class RealSpindexerS extends SpindexerS {
      *         specified voltage to the motor.
      */
     public Command setVoltage(Supplier<Voltage> voltage) {
-        return runOnce(() -> m_spindexerController.setVoltage(voltage.get()));
+        return run(() -> m_spindexerController.setVoltage(voltage.get())).finallyDo(() -> m_spindexerController.setVoltage(Volts.zero()));
     }
 
     /**

@@ -175,11 +175,11 @@ public class AutoCommands {
     // auto hood angle command
     public Command Score() {
         return Commands.sequence(
-                m_hood.autoHoodAngle(),
-                Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint() && m_flywheel.atSetpoint()),
+             m_hood.autoHoodAngle(),
+               // Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint() && m_flywheel.atSetpoint()),
                 Commands.parallel(
-                        m_indexer.setVoltage(() -> IndexerConstants.kIntakeVoltage),
-                        m_Spindexer.setVelocity(
-                                () -> SpindexerConstants.kVelocity)));
+                        m_indexer.setVoltage(() -> IndexerConstants.kSlowVoltage),
+                        m_Spindexer.setVoltage(
+                                () -> SpindexerConstants.kSlowVoltage)));
     }
 }
