@@ -122,18 +122,18 @@ public class AutoAlign extends Command {
      * @param drivetrain Drivetrain subsystem
      */
     public AutoAlign(Pose2d targetPose, CommandSwerveDrivetrain drivetrain) {
-        this(targetPose, drivetrain, kDefaultProfile);
+        this(new APTarget(targetPose), drivetrain, kDefaultProfile);
     }
 
     /**
      * Uses default constraints, beeline path with custom profile
      * 
-     * @param targetPose Pose2d to align to
+     * @param target Pose2d to align to
      * @param drivetrain Drivetrain subsystem
-     * @param profile    APProfile to use for this alignment
+     * @param constraints    APProfile to use for this alignment
      */
-    public AutoAlign(Pose2d targetPose, CommandSwerveDrivetrain drivetrain, APProfile profile) {
-        this(new APTarget(targetPose), drivetrain, profile);
+    public AutoAlign(APTarget target, CommandSwerveDrivetrain drivetrain, APConstraints constraints) {
+        this(target, drivetrain, new APProfile(constraints));
     }
 
     /**
@@ -157,6 +157,10 @@ public class AutoAlign extends Command {
      */
     public AutoAlign(Pose2d targetPose, Rotation2d entryAngle, CommandSwerveDrivetrain drivetrain, APProfile profile) {
         this(new APTarget(targetPose).withEntryAngle(entryAngle), drivetrain, profile);
+    }
+
+    public AutoAlign(Pose2d targetPose, CommandSwerveDrivetrain drivetrain, APProfile profile) {
+        this(new APTarget(targetPose), drivetrain, profile);
     }
 
     /**

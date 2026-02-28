@@ -32,6 +32,8 @@ public class AprilTagModule {
     private final BooleanPublisher isActivePublisher;
     private final StringPublisher modePublisher;
     private final StringPublisher defaultModePublisher;
+    private PoseEstimate mt1Pose;
+    private PoseEstimate mt2Pose;
 
     private EstimationMode defaultMode;
     private EstimationMode lastMode;
@@ -54,6 +56,9 @@ public class AprilTagModule {
         modePublisher = moduleSubTable.getStringTopic("LastEstimateMode").publish();
         defaultModePublisher = moduleSubTable.getStringTopic("DefaultEstimateMode").publish();
         
+        mt1Pose = new PoseEstimate(limelight, "botpose_wpiblue", false);
+        mt2Pose = new PoseEstimate(limelight, "botpose_orb_wpiblue", true);
+
 
         robotToCameraPublisher.accept(offset);
         defaultModePublisher.setDefault(defaultMode.name());
@@ -118,7 +123,7 @@ public class AprilTagModule {
      */
     public Optional<PoseEstimate> getPoseMT2() {
         lastMode = EstimationMode.MEGATAG2;
-        return BotPose.BLUE_MEGATAG2.get(limelight);
+        return mt2Pose.getPoseEstimate();
     }
 
     /**
@@ -128,7 +133,7 @@ public class AprilTagModule {
      */
     public Optional<PoseEstimate> getPoseMT1() {
         lastMode = EstimationMode.MEGATAG1;
-        return BotPose.BLUE.get(limelight);
+        return mt1Pose.getPoseEstimate();
     }
 
     /**

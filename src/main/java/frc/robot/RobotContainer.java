@@ -71,8 +71,7 @@ import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
-        public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.HIGH;
-
+    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.HIGH;
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                   // speed
@@ -102,25 +101,28 @@ public class RobotContainer {
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
     @Logged(name = "Hood")
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    //private final HoodS m_hood = new NoneHoodS();
+    // private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, ()
+    // -> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new NoneHoodS();
     @Logged(name = "Indexer")
-    private final IndexerS m_indexer = new RealIndexerS();
+    private final IndexerS m_indexer = new NoneIndexerS();
     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new RealSpindexerS();
+    private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
-private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-//private final TurretS m_turret = new NoneTurretS();
+    // private final TurretS m_turret = new RealTurretS(() ->
+    // m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()->
+    // m_intakePivot.isIntakeDeployed());
+    private final TurretS m_turret = new NoneTurretS();
 
-        // @Logged(name = "ObjectDetection")
-        private final ObjectVision m_objectVision = new NoneODVision(()->m_drivetrain.state.Pose);
+    // @Logged(name = "ObjectDetection")
+    private final ObjectVision m_objectVision = new NoneODVision(() -> m_drivetrain.state.Pose);
 
-        private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-                        m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
+    private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
+            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -145,11 +147,11 @@ private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, 
         setDefaultCommands();
         configureBindings();
 
-        }
+    }
 
-        public void periodic() {
-                m_objectVision.update();
-        }
+    public void periodic() {
+        m_objectVision.update();
+    }
 
     public double xButtonPressedTime = 0;
     public boolean intakeState = false;
@@ -226,19 +228,20 @@ private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, 
                         m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
                         m_intakeRoller.setVoltage(Volts.of(0))));
 
-                joystick.rightBumper().whileTrue(
-                        m_autoCommands.APToBestCluster()
-                );
+        joystick.rightBumper().whileTrue(
+                m_autoCommands.APToBestCluster());
 
-                // right trigger hold to score
-                joystick.rightTrigger().whileTrue(m_autoCommands.Score());
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
-
+        // right trigger hold to score
+        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+        joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
         joystick.leftBumper().whileTrue(
                 AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
-        joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() -> DegreesPerSecond.of(1000)));
-        joystick.rightBumper().onFalse(m_spindexer.setVelocity(() -> DegreesPerSecond.of(0)));
+        // joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() ->
+        // DegreesPerSecond.of(1000)));
+        // joystick.rightBumper().onFalse(m_spindexer.setVelocity(() ->
+        // DegreesPerSecond.of(0)));
 
         // start button home turret
         joystick.start()
@@ -250,8 +253,7 @@ private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, 
                 Commands.either(
                         m_turret.driveToHome(),
                         m_turret.resetEncoder(),
-                        () -> DriverStation.isEnabled()
-                ),
+                        () -> DriverStation.isEnabled()),
                 m_flywheel.resetEncoder(),
                 m_spindexer.resetEncoder(),
                 m_intakeRoller.resetEncoder(),

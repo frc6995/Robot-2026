@@ -26,9 +26,8 @@ public class RealODVision extends ObjectVision {
     public static class ODVisionConstants {
         public static final String kCameraID = "limelight-front";
         public static final Pose3d kCameraOffset = new Pose3d(
-            new Translation3d(Inches.of(-11.25),Inches.of(0),Inches.of(20.5)),
-            new Rotation3d(Degrees.of(0),Degrees.of(-2),Degrees.of(0))
-        );
+                new Translation3d(Inches.of(-11.25), Inches.of(0), Inches.of(20.5)),
+                new Rotation3d(Degrees.of(0), Degrees.of(-2), Degrees.of(0)));
         public static final Distance kGamePieceDiameter = Inches.of(5.91);
 
         private static final Distance kClusterRadius = Inches.of(20);
@@ -50,15 +49,22 @@ public class RealODVision extends ObjectVision {
         gamePieces.clear();
         var results = camera.getLatestResults();
 
-        if(results.isPresent()) {
+        if (results.isPresent()) {
             var detectorTargets = results.get().targets_Detector;
-            for(var target : detectorTargets) {
+            for (var target : detectorTargets) {
                 Translation2d targetLocation = getRobotToObject(target.tx_nocrosshair, target.ty_nocrosshair);
-                gamePieces.add(new GamePiece(robotPose.get().getTranslation().plus(targetLocation).rotateAround(robotPose.get().getTranslation(), robotPose.get().getRotation()), timer.get()));
+                boolean isCloseEnoughToRobot = targetLocation.getDistance(Translation2d.kZero) < 0
+              //  && targetLocation.getDistance(Translation2d.kZero) > 100
+                ; // Distance is in
+                                                                                                    // meters
+                if (isCloseEnoughToRobot) {
+                    gamePieces.add(new GamePiece(robotPose.get().getTranslation().plus(targetLocation)
+                            .rotateAround(robotPose.get().getTranslation(), robotPose.get().getRotation()),
+                            timer.get()));
+                }
             }
         }
 
         updateTelemetry();
     }
-    
 }
