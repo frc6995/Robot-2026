@@ -15,6 +15,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -106,9 +107,8 @@ public class RobotContainer {
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
-    // private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-private final TurretS m_turret = new NoneTurretS();
-
+//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final TurretS m_turret = new NoneTurretS();
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
@@ -238,6 +238,12 @@ private final TurretS m_turret = new NoneTurretS();
                 m_intakePivot.resetEncoder(),
                 m_indexer.resetEncoder(),
                 m_hood.resetEncoder()));
+
+        joystick.a().onTrue(m_turret.driveToHome());
+        joystick.x().whileTrue(m_hood.autoHoodAngle());
+
+
+        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
         // JS: Why is this a deferred proxy?
