@@ -52,6 +52,12 @@ public class NoneTurretS extends TurretS {
         return Commands.none();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Command aimAtClosestPose(Supplier<Pose2d> drivebasePose, Supplier<Translation2d>... translations) {
+        return Commands.none();
+    }
+
     @Override
     public Command aimAtHub() {
         return Commands.none();
@@ -69,8 +75,8 @@ public class NoneTurretS extends TurretS {
     }
 
     @Override
-    public Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle) {
-        return () -> Rotation2d.fromDegrees(0);
+    public Supplier<Angle> applyDynamicLimits(Supplier<Angle> angle) {
+        return () -> Degrees.zero();
     }
 
     @Override

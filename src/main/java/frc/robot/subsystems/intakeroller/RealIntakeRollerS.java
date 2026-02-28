@@ -1,4 +1,4 @@
-
+// JS: Recommend fully using the FlyWheel class, even if it's just going to be voltage control. 
 package frc.robot.subsystems.intakeroller;
 
 
@@ -17,8 +17,10 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.generated.TunerConstants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
+import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
@@ -41,7 +43,10 @@ public class RealIntakeRollerS extends IntakeRollerS {
     public static final int kReduction = 3;
     public static final int kCANID = 32;
     public static final double kStatorCurrentLimit = 100;
-    public static final boolean kMotorInverted = false;
+    public static final boolean kMotorInverted = true;
+
+
+    public static final Voltage kDefaultIntake = Volts.of(8);
 
     public static final double kSimP = 0;
     public static final double kSimI = 0;
@@ -53,7 +58,7 @@ public class RealIntakeRollerS extends IntakeRollerS {
     public static final double kSimVelocity = 0;
     public static final double kSimAcceleration = 0;
 
-    public static final Voltage kIntakeVoltage = Volts.of(5);
+    public static final Voltage kIntakeVoltage = Volts.of(10);
     
     }
 
@@ -79,16 +84,15 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
   .withIdleMode(MotorMode.BRAKE)
   .withStatorCurrentLimit(Amps.of(IntakeRollerConstants.kStatorCurrentLimit));
 
-  private TalonFX motor = new TalonFX(IntakeRollerConstants.kCANID);
+  private TalonFX motor = new TalonFX(IntakeRollerConstants.kCANID, TunerConstants.kCANBus);
 
   private SmartMotorController talonFXSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig); 
-
- public Command setVoltage(Supplier<Voltage> volts) {
-        return Commands.run(() -> motor.setVoltage(volts.get().in(Volts)));
+  public Command setVoltage(Supplier<Voltage> volts) {
+    return run(() -> motor.setVoltage(volts.get().in(Volts)));
   }
 
   public Command setVoltage(Voltage volts) {
-    return Commands.runOnce(() -> motor.setVoltage(volts.in(Volts)));
+    return runOnce(() -> motor.setVoltage(volts.in(Volts)));
   }
 
 

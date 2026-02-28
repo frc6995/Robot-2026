@@ -26,6 +26,7 @@ public class VisionModule {
 
     private final NetworkTable moduleSubTable;
 
+    private final StructPublisher<Pose3d> robotToCameraPublisher;
     private final StructPublisher<Pose3d> estimatePublisher;
     private final BooleanPublisher isActivePublisher;
     private final StringPublisher modePublisher;
@@ -34,29 +35,32 @@ public class VisionModule {
     private EstimationMode defaultMode;
     private EstimationMode lastMode;
 
-    private LimelightPoseEstimator mt1PoseEstimator;
-    private LimelightPoseEstimator mt2PoseEstimator;
+    private PoseEstimate mt1Pose;
+    private PoseEstimate mt2Pose;
 
     public VisionModule(String limelightID, Pose3d offset, NetworkTable visionTable) {
         this.limelight = new Limelight(limelightID);
         limelight.getSettings()
             .withLimelightLEDMode(LEDMode.PipelineControl)
             .withCameraOffset(offset)
-            .withImuMode(ImuMode.InternalImu)
+            .withImuMode(ImuMode.ExternalImu)
             .save();
-        
-        mt1PoseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
-        mt2PoseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+
+        mt1Pose = new PoseEstimate(limelight, "botpose_wpiblue", false);
+        mt2Pose = new PoseEstimate(limelight, "botpose_orb_wpiblue", true);
 
         defaultMode = VisionConstants.kDefaultMode;
 
             // Publishers for Limelight data
         moduleSubTable = visionTable.getSubTable(limelightID);
+        robotToCameraPublisher = moduleSubTable.getStructTopic("CameraOffset", Pose3d.struct).publish();
         estimatePublisher = moduleSubTable.getStructTopic("PoseEstimate", Pose3d.struct).publish();
         isActivePublisher = moduleSubTable.getBooleanTopic("IsActive").publish();
         modePublisher = moduleSubTable.getStringTopic("LastEstimateMode").publish();
         defaultModePublisher = moduleSubTable.getStringTopic("DefaultEstimateMode").publish();
+        
 
+        robotToCameraPublisher.accept(offset);
         defaultModePublisher.setDefault(defaultMode.name());
     }
 
@@ -117,8 +121,7 @@ public class VisionModule {
      */
     public Optional<PoseEstimate> getPoseMT2() {
         lastMode = EstimationMode.MEGATAG2;
-        return mt2PoseEstimator.getPoseEstimate();
-        // return BotPose.BLUE_MEGATAG2.get(limelight);
+        return Optional.of(mt2Pose.refresh());
     }
 
     /**
@@ -128,8 +131,7 @@ public class VisionModule {
      */
     public Optional<PoseEstimate> getPoseMT1() {
         lastMode = EstimationMode.MEGATAG1;
-        return mt1PoseEstimator.getPoseEstimate();
-        // return BotPose.BLUE.get(limelight);
+        return Optional.of(mt1Pose.refresh());
     }
 
     /**

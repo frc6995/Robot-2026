@@ -2,6 +2,7 @@ package frc.robot.subsystems.spindexer;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -13,6 +14,6 @@ public abstract class SpindexerS extends SubsystemBase {
     public abstract Command setVoltage(Supplier<Voltage> voltage);
     public abstract Command setVelocity(Supplier<AngularVelocity> speed);
     public abstract Command resetEncoder();
-
+    @Logged
     public abstract Current getCurrent();
 }
