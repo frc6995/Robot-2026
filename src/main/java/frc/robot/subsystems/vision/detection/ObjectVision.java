@@ -33,6 +33,10 @@ public abstract class ObjectVision {
     protected StructPublisher<Pose2d> averageObjectPose;
     protected StructPublisher<Pose2d> bestObjectPose;
 
+    /**
+     * @param translation Translation2d
+     * @param detectionTime double 
+     */
     protected static record GamePiece(Translation2d translation, double detectionTime) {}
     public static class Cluster {
         double sumX = 0.0;
@@ -198,6 +202,11 @@ public abstract class ObjectVision {
         Distance distAwayX = distHypotenuseYToGround.times(Math.tan(totalAngleX)); // robot y
 
         return new Translation2d(distAwayY, distAwayX);
+    }
+
+    protected static Translation2d gamePieceToField(Translation2d gamepiece, Pose2d robotPose) {
+        return robotPose.getTranslation().plus(gamepiece)
+                .rotateAround(robotPose.getTranslation(), robotPose.getRotation());
     }
 
     protected static GamePiece getClosest(GamePiece one, GamePiece two, Translation2d origin) {
