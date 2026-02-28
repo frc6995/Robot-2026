@@ -95,19 +95,19 @@ public class RobotContainer {
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
     @Logged(name = "Hood")
-    //private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    private final HoodS m_hood = new NoneHoodS();
+    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    //private final HoodS m_hood = new NoneHoodS();
     @Logged(name = "Indexer")
-    private final IndexerS m_indexer = new NoneIndexerS();
+    private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new NoneSpindexerS();
+    private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")
-    // private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-private final TurretS m_turret = new NoneTurretS();
+private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+//private final TurretS m_turret = new NoneTurretS();
 
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
