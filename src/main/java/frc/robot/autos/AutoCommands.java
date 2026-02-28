@@ -268,8 +268,7 @@ public class AutoCommands {
         return Commands.race(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
                 new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
-                m_climbPivot.setAngle(() -> Degrees.of(0)),
-                m_climbExtension.setHeight(() -> Inches.of(5)));
+                m_climbPivot.setAngle(() -> Degrees.of(5)));
 
     }
 
