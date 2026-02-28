@@ -11,61 +11,65 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.generated.ChoreoVars;
+import static frc.robot.util.AllianceFlipUtil.flipped;
 
 public class POI {
-        // ============= POSES =============
+    // ============= POSES =============
 
-        // Center line intake poses
-        public static final Supplier<Pose2d> BALLL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLL1);
-        public static final Supplier<Pose2d> BALLR1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLR1);
-        public static final Supplier<Pose2d> BALLL2 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLL2);
-        public static final Supplier<Pose2d> BALLL3 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.BALLL3);
+    // Center line intake start poses
+    public static final Supplier<Pose2d> BALLL1 = flipped(ChoreoVars.Poses.BALLL1);
+    public static final Supplier<Pose2d> BALLR1 = flipped(ChoreoVars.Poses.BALLR1);
+    public static final Supplier<Pose2d> BALLL2 = flipped(ChoreoVars.Poses.BALLL2);
+    public static final Supplier<Pose2d> BALLL3 = flipped(ChoreoVars.Poses.BALLL3);
 
-        // Auto start poses
-        public static final Supplier<Pose2d> TRL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TRL1);
-        public static final Supplier<Pose2d> TRR1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.TRR1);
+    // Center line intake stop poses
+    public static final Supplier<Pose2d> STOPL1 = flipped(ChoreoVars.Poses.STOPL1);
+    public static final Supplier<Pose2d> STOPL2 = flipped(ChoreoVars.Poses.STOPL2);
 
-        // Autoalign help poses
-        public static final Supplier<Pose2d> HELPL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.HELPL1);
-        public static final Supplier<Pose2d> HELPR1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.HELPR1);
-        public static final Supplier<Pose2d> HELPL2 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.HELPL2);
+    // Auto start poses
+    public static final Supplier<Pose2d> TRL1 = flipped(ChoreoVars.Poses.TRL1);
+    public static final Supplier<Pose2d> TRR1 = flipped(ChoreoVars.Poses.TRR1);
 
-        // Climb poses
-        public static final Supplier<Pose2d> CL1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.CL1);
+    // Center line help poses
+    public static final Supplier<Pose2d> HELPL1 = flipped(ChoreoVars.Poses.HELPL1);
+    public static final Supplier<Pose2d> HELPR1 = flipped(ChoreoVars.Poses.HELPR1);
+    public static final Supplier<Pose2d> HELPL2 = flipped(ChoreoVars.Poses.HELPL2);
 
-        // Other poses
-        public static final Supplier<Pose2d> DEPOT = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.DEPOT);
-        public static final Supplier<Pose2d> STA1 = () -> AllianceFlipUtil.flipPose(ChoreoVars.Poses.STA1);
-            public static final Supplier<Pose2d> HUB1 = () -> AllianceFlipUtil.flipPose(new Pose2d(4.625, 4.05, new Rotation2d()));
+    // Climb poses
+    public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
 
-        // ============= ROTATIONS =============
+    // Depot poses
+    public static final Supplier<Pose2d> DEPOT_START = flipped(ChoreoVars.Poses.DEPOTSTART);
+    public static final Supplier<Pose2d> DEPOT_END = flipped(ChoreoVars.Poses.DEPOTEND);
+    public static final Supplier<Pose2d> DEPOT_HELP = flipped(ChoreoVars.Poses.HELPD1);
 
-        // Center line intake pose rotations
-        public static final Supplier<Rotation2d> BALLL2Entry = () -> AllianceFlipUtil
-                        .flipRotation(new Rotation2d(Degrees.of(-75)));
+    // Other poses
+    public static final Supplier<Pose2d> STA1 = flipped(ChoreoVars.Poses.STA1);
+    public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
 
-        // Auto start pose rotations
-        public static final Supplier<Rotation2d> TRL1Entry = () -> AllianceFlipUtil
-                        .flipRotation(new Rotation2d(Degrees.of(180)));
-        public static final Supplier<Rotation2d> TRR1Entry = () -> AllianceFlipUtil
-                        .flipRotation(new Rotation2d(Degrees.of(0)));
+    // ============= ROTATIONS =============
 
-        // Autoalign help pose rotations
-        public static final Supplier<Rotation2d> HELPL1Entry = () -> AllianceFlipUtil
-                        .flipRotation(new Rotation2d(Degrees.of(0)));
-        public static final Supplier<Rotation2d> HELPR1Entry = () -> AllianceFlipUtil
-                        .flipRotation(new Rotation2d(Degrees.of(-30)));
-        public static final Supplier<Rotation2d> HELPL2Entry = () -> AllianceFlipUtil
-                        .flipRotation(new Rotation2d(Degrees.of(160)));
-        // Climb pose rotations
-        // Other rotations
-        public static final Supplier<Rotation2d> testEntry = () -> AllianceFlipUtil
-                        .flipRotation(new Rotation2d(Degrees.of(-90)));
+    // Center line intake pose rotations
+    public static final Supplier<Rotation2d> BALLL2Entry = flipped(new Rotation2d(Degrees.of(-35)));
+    public static final Supplier<Rotation2d> BALLL2CloseEntry = flipped(new Rotation2d(Degrees.of(0)));
 
-// ============= TRANSLATIONS =============
+    // Auto start pose rotations
+    public static final Supplier<Rotation2d> TRL1Entry = flipped(new Rotation2d(Degrees.of(180)));
+    public static final Supplier<Rotation2d> TRR1Entry = flipped(new Rotation2d(Degrees.of(0)));
+
+    // Autoalign help pose rotations
+    public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));
+    public static final Supplier<Rotation2d> HELPR1Entry = flipped(new Rotation2d(Degrees.of(-30)));
+    public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(160)));
+    public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
+
+    // Climb pose rotations
+    // Other rotations
+    public static final Supplier<Rotation2d> testEntry = flipped(new Rotation2d(Degrees.of(-90)));
+    public static final Supplier<Rotation2d> depotStartEntry = flipped(new Rotation2d(Degrees.of(200)));
+
+    // ============= TRANSLATIONS =============
     // ============= DISTANCES =============
-    private static final Distance kOriginToTrenchBlue = Meters.of(4.6);
-    private static final Distance kOriginToTrenchRed = Meters.of(11.9);
-
-    public static final Supplier<Distance> kOriginToTrench = () -> !AllianceFlipUtil.isRedAlliance() ? kOriginToTrenchBlue : kOriginToTrenchRed;
+    public static final Distance kOriginToTrenchBlue = Meters.of(4.6);
+    public static final Distance kOriginToTrenchRed = Meters.of(11.9);
 }

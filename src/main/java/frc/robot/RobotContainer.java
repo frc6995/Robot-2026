@@ -6,10 +6,14 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -18,12 +22,14 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
+import frc.robot.generated.ChoreoVars;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
@@ -44,6 +50,8 @@ import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
@@ -51,8 +59,13 @@ import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.RealVision;
+import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
+import frc.robot.util.ClimbConstants;
+import frc.robot.util.POI;
 import frc.robot.util.Telemetry;
+import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
+import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
@@ -74,24 +87,29 @@ public class RobotContainer {
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
-        true,
-        TunerConstants.DrivetrainConstants,
-        TunerConstants.FrontLeft,
-        TunerConstants.FrontRight,
-        TunerConstants.BackLeft,
-        TunerConstants.BackRight
-    );
+            TunerConstants.DrivetrainConstants,
+            TunerConstants.FrontLeft,
+            TunerConstants.FrontRight,
+            TunerConstants.BackLeft,
+            TunerConstants.BackRight);
 
+    @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
-//     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    @Logged(name = "Hood")
+    //private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
     private final HoodS m_hood = new NoneHoodS();
+    @Logged(name = "Indexer")
     private final IndexerS m_indexer = new NoneIndexerS();
-    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
-    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS();
+    @Logged(name = "IntakePivot")
+    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
+    @Logged(name = "IntakeRoller")
+    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
+    @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new NoneSpindexerS();
-    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-   // private final TurretS m_turret = new NoneTurretS();
-    private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
+    @Logged(name = "Turret")
+//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final TurretS m_turret = new NoneTurretS();
+    private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel);
 
     private final AutoFactory autoFactory;
@@ -110,16 +128,23 @@ public class RobotContainer {
         SmartDashboard.putData("Visualzer", VISUALIZER);
 
         autoFactory = m_drivetrain.createAutoFactory();
-        autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
+        autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,
+                m_turret,
                 m_indexer, m_spindexer, m_flywheel);
         SmartDashboard.putData("Auto Mode", m_chooser);
+        setDefaultCommands();
         configureBindings();
 
     }
 
-     
     public double xButtonPressedTime = 0;
     public boolean intakeState = false;
+
+    private void setDefaultCommands() {
+        m_turret.setDefaultCommand(m_turret.aimAtHub());
+        m_hood.setDefaultCommand(m_hood.autoHoodAngle());
+
+    }
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -127,12 +152,10 @@ public class RobotContainer {
         m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
                 m_drivetrain.applyRequest(
                         () -> {
-                            var xSpeed = -joystick.getLeftY() * 4.2;
-                            var ySpeed = -joystick.getLeftX() * 4.2;
-                            var rotationSpeed = -joystick.getRightX() * 2 * Math.PI;
-
+                            var xSpeed = MathUtil.applyDeadband(-joystick.getLeftY(), 0.1) * 4.2;
+                            var ySpeed = MathUtil.applyDeadband(-joystick.getLeftX(), 0.1) * 4.2;
+                            var rotationSpeed = MathUtil.applyDeadband(-joystick.getRightX(), 0.1) * 2 * Math.PI;
                             if (DriverStation.isAutonomous()) {
-                               
                                 return m_driveRequest.withVelocityX(0).withVelocityY(0)
                                         .withRotationalRate(0);
                             }
@@ -144,9 +167,11 @@ public class RobotContainer {
                                             ySpeed) // Drive left with
                                                     // negative X (left)
                                     .withRotationalRate(
-                                            rotationSpeed);
-                        } // Drive counterclockwise with negative X (left)
-                ));
+                                            rotationSpeed); // Drive counterclockwise with negative X (left)
+                        }));
+
+        // robot relative driving with D-pad
+        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -155,11 +180,7 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         // A intake toggle
-        joystick.a().whileTrue(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle));
-        joystick.y().whileTrue(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
-                // m_intakeroller.setVoltage(() -> intakeState ? IntakeRollerConstants.kIntakeVoltage : Volts.of(0))));
+        joystick.a().onTrue(m_autoCommands.fuelIntake());
 
         // B button align to cardinal direction
         joystick.b().whileTrue(
@@ -168,7 +189,9 @@ public class RobotContainer {
                             var xSpeed = -joystick.getLeftY() * 4.2;
                             var ySpeed = -joystick.getLeftX() * 4.2;
                             var rotSpeed = m_drivetrain.calculateThetaPID(
-                                    AutoAlignFixedHeading.cardinalizeHeading(m_drivetrain.state.Pose.getRotation()));
+                                    AutoAlignFixedHeading.cardinalizeHeadingNS(
+                                            m_drivetrain.state.Pose
+                                                    .getRotation()));
 
                             return m_driveRequest
                                     .withVelocityX(
@@ -182,47 +205,48 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
 
+        // X: climb
+        // Y: stow intake
+        joystick.y().whileTrue(
+                Commands.parallel(
+                        m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
+                        m_intakeRoller.setVoltage(Volts.of(0))));
+
         // right trigger hold to score
-        joystick.rightTrigger().whileTrue(m_AutoCommands.Score());
-        m_flywheel.setDefaultCommand(m_flywheel.setVelocity(()->FlywheelConstants.kShootSpeed));
-        m_turret.setDefaultCommand(m_turret.aimAtHub());
-        m_hood.setDefaultCommand(m_hood.setAngle(()->HoodConstants.kLowerLimit));
+        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+
+        joystick.leftBumper().whileTrue(
+                AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
+        joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() -> DegreesPerSecond.of(1000)));
+        joystick.rightBumper().onFalse(m_spindexer.setVelocity(() -> DegreesPerSecond.of(0)));
 
         // start button home turret
         joystick.start()
                 .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
         // select button home all, reset on disable
-        joystick.back().onTrue(Commands.either(
-                Commands.parallel(
+        // JS: This could be one parallel group, with
+        // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
+        joystick.back().onTrue(Commands.parallel(
+                Commands.either(
                         m_turret.driveToHome(),
-                        m_flywheel.resetEncoder(),
-                        m_spindexer.resetEncoder(),
-                        m_intakeRoller.resetEncoder(),
-                        m_intakePivot.resetEncoder(),
-                        m_indexer.resetEncoder(),
-                        m_hood.resetEncoder()),
-                Commands.parallel(
                         m_turret.resetEncoder(),
-                        m_flywheel.resetEncoder(),
-                        m_spindexer.resetEncoder(),
-                        m_intakeRoller.resetEncoder(),
-                        m_intakePivot.resetEncoder(),
-                        m_indexer.resetEncoder(),
-                        m_hood.resetEncoder()),
-                () -> DriverStation.isEnabled()));
+                        () -> DriverStation.isEnabled()
+                ),
+                m_flywheel.resetEncoder(),
+                m_spindexer.resetEncoder(),
+                m_intakeRoller.resetEncoder(),
+                m_intakePivot.resetEncoder(),
+                m_indexer.resetEncoder(),
+                m_hood.resetEncoder()));
 
         joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
-        joystick.leftTrigger().onTrue(m_turret.setAngle(()->Rotation2d.fromDegrees(100)));
-        joystick.leftBumper().onTrue(m_turret.setAngle(()->Rotation2d.fromDegrees(-100)));
-        
 
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
-        // 😢pain
         m_drivetrain.registerTelemetry(logger::telemeterize);
-
+        // JS: Why is this a deferred proxy?
         RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
 
     }
@@ -247,5 +271,4 @@ public class RobotContainer {
 
     }
 
-    
 }

@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
@@ -12,17 +15,38 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-
+@Logged
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+    private Command m_autonomousCommand;
 
-  private final RobotContainer m_robotContainer;
+    @Logged(name = "RobotContainer")
+    private final RobotContainer m_robotContainer;
     private double autoSimTime = 20;
 
+    public Robot() {
 
-  public Robot() {
-    m_robotContainer = new RobotContainer();
-  }
+        Epilogue.configure(config -> {
+            // Log only to disk, instead of the default NetworkTables logging
+            // Note that this means data cannot be analyzed in realtime by a dashboard
+            // config.backend = new FileBackend(DataLogManager.getLog());
+
+            if (isSimulation()) {
+                // If running in simulation, then we'd want to re-throw any errors that
+                // occur so we can debug and fix them!
+                config.errorHandler = ErrorHandler.crashOnError();
+            }
+
+            // Change the root data path
+            config.root = "Telemetry";
+
+            // minimum importance level that will be logged. DEBUG is lowest level and will
+            // log everything by default
+            config.minimumImportance = Logged.Importance.DEBUG;
+        });
+        Epilogue.bind(this);
+
+        m_robotContainer = new RobotContainer();
+    }
 
   @Override
   public void robotPeriodic() {

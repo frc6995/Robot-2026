@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -33,8 +34,10 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.util.POI;
 import frc.robot.util.RobotVisualizer;
+import frc.robot.util.UnitUtil;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -48,7 +51,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class RealTurretS extends TurretS {
     public static class TurretConstants {
-        public static int kCANID = 41;
+        public static int kCANID = 51;
 
         public static double kP = 0;
         public static double kI = 0.0;
@@ -69,20 +72,22 @@ public class RealTurretS extends TurretS {
         public static double kSimA = 0.0;
         public static AngularVelocity kSimVelocity = DegreesPerSecond.of(180.0);
         public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(360.0);
-        public static Rotation2d kStowedAngle = Rotation2d.fromDegrees(90);
+        public static Angle kStowedAngle = Degrees.of(90);
 
         
-        public static Rotation2d kCWLimit = Rotation2d.fromDegrees(-165);
-        public static Rotation2d kCCWLimit = Rotation2d.fromDegrees(165);
-        public static Rotation2d kStartAngle = kCCWLimit;
-        public static Rotation2d kTolerance = Rotation2d.fromDegrees(5);
+        public static Angle kCWLimit = Degrees.of(-165);
+        public static Angle kCCWLimit = Degrees.of(165);
+        public static Angle kStartAngle = kCCWLimit;
+        public static Angle kTolerance = Degrees.of(5);
+        public static Angle kStowedAngleMin = kStowedAngle.minus(kTolerance);
+        public static Angle kStowedAngleMax = kStowedAngle.plus(kTolerance);
 
         public static double kReduction = 50.0;
         public static double kStatorLimit = 80.0;
         public static double kSupplyLimit = 40.0;
 
         public static Voltage kHomingDrive = Volts.of(-1.0);
-        public static double kHomingCurrentThreshold = 3.0;
+        public static Current kHomingCurrentThreshold = Amps.of(3.0);
 
         public static boolean kIsInverted = false;
 
@@ -125,11 +130,11 @@ public class RealTurretS extends TurretS {
             motorConfig);
 
     private final PivotConfig m_config = new PivotConfig(turretMotorSMC)
-            .withHardLimit(TurretConstants.kCWLimit.getMeasure(), TurretConstants.kCCWLimit.getMeasure())
+            .withHardLimit(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
             // .withSoftLimits(TurretConstants.kCWLimit.plus(Degrees.of(10)),
             //         TurretConstants.kCCWLimit.minus(Degrees.of(10)))
             .withTelemetry("Turret", TelemetryVerbosity.HIGH)
-            .withStartingPosition(TurretConstants.kStartAngle.getMeasure())
+            .withStartingPosition(TurretConstants.kStartAngle)
           //  .withWrapping(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
             
             // WIP
@@ -150,12 +155,15 @@ public class RealTurretS extends TurretS {
         m_turret.simIterate();
     }
 
+    private Angle toAngle(Rotation2d angle) {
+        return Radians.of(MathUtil.inputModulus(angle.getRadians(), -Math.PI, Math.PI));
+    }
     public Command setAngle(Supplier<Rotation2d> angle) {
-        return m_turret.setAngle(() -> rotationClamp(angle.get(), TurretConstants.kCWLimit, TurretConstants.kCCWLimit).getMeasure());
+        return m_turret.setAngle(() -> toAngle(angle.get()));
     }
 
     public Command setAngle(Rotation2d angle) {
-        return m_turret.setAngle(angle.getMeasure());
+        return m_turret.setAngle(toAngle(angle));
     }
 
     public Command setVoltage(Supplier<Voltage> voltageSupplier) {
@@ -176,9 +184,24 @@ public class RealTurretS extends TurretS {
         return m_turret.sysId(Volts.of(3), Volts.of(3).per(Second), Second.of(30));
     }
 
-
-    public Supplier<Rotation2d> applyDynamicLimits(Supplier<Rotation2d> angle) {
-        return () -> isIntakeDeployed.get() ? rotationClamp(angle.get(), TurretConstants.kCWLimit, TurretConstants.kCCWLimit) : rotationClamp(angle.get(), TurretConstants.kStowedAngle.minus(TurretConstants.kTolerance), TurretConstants.kStowedAngle.plus(TurretConstants.kTolerance));
+    /**no allocations: returns the parameter or a constant*/
+    public Angle clampToHardLimits(Angle angle) {
+        return UnitUtil.clamp(angle, TurretConstants.kCWLimit, TurretConstants.kCCWLimit);
+    }
+    /**no allocations: returns the parameter or a constant*/
+    public Angle clampToStowedLimits(Angle angle) {
+        return UnitUtil.clamp(angle, TurretConstants.kStowedAngleMin, TurretConstants.kStowedAngleMax);
+    }
+    /**no allocations: returns the parameter or a constant*/
+    public Angle applyDynamicLimits(Angle angle) {
+        if (isIntakeDeployed.get()) {
+            return clampToHardLimits(angle);
+        } else {
+            return clampToStowedLimits(angle);
+        }
+    }
+    public Supplier<Angle> applyDynamicLimits(Supplier<Angle> angle) {
+        return () -> applyDynamicLimits(angle.get());
     }
 
     public Angle getAngle() {
@@ -191,7 +214,7 @@ public class RealTurretS extends TurretS {
 
     public boolean atSetpoint() {
         var refOpt = getSetpoint();
-        return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolerance.getMeasure());
+        return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolerance);
     }
 
     public Current getCurrent() {
@@ -200,7 +223,7 @@ public class RealTurretS extends TurretS {
 
     public Command resetEncoder() {
         return runOnce(() -> turretMotorSMC.setEncoderPosition(
-                Degrees.of(0))).ignoringDisable(true);
+                Degrees.zero())).ignoringDisable(true);
     }
 
     /**
@@ -223,6 +246,18 @@ public class RealTurretS extends TurretS {
             () -> drivebasePose.get().getRotation());
     }
 
+    @SuppressWarnings("unchecked")
+    public Command aimAtClosestPose(Supplier<Pose2d> drivebasePose, Supplier<Translation2d>... translations) {
+        
+        return aimAtFieldPose(() -> {
+            var trs = new Pose2d[translations.length];
+            for(int i = 0; i < translations.length; i++) {
+                trs[i] = new Pose2d(translations[i].get(), new Rotation2d());
+            }
+            return drivebasePose.get().nearest(Set.of(trs)).getTranslation();
+        }, drivebasePose); 
+    }
+
     public Command aimAtHub() {
         return aimAtFieldPose(() -> POI.HUB1.get().getTranslation(), robotPose);
     }
@@ -242,12 +277,8 @@ public class RealTurretS extends TurretS {
     public Command driveToHome() {
         return Commands.sequence(
                 setVoltage(TurretConstants.kHomingDrive)
-                        .until(() -> getCurrent().in(Amps) > TurretConstants.kHomingCurrentThreshold),
-                this.runOnce(() -> m_turretMotor.setPosition(Degrees.of(0))).ignoringDisable(true))
-                .andThen(setVoltage(Volts.of(0))).withTimeout(2.0);
-    }
-
-    private Rotation2d rotationClamp(Rotation2d value, Rotation2d min, Rotation2d max) {
-        return Rotation2d.fromDegrees(MathUtil.clamp(value.getDegrees(), min.getDegrees(), max.getDegrees()));
+                        .until(() -> getCurrent().gt(TurretConstants.kHomingCurrentThreshold)),
+                this.runOnce(() -> m_turretMotor.setPosition(Degrees.zero())).ignoringDisable(true))
+                .andThen(setVoltage(Volts.zero())).withTimeout(2.0);
     }
 }

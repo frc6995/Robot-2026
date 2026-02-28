@@ -9,7 +9,9 @@ import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.subsystems.vision.RealVision.VisionConstants;
 import limelight.Limelight;
+import limelight.networktables.LimelightPoseEstimator;
 import limelight.networktables.Orientation3d;
+import limelight.networktables.LimelightSettings.ImuMode;
 import limelight.networktables.LimelightSettings.LEDMode;
 import limelight.networktables.PoseEstimate;
 import limelight.networktables.LimelightPoseEstimator.BotPose;
@@ -24,6 +26,7 @@ public class VisionModule {
 
     private final NetworkTable moduleSubTable;
 
+    private final StructPublisher<Pose3d> robotToCameraPublisher;
     private final StructPublisher<Pose3d> estimatePublisher;
     private final BooleanPublisher isActivePublisher;
     private final StringPublisher modePublisher;
@@ -32,22 +35,32 @@ public class VisionModule {
     private EstimationMode defaultMode;
     private EstimationMode lastMode;
 
+    private PoseEstimate mt1Pose;
+    private PoseEstimate mt2Pose;
+
     public VisionModule(String limelightID, Pose3d offset, NetworkTable visionTable) {
         this.limelight = new Limelight(limelightID);
         limelight.getSettings()
             .withLimelightLEDMode(LEDMode.PipelineControl)
             .withCameraOffset(offset)
+            .withImuMode(ImuMode.ExternalImu)
             .save();
+
+        mt1Pose = new PoseEstimate(limelight, "botpose_wpiblue", false);
+        mt2Pose = new PoseEstimate(limelight, "botpose_orb_wpiblue", true);
 
         defaultMode = VisionConstants.kDefaultMode;
 
             // Publishers for Limelight data
         moduleSubTable = visionTable.getSubTable(limelightID);
+        robotToCameraPublisher = moduleSubTable.getStructTopic("CameraOffset", Pose3d.struct).publish();
         estimatePublisher = moduleSubTable.getStructTopic("PoseEstimate", Pose3d.struct).publish();
         isActivePublisher = moduleSubTable.getBooleanTopic("IsActive").publish();
         modePublisher = moduleSubTable.getStringTopic("LastEstimateMode").publish();
         defaultModePublisher = moduleSubTable.getStringTopic("DefaultEstimateMode").publish();
+        
 
+        robotToCameraPublisher.accept(offset);
         defaultModePublisher.setDefault(defaultMode.name());
     }
 
@@ -65,7 +78,8 @@ public class VisionModule {
      * {@link limelight.networktables.LimelightPoseEstimator.EstimationMode}.
      */
     private void updateTelemetry() {
-        estimatePublisher.accept(getPose().isPresent() ? getPose().get().pose : new Pose3d());
+        var poseSupp = getPose();
+        estimatePublisher.accept(poseSupp.isPresent() ? poseSupp.get().pose : new Pose3d());
         isActivePublisher.accept(isActive());
         modePublisher.accept(lastMode.toString());
         defaultModePublisher.accept(defaultMode.toString());
@@ -77,7 +91,8 @@ public class VisionModule {
      * @return Whether or not the Limelight is estimating a robot pose.
      */
     public boolean isActive() {
-        return getPoseMT1().isPresent() && getPoseMT1().get().hasData;
+        var posemt1 = getPoseMT1();
+        return posemt1.isPresent() && posemt1.get().hasData;
     }
 
     /**
@@ -106,7 +121,7 @@ public class VisionModule {
      */
     public Optional<PoseEstimate> getPoseMT2() {
         lastMode = EstimationMode.MEGATAG2;
-        return BotPose.BLUE_MEGATAG2.get(limelight);
+        return Optional.of(mt2Pose.refresh());
     }
 
     /**
@@ -116,7 +131,7 @@ public class VisionModule {
      */
     public Optional<PoseEstimate> getPoseMT1() {
         lastMode = EstimationMode.MEGATAG1;
-        return BotPose.BLUE.get(limelight);
+        return Optional.of(mt1Pose.refresh());
     }
 
     /**
