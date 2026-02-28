@@ -47,6 +47,10 @@ public class TriggerUtil {
         return () -> lowerSupplier.get() < valueSupplier.get() && valueSupplier.get() < upperSupplier.get();
     }
 
+    public static BooleanSupplier isWithinTolerance(Supplier<Double> valueSupplier, Supplier<Double> targetSupplier, Supplier<Double> toleranceSupplier) {
+        return () -> Math.abs(valueSupplier.get() - targetSupplier.get()) < toleranceSupplier.get();
+    }
+
     /**
      * Negates the given BooleanSupplier
      * 

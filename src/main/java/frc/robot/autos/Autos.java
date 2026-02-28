@@ -2,6 +2,8 @@ package frc.robot.autos;
 
 import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,6 +23,7 @@ import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
 import frc.robot.RobotContainer;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -101,6 +104,27 @@ public class Autos {
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
+
+        autos.put("L GPD 1x",
+                () -> auto(POI.TRL1.get(), c -> {
+                    c.addCommands(
+    defaultAPToCenterLineCommandLeft.get().until(
+        () -> m_objectVision.getBestCluster().isPresent() 
+        && TriggerUtil.isWithinTolerance(
+            () -> m_drivebase.state.Pose.getRotation().getDegrees(), 
+            () -> 90.0, 
+            () -> 15.0
+        ).getAsBoolean()
+    )
+);
+
+                    c.addCommands(autoCommands.APToBestCluster());
+
+                    c.addCommands(defaultAPBackToStartCommandLeft.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                }));
+
 
         autos.put("2x test",
                 () -> auto(POI.TRL1.get(), c -> {
