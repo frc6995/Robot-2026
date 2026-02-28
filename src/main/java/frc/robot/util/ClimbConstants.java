@@ -229,7 +229,7 @@ public class ClimbConstants {
         public static final Angle kStartingAngle = Degrees.of(00);
         // Sim Constants
         public static final double kHeight = 2;
-        public static final double kMass = 1;
+        public static final double kMass = 5;
         // Setpoints
         public static final Distance kFullExtension = Inches.of(10);
         public static final Distance kL1 = Inches.of(1);

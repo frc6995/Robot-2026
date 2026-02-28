@@ -263,17 +263,20 @@ public class AutoCommands {
      * @param targetpose Target pose to autoallign to
      * @return Command that aligns to target pose and climbs
      */
-    public Command L1Climb(
+    public Command prepL1Climb(
             Pose2d targetpose) {
-        return Commands.sequence(
-                Commands.parallel(
-                        m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
-                        m_climbPivot.setAngle(() -> Degrees.of(0)),
-                        m_climbExtension.setHeight(() -> Inches.of(8))),
-                Commands.waitSeconds(1),
-                m_climbPivot.setAngle(() -> Degrees.of(30)),
+        return Commands.race(
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
+                new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
+                m_climbPivot.setAngle(() -> Degrees.of(0)),
                 m_climbExtension.setHeight(() -> Inches.of(5)));
 
+    }
+
+    public Command L1Climb() {
+        return Commands.race(
+                m_climbPivot.setAngle(() -> Degrees.of(30)),
+                m_climbExtension.setHeight(() -> Inches.of(2)));
     }
 
     public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {

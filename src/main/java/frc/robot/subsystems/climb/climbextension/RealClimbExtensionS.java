@@ -73,8 +73,8 @@ public class RealClimbExtensionS extends ClimbExtensionS {
         talonSmartMotorController = new TalonFXWrapper(talon, DCMotor.getKrakenX60(1), smcConfig);
 
         elevconfig = new ElevatorConfig(talonSmartMotorController)
-                .withStartingHeight(Meters.of(constants.kHeight()))
-                .withHardLimits(Meters.of(constants.kMinHeight()), Meters.of(constants.kMaxHeight()))
+                .withStartingHeight(Inches.of(constants.kHeight()))
+                .withHardLimits(Inches.of(constants.kMinHeight()), Inches.of(constants.kMaxHeight()))
                 .withTelemetry("Elevator", TelemetryVerbosity.HIGH)
                 .withMass(Pounds.of(constants.kMass()));
         m_elevator = new Elevator(elevconfig);

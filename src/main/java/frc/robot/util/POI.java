@@ -35,8 +35,8 @@ public class POI {
     public static final Supplier<Pose2d> HELPL2 = flipped(ChoreoVars.Poses.HELPL2);
 
     // Climb poses
-    // public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
-    public static final Supplier<Pose2d> CL1 = flipped(new Pose2d(1.6, 4.2, new Rotation2d()));
+     public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
+    //public static final Supplier<Pose2d> CL1 = flipped(new Pose2d(1.6, 4.2, new Rotation2d()));
 
     // Depot poses
     public static final Supplier<Pose2d> DEPOT_START = flipped(ChoreoVars.Poses.DEPOTSTART);
