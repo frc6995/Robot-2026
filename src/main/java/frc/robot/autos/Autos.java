@@ -105,7 +105,7 @@ public class Autos {
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
-        autos.put("L GPD 1x",
+        autos.put("L GPD 1x test",
                 () -> auto(POI.TRL1.get(), c -> {
                     c.addCommands(
     defaultAPToCenterLineCommandLeft.get().until(
