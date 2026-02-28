@@ -93,18 +93,18 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     @Logged(name = "Flywheel")
-    private final FlyWheelS m_flywheel = new RealFlyWheelS();
+    private final FlyWheelS m_flywheel = new NoneFlyWheelS();
     @Logged(name = "Hood")
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-   // private final HoodS m_hood = new NoneHoodS();
+    //private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new NoneHoodS();
     @Logged(name = "Indexer")
-    private final IndexerS m_indexer = new RealIndexerS();
+    private final IndexerS m_indexer = new NoneIndexerS();
     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new RealSpindexerS();
+    private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
     // private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
 private final TurretS m_turret = new NoneTurretS();

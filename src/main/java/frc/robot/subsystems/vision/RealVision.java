@@ -41,7 +41,7 @@ public class RealVision extends Vision {
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
-        public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.01, 0.01, 0.00001);
+        public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.05, 0.05, 999999);
 
     }
     private static final AngularVelocity3d zeroAngularVelocity3d = new AngularVelocity3d(

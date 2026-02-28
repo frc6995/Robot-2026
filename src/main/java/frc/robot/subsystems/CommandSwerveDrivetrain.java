@@ -376,11 +376,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         m_vision.periodic();
 
-        if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/2)) {
+        if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/8)) {
  
         var estimates = m_vision.getAllEstimates();
         for(var estimate : estimates) {
-             addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, VisionConstants.kVisionStdDevs);
+            if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.25) {
+                addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, VisionConstants.kVisionStdDevs);
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ import frc.robot.subsystems.intakepivot.IntakePivotS;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
+import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
 import frc.robot.RobotContainer;
@@ -61,8 +62,10 @@ public class Autos {
      * return routine;
      * }
      */
-    public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory, RobotContainer container, HoodS hood,
-            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer, FlyWheelS flyWheel) {
+    public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory,
+            RobotContainer container, HoodS hood,
+            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer,
+            SpindexerS spindexer, FlyWheelS flyWheel) {
         this.factory = factory;
         this.autoCommands = autoCommands;
         this.m_hood = hood;
@@ -107,8 +110,9 @@ public class Autos {
                     c.addCommands(autoCommands.APToIntake(POI.HELPL1.get(), Meters.of(3.5), POI.BALLL3.get(),
                             POI.BALLL2Entry.get(), Meters.of(0.1), POI.STOPL2.get()));
 
-                    c.addCommands(autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2CloseEntry.get(), Meters.of(2.0),
-                            POI.TRL1.get(), POI.TRL1Entry.get()));
+                    c.addCommands(
+                            autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2CloseEntry.get(), Meters.of(2.0),
+                                    POI.TRL1.get(), POI.TRL1Entry.get()));
 
                     c.addCommands((autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)));
                 }));
@@ -131,12 +135,11 @@ public class Autos {
                             .alongWith(autoCommands.APtoDepot()));
                 }));
 
-         autos.put("Depot test", () -> auto(POI.TRL1.get(), c -> {
-             c.addCommands(autoCommands.APtoDepot());
-
+        autos.put("Depot test", () -> auto(POI.TRL1.get(), c -> {
+            c.addCommands(new AutoAlign(POI.DEPOT_HELP.get(), m_drivebase));
             c.addCommands(autoCommands.APtoDepot());
 
-         }));
+        }));
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
