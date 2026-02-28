@@ -267,14 +267,13 @@ public class AutoCommands {
             Pose2d targetpose) {
         return Commands.race(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
-                new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
-                m_climbPivot.setAngle(() -> Degrees.of(5)));
+                new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile));
 
     }
 
     public Command L1Climb() {
         return Commands.race(
-                m_climbPivot.setAngle(() -> Degrees.of(30)),
+                m_climbPivot.setAngle(() -> Degrees.of(94)),
                 m_climbExtension.setHeight(() -> Inches.of(2)));
     }
 
