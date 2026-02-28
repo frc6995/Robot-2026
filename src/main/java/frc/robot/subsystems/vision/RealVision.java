@@ -32,12 +32,16 @@ import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 public class RealVision extends Vision {
     public static class VisionConstants {
         public static final String[] LL_IDS = {
-            "limelight-climb"
+            "limelight-climb", "limelight-right"
         };
+
         public static final Pose3d[] LL_OFFSETS = {
             new Pose3d( // climb
-                new Translation3d(Inches.of(-10.925),Inches.of(10.750),Inches.of(8.820)),
-                new Rotation3d(Degrees.of(7.52), Degrees.of(20.0), Degrees.of(180+17.5)))
+                new Translation3d(Inches.of(10.750),Inches.of(10.925), Inches.of(8.820)),
+                new Rotation3d(Degrees.of(7.52), Degrees.of(20.0), Degrees.of(180+17.5))),
+            new Pose3d( // right
+                new Translation3d(Inches.of(2.550), Inches.of(12.987),Inches.of(7.435)),
+                new Rotation3d(Degrees.of(0), Degrees.of(22.5), Degrees.of(-90)))
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 

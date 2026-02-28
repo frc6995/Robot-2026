@@ -35,8 +35,8 @@ public class VisionModule {
     private EstimationMode defaultMode;
     private EstimationMode lastMode;
 
-    private LimelightPoseEstimator mt1PoseEstimator;
-    private LimelightPoseEstimator mt2PoseEstimator;
+    private PoseEstimate mt1Pose;
+    private PoseEstimate mt2Pose;
 
     public VisionModule(String limelightID, Pose3d offset, NetworkTable visionTable) {
         this.limelight = new Limelight(limelightID);
@@ -45,9 +45,9 @@ public class VisionModule {
             .withCameraOffset(offset)
             .withImuMode(ImuMode.ExternalImu)
             .save();
-        
-        mt1PoseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
-        mt2PoseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+
+        mt1Pose = new PoseEstimate(limelight, "botpose_wpiblue", false);
+        mt2Pose = new PoseEstimate(limelight, "botpose_orb_wpiblue", true);
 
         defaultMode = VisionConstants.kDefaultMode;
 
@@ -121,8 +121,7 @@ public class VisionModule {
      */
     public Optional<PoseEstimate> getPoseMT2() {
         lastMode = EstimationMode.MEGATAG2;
-        return mt2PoseEstimator.getPoseEstimate();
-        // return BotPose.BLUE_MEGATAG2.get(limelight);
+        return Optional.of(mt2Pose.refresh());
     }
 
     /**
@@ -132,8 +131,7 @@ public class VisionModule {
      */
     public Optional<PoseEstimate> getPoseMT1() {
         lastMode = EstimationMode.MEGATAG1;
-        return mt1PoseEstimator.getPoseEstimate();
-        // return BotPose.BLUE.get(limelight);
+        return Optional.of(mt1Pose.refresh());
     }
 
     /**
