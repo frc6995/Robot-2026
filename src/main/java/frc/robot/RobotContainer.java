@@ -221,6 +221,7 @@ public class RobotContainer {
                 ));
         // X: climb
         joystick.x().whileTrue(m_AutoCommands.L1Climb(POI.CL1.get()));
+        joystick.rightBumper().onTrue(m_climbPivot.setAngle(()->Degrees.of(30)));
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 

@@ -266,20 +266,20 @@ public class AutoCommands {
     public Command L1Climb(
             Pose2d targetpose) {
         return Commands.sequence(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
                 Commands.parallel(
-                        setClimber(()->Degrees.of(0),()->Inches.of(8)),
-                        new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile)),
-                m_climbPivot.setAngle(() -> Degrees.of(0)),
+                        m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
+                        m_climbPivot.setAngle(() -> Degrees.of(0)),
+                        m_climbExtension.setHeight(() -> Inches.of(8))),
+                Commands.waitSeconds(1),
+                m_climbPivot.setAngle(() -> Degrees.of(30)),
                 m_climbExtension.setHeight(() -> Inches.of(5)));
 
     }
 
-    public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance){
-       return Commands.parallel(
-        m_climbPivot.setAngle(pivotAngle),
-        m_climbExtension.setHeight(extensionDistance)
-       );
+    public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
+        return Commands.parallel(
+                m_climbPivot.setAngle(pivotAngle),
+                m_climbExtension.setHeight(extensionDistance));
     }
 
     public Command fuelIntake() {

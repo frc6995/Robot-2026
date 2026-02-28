@@ -16,7 +16,7 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"CL1.x", "val":1.585742712020874}, "y":{"exp":"CL1.y", "val":4.175879001617432}, "heading":{"exp":"CL1.heading", "val":0.0}, "intervals":5, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"1.6 m", "val":1.6}, "y":{"exp":"4.2 m", "val":4.2}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":5, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"CLT.x", "val":1.7536717653274536}, "y":{"exp":"CLT.y", "val":4.1464056968688965}, "heading":{"exp":"CLT.heading", "val":0.0}, "intervals":30, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"DEPOTEND.x", "val":0.5552138090133667}, "y":{"exp":"DEPOTEND.y", "val":5.974564743041992}, "heading":{"exp":"DEPOTEND.heading", "val":3.1319773679238696}, "intervals":43, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"STA1.x", "val":0.4744477868080139}, "y":{"exp":"STA1.y", "val":0.660979151725769}, "heading":{"exp":"STA1.heading", "val":0.0}, "intervals":43, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
