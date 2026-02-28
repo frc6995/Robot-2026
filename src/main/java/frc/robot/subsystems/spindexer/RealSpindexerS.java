@@ -59,7 +59,7 @@ public class RealSpindexerS extends SpindexerS {
         public static final int kStatorCurrentLimit = 120;
         public static final int kSupplyCurrentLimit = 10;
         public static final int kGearRatio = 50;
-        public static final boolean kInverted = false;
+        public static final boolean kInverted = true;
         // Sim Constants
         public static final Mass kMass = Pounds.of(1);
         public static final Distance kDiameter = Inches.of(4);
