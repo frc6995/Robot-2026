@@ -227,8 +227,11 @@ private final TurretS m_turret = new NoneTurretS();
         // JS: This could be one parallel group, with
         // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
         joystick.back().onTrue(Commands.parallel(
-                m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()),
-                m_turret.resetEncoder().onlyIf(() -> DriverStation.isDisabled()),
+                Commands.either(
+                        m_turret.driveToHome(),
+                        m_turret.resetEncoder(),
+                        () -> DriverStation.isEnabled()
+                ),
                 m_flywheel.resetEncoder(),
                 m_spindexer.resetEncoder(),
                 m_intakeRoller.resetEncoder(),
