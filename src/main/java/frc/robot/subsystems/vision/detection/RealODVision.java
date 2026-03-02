@@ -6,21 +6,13 @@ import static edu.wpi.first.units.Units.Meters;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.RobotContainer;
 import limelight.Limelight;
-import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RealODVision extends ObjectVision {
     public static class ODVisionConstants {
@@ -57,8 +49,7 @@ public class RealODVision extends ObjectVision {
               //  && targetLocation.getDistance(Translation2d.kZero) > 100
                 // Distance is in meters
                 if (isCloseEnoughToRobot) {
-                    gamePieces.add(new GamePiece(gamePieceToField(targetLocation, robotPose.get()),
-                            timer.get()));
+                    gamePieces.add(gamePieceToField(targetLocation, robotPose.get()));
                 }
             }
         }

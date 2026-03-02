@@ -9,7 +9,6 @@ import java.util.random.RandomGenerator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.util.AllianceFlipUtil;
 
 public class SimODVision extends ObjectVision {
@@ -18,7 +17,7 @@ public class SimODVision extends ObjectVision {
 
     public static final Distance validRadius = Meters.of(2);
 
-    public ArrayList<GamePiece> invalidGamepieces = new ArrayList<GamePiece>();
+    public ArrayList<Translation2d> invalidGamepieces = new ArrayList<Translation2d>();
 
     public SimODVision(Supplier<Pose2d> robotPose) {
         super(robotPose);
@@ -37,10 +36,7 @@ public class SimODVision extends ObjectVision {
         invalidGamepieces.clear();
         for (Translation2d gamePiece : m_fuel) {
             if (isValid(gamePiece, robotPose.get().getTranslation())) {
-                gamePieces.add(new GamePiece(gamePiece, RobotController.getTime()));
-            }
-            else {
-                invalidGamepieces.add(new GamePiece(gamePiece, RobotController.getTime()));
+                gamePieces.add(gamePiece);
             }
         }
 
