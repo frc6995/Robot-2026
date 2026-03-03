@@ -112,6 +112,7 @@ public class RealClimbExtensionS extends ClimbExtensionS {
         m_elevator.setHeight(height);
     }
 
+
     public Command resetEncoder() {
         return runOnce(() -> talonSmartMotorController.setEncoderPosition(Meters.of(0))).ignoringDisable(true);
     }
@@ -126,6 +127,10 @@ public class RealClimbExtensionS extends ClimbExtensionS {
         double currentDistanceMeter = m_elevator.getHeight().in(Meters);
         RobotVisualizer.updateExtend(currentDistanceMeter);
         m_elevator.updateTelemetry();
+    }
+
+    public void setDefaultCommand (){
+        m_elevator.setHeight(()->Inches.of(8));
     }
 
     @Override

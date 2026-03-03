@@ -173,6 +173,13 @@ public class RobotContainer {
                                             rotationSpeed); // Drive counterclockwise with negative X (left)
                         }));
 
+        m_climbPivot.setDefaultCommand(
+            m_climbPivot.setAngle(()->Degrees.of(84))
+        );
+        m_climbExtension.setDefaultCommand(
+            m_climbExtension.setHeight(()->Inches.of(8))
+        );
+
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
