@@ -112,16 +112,16 @@ public class Autos {
                 .andThen(new AutoAlign(POI.TRR2.get(), POI.TRR1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile));
 
-        autoCommands.APToIntake(POI.HELPR1.get(),
+        Supplier<Command> rightStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPR1.get(),
                 Meters.of(3.5),
                 POI.BALLR2.get(), POI.BALLR2Entry.get(), Meters.of(0.12), POI.STOPR3.get())
                 .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile));
 
         // (L) Back From Center Line To Depot
-
-        autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(1.2),
-                POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
+        Supplier<Command> leftBackToStartDefaultPlusDepot = () -> autoCommands
+                .APBackFromIntake(POI.HELPL2.get(), POI.HELPL2Entry.get(), Meters.of(1.2),
+                        POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
                 .until(
                         TriggerUtil.isWithinRadius(
                                 () -> POI.DEPOT_HELP.get()
@@ -130,8 +130,9 @@ public class Autos {
                                 () -> Meters.of(1.7)))
                 .andThen(
 
-                        autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime))
+                        autoCommands.Score().withTimeout(Seconds.of(8.0)))
                 .alongWith(autoCommands.APtoDepot());
+
         // (L/R) Back From Center Line To Climb
 
         // ============= CHOREO PATHS =============
