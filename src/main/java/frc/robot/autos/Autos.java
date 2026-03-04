@@ -95,6 +95,21 @@ public class Autos {
                 POI.BALLR2.get(), POI.BALLR2Entry.get(), Meters.of(0.12), POI.STOPR1.get());
 
         // (L/R) Center Line Middle GPD
+        Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
+                .until(() -> m_objectVision.getBestCluster().isPresent()
+                        && TriggerUtil.isWithinTolerance(
+                                () -> m_drivebase.state.Pose.getRotation().getDegrees(),
+                                () -> 90.0,
+                                () -> 15.0).getAsBoolean())
+                .andThen(autoCommands.APToClusterChain(40, true));
+
+        Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
+                .until(() -> m_objectVision.getBestCluster().isPresent()
+                        && TriggerUtil.isWithinTolerance(
+                                () -> m_drivebase.state.Pose.getRotation().getDegrees(),
+                                () -> 90.0,
+                                () -> 15.0).getAsBoolean())
+                .andThen(autoCommands.APToClusterChain(40, false));
 
         // (L/R) Back From Center Line Default
         Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),
