@@ -222,6 +222,12 @@ public class AutoCommands {
                         }
                 };
         };
+        public Command APToClusterChain(int numberOfBalls, boolean isLeftSide) {
+                return Commands.defer(
+                        () -> clusterChainFunction.apply(numberOfBalls, isLeftSide ? POI.kLeftAutoBounds.get() : POI.kRightAutoBounds.get()),
+                        Set.of(m_drivebase,m_intakePivot,m_intakeRoller)
+                );
+        }
         public Command APToClusterChain(int numberOfBalls, Rectangle2d bounds) {
                 return Commands.defer(
                         () -> clusterChainFunction.apply(numberOfBalls, bounds),
