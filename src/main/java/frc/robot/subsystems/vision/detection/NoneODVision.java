@@ -8,24 +8,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class NoneODVision extends ObjectVision {
     public NoneODVision(Supplier<Pose2d> robotPose) {
         super(robotPose);
-
-        var pose = robotPose.get();
-        
-        for(int i = 0; i < 15; i++) {
-            Translation2d newPiece = new Translation2d(
-                (Math.random() + 10.0) * 1.0,
-                (Math.random()+ 2.7) * 1.0
-            );
-
-            gamePieces.add(
-                new GamePiece(pose.getTranslation().plus(newPiece), timer.get())
-            );
-        }
     }
 
     @Override
     public void update() {
         // gamePieces.clear();
-        updateTelemetry();
+        // updateTelemetry();
     }
 }

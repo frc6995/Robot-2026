@@ -37,8 +37,8 @@ public class RealATVision extends AprilTagVision {
 
         public static final Pose3d[] LL_OFFSETS = {
             new Pose3d( // climb
-                new Translation3d(Inches.of(-10.924),Inches.of(10.750), Inches.of(8.820)),
-                new Rotation3d(Degrees.of(7.52), Degrees.of(20.0), Degrees.of(-180+22.5))),
+                new Translation3d(Inches.of(-11.0672),Inches.of(-10.432), Inches.of(8.674)),
+                new Rotation3d(Degrees.of(0), Degrees.of(22.5), Degrees.of(180))),
             new Pose3d( // right
                 new Translation3d(Inches.of(2.550), Inches.of(12.987),Inches.of(7.435)),
                 new Rotation3d(Degrees.of(0), Degrees.of(22.5), Degrees.of(-90)))
