@@ -13,14 +13,15 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class RobotVisualizer {
 
+    final static double rotationDegrees = 180;
     final static double INTAKE_X = Units.inchesToMeters(11.5); // 11.5 with AP's config file
     final static double INTAKE_Z = Units.inchesToMeters(7.85); // 7.85 with AP's config file
     final static Pose3d INTAKE_PIVOT_LOCATION = new Pose3d(INTAKE_X, 0, INTAKE_Z,
-            new Rotation3d(Degrees.of(180), Degrees.zero(), Degrees.zero()));
+            new Rotation3d(Degrees.of(RobotVisualizer.rotationDegrees), Degrees.zero(), Degrees.zero()));
     final static double HOOD_X = Units.inchesToMeters(2.405);
     final static double HOOD_Z = Units.inchesToMeters(18.5);
     final static Pose3d HOOD_LOCATION = new Pose3d(HOOD_X, 0, HOOD_Z,
-            new Rotation3d(Degrees.of(180), Degrees.zero(), Degrees.zero()));
+            new Rotation3d(Degrees.of(RobotVisualizer.rotationDegrees), Degrees.zero(), Degrees.zero()));
     final static double TURRET_X = Units.inchesToMeters(-1.105);
     final static double TURRET_Z = Units.inchesToMeters(14);
     final static Pose3d TURRET_LOCATION = new Pose3d(TURRET_X, 0, TURRET_Z,
@@ -28,14 +29,16 @@ public class RobotVisualizer {
     final static double HOOK_X = Units.inchesToMeters(1.105);
     final static double HOOK_Z = Units.inchesToMeters(4.375);
     final static Pose3d HOOK_LOCATION = new Pose3d(HOOK_X, 0, HOOK_Z,
-            new Rotation3d(Degrees.of(180), Degrees.zero(), Degrees.zero()));
-    final static double CLIMB_STINGER_PIVOT_X = Units.inchesToMeters(1);
-    final static double CLIMB_STINGER_PIVOT_Z = Units.inchesToMeters(1);
+            new Rotation3d(Degrees.of(RobotVisualizer.rotationDegrees), Degrees.zero(), Degrees.zero()));
+    final static double CLIMB_STINGER_PIVOT_X = Units.inchesToMeters(2); // Meters: -0.136525
+    final static double CLIMB_STINGER_PIVOT_Y = Units.inchesToMeters(0); //Meters: -0.3175
+    final static double CLIMB_STINGER_PIVOT_Z = Units.inchesToMeters(0);
     final static Pose3d CLIMB_STINGER_PIVOT_LOCATION = new Pose3d(CLIMB_STINGER_PIVOT_X, 0, CLIMB_STINGER_PIVOT_Z,
-            new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
-    final static double CLIMB_STINGER_EXTENSION_X = Units.inchesToMeters(1);
-    final static double CLIMB_STINGER_EXTENSION_Z = Units.inchesToMeters(1);
-    final static Pose3d CLIMB_STINGER_EXTENSION_LOCATION = new Pose3d(CLIMB_STINGER_EXTENSION_X, 0,
+            new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0))); 
+    final static double CLIMB_STINGER_EXTENSION_X = Units.inchesToMeters(0);
+    final static double CLIMB_STINGER_EXTENSION_Y = Units.inchesToMeters(0);
+    final static double CLIMB_STINGER_EXTENSION_Z = Units.inchesToMeters(0);
+    final static Pose3d CLIMB_STINGER_EXTENSION_LOCATION = new Pose3d(CLIMB_STINGER_EXTENSION_X, CLIMB_STINGER_EXTENSION_Y,
             CLIMB_STINGER_EXTENSION_Z, new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
     private static double hoodAngleRadians = 0;
     private static double climbExtensionMeters = 0;
