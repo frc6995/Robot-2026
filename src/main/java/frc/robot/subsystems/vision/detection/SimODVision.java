@@ -24,8 +24,6 @@ public class SimODVision extends ObjectVision {
 
     public static final Pose3d[] m_fuel = new Pose3d[200];
 
-    public static final Distance validRadius = Meters.of(2);
-
     private final StructArrayPublisher<Pose3d> allFuelPoses;
 
     public SimODVision(Supplier<Pose2d> robotPose) {
@@ -67,7 +65,8 @@ public class SimODVision extends ObjectVision {
         Translation2d robotTranslation = robotPose.getTranslation();
         double robotAngle = robotPose.getRotation().plus(Rotation2d.k180deg).getDegrees();
         double angle = robotTranslation.minus(gamepiece).getAngle().getDegrees();
-        return robotTranslation.getDistance(gamepiece) <= validRadius.in(Meters) && MathUtil.isNear(robotAngle, angle, ODVisionConstants.kCameraFOVDegrees / 2.0);
+        double detectDist = robotTranslation.getDistance(gamepiece);
+        return  detectDist < ODVisionConstants.kMaxDetectRadiusMeters && detectDist > ODVisionConstants.kMinDetectRadiusMeters && MathUtil.isNear(robotAngle, angle, ODVisionConstants.kCameraFOVDegrees / 2.0);
     }
 
 }
