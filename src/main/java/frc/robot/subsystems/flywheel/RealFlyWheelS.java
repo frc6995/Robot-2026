@@ -66,6 +66,11 @@ public class RealFlyWheelS extends FlyWheelS {
     public static final AngularVelocity kMaxSpeed = RotationsPerSecond.of(4400.0 / 60.0);
     public static final AngularVelocity kShootSpeed = RotationsPerSecond.of(3000 / 60.0);
     public static final AngularVelocity kTolerance = RotationsPerSecond.of(2);
+
+    public static final double[][] kShooterData = {
+      {0.0, 1200},
+      {5.0, 1200}
+    };
   }
 
     // Motors

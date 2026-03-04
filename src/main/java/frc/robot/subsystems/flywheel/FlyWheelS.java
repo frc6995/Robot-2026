@@ -24,7 +24,7 @@ public abstract class FlyWheelS extends SubsystemBase {
     public abstract Current getCurrent();
     
     public Command runSOTF(
-    java.util.function.Supplier<frc.robot.util.ShooterController.ShooterCommand> solution
+    Supplier<frc.robot.util.ShooterController.ShooterTargetData> solution
   ) {
       return setVelocity(() ->
           edu.wpi.first.units.Units.RotationsPerSecond

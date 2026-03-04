@@ -20,6 +20,7 @@ import choreo.auto.AutoFactory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -58,6 +59,7 @@ import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.POI;
 import frc.robot.util.ShooterController;
 import frc.robot.util.Telemetry;
+import frc.robot.util.ShooterController.ShooterTargetData;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
@@ -110,24 +112,14 @@ public class RobotContainer {
     private Mechanism2d VISUALIZER;
     private final Autos autoRoutines;
     public final AutoChooser m_chooser = new AutoChooser();
-    private final ShooterController m_shooterController =
-    new ShooterController(
-        () -> m_drivetrain.state.Pose,
-        () -> m_drivetrain.state.Speeds,
-        POI.HUB1
-    );
-    private ShooterController.ShooterCommand cachedShot;
-    private final Supplier<ShooterController.ShooterCommand> shooterSupplier =
-        () -> cachedShot;
 
     private final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.Velocity);
 
     public RobotContainer() {
+        ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, () -> POI.HUB1.get());
 
         m_drivetrain.resetOdometry(new Pose2d());
-
-        cachedShot = m_shooterController.calculate();
         VISUALIZER = logger.MECH_VISUALIZER;
 
         SmartDashboard.putData("Visualzer", VISUALIZER);
@@ -137,12 +129,6 @@ public class RobotContainer {
                 m_indexer, m_spindexer, m_flywheel);
         SmartDashboard.putData("Auto Mode", m_chooser);
         configureBindings();
-
-
-
-        
-        
-
     }
 
 
@@ -177,29 +163,17 @@ public class RobotContainer {
                 ));
         // m_turret.setDefaultCommand(m_turret.aimAtHub());
         // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
-        m_drivetrain.setDefaultCommand(
-                m_drivetrain.getDefaultCommand()
-                        .alongWith(
-                        Commands.run(() -> cachedShot = m_shooterController.calculate())
-                        )
-        );
         m_turret.setDefaultCommand(
-                m_turret.runSOTF(shooterSupplier)
+                m_turret.runSOTF(ShooterController.getInstance()::getCachedData)
         );
 
         m_hood.setDefaultCommand(
-                m_hood.runSOTF(shooterSupplier, () -> m_drivetrain.state.Pose)
+                m_hood.runSOTF(ShooterController.getInstance()::getCachedData, () -> m_drivetrain.state.Pose)
         );
 
         m_flywheel.setDefaultCommand(
-        new RunCommand(
-                () -> {
-                cachedShot = m_shooterController.calculate(); // update cached shot
-                m_flywheel.runSOTF(() -> cachedShot).schedule(); // run velocity command
-                },
-                m_flywheel
-        )
-);
+                m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData)
+        );
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 

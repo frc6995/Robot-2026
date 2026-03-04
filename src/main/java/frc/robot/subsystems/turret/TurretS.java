@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.ShooterController.ShooterCommand;
+import frc.robot.util.ShooterController.ShooterTargetData;
 
 public abstract class TurretS extends SubsystemBase {
     public abstract Command setAngle(Supplier<Rotation2d> angle);
@@ -38,7 +38,7 @@ public abstract class TurretS extends SubsystemBase {
     @Logged
     public abstract Current getCurrent();
     public Command runSOTF(
-    java.util.function.Supplier<frc.robot.util.ShooterController.ShooterCommand> solution
+    java.util.function.Supplier<frc.robot.util.ShooterController.ShooterTargetData> solution
 ) {
     return setAngle(() -> solution.get().turretAngle());
 }

@@ -9,7 +9,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.ShooterController.ShooterCommand;
+import frc.robot.util.ShooterController.ShooterTargetData;
 
 public abstract class HoodS extends SubsystemBase {
     public abstract Command setAngle(Supplier<Angle> angle);
@@ -27,7 +27,7 @@ public abstract class HoodS extends SubsystemBase {
     @Logged
     public abstract boolean isHoodReady();
       public Command runSOTF(
-    java.util.function.Supplier<frc.robot.util.ShooterController.ShooterCommand> solution,
+    java.util.function.Supplier<frc.robot.util.ShooterController.ShooterTargetData> solution,
     java.util.function.Supplier<Pose2d> robotPose
   ) {
       return setAngle(() ->
