@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision.detection;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
@@ -23,11 +24,16 @@ public class RealODVision extends ObjectVision {
         public static final Distance kGamePieceDiameter = Inches.of(5.91);
 
         private static final Distance kClusterRadius = Inches.of(16);
-
-        public static final double kClusterTolerance = Math.pow(kClusterRadius.in(Meters), 2);
+        private static final Distance kValidMaxDetectRadius = Meters.of(3);
+        private static final Distance kValidMinDetectRadius = Inches.of(24);
 
         public static final double kDistanceWeight = -1;
         public static final double kPieceCountWeight = 2;
+
+            // Calculated Constants
+        public static final double kClusterTolerance = Math.pow(kClusterRadius.in(Meters), 2);
+        public static final double kMaxDetectRadiusMeters = kValidMaxDetectRadius.in(Meters);
+        public static final double kMinDetectRadiusMeters = kValidMinDetectRadius.in(Meters);
 
             // Sim Constants
         public static final double kCameraFOVDegrees = 120;
@@ -48,10 +54,8 @@ public class RealODVision extends ObjectVision {
             var detectorTargets = results.get().targets_Detector;
             for (var target : detectorTargets) {
                 Translation2d targetLocation = getRobotToObject(target.tx_nocrosshair, target.ty_nocrosshair);
-                boolean isCloseEnoughToRobot = targetLocation.getDistance(Translation2d.kZero) < 0;
-              //  && targetLocation.getDistance(Translation2d.kZero) > 100
-                // Distance is in meters
-                if (isCloseEnoughToRobot) {
+                double detectDist = targetLocation.getDistance(Translation2d.kZero);
+                if (detectDist < ODVisionConstants.kMaxDetectRadiusMeters && detectDist > ODVisionConstants.kMinDetectRadiusMeters) {
                     gamePieces.add(convertPieceToField(targetLocation, robotPose.get()));
                 }
             }
