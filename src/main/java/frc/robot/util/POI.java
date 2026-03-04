@@ -25,15 +25,24 @@ public class POI {
     // Center line intake stop poses
     public static final Supplier<Pose2d> STOPL1 = flipped(ChoreoVars.Poses.STOPL1);
     public static final Supplier<Pose2d> STOPL2 = flipped(ChoreoVars.Poses.STOPL2);
+    public static final Supplier<Pose2d> STOPL3 = flipped(ChoreoVars.Poses.STOPL3);
+
+
 
     // Auto start poses
     public static final Supplier<Pose2d> TRL1 = flipped(ChoreoVars.Poses.TRL1);
     public static final Supplier<Pose2d> TRR1 = flipped(ChoreoVars.Poses.TRR1);
+    public static final Supplier<Pose2d> TRR2 = flipped(ChoreoVars.Poses.TRR2);
+
 
     // Center line help poses
     public static final Supplier<Pose2d> HELPL1 = flipped(ChoreoVars.Poses.HELPL1);
     public static final Supplier<Pose2d> HELPR1 = flipped(ChoreoVars.Poses.HELPR1);
     public static final Supplier<Pose2d> HELPL2 = flipped(ChoreoVars.Poses.HELPL2);
+    public static final Supplier<Pose2d> HELPR2 = flipped(ChoreoVars.Poses.HELPR2);
+        public static final Supplier<Pose2d> HELPR3 = flipped(ChoreoVars.Poses.HELPR3);
+
+
 
     // Climb poses
     public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
@@ -55,11 +64,13 @@ public class POI {
 
     // Auto start pose rotations
     public static final Supplier<Rotation2d> TRL1Entry = flipped(new Rotation2d(Degrees.of(180)));
-    public static final Supplier<Rotation2d> TRR1Entry = flipped(new Rotation2d(Degrees.of(0)));
+    public static final Supplier<Rotation2d> TRR1Entry = flipped(new Rotation2d(Degrees.of(180)));
 
     // Autoalign help pose rotations
     public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));
     public static final Supplier<Rotation2d> HELPR1Entry = flipped(new Rotation2d(Degrees.of(-30)));
+    public static final Supplier<Rotation2d> HELPR2Entry = flipped(new Rotation2d(Degrees.of(-160)));
+
     public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(160)));
     public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
 

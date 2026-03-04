@@ -88,9 +88,19 @@ public class Autos {
                 Meters.of(3.5),
                 POI.BALLL2.get(), POI.BALLL2Entry.get(), Meters.of(0.12), POI.STOPL1.get());
 
+        Supplier<Command> leftAPSweepCommand = () -> autoCommands.APToIntake(POI.HELPL1.get(),
+                Meters.of(3.5),
+                POI.BALLL2.get(), POI.BALLL2Entry.get(), Meters.of(0.12), POI.STOPL3.get())
+                .andThen(new AutoAlign(POI.TRR2.get(), POI.TRR1Entry.get(), m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile));
+
         Supplier<Command> defaultAPBackToStartCommandLeft = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),
                 POI.HELPL2Entry.get(), Meters.of(1.8),
                 POI.TRL1.get(), POI.TRL1Entry.get());
+
+        Supplier<Command> defaultAPBackToStartCommandRight = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
+                POI.HELPR2Entry.get(), Meters.of(2.8),
+                POI.TRR2.get(), POI.TRR1Entry.get());
 
         // ============= CHOREO PATHS =============
         Command run = factory.trajectoryCmd("Poses");
@@ -115,8 +125,7 @@ public class Autos {
                                             () -> 15.0).getAsBoolean()));
 
                     c.addCommands(autoCommands.APToBestCluster()
-                   .withTimeout(1.5)
-                                    );
+                            .withTimeout(1.5));
 
                     c.addCommands(defaultAPBackToStartCommandLeft.get());
 
@@ -139,10 +148,8 @@ public class Autos {
                                             () -> 90.0,
                                             () -> 15.0).getAsBoolean()));
 
-                                                                c.addCommands(autoCommands.APToBestCluster()
-                                                                               .withTimeout(1.5)
-                                                            );
-
+                    c.addCommands(autoCommands.APToBestCluster()
+                            .withTimeout(1.5));
 
                     c.addCommands(
                             autoCommands.APBackFromIntake(POI.HELPL2.get(), POI.HELPL2CloseEntry.get(), Meters.of(2.0),
@@ -167,6 +174,14 @@ public class Autos {
                                     POI.TRL1.get(), POI.TRL1Entry.get()));
 
                     c.addCommands((autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)));
+                }));
+
+        autos.put("L Sweep test",
+                () -> auto(POI.TRL1.get(), c -> {
+                    c.addCommands(leftAPSweepCommand.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+
                 }));
 
         autos.put("DEPOT L center-line 1x tune",
