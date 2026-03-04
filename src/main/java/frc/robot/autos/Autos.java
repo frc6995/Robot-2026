@@ -101,7 +101,7 @@ public class Autos {
                                 () -> m_drivebase.state.Pose.getRotation().getDegrees(),
                                 () -> 90.0,
                                 () -> 15.0).getAsBoolean())
-                .andThen(autoCommands.APToClusterChain(40, true));
+                .andThen(autoCommands.APToClusterChain(230, true));
 
         Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
                 .until(() -> m_objectVision.getBestCluster().isPresent()
@@ -109,16 +109,16 @@ public class Autos {
                                 () -> m_drivebase.state.Pose.getRotation().getDegrees(),
                                 () -> 90.0,
                                 () -> 15.0).getAsBoolean())
-                .andThen(autoCommands.APToClusterChain(40, false));
+                .andThen(autoCommands.APToClusterChain(230, false));
 
         // (L/R) Back From Center Line Default
         Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),
                 POI.HELPL2Entry.get(), Meters.of(2.8),
                 POI.TRL1.get(), POI.TRL1Entry.get());
 
-        Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
+        Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR2.get(),
                 POI.HELPR2Entry.get(), Meters.of(2.8),
-                POI.TRR2.get(), POI.TRR1Entry.get());
+                POI.TRR1.get(), POI.TRR1Entry.get());
 
         // (L/R) Sweep Default
         Supplier<Command> leftStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPL1.get(),
@@ -162,12 +162,35 @@ public class Autos {
                     c.addCommands(leftBackToStartDefault.get());
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
-                    // ADD GPD ONES
+
+                    c.addCommands(leftToCenterLineGPD.get());
+
+                    c.addCommands(leftBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+
+                    c.addCommands(leftToCenterLineGPD.get());
+
+                    c.addCommands(leftBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
         autos.put("R 3x center-line",
-                () -> auto(POI.TRL1.get(), c -> {
+                () -> auto(POI.TRR1.get(), c -> {
                     c.addCommands(rightToCenterLineMiddleHardCoded.get());
+
+                    c.addCommands(rightBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    
+                    c.addCommands(rightToCenterLineGPD.get());
+
+                    c.addCommands(rightBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+
+                    c.addCommands(rightToCenterLineGPD.get());
 
                     c.addCommands(rightBackToStartDefault.get());
 

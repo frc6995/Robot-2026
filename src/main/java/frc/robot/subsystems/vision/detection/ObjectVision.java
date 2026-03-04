@@ -23,6 +23,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.BaseUnits;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.vision.detection.RealODVision.ODVisionConstants;
+import frc.robot.util.POI;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public abstract class ObjectVision {
@@ -33,6 +34,7 @@ public abstract class ObjectVision {
     protected StructArrayPublisher<Pose2d> clusterPoses;
     protected StructPublisher<Pose2d> averageObjectPose;
     protected StructPublisher<Pose2d> bestObjectPose;
+    protected StructArrayPublisher<Pose2d> clusterBounds;
 
     public static class Cluster {
         double sumX = 0.0;
@@ -48,15 +50,16 @@ public abstract class ObjectVision {
 
         public Translation2d getCenter() {
             center = new Translation2d(
-                sumX / count,
-                sumY / count
-            );
+                    sumX / count,
+                    sumY / count);
             return center;
         }
 
         public double calculateScore(Pose2d robotPose) {
-            if(center == null) getCenter();
-            return robotPose.getTranslation().getDistance(center) * ODVisionConstants.kDistanceWeight + count * ODVisionConstants.kPieceCountWeight;
+            if (center == null)
+                getCenter();
+            return robotPose.getTranslation().getDistance(center) * ODVisionConstants.kDistanceWeight
+                    + count * ODVisionConstants.kPieceCountWeight;
         }
 
         public double getPieceCount() {
@@ -67,24 +70,26 @@ public abstract class ObjectVision {
     protected ObjectVision(Supplier<Pose2d> robotPose) {
         this.robotPose = robotPose;
 
-        var table = NetworkTableInstance.getDefault().getTable("Vision/Object-Detection/" + ODVisionConstants.kCameraID);
+        var table = NetworkTableInstance.getDefault()
+                .getTable("Vision/Object-Detection/" + ODVisionConstants.kCameraID);
         objectPoses = table.getStructArrayTopic("Object Poses", Pose3d.struct).publish();
         clusterPoses = table.getStructArrayTopic("Cluster Poses", Pose2d.struct).publish();
         averageObjectPose = table.getStructTopic("Average Pose", Pose2d.struct).publish();
         bestObjectPose = table.getStructTopic("Best Pose", Pose2d.struct).publish();
+        clusterBounds = table.getStructArrayTopic("Cluster Bounds", Pose2d.struct).publish();
     }
 
     public abstract void update();
 
     protected void updateTelemetry() {
-        if(RobotContainer.kTelemetryVerbosity == TelemetryVerbosity.HIGH) {
+        if (RobotContainer.kTelemetryVerbosity == TelemetryVerbosity.HIGH) {
             objectPoses.accept(getObjectPoses().toArray(new Pose3d[gamePieces.size()]));
             var clusters = getClusters();
             var poses = new ArrayList<Pose2d>(clusters.size());
             clusters.forEach((cluster) -> poses.add(new Pose2d(cluster.getCenter(), Rotation2d.kZero)));
             clusterPoses.accept(poses.toArray(new Pose2d[poses.size()]));
         }
-        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
+        if (RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
             var avgOpt = getAverageObjectLocation();
             averageObjectPose.accept(avgOpt.isPresent() ? new Pose2d(avgOpt.get(), Rotation2d.kZero) : Pose2d.kZero);
 
@@ -102,14 +107,15 @@ public abstract class ObjectVision {
         gamePieces.forEach((piece) -> poses.add(new Pose3d(new Translation3d(piece), Rotation3d.kZero)));
         return poses;
     }
-    
+
     public Optional<Translation2d> getAverageObjectLocation() {
-        if(gamePieces.size() == 0) return Optional.empty();
+        if (gamePieces.size() == 0)
+            return Optional.empty();
 
         double xAvg = 0;
         double yAvg = 0;
 
-        for(Translation2d piece : gamePieces) {
+        for (Translation2d piece : gamePieces) {
             xAvg += piece.getX();
             yAvg += piece.getY();
         }
@@ -118,7 +124,8 @@ public abstract class ObjectVision {
     }
 
     public Optional<Translation2d> getBestObjectLocation() {
-        if(gamePieces.size() == 0) return Optional.empty();
+        if (gamePieces.size() == 0)
+            return Optional.empty();
         Translation2d currentBest = gamePieces.get(0);
 
         for (Translation2d piece : gamePieces) {
@@ -130,12 +137,13 @@ public abstract class ObjectVision {
 
     protected List<Cluster> getClusters() {
         ArrayList<Cluster> clusters = new ArrayList<Cluster>();
-        
+
         int n = gamePieces.size();
         boolean[] visited = new boolean[n];
 
-        for(int i = 0; i < n; i++) {
-            if(visited[i]) continue;
+        for (int i = 0; i < n; i++) {
+            if (visited[i])
+                continue;
 
             Cluster c = new Cluster();
             Deque<Integer> stack = new ArrayDeque<>();
@@ -149,20 +157,21 @@ public abstract class ObjectVision {
                 c.add(piece);
 
                 for (int k = 0; k < n; k++) {
-                    if (visited[k]) continue;
+                    if (visited[k])
+                        continue;
 
                     var piece2 = gamePieces.get(k);
                     double dx = piece.getX() - piece2.getX();
                     double dy = piece.getY() - piece2.getY();
 
-                    if (dx*dx + dy*dy < ODVisionConstants.kClusterTolerance) {
+                    if (dx * dx + dy * dy < ODVisionConstants.kClusterTolerance) {
                         visited[k] = true;
                         stack.push(k);
                     }
                 }
             }
 
-            if(c.count >= 2) {
+            if (c.count >= 2) {
                 clusters.add(c);
             }
         }
@@ -171,41 +180,50 @@ public abstract class ObjectVision {
     }
 
     public Optional<Cluster> getBestCluster() {
-        Optional<Cluster> best = Optional.empty();
-        for(Cluster cl : getClusters()) {
-            if(best.isEmpty() || cl.calculateScore(robotPose.get()) > best.get().calculateScore(robotPose.get())) {
-                best = Optional.of(cl);
-            }
-        }
-        return best;
+        return getBestCluster(POI.kFieldBounds);
     }
 
     public Optional<Cluster> getBestCluster(Rectangle2d bounds) {
         Optional<Cluster> best = Optional.empty();
-        for(Cluster cl : getClusters()) {
-            if(best.isEmpty() || (cl.calculateScore(robotPose.get()) > best.get().calculateScore(robotPose.get()) && bounds.contains(best.get().getCenter()))) {
+        for (Cluster cl : getClusters()) {
+            if ((best.isEmpty() || cl.calculateScore(robotPose.get()) > best.get().calculateScore(robotPose.get()))
+                    && bounds.contains(cl.getCenter())) {
                 best = Optional.of(cl);
             }
+        }
+        if (RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
+            Pose2d center = bounds.getCenter();
+            clusterBounds.accept(new Pose2d[] {
+                    new Pose2d(
+                            center.getTranslation()
+                                    .plus(new Translation2d(bounds.getXWidth() / 2, bounds.getYWidth() / 2)),
+                            Rotation2d.kZero),
+                    new Pose2d(
+                            center.getTranslation()
+                                    .plus(new Translation2d(-bounds.getXWidth() / 2, -bounds.getYWidth() / 2)),
+                            Rotation2d.kZero),
+            });
         }
         return best;
     }
 
-        // Based off algorithm from FRC 1678
+    // Based off algorithm from FRC 1678
     protected static Translation2d getRobotToObject(double tx, double ty) {
         double totalAngleY = Units.degreesToRadians(-ty) - ODVisionConstants.kCameraOffset.getRotation().getY();
-        double distAwayY = (ODVisionConstants.kCameraOffset.getMeasureZ().in(Meters) - (ODVisionConstants.kGamePieceDiameter.in(Meters) / 2.0)) / Math.tan(totalAngleY);
+        double distAwayY = (ODVisionConstants.kCameraOffset.getMeasureZ().in(Meters)
+                - (ODVisionConstants.kGamePieceDiameter.in(Meters) / 2.0)) / Math.tan(totalAngleY);
 
         double distHypotenuseYToGround = Math.hypot(
-				distAwayY,
-				ODVisionConstants.kCameraOffset
-						.getMeasureZ()
-						.minus(ODVisionConstants.kGamePieceDiameter.div(2))
-						.in(BaseUnits.DistanceUnit));
+                distAwayY,
+                ODVisionConstants.kCameraOffset
+                        .getMeasureZ()
+                        .minus(ODVisionConstants.kGamePieceDiameter.div(2))
+                        .in(BaseUnits.DistanceUnit));
 
         double totalAngleX = Units.degreesToRadians(-tx)
                 + ODVisionConstants.kCameraOffset.getRotation().getZ();
 
-        double distAwayX = distHypotenuseYToGround*Math.tan(totalAngleX);
+        double distAwayX = distHypotenuseYToGround * Math.tan(totalAngleX);
 
         return new Translation2d(distAwayY, distAwayX);
     }
