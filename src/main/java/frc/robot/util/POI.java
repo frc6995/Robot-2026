@@ -18,34 +18,41 @@ public class POI {
 
     // Center line intake start poses
     public static final Supplier<Pose2d> BALLL1 = flipped(ChoreoVars.Poses.BALLL1);
-    public static final Supplier<Pose2d> BALLR1 = flipped(ChoreoVars.Poses.BALLR1);
     public static final Supplier<Pose2d> BALLL2 = flipped(ChoreoVars.Poses.BALLL2);
     public static final Supplier<Pose2d> BALLL3 = flipped(ChoreoVars.Poses.BALLL3);
+
+    public static final Supplier<Pose2d> BALLR1 = flipped(ChoreoVars.Poses.BALLR1);
+    public static final Supplier<Pose2d> BALLR2 = flipped(ChoreoVars.Poses.BALLR2);
+    public static final Supplier<Pose2d> BALLR3 = flipped(ChoreoVars.Poses.BALLR3);
 
     // Center line intake stop poses
     public static final Supplier<Pose2d> STOPL1 = flipped(ChoreoVars.Poses.STOPL1);
     public static final Supplier<Pose2d> STOPL2 = flipped(ChoreoVars.Poses.STOPL2);
     public static final Supplier<Pose2d> STOPL3 = flipped(ChoreoVars.Poses.STOPL3);
 
-
+    public static final Supplier<Pose2d> STOPR1 = flipped(ChoreoVars.Poses.STOPR1);
+    public static final Supplier<Pose2d> STOPR2 = flipped(ChoreoVars.Poses.STOPR2);
+    public static final Supplier<Pose2d> STOPR3 = flipped(ChoreoVars.Poses.STOPR3);
 
     // Auto start poses
     public static final Supplier<Pose2d> TRL1 = flipped(ChoreoVars.Poses.TRL1);
+    public static final Supplier<Pose2d> TRL2 = flipped(ChoreoVars.Poses.TRL2);
+
     public static final Supplier<Pose2d> TRR1 = flipped(ChoreoVars.Poses.TRR1);
     public static final Supplier<Pose2d> TRR2 = flipped(ChoreoVars.Poses.TRR2);
 
-
     // Center line help poses
     public static final Supplier<Pose2d> HELPL1 = flipped(ChoreoVars.Poses.HELPL1);
-    public static final Supplier<Pose2d> HELPR1 = flipped(ChoreoVars.Poses.HELPR1);
     public static final Supplier<Pose2d> HELPL2 = flipped(ChoreoVars.Poses.HELPL2);
+    public static final Supplier<Pose2d> HELPL3 = flipped(ChoreoVars.Poses.HELPL3);
+
+    public static final Supplier<Pose2d> HELPR1 = flipped(ChoreoVars.Poses.HELPR1);
     public static final Supplier<Pose2d> HELPR2 = flipped(ChoreoVars.Poses.HELPR2);
-        public static final Supplier<Pose2d> HELPR3 = flipped(ChoreoVars.Poses.HELPR3);
-
-
+    public static final Supplier<Pose2d> HELPR3 = flipped(ChoreoVars.Poses.HELPR3);
 
     // Climb poses
     public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
+    public static final Supplier<Pose2d> CL2 = flipped(ChoreoVars.Poses.CL2);
 
     // Depot poses
     public static final Supplier<Pose2d> DEPOT_START = flipped(ChoreoVars.Poses.DEPOTSTART);
