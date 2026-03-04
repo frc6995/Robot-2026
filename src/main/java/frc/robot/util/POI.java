@@ -69,17 +69,22 @@ public class POI {
     public static final Supplier<Rotation2d> BALLL2Entry = flipped(new Rotation2d(Degrees.of(-35)));
     public static final Supplier<Rotation2d> BALLL2CloseEntry = flipped(new Rotation2d(Degrees.of(0)));
 
+    public static final Supplier<Rotation2d> BALLR2Entry = flipped(new Rotation2d(Degrees.of(35)));
+    public static final Supplier<Rotation2d> BALLR2CloseEntry = flipped(new Rotation2d(Degrees.of(180)));
+
     // Auto start pose rotations
     public static final Supplier<Rotation2d> TRL1Entry = flipped(new Rotation2d(Degrees.of(180)));
+
     public static final Supplier<Rotation2d> TRR1Entry = flipped(new Rotation2d(Degrees.of(180)));
 
     // Autoalign help pose rotations
     public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));
-    public static final Supplier<Rotation2d> HELPR1Entry = flipped(new Rotation2d(Degrees.of(-30)));
-    public static final Supplier<Rotation2d> HELPR2Entry = flipped(new Rotation2d(Degrees.of(-160)));
-
     public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(160)));
     public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
+
+    public static final Supplier<Rotation2d> HELPR1Entry = flipped(new Rotation2d(Degrees.of(-30)));
+    public static final Supplier<Rotation2d> HELPR2Entry = flipped(new Rotation2d(Degrees.of(-160)));
+    public static final Supplier<Rotation2d> HELPR2CloseEntry = flipped(new Rotation2d(Degrees.of(-140)));
 
     // Climb pose rotations
     // Other rotations
