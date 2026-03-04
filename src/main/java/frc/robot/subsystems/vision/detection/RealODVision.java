@@ -22,7 +22,7 @@ public class RealODVision extends ObjectVision {
                 new Rotation3d(Degrees.of(0), Degrees.of(-2), Degrees.of(0)));
         public static final Distance kGamePieceDiameter = Inches.of(5.91);
 
-        private static final Distance kClusterRadius = Inches.of(20);
+        private static final Distance kClusterRadius = Inches.of(16);
 
         public static final double kClusterTolerance = Math.pow(kClusterRadius.in(Meters), 2);
 
@@ -52,7 +52,7 @@ public class RealODVision extends ObjectVision {
               //  && targetLocation.getDistance(Translation2d.kZero) > 100
                 // Distance is in meters
                 if (isCloseEnoughToRobot) {
-                    gamePieces.add(gamePieceToField(targetLocation, robotPose.get()));
+                    gamePieces.add(convertPieceToField(targetLocation, robotPose.get()));
                 }
             }
         }

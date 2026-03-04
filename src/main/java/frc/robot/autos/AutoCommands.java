@@ -5,11 +5,16 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.DoubleFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.therekrab.autopilot.APProfile;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
@@ -182,20 +187,51 @@ public class AutoCommands {
         // }
 
         public Command APToBestCluster() {
-                return Commands.defer(
+                return Commands.deferredProxy(
                         () -> {
                                 Optional<Cluster> clusterOpt = m_objectVision.getBestCluster();
                                 if(clusterOpt.isPresent()) {
-                                    var clusterPose = clusterOpt.get().getCenter();
-                                    var at = new AutoAlign(new Pose2d(clusterPose, clusterPose.minus(m_drivebase.state.Pose.getTranslation()).getAngle()), m_drivebase, AutoAlign.kDefaultVelocityLimitedProfile);
-                                    return Commands.parallel(
+                                    var clusterLoc = clusterOpt.get().getCenter();
+                                    var at = new AutoAlign(new Pose2d(clusterLoc, clusterLoc.minus(m_drivebase.state.Pose.getTranslation()).getAngle()), m_drivebase, AutoAlign.kDefaultVelocityLimitedProfile);
+                                    return Commands.deadline(
                                             at,
                                             fuelIntake()
                                     );
                                 }
                                 return Commands.none();
-                        },
-                        Set.of(m_intakePivot,m_intakeRoller,m_drivebase)
+                        }
+                );
+        }
+
+        private static int tempNumberPickedUp = 0;
+        private BiFunction<Integer, Rectangle2d, Command> clusterChainFunction = new BiFunction<Integer,Rectangle2d,Command>() {
+                public Command apply(Integer numBalls, Rectangle2d bounds) {
+                        var clusterOpt = m_objectVision.getBestCluster(bounds);
+                        if(clusterOpt.isPresent() && tempNumberPickedUp < numBalls) {
+                                tempNumberPickedUp += clusterOpt.get().getPieceCount();
+                                var clusterLoc = clusterOpt.get().getCenter();
+                                var at = new AutoAlign(new Pose2d(clusterLoc, clusterLoc.minus(m_drivebase.state.Pose.getTranslation()).getAngle()), m_drivebase, AutoAlign.kDefaultVelocityLimitedProfile);
+                                return Commands.deadline(
+                                        at,
+                                        fuelIntake()
+                                ).andThen(APToClusterChain(numBalls, bounds));
+
+                        } else {
+                                tempNumberPickedUp = 0;
+                                return Commands.none();
+                        }
+                };
+        };
+        public Command APToClusterChain(int numberOfBalls, boolean isLeftSide) {
+                return Commands.defer(
+                        () -> clusterChainFunction.apply(numberOfBalls, isLeftSide ? POI.kLeftAutoBounds.get() : POI.kRightAutoBounds.get()),
+                        Set.of(m_drivebase,m_intakePivot,m_intakeRoller)
+                );
+        }
+        public Command APToClusterChain(int numberOfBalls, Rectangle2d bounds) {
+                return Commands.defer(
+                        () -> clusterChainFunction.apply(numberOfBalls, bounds),
+                        Set.of(m_drivebase,m_intakePivot,m_intakeRoller)
                 );
         }
 
