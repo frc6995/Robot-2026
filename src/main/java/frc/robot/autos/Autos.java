@@ -101,7 +101,7 @@ public class Autos {
                                 () -> m_drivebase.state.Pose.getRotation().getDegrees(),
                                 () -> 90.0,
                                 () -> 15.0).getAsBoolean())
-                .andThen(autoCommands.APToClusterChain(230, true));
+                .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(7.0);
 
         Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
                 .until(() -> m_objectVision.getBestCluster().isPresent()
@@ -109,7 +109,7 @@ public class Autos {
                                 () -> m_drivebase.state.Pose.getRotation().getDegrees(),
                                 () -> 90.0,
                                 () -> 15.0).getAsBoolean())
-                .andThen(autoCommands.APToClusterChain(230, false));
+                .andThen(autoCommands.APToClusterChain(90000, false));
 
         // (L/R) Back From Center Line Default
         Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),

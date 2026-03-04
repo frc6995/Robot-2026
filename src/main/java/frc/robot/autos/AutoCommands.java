@@ -192,7 +192,7 @@ public class AutoCommands {
                                 Optional<Cluster> clusterOpt = m_objectVision.getBestCluster();
                                 if(clusterOpt.isPresent()) {
                                     var clusterLoc = clusterOpt.get().getCenter();
-                                    var at = new AutoAlign(new Pose2d(clusterLoc, clusterLoc.minus(m_drivebase.state.Pose.getTranslation()).getAngle()), m_drivebase, AutoAlign.kDefaultVelocityLimitedProfile);
+                                    var at = new AutoAlign(new Pose2d(clusterLoc, clusterLoc.minus(m_drivebase.state.Pose.getTranslation()).getAngle()), m_drivebase, AutoAlign.kGPDProfile);
                                     return Commands.deadline(
                                             at,
                                             fuelIntake()
@@ -210,7 +210,7 @@ public class AutoCommands {
                         if(clusterOpt.isPresent() && tempNumberPickedUp < numBalls) {
                                 tempNumberPickedUp += clusterOpt.get().getPieceCount();
                                 var clusterLoc = clusterOpt.get().getCenter();
-                                var at = new AutoAlign(new Pose2d(clusterLoc, clusterLoc.minus(m_drivebase.state.Pose.getTranslation()).getAngle()), m_drivebase, AutoAlign.kDefaultVelocityLimitedProfile);
+                                var at = new AutoAlign(new Pose2d(clusterLoc, clusterLoc.minus(m_drivebase.state.Pose.getTranslation()).getAngle()), m_drivebase, AutoAlign.kGPDProfile);
                                 return Commands.deadline(
                                         at,
                                         fuelIntake()

@@ -102,9 +102,9 @@ public class RobotContainer {
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
     @Logged(name = "Hood")
-    // private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, ()
-    // -> m_drivetrain.state.Speeds);
-    private final HoodS m_hood = new NoneHoodS();
+    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, ()
+    -> m_drivetrain.state.Speeds);
+    // private final HoodS m_hood = new NoneHoodS();
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new NoneIndexerS();
     @Logged(name = "IntakePivot")
@@ -112,12 +112,12 @@ public class RobotContainer {
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new NoneSpindexerS();
+    private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")
-    // private final TurretS m_turret = new RealTurretS(() ->
-    // m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()->
-    // m_intakePivot.isIntakeDeployed());
-    private final TurretS m_turret = new NoneTurretS();
+    private final TurretS m_turret = new RealTurretS(() ->
+    m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()->
+    m_intakePivot.isIntakeDeployed());
+    // private final TurretS m_turret = new NoneTurretS();
 
     // @Logged(name = "ObjectDetection")
     private final ObjectVision m_objectVision = new SimODVision(() -> m_drivetrain.state.Pose);
