@@ -22,7 +22,7 @@ import frc.robot.subsystems.vision.detection.RealODVision.ODVisionConstants;;
 
 public class SimODVision extends ObjectVision {
 
-    public static final Pose3d[] m_fuel = new Pose3d[100];
+    public static final Pose3d[] m_fuel = new Pose3d[400];
 
     public static final Distance validRadius = Meters.of(2);
 
@@ -35,8 +35,8 @@ public class SimODVision extends ObjectVision {
             double originX = AllianceFlipUtil.FIELD_LENGTH / 2.0;
             double originY = AllianceFlipUtil.FIELD_WIDTH / 2.0;
             m_fuel[i] = new Pose3d(new Translation3d(
-                    RandomGenerator.getDefault().nextDouble(originX - 10, originX + 10), 
-                    RandomGenerator.getDefault().nextDouble(originY - 10, originY + 10),
+                    RandomGenerator.getDefault().nextDouble(originX - 2, originX + 2), 
+                    RandomGenerator.getDefault().nextDouble(originY - 3, originY + 3),
                     0),
                     Rotation3d.kZero);
         }

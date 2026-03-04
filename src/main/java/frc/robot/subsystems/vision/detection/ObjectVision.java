@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -56,6 +57,10 @@ public abstract class ObjectVision {
         public double calculateScore(Pose2d robotPose) {
             if(center == null) getCenter();
             return robotPose.getTranslation().getDistance(center) * ODVisionConstants.kDistanceWeight + count * ODVisionConstants.kPieceCountWeight;
+        }
+
+        public double getPieceCount() {
+            return count;
         }
     }
 
@@ -175,6 +180,16 @@ public abstract class ObjectVision {
         return best;
     }
 
+    public Optional<Cluster> getBestCluster(Rectangle2d bounds) {
+        Optional<Cluster> best = Optional.empty();
+        for(Cluster cl : getClusters()) {
+            if(best.isEmpty() || (cl.calculateScore(robotPose.get()) > best.get().calculateScore(robotPose.get()) && bounds.contains(best.get().getCenter()))) {
+                best = Optional.of(cl);
+            }
+        }
+        return best;
+    }
+
         // Based off algorithm from FRC 1678
     protected static Translation2d getRobotToObject(double tx, double ty) {
         double totalAngleY = Units.degreesToRadians(-ty) - ODVisionConstants.kCameraOffset.getRotation().getY();
@@ -195,8 +210,8 @@ public abstract class ObjectVision {
         return new Translation2d(distAwayY, distAwayX);
     }
 
-    protected static Translation2d gamePieceToField(Translation2d gamepiece, Pose2d robotPose) {
-        return robotPose.getTranslation().plus(gamepiece)
+    protected static Translation2d convertPieceToField(Translation2d pieceRobotRelative, Pose2d robotPose) {
+        return robotPose.getTranslation().plus(pieceRobotRelative)
                 .rotateAround(robotPose.getTranslation(), robotPose.getRotation());
     }
 

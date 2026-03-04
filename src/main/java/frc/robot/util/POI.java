@@ -8,8 +8,12 @@ import static edu.wpi.first.units.Units.Degrees;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.generated.ChoreoVars;
 import static frc.robot.util.AllianceFlipUtil.flipped;
 
@@ -90,4 +94,37 @@ public class POI {
     // ============= DISTANCES =============
     public static final Distance kOriginToTrenchBlue = Meters.of(4.6);
     public static final Distance kOriginToTrenchRed = Meters.of(11.9);
+    
+    // ============= PRIVATE RECTANGLES =============
+        /** Number of meters over the center/side lines acceptable for the auto game piece pickup. */
+    private static final double kLineToleranceMeters = 1.0;
+    private static final Rectangle2d kLeftBlueBounds = new Rectangle2d(
+        new Translation2d(
+            0, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters),
+        new Translation2d(
+            AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 - kLineToleranceMeters)
+    );
+    private static final Rectangle2d kRightBlueBounds = new Rectangle2d(
+        new Translation2d(
+            0, kLineToleranceMeters),
+        new Translation2d(
+            AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 + kLineToleranceMeters
+        )
+    );
+    private static final Rectangle2d kLeftRedBounds = new Rectangle2d(
+        new Translation2d(
+            AllianceFlipUtil.FIELD_LENGTH, 0),
+        new Translation2d(
+            AllianceFlipUtil.FIELD_LENGTH / 2.0 - kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 + kLineToleranceMeters)
+    );
+    private static final Rectangle2d kRightRedBounds = new Rectangle2d(
+        new Translation2d(
+            AllianceFlipUtil.FIELD_LENGTH, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters),
+        new Translation2d(
+            AllianceFlipUtil.FIELD_LENGTH / 2.0 - kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 - kLineToleranceMeters)
+    );
+
+    // ============= RECTANGLES =============
+    public static final Supplier<Rectangle2d> kLeftAutoBounds = AllianceFlipUtil.constant(kLeftBlueBounds, kLeftRedBounds);
+    public static final Supplier<Rectangle2d> kRightAutoBounds = AllianceFlipUtil.constant(kRightBlueBounds, kRightRedBounds);
 }
