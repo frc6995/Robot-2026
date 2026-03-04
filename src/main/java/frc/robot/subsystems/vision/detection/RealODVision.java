@@ -26,8 +26,11 @@ public class RealODVision extends ObjectVision {
 
         public static final double kClusterTolerance = Math.pow(kClusterRadius.in(Meters), 2);
 
-        public static final double kDistanceWeight = 0;
-        public static final double kPieceCountWeight = 0;
+        public static final double kDistanceWeight = -1;
+        public static final double kPieceCountWeight = 2;
+
+            // Sim Constants
+        public static final double kCameraFOVDegrees = 120;
     }
 
     private Limelight camera = new Limelight(ODVisionConstants.kCameraID);
