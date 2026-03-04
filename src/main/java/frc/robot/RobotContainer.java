@@ -174,7 +174,7 @@ public class RobotContainer {
                         }));
 
         m_climbPivot.setDefaultCommand(
-            m_climbPivot.setAngle(()->Degrees.of(84))
+            m_climbPivot.setAngle(()->Degrees.of(94))
         );
         m_climbExtension.setDefaultCommand(
             m_climbExtension.setHeight(()->Inches.of(8))

@@ -30,7 +30,7 @@ public class RobotVisualizer {
     final static double HOOK_Z = Units.inchesToMeters(4.375);
     final static Pose3d HOOK_LOCATION = new Pose3d(HOOK_X, 0, HOOK_Z,
             new Rotation3d(Degrees.of(RobotVisualizer.rotationDegrees), Degrees.zero(), Degrees.zero()));
-    final static double CLIMB_STINGER_PIVOT_X = Units.inchesToMeters(2); // Meters: -0.136525
+    final static double CLIMB_STINGER_PIVOT_X = Units.inchesToMeters(0); // Meters: -0.136525
     final static double CLIMB_STINGER_PIVOT_Y = Units.inchesToMeters(0); //Meters: -0.3175
     final static double CLIMB_STINGER_PIVOT_Z = Units.inchesToMeters(0);
     final static Pose3d CLIMB_STINGER_PIVOT_LOCATION = new Pose3d(CLIMB_STINGER_PIVOT_X, 0, CLIMB_STINGER_PIVOT_Z,
