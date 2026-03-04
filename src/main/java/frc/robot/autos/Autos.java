@@ -98,7 +98,7 @@ public class Autos {
 
         // (L/R) Back From Center Line Default
         Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                POI.HELPL2Entry.get(), Meters.of(1.8),
+                POI.HELPL2Entry.get(), Meters.of(2.8),
                 POI.TRL1.get(), POI.TRL1Entry.get());
 
         Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
@@ -139,6 +139,34 @@ public class Autos {
         Command run = factory.trajectoryCmd("Poses");
 
         // ============= DEFINE AUTOS =============
+
+        autos.put("L 3x center-line",
+                () -> auto(POI.TRL1.get(), c -> {
+                    c.addCommands(leftToCenterLineMiddleHardCoded.get());
+
+                    c.addCommands(leftBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    // ADD GPD ONES
+                }));
+
+        autos.put("R 3x center-line",
+                () -> auto(POI.TRL1.get(), c -> {
+                    c.addCommands(rightToCenterLineMiddleHardCoded.get());
+
+                    c.addCommands(rightBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    // ADD GPD ONES
+                }));
+
+        autos.put("L 1x center-line + Depot",
+                () -> auto(POI.TRL1.get(), c -> {
+                    c.addCommands(leftToCenterLineMiddleHardCoded.get());
+
+                    c.addCommands(leftBackToStartDefaultPlusDepot.get());
+                }));
+
         autos.put("L center-line 1x tune",
                 () -> auto(POI.TRL1.get(), c -> {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
@@ -191,7 +219,7 @@ public class Autos {
                     c.addCommands((autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)));
                 }));
 
-        autos.put("2x Left Preplanned",
+        autos.put("L 2x center-line Preplanned",
                 () -> auto(POI.TRL1.get(), c -> {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
