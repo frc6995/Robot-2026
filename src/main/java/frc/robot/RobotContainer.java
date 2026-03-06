@@ -102,9 +102,8 @@ public class RobotContainer {
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new NoneFlyWheelS();
     @Logged(name = "Hood")
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, ()
-    -> m_drivetrain.state.Speeds);
-    // private final HoodS m_hood = new NoneHoodS();
+//     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, ()-> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new NoneHoodS();
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new NoneIndexerS();
     @Logged(name = "IntakePivot")
@@ -112,15 +111,13 @@ public class RobotContainer {
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new RealSpindexerS();
+    private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
-    private final TurretS m_turret = new RealTurretS(() ->
-    m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()->
-    m_intakePivot.isIntakeDeployed());
-    // private final TurretS m_turret = new NoneTurretS();
+//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    private final TurretS m_turret = new NoneTurretS();
 
     // @Logged(name = "ObjectDetection")
-    private final ObjectVision m_objectVision = new SimODVision(() -> m_drivetrain.state.Pose);
+    private final ObjectVision m_objectVision = new RealODVision(() -> m_drivetrain.state.Pose);
 
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
@@ -230,7 +227,7 @@ public class RobotContainer {
                         m_intakeRoller.setVoltage(Volts.of(0))));
 
         joystick.rightBumper().whileTrue(
-                m_autoCommands.APToBestCluster());
+                m_autoCommands.APToClusterChain(200, true));
 
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
