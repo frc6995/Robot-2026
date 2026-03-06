@@ -173,13 +173,6 @@ public class RobotContainer {
                                             rotationSpeed); // Drive counterclockwise with negative X (left)
                         }));
 
-        m_climbPivot.setDefaultCommand(
-            m_climbPivot.setAngle(()->Degrees.of(94))
-        );
-        m_climbExtension.setDefaultCommand(
-            m_climbExtension.setHeight(()->Inches.of(8))
-        );
-
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
@@ -223,10 +216,10 @@ public class RobotContainer {
         // X: climb
         joystick.x().whileTrue(
                 Commands.sequence(
+                        m_AutoCommands.prepclimbPivot(),
                         m_AutoCommands.prepL1Climb(POI.CL1.get()),
-                        m_AutoCommands.L1Climb()));
-
-        joystick.rightBumper().onTrue(m_climbExtension.setHeight(()->Inches.of(8)));
+                        m_AutoCommands.L1Climb(),
+                        m_AutoCommands.finishL1Climb()));
         joystick.y().whileTrue(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 

@@ -3,6 +3,7 @@ package frc.robot.autos;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
@@ -263,17 +264,29 @@ public class AutoCommands {
      * @param targetpose Target pose to autoallign to
      * @return Command that aligns to target pose and climbs
      */
+
+    public Command prepclimbPivot(){
+        return m_climbPivot.setAngle(()->Degrees.of(94)).withTimeout(Seconds.of(0.25));
+    }
+
     public Command prepL1Climb(
             Pose2d targetpose) {
         return Commands.race(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
                 new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
-                m_climbPivot.setAngle(() -> Degrees.of(84)));
-    }
+                m_climbExtension.setHeight(()->Inches.of(8)),
+                m_climbPivot.setAngle(()->Degrees.of(84)));
+                }
 
     public Command L1Climb() {
-        return Commands.race(
-                m_climbExtension.setHeight(() -> Inches.of(2)));
+        return Commands.sequence(
+            m_climbExtension.setHeight(() -> Inches.of(2)).withTimeout(1));
+    }
+
+    public Command finishL1Climb() {
+            return Commands.sequence(
+                m_climbExtension.setHeight(()->Inches.of(8)).withTimeout(0.5),
+                m_climbPivot.setAngle(()->Degrees.of(94)));
     }
 
     public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
