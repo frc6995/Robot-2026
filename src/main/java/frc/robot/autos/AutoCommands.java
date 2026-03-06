@@ -119,11 +119,11 @@ public class AutoCommands {
         return Commands.deadline(
                 Commands.sequence(
                         new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(), m_drivebase,
-                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                AutoAlign.kSlowDriveProfile).until(
                                         TriggerUtil.isWithinRadius(
                                                 () -> POI.DEPOT_START.get().getTranslation(),
                                                 () -> m_drivebase.state.Pose,
-                                                () -> Meters.of(0.2))),
+                                                () -> Meters.of(0.1))),
                         new AutoAlign(POI.DEPOT_END.get(), m_drivebase,
                                 AutoAlign.kSlowDriveProfile)),
                 Commands.parallel(fuelIntake()));

@@ -27,7 +27,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
 	    "Climb_Poses",
 	    OptionalInt.empty(),
-	    5.79943,
+	    6.00106,
 	    new Pose2d(1.586, 4.196, Rotation2d.fromRadians(0)),
 	    new Pose2d(1.586, 3.3, Rotation2d.fromRadians(0))
 	);
@@ -55,9 +55,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
 	    "Center_Line_Poses",
 	    OptionalInt.empty(),
-	    21.3861,
+	    21.4377,
 	    new Pose2d(4.403, 7.413, Rotation2d.fromRadians(0)),
-	    new Pose2d(6.027, 8.955, Rotation2d.fromRadians(3.142))
+	    new Pose2d(5.627, 8.995, Rotation2d.fromRadians(3.142))
 	);
 
     /**
