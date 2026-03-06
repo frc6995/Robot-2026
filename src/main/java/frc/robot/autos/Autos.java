@@ -157,6 +157,17 @@ public class Autos {
 
         // ============= DEFINE AUTOS =============
 
+        autos.put("L 1x center-line GPD test",
+                () -> auto(POI.TRL1.get(), c -> {
+
+                    c.addCommands(leftToCenterLineGPD.get());
+
+                    c.addCommands(leftBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+
+                }));
+
         autos.put("L 3x center-line",
                 () -> auto(POI.TRL1.get(), c -> {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
