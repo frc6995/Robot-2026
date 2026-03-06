@@ -190,6 +190,7 @@ public abstract class ObjectVision {
                     && bounds.contains(cl.getCenter())) {
                 best = Optional.of(cl);
             }
+            System.out.println("Cluster at " + cl.getCenter() + " within bounds: " + bounds.contains(cl.getCenter()));
         }
         if (RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
             Pose2d center = bounds.getCenter();

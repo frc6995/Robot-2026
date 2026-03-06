@@ -1,6 +1,7 @@
 package frc.robot.autos;
 
 import choreo.auto.AutoFactory;
+import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -18,6 +19,7 @@ import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.detection.ObjectVision;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
@@ -99,7 +101,7 @@ public class Autos {
                 .until(() -> m_objectVision.getBestCluster().isPresent()
                         && TriggerUtil.isWithinTolerance(
                                 () -> m_drivebase.state.Pose.getRotation().getDegrees(),
-                                () -> 90.0,
+                                AllianceFlipUtil.constant(-90.0, 90.0),
                                 () -> 15.0).getAsBoolean())
                 .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(7.0);
 
@@ -107,9 +109,9 @@ public class Autos {
                 .until(() -> m_objectVision.getBestCluster().isPresent()
                         && TriggerUtil.isWithinTolerance(
                                 () -> m_drivebase.state.Pose.getRotation().getDegrees(),
-                                () -> 90.0,
+                                AllianceFlipUtil.constant(90.0, -90.0),
                                 () -> 15.0).getAsBoolean())
-                .andThen(autoCommands.APToClusterChain(90000, false));
+                .andThen(autoCommands.APToClusterChain(90000, false)).withTimeout(7.0);
 
         // (L/R) Back From Center Line Default
         Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),

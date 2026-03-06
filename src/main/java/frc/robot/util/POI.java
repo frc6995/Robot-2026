@@ -103,11 +103,12 @@ public class POI {
     // ============= PRIVATE RECTANGLES =============
         /** Number of meters over the center/side lines acceptable for the auto game piece pickup. */
     private static final double kLineToleranceMeters = 0.0;
-    private static final Rectangle2d kLeftBlueBounds = new Rectangle2d(
-        new Translation2d(
-            0, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters),
+    public static final Rectangle2d kLeftBlueBounds = new Rectangle2d(
         new Translation2d(
             AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 - kLineToleranceMeters)
+    ,
+        new Translation2d(
+            0, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters)
     );
     private static final Rectangle2d kRightBlueBounds = new Rectangle2d(
         new Translation2d(
@@ -116,7 +117,7 @@ public class POI {
             AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 + kLineToleranceMeters
         )
     );
-    private static final Rectangle2d kLeftRedBounds = new Rectangle2d(
+    public static final Rectangle2d kLeftRedBounds = new Rectangle2d(
         new Translation2d(
             AllianceFlipUtil.FIELD_LENGTH, 0),
         new Translation2d(
