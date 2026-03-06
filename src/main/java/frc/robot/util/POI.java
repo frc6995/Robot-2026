@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Meters;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -8,7 +7,9 @@ import static edu.wpi.first.units.Units.Degrees;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.generated.ChoreoVars;
 import static frc.robot.util.AllianceFlipUtil.flipped;
@@ -68,8 +69,29 @@ public class POI {
     public static final Supplier<Rotation2d> testEntry = flipped(new Rotation2d(Degrees.of(-90)));
     public static final Supplier<Rotation2d> depotStartEntry = flipped(new Rotation2d(Degrees.of(200)));
 
+    // Passing zones
+    public static final Translation2d centerZoneCorner1 = new Translation2d(Meters.of(4.7), Meters.of(4.7));
+    public static final Translation2d centerZoneCorner2 = new Translation2d(Meters.of(11.7), Meters.of(3.3));
+    public static final Supplier<Rectangle2d> topAllianceZone = ()-> new Rectangle2d(
+            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get(), 
+            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get());
+    public static final Supplier<Rectangle2d> bottomAllianceZone = ()-> new Rectangle2d(
+            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get(), 
+            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get());
+    public static final Supplier<Rectangle2d> topZone = ()-> new Rectangle2d(
+            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get(), 
+            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get());
+    public static final Supplier<Rectangle2d> centerZone = () -> flippedRectangle(centerZoneCorner1, centerZoneCorner2);
+    public static final Supplier<Rectangle2d> bottomZone = ()-> new Rectangle2d(
+            flipped(new Translation2d(Meters.of(4.7), Meters.of(0.5))).get(), 
+            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get());
+
     // ============= TRANSLATIONS =============
     // ============= DISTANCES =============
     public static final Distance kOriginToTrenchBlue = Meters.of(4.6);
     public static final Distance kOriginToTrenchRed = Meters.of(11.9);
+
+    private static Rectangle2d flippedRectangle(Translation2d corner1, Translation2d corner2) {
+        return new Rectangle2d(flipped(corner1).get(), flipped(corner2).get());
+    }
 }
