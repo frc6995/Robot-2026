@@ -35,6 +35,8 @@ public abstract class ObjectVision {
     protected StructPublisher<Pose2d> averageObjectPose;
     protected StructPublisher<Pose2d> bestObjectPose;
     protected StructArrayPublisher<Pose2d> clusterBounds;
+    protected StructPublisher<Pose2d> bestClusterPose;
+    protected StructArrayPublisher<Pose2d> bestClusterObjectPoses;
 
     public static class Cluster {
         double sumX = 0.0;
@@ -42,10 +44,17 @@ public abstract class ObjectVision {
         int count = 0;
         Translation2d center = null;
 
+        ArrayList<Translation2d> pieces = new ArrayList<Translation2d>();
+
         public void add(Translation2d piece) {
             sumX += piece.getX();
             sumY += piece.getY();
             count++;
+            pieces.add(piece);
+        }
+
+        public List<Translation2d> getPieces() {
+            return pieces;
         }
 
         public Translation2d getCenter() {
@@ -77,6 +86,8 @@ public abstract class ObjectVision {
         averageObjectPose = table.getStructTopic("Average Pose", Pose2d.struct).publish();
         bestObjectPose = table.getStructTopic("Best Pose", Pose2d.struct).publish();
         clusterBounds = table.getStructArrayTopic("Cluster Bounds", Pose2d.struct).publish();
+        bestClusterPose = table.getStructTopic("Best Cluster Pose", Pose2d.struct).publish();
+        bestClusterObjectPoses = table.getStructArrayTopic("Best Cluster Object Poses", Pose2d.struct).publish();
     }
 
     public abstract void update();
@@ -84,10 +95,19 @@ public abstract class ObjectVision {
     protected void updateTelemetry() {
         if (RobotContainer.kTelemetryVerbosity == TelemetryVerbosity.HIGH) {
             objectPoses.accept(getObjectPoses().toArray(new Pose3d[gamePieces.size()]));
+
             var clusters = getClusters();
             var poses = new ArrayList<Pose2d>(clusters.size());
             clusters.forEach((cluster) -> poses.add(new Pose2d(cluster.getCenter(), Rotation2d.kZero)));
             clusterPoses.accept(poses.toArray(new Pose2d[poses.size()]));
+
+            var bestClusterOpt = getBestCluster();
+            bestClusterPose.accept(bestClusterOpt.isPresent() ? new Pose2d(bestClusterOpt.get().getCenter(), Rotation2d.kZero) : Pose2d.kZero);
+            
+            var clusterObjects = bestClusterOpt.isPresent() ? bestClusterOpt.get().getPieces() : new ArrayList<Translation2d>();
+            var clusterPoses = new ArrayList<Pose2d>(clusterObjects.size());
+            clusterObjects.forEach((piece) -> clusterPoses.add(new Pose2d(piece, Rotation2d.kZero)));
+            bestClusterObjectPoses.accept(clusterPoses.toArray(new Pose2d[clusterPoses.size()]));
         }
         if (RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
             var avgOpt = getAverageObjectLocation();
@@ -145,33 +165,29 @@ public abstract class ObjectVision {
             if (visited[i])
                 continue;
 
-            Cluster c = new Cluster();
-            Deque<Integer> stack = new ArrayDeque<>();
-            stack.push(i);
+            Cluster c = null;
             visited[i] = true;
+            var center = gamePieces.get(i);
 
-            while (!stack.isEmpty()) {
-                int j = stack.pop();
-                var piece = gamePieces.get(j);
-
-                c.add(piece);
-
-                for (int k = 0; k < n; k++) {
+            for (int k = 0; k < n; k++) {
                     if (visited[k])
                         continue;
 
                     var piece2 = gamePieces.get(k);
-                    double dx = piece.getX() - piece2.getX();
-                    double dy = piece.getY() - piece2.getY();
+                    double dx = center.getX() - piece2.getX();
+                    double dy = center.getY() - piece2.getY();
 
                     if (dx * dx + dy * dy < ODVisionConstants.kClusterTolerance) {
+                        if(c == null) {
+                            c = new Cluster();
+                        }
+                        c.add(gamePieces.get(k));
+                        center = c.getCenter();
                         visited[k] = true;
-                        stack.push(k);
                     }
                 }
-            }
 
-            if (c.count >= 2) {
+            if (c != null && c.count >= 2) {
                 clusters.add(c);
             }
         }
@@ -190,7 +206,6 @@ public abstract class ObjectVision {
                     && bounds.contains(cl.getCenter())) {
                 best = Optional.of(cl);
             }
-            System.out.println("Cluster at " + cl.getCenter() + " within bounds: " + bounds.contains(cl.getCenter()));
         }
         if (RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
             Pose2d center = bounds.getCenter();
