@@ -45,6 +45,7 @@ import frc.robot.subsystems.hood.NoneHoodS;
 import frc.robot.subsystems.hood.RealHoodS;
 import frc.robot.subsystems.indexer.IndexerS;
 import frc.robot.subsystems.indexer.NoneIndexerS;
+import frc.robot.subsystems.indexer.RealIndexerS;
 import frc.robot.subsystems.intakepivot.IntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
@@ -52,6 +53,7 @@ import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
+import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
@@ -91,17 +93,18 @@ public class RobotContainer {
 
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new RealFlyWheelS();
-    @Logged(name = "Hood")
+    //TODO: logging hood currently causes error with epilogue
+    //@Logged(name = "Hood")
     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
     //private final HoodS m_hood = new NoneHoodS();
     @Logged(name = "Indexer")
-    private final IndexerS m_indexer = new NoneIndexerS();
+    private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new NoneSpindexerS();
+    private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
     //private final TurretS m_turret = new NoneTurretS();
@@ -117,7 +120,7 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.Velocity);
 
     public RobotContainer() {
-        ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, () -> POI.HUB1.get());
+        ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, (pose) -> ShooterController.getAimLocation(pose));
 
         m_drivetrain.resetOdometry(new Pose2d());
         VISUALIZER = logger.MECH_VISUALIZER;
@@ -172,7 +175,7 @@ public class RobotContainer {
         );
 
         m_hood.setDefaultCommand(
-                m_hood.runSOTF(ShooterController.getInstance()::getCachedData, () -> m_drivetrain.state.Pose)
+                m_hood.runSOTF(ShooterController.getInstance()::getCachedData)
         );
 
         m_flywheel.setDefaultCommand(

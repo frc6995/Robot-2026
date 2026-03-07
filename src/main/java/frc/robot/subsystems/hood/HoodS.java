@@ -1,5 +1,7 @@
 package frc.robot.subsystems.hood;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -19,23 +21,12 @@ public abstract class HoodS extends SubsystemBase {
     public abstract Command resetEncoder();
 
     public abstract Angle applyDynamicLimits(Angle targetAngle, Pose2d pose);
-    @Logged
-    public abstract Angle getAutoHoodAngle();
     public abstract Optional<Angle> getSetpoint();
     @Logged
     public abstract boolean isHoodSafe();
     @Logged
     public abstract boolean isHoodReady();
-      public Command runSOTF(
-    java.util.function.Supplier<frc.robot.util.ShooterController.ShooterTargetData> solution,
-    java.util.function.Supplier<Pose2d> robotPose
-  ) {
-      return setAngle(() ->
-          applyDynamicLimits(
-              edu.wpi.first.units.Units.Degrees.of(solution.get().hoodAngleDeg()),
-              robotPose.get()
-          )
-      );
-  }
+
+    public abstract Command runSOTF(Supplier<ShooterTargetData> dataSupplier);
 
 }

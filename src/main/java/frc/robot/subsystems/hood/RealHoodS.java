@@ -43,8 +43,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.POI;
 import frc.robot.util.RobotVisualizer;
+import frc.robot.util.ShooterController;
 import frc.robot.util.TriggerUtil;
 import frc.robot.util.UnitUtil;
+import frc.robot.util.ShooterController.ShooterTargetData;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -102,8 +104,6 @@ public class RealHoodS extends HoodS {
         public static final Distance kSafetyOverride_Final = Meters.of(0.01);
         public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.2);
     }
-
-    public InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
             .withControlMode(ControlMode.CLOSED_LOOP)
@@ -189,8 +189,7 @@ public class RealHoodS extends HoodS {
     }
 
     public Command autoHoodAngle() {
-        return setAngle(
-                () -> getAutoHoodAngle());
+        return runSOTF(ShooterController.getInstance()::getCachedData);
     }
 
   public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
@@ -207,9 +206,14 @@ public class RealHoodS extends HoodS {
                 HoodConstants.kTolerance);
     }
 
-    public Angle getAutoHoodAngle() {
-        return Degrees.of(table.get(robotPose.get().getTranslation().getDistance(POI.HUB1.get().getTranslation())));
-    }
+    public Command runSOTF(Supplier<ShooterTargetData> dataSupplier) {
+        return setAngle(() ->
+            applyDynamicLimits(
+                Degrees.of(dataSupplier.get().hoodAngleDeg()),
+                robotPose.get()
+            )
+        );
+    }   
 
     public Optional<Angle> getSetpoint() {
         return hood.getMechanismSetpoint();

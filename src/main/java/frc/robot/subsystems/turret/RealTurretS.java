@@ -159,11 +159,11 @@ public class RealTurretS extends TurretS {
         return Radians.of(MathUtil.inputModulus(angle.getRadians(), -Math.PI, Math.PI));
     }
     public Command setAngle(Supplier<Rotation2d> angle) {
-        return m_turret.setAngle(() -> toAngle(angle.get()));
+        return m_turret.setAngle(() -> applyDynamicLimits(toAngle(angle.get())));
     }
 
     public Command setAngle(Rotation2d angle) {
-        return m_turret.setAngle(toAngle(angle));
+        return m_turret.setAngle(applyDynamicLimits(toAngle(angle)));
     }
 
     public Command setVoltage(Supplier<Voltage> voltageSupplier) {

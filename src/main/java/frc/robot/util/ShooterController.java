@@ -2,19 +2,26 @@ package frc.robot.util;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.concurrent.Flow.Publisher;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 public class ShooterController {
     public record ShooterTargetData(
-    Rotation2d turretAngle,
-    double rpm,
-    double hoodAngleDeg)
+        Rotation2d turretAngle,
+        double rpm,
+        double hoodAngleDeg)
     {}
     private static final double[][] kTimeOfFlightData = {
         {1.0, 0.30},
@@ -37,21 +44,27 @@ public class ShooterController {
 
     private final Supplier<Pose2d> robotPose;
     private final Supplier<ChassisSpeeds> robotSpeeds;
-    private final Supplier<Pose2d> goalPose;
+    private final Function<Pose2d, Pose2d> goalPose;
+
+    public NetworkTable goalPoseTable; 
+    public StructPublisher<Pose2d> targetPosePub;
 
     private ShooterController(
         Supplier<Pose2d> robotPose,
         Supplier<ChassisSpeeds> robotSpeeds,
-        Supplier<Pose2d> goalPose
+        Function<Pose2d, Pose2d> goalPose
     ) {
         this.robotPose = robotPose;
         this.robotSpeeds = robotSpeeds;
         this.goalPose = goalPose;
 
+        goalPoseTable = NetworkTableInstance.getDefault().getTable("Aim");
+        targetPosePub = goalPoseTable.getStructTopic("target", Pose2d.struct).publish();
+
         populateLUTs();
     }
 
-    public static void initialize(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Supplier<Pose2d> targetPose) {
+    public static void initialize(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Function<Pose2d, Pose2d> targetPose) {
         if(instance == null) {
             instance = new ShooterController(robotPose, robotSpeeds, targetPose);
         }
@@ -62,6 +75,29 @@ public class ShooterController {
             throw new NullPointerException("ShooterController has not yet been initialized!");
         }
         return instance;
+    }
+
+    public static Pose2d getAimLocation(Pose2d drivePose) {
+        if (POI.topZone.get().contains(drivePose.getTranslation())) {
+            return POI.topAllianceZone.get().getCenter();
+        }
+        else if (POI.bottomZone.get().contains(drivePose.getTranslation())) {
+            return POI.bottomAllianceZone.get().getCenter();
+        }
+        else if (POI.centerZone.get().contains(drivePose.getTranslation())) {
+            if (POI.centerZone.get().getCenter().getY() > drivePose.getY())
+                return POI.topAllianceZone.get().getCenter();
+            else
+                return POI.bottomAllianceZone.get().getCenter();
+        }
+        else {
+            if (drivePose.getX() < Meters.of(4).magnitude()) {
+                return POI.HUB1.get();
+            }
+            else {
+                return POI.topAllianceZone.get().getCenter();
+            }
+        }
     }
 
     public ShooterTargetData getCachedData() {
@@ -82,6 +118,7 @@ public class ShooterController {
             tofMap.put(value[0], value[1]);
         }
     }
+
     public ShooterTargetData calculate() {
 
         Pose2d currentPose = robotPose.get();
@@ -98,8 +135,10 @@ public class ShooterController {
         Pose2d projectedPose =
             new Pose2d(projectedTranslation, currentPose.getRotation());
 
-        Translation2d goalTranslation = goalPose.get().getTranslation();
+        Translation2d goalTranslation = goalPose.apply(projectedPose).getTranslation();
         Translation2d delta = goalTranslation.minus(projectedPose.getTranslation());
+
+        targetPosePub.accept(new Pose2d(goalTranslation, new Rotation2d()));
 
         double distance = delta.getNorm();
 
