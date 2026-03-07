@@ -163,7 +163,7 @@ public class AutoCommands {
                         Rotation2d targetPoseEntryAngle) {
                 return Commands.sequence(
                                 Commands.waitUntil(() -> m_hood.isHoodSafe()),
-                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase,
+                                new AutoAlign(helpPose, m_drivebase,
                                                 AutoAlign.kHighJerkProfile).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
@@ -232,7 +232,7 @@ public class AutoCommands {
                                 return Commands.deadline(at,fuelIntake()).andThen(APToClusterChain(numBalls,bounds));
                         } else if(!hasTurned && tempNumberPickedUp < numBalls) {
                                 hasTurned = true;
-                                return new AutoAlign(new Pose2d(m_drivebase.state.Pose.getTranslation(), DriveUtil.getAngleTowards(bounds.getCenter(), m_drivebase.state.Pose)), m_drivebase).andThen(APToClusterChain(numBalls, bounds));
+                                return new AutoAlign(new Pose2d(m_drivebase.state.Pose.getTranslation(), DriveUtil.getAngleTowards(bounds.getCenter(), m_drivebase.state.Pose)), m_drivebase, AutoAlign.kGPDProfile).andThen(APToClusterChain(numBalls, bounds));
                         } else {
                                 hasTurned = false;
                                 tempNumberPickedUp = 0;

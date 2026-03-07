@@ -5,6 +5,7 @@ import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -39,6 +40,10 @@ public class Autos {
 
     public class AutoConstants {
         private static Time kDefaultAutoScoreTime = Seconds.of(2.0);
+        private static Time kGPDTimeout = Seconds.of(6.0);
+        private static Distance kGPDStartRadius = Meters.of(2.0);
+ private static Distance kBackToStartRadius = Meters.of(12.8);
+
 
     }
 
@@ -90,7 +95,7 @@ public class Autos {
         // (L/R) Center Line Middle Preplanned
         Supplier<Command> leftToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
                 Meters.of(3.5),
-                POI.BALLL2.get(), POI.BALLL2Entry.get(), Meters.of(0.12), POI.STOPL1.get());
+                POI.BALLL2.get(), POI.BALLL2Entry.get(), Meters.of(0.2), POI.STOPL1.get());
 
         Supplier<Command> rightToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
                 Meters.of(3.5),
@@ -100,25 +105,23 @@ public class Autos {
         Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
                 .until(() -> m_objectVision.getBestCluster().isPresent()
                         && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
-                                () -> m_drivebase.state.Pose, () -> Meters.of(2.0)).getAsBoolean())
+                                () -> m_drivebase.state.Pose, () -> AutoConstants.kGPDStartRadius).getAsBoolean())
 
-                .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(20.0);
+                .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(AutoConstants.kGPDTimeout);
 
         Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
                 .until(() -> m_objectVision.getBestCluster().isPresent()
-                        && TriggerUtil.isWithinTolerance(
-                                () -> m_drivebase.state.Pose.getRotation().getDegrees(),
-                                AllianceFlipUtil.constant(90.0, -90.0),
-                                () -> 75.0).getAsBoolean())
-                .andThen(autoCommands.APToClusterChain(90000, false)).withTimeout(7.0);
+                        && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
+                                () -> m_drivebase.state.Pose, () -> AutoConstants.kGPDStartRadius).getAsBoolean())
+                .andThen(autoCommands.APToClusterChain(90000, false)).withTimeout(AutoConstants.kGPDTimeout);
 
         // (L/R) Back From Center Line Default
         Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                POI.HELPL2Entry.get(), Meters.of(4.6),
+                POI.HELPL2Entry.get(), AutoConstants.kBackToStartRadius,
                 POI.TRL1.get(), POI.TRL1Entry.get());
 
         Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR2.get(),
-                POI.HELPR2Entry.get(), Meters.of(4.6),
+                POI.HELPR2Entry.get(), AutoConstants.kBackToStartRadius,
                 POI.TRR1.get(), POI.TRR1Entry.get());
 
         // (L/R) Sweep Default
@@ -136,7 +139,7 @@ public class Autos {
 
         // (L) Back From Center Line To Depot
         Supplier<Command> leftBackToStartDefaultPlusDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
-                POI.HELPL2Entry.get(), Meters.of(2.8),
+                POI.HELPL2Entry.get(), Meters.of(12.0),
                 POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
                 .until(
                         TriggerUtil.isWithinRadius(
@@ -215,6 +218,9 @@ public class Autos {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
                     c.addCommands(leftBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+
                     c.addCommands(leftToCenterLineGPD.get());
 
                     c.addCommands(leftBackToStartDefaultPlusDepot.get());
