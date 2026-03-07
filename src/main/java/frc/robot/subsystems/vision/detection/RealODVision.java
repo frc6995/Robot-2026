@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision.detection;
 
+import static edu.wpi.first.units.Units.Centimeter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
@@ -19,8 +20,9 @@ public class RealODVision extends ObjectVision {
     public static class ODVisionConstants {
         public static final String kCameraID = "limelight-front";
         public static final Pose3d kCameraOffset = new Pose3d(
-                new Translation3d(Inches.of(-11.25), Inches.of(0), Inches.of(20.5)),
-                new Rotation3d(Degrees.of(0), Degrees.of(-2), Degrees.of(0)));
+                //new Translation3d(Inches.of(-11.25), Inches.of(0), Inches.of(20.5)),
+                new Translation3d(Centimeter.of(-26.363), Centimeter.of(-7.639), Centimeter.of(54.341)),
+                new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(-9)));
         public static final Distance kGamePieceDiameter = Inches.of(5.91);
 
         private static final Distance kClusterRadius = Inches.of(16);
