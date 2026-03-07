@@ -74,9 +74,9 @@ public class RealTurretS extends TurretS {
         public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(200.0);
         public static Angle kStowedAngle = Degrees.of(90);
         
-        public static Angle kCWLimit = Degrees.of(-165);
-        public static Angle kCCWLimit = Degrees.of(165);
-        public static Angle kStartAngle = kCCWLimit;
+        public static Angle kCWLimit = Degrees.of(-30);
+        public static Angle kCCWLimit = Degrees.of(300);
+        public static Angle kStartAngle = Degrees.zero();
         public static Angle kTolerance = Degrees.of(5);
         public static Angle kStowedAngleMin = kStowedAngle.minus(kTolerance);
         public static Angle kStowedAngleMax = kStowedAngle.plus(kTolerance);
@@ -277,7 +277,7 @@ public class RealTurretS extends TurretS {
         return Commands.sequence(
                 setVoltage(TurretConstants.kHomingDrive)
                         .until(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold)),
-                this.runOnce(() -> m_turretMotor.setPosition(Degrees.zero())).ignoringDisable(true)).withTimeout(2.0)
+                this.runOnce(() -> m_turretMotor.setPosition(TurretConstants.kCWLimit)).ignoringDisable(true)).withTimeout(2.0)
                 .andThen(setVoltage(Volts.zero()));
     }
 }
