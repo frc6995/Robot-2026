@@ -22,4 +22,13 @@ public abstract class FlyWheelS extends SubsystemBase {
     public abstract boolean atSetpoint();
     @Logged
     public abstract Current getCurrent();
+    
+    public Command runSOTF(
+    Supplier<frc.robot.util.ShooterController.ShooterTargetData> solution
+  ) {
+      return setVelocity(() ->
+          edu.wpi.first.units.Units.RotationsPerSecond
+              .of(solution.get().rpm() / 60.0)
+      );
+  }
 }
