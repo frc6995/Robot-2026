@@ -43,9 +43,9 @@ public class RealATVision extends AprilTagVision {
             new Pose3d( // right
                 new Translation3d(Inches.of(2.550), Inches.of(12.987),Inches.of(7.435)),
                 new Rotation3d(Degrees.zero(), Degrees.of(22.5), Degrees.of(-90))),
-            new Pose3d(
+            new Pose3d( // left
                 new Translation3d(Inches.of(2.550), Inches.of(-12.987), Inches.of(7.435)),
-                new Rotation3d(Degrees.zero(), Degrees.of(22.5), Degrees.of(-90)))
+                new Rotation3d(Degrees.zero(), Degrees.of(22.5), Degrees.of(90)))
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 

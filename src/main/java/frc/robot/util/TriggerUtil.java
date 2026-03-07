@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Meters;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
@@ -81,5 +82,10 @@ public class TriggerUtil {
      */
     public static BooleanSupplier or(BooleanSupplier supplierOne, BooleanSupplier supplierTwo) {
         return () -> supplierOne.getAsBoolean() || supplierTwo.getAsBoolean();
+    }
+
+    public static BooleanSupplier debounce(BooleanSupplier supp, double time) {
+        Debouncer debouncer = new Debouncer(time);
+        return () -> debouncer.calculate(supp.getAsBoolean());
     }
 }

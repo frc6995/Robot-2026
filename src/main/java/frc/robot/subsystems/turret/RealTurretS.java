@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -73,22 +74,23 @@ public class RealTurretS extends TurretS {
         public static double kSimA = 0.0;
         public static AngularVelocity kSimVelocity = DegreesPerSecond.of(180.0);
         public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(360.0);
-        public static Angle kStowedAngle = Degrees.of(90);
+        public static Angle kStowedAngle = Degrees.of(-90);
 
         
         public static Angle kCWLimit = Degrees.of(-135);
         public static Angle kCCWLimit = Degrees.of(192.6);
-        public static Angle kStartAngle = Degrees.zero();
+        public static Angle kStartAngle = Degrees.of(-90);
         public static Angle kTolerance = Degrees.of(5);
         public static Angle kStowedAngleMin = kStowedAngle.minus(kTolerance);
         public static Angle kStowedAngleMax = kStowedAngle.plus(kTolerance);
 
         public static double kReduction = 12.5;
         public static double kStatorLimit = 80.0;
-        public static double kSupplyLimit = 25.0;
+        public static double kSupplyLimit = 40.0;
 
         public static Voltage kHomingDrive = Volts.of(-1.0);
-        public static Current kHomingCurrentThreshold = Amps.of(13.0);
+        public static Current kHomingCurrentThreshold = Amps.of(39.0);
+        public static double kHomingTime = 0.5;
 
         public static boolean kIsInverted = false;
 
@@ -133,7 +135,7 @@ public class RealTurretS extends TurretS {
             
     private final Pivot m_turret = new Pivot(m_config);
 
-    public RealTurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Supplier<Boolean> isIntakeDeployed) {
+    public RealTurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, BooleanSupplier isIntakeDeployed) {
         super(robotPose, robotSpeeds, isIntakeDeployed);
     }
 

@@ -135,89 +135,88 @@ public class ShooterController {
     }
 
     public ShooterTargetData calculate() {
+
+        Pose2d currentPose = robotPose.get();
+        ChassisSpeeds speeds = robotSpeeds.get();
+
+        Translation2d projectedTranslation =
+            currentPose.getTranslation().plus(
+                new Translation2d(
+                    speeds.vxMetersPerSecond * LATENCY_SECONDS,
+                    speeds.vyMetersPerSecond * LATENCY_SECONDS
+                )
+            );
+
+        Pose2d projectedPose =
+            new Pose2d(projectedTranslation, currentPose.getRotation().plus(Rotation2d.fromDegrees(speeds.omegaRadiansPerSecond)));
+
+        Translation2d goalTranslation = goalPose.apply(projectedPose).getTranslation();
+        Translation2d delta = goalTranslation.minus(projectedPose.getTranslation());
+
+        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
+            targetPosePub.accept(new Pose2d(goalTranslation, new Rotation2d()));
+
+        double distance = delta.getNorm();
+
+        double baseRPM = rpmMap.get(distance);
+        double baseHood = hoodMap.get(distance);
+        double timeOfFlight = tofMap.get(distance);
+
+        double baselineVelocity =
+            distance / timeOfFlight; // m/s
+
+        Translation2d shotUnit = delta.div(distance);
+
+        Translation2d shotVelocityVector =
+            shotUnit.times(baselineVelocity);
+
+        Translation2d robotVel =
+            new Translation2d(
+                speeds.vxMetersPerSecond,
+                speeds.vyMetersPerSecond
+            );
+
+        Translation2d correctedVector =
+            shotVelocityVector.minus(robotVel);
+
+        double correctedSpeed = correctedVector.getNorm();
+
+
+        Rotation2d turretFieldAngle =
+            new Rotation2d(
+                correctedVector.getX(),
+                correctedVector.getY()
+            );
+
+
+        Rotation2d turretRobotAngle =
+            turretFieldAngle.minus(projectedPose.getRotation());
+
+
+        double velocityDelta =
+            correctedSpeed - baselineVelocity;
+
+        double rpmCorrection =
+            velocityDelta * RPM_CORRECTION_GAIN * 100.0; // scale factor placeholder
+
+        double hoodCorrection =
+            velocityDelta * HOOD_CORRECTION_GAIN * 2.0; // degrees scaling placeholder
+
+        double finalRPM =
+            baseRPM + rpmCorrection;
+
+        double finalHood =
+            MathUtil.clamp(
+                baseHood + hoodCorrection,
+                HOOD_MIN,
+                HOOD_MAX
+            );
+
+        cachedData.hoodAngleDeg = finalHood;
+        cachedData.rpm = finalRPM;
+        cachedData.turretAngle = turretRobotAngle;
+
         return cachedData;
-
-        // Pose2d currentPose = robotPose.get();
-        // ChassisSpeeds speeds = robotSpeeds.get();
-
-        // Translation2d projectedTranslation =
-        //     currentPose.getTranslation().plus(
-        //         new Translation2d(
-        //             speeds.vxMetersPerSecond * LATENCY_SECONDS,
-        //             speeds.vyMetersPerSecond * LATENCY_SECONDS
-        //         )
-        //     );
-
-        // Pose2d projectedPose =
-        //     new Pose2d(projectedTranslation, currentPose.getRotation().plus(Rotation2d.fromDegrees(speeds.omegaRadiansPerSecond)));
-
-        // Translation2d goalTranslation = goalPose.apply(projectedPose).getTranslation();
-        // Translation2d delta = goalTranslation.minus(projectedPose.getTranslation());
-
-        // if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
-        //     targetPosePub.accept(new Pose2d(goalTranslation, new Rotation2d()));
-
-        // double distance = delta.getNorm();
-
-        // double baseRPM = rpmMap.get(distance);
-        // double baseHood = hoodMap.get(distance);
-        // double timeOfFlight = tofMap.get(distance);
-
-        // double baselineVelocity =
-        //     distance / timeOfFlight; // m/s
-
-        // Translation2d shotUnit = delta.div(distance);
-
-        // Translation2d shotVelocityVector =
-        //     shotUnit.times(baselineVelocity);
-
-        // Translation2d robotVel =
-        //     new Translation2d(
-        //         speeds.vxMetersPerSecond,
-        //         speeds.vyMetersPerSecond
-        //     );
-
-        // Translation2d correctedVector =
-        //     shotVelocityVector.minus(robotVel);
-
-        // double correctedSpeed = correctedVector.getNorm();
-
-
-        // Rotation2d turretFieldAngle =
-        //     new Rotation2d(
-        //         correctedVector.getX(),
-        //         correctedVector.getY()
-        //     );
-
-
-        // Rotation2d turretRobotAngle =
-        //     turretFieldAngle.minus(projectedPose.getRotation());
-
-
-        // double velocityDelta =
-        //     correctedSpeed - baselineVelocity;
-
-        // double rpmCorrection =
-        //     velocityDelta * RPM_CORRECTION_GAIN * 100.0; // scale factor placeholder
-
-        // double hoodCorrection =
-        //     velocityDelta * HOOD_CORRECTION_GAIN * 2.0; // degrees scaling placeholder
-
-        // double finalRPM =
-        //     baseRPM + rpmCorrection;
-
-        // double finalHood =
-        //     MathUtil.clamp(
-        //         baseHood + hoodCorrection,
-        //         HOOD_MIN,
-        //         HOOD_MAX
-        //     );
-
-        // cachedData.hoodAngleDeg = finalHood;
-        // cachedData.rpm = finalRPM;
-        // cachedData.turretAngle = turretRobotAngle;
-
-        // return cachedData;
     }
 }
 

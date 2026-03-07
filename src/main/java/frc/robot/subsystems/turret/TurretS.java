@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.epilogue.Logged;
@@ -21,15 +22,20 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.util.POI;
+import frc.robot.util.TriggerUtil;
 import frc.robot.util.ShooterController.ShooterTargetData;
 import frc.robot.util.UnitUtil;
 
 public abstract class TurretS extends SubsystemBase {
     protected Supplier<Pose2d> robotPose;
     protected Supplier<ChassisSpeeds> robotSpeeds;
-    protected Supplier<Boolean> isIntakeDeployed;
+    protected BooleanSupplier isIntakeDeployed;
 
-    public TurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Supplier<Boolean> isIntakeDeployed) {}
+    public TurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, BooleanSupplier isIntakeDeployed) {
+        this.robotPose = robotPose;
+        this.robotSpeeds = robotSpeeds;
+        this.isIntakeDeployed = isIntakeDeployed;
+    }
 
     public abstract Command setAngle(Supplier<Rotation2d> angle);
 
@@ -94,7 +100,7 @@ public abstract class TurretS extends SubsystemBase {
     public Command driveToHome() {
         return Commands.sequence(
                 setVoltage(TurretConstants.kHomingDrive)
-                        .until(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold)),
+                        .until(TriggerUtil.debounce(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold), TurretConstants.kHomingTime)),
                 resetEncoder()).withTimeout(2.0)
                 .andThen(setVoltage(Volts.zero()));
     }
@@ -115,7 +121,7 @@ public abstract class TurretS extends SubsystemBase {
 
     /**no allocations: returns the parameter or a constant*/
     public Angle applyDynamicLimits(Angle angle) {
-        if (isIntakeDeployed.get()) {
+        if (isIntakeDeployed.getAsBoolean()) {
             return clampToHardLimits(angle);
         } else {
             return clampToStowedLimits(angle);
