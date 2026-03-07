@@ -99,10 +99,8 @@ public class Autos {
         // (L/R) Center Line Middle GPD
         Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
                 .until(() -> m_objectVision.getBestCluster().isPresent()
-                        && TriggerUtil.isWithinTolerance(
-                                () -> m_drivebase.state.Pose.getRotation().getDegrees(),
-                                AllianceFlipUtil.constant(-90.0, 90.0),
-                                () -> 75.0).getAsBoolean())
+                        && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(2.0)).getAsBoolean())
+
                 .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(7.0);
 
         Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
@@ -110,7 +108,7 @@ public class Autos {
                         && TriggerUtil.isWithinTolerance(
                                 () -> m_drivebase.state.Pose.getRotation().getDegrees(),
                                 AllianceFlipUtil.constant(90.0, -90.0),
-                                () -> 15.0).getAsBoolean())
+                                () -> 75.0).getAsBoolean())
                 .andThen(autoCommands.APToClusterChain(90000, false)).withTimeout(7.0);
 
         // (L/R) Back From Center Line Default
