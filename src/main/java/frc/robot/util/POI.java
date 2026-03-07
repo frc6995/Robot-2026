@@ -85,8 +85,10 @@ public class POI {
 
     // Autoalign help pose rotations
     public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));
-    public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(172)));
+    public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(200)));
     public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
+    public static final Supplier<Rotation2d> HELPD1ntry = flipped(new Rotation2d(Degrees.of(160)));
+
 
     public static final Supplier<Rotation2d> HELPR1Entry = flipped(new Rotation2d(Degrees.of(-30)));
     public static final Supplier<Rotation2d> HELPR2Entry = flipped(new Rotation2d(Degrees.of(-172)));
