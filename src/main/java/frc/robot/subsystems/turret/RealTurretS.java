@@ -106,7 +106,7 @@ public class RealTurretS extends TurretS {
         this.isIntakeDeployed = isIntakeDeployed;
     }
 
-    private final TalonFX m_turretMotor = new TalonFX(TurretConstants.kCANID, TunerConstants.kCANBus);
+    private final TalonFX m_turretMotor = new TalonFX(TurretConstants.kCANID, TunerConstants.kHigherBus);
     private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
             .withClosedLoopController(TurretConstants.kP, TurretConstants.kI, TurretConstants.kD,
                     TurretConstants.kVelocity,
