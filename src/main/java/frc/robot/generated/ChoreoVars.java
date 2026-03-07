@@ -1,5 +1,5 @@
+// spotless:off
 package frc.robot.generated;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Units;
@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.*;
  * in the Choreo GUI.
  */
 public final class ChoreoVars {
-    public static final Distance fieldWidth = Units.Meters.of(8.052);
+    public static final Distance fieldWidth = Units.Meters.of(8.0518);
 
     public static final class Poses {
         public static final Pose2d BALLL1 = new Pose2d(6.917, 6.701, Rotation2d.fromRadians(-0.785));

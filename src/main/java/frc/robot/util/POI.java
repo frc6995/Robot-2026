@@ -1,15 +1,17 @@
 package frc.robot.util;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Meters;
 
 import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.function.Supplier;
 
+import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -95,10 +97,38 @@ public class POI {
     public static final Supplier<Rotation2d> testEntry = flipped(new Rotation2d(Degrees.of(-90)));
     public static final Supplier<Rotation2d> depotStartEntry = flipped(new Rotation2d(Degrees.of(200)));
 
+    // Passing zones
+    private static final Translation2d topZoneCorner1 = new Translation2d(Meters.of(11.7), Meters.of(7.6));
+    private static final Translation2d topZoneCorner2 = new Translation2d(Meters.of(4.7), Meters.of(4.7));
+    private static final Translation2d centerZoneCorner1 = topZoneCorner2;
+    private static final Translation2d centerZoneCorner2 = new Translation2d(Meters.of(11.7), Meters.of(3.3));
+    private static final Translation2d bottomZoneCorner1 = new Translation2d(Meters.of(4.7), Meters.of(0.5));
+    private static final Translation2d bottomZoneCorner2 = centerZoneCorner2;
+
+    private static final Translation2d allianceZoneCorner1 = new Translation2d(Meters.of(0), Meters.of(0));
+    private static final Translation2d allianceZoneCorner2 = new Translation2d(Meters.of(4), Meters.of(8));
+    private static final Translation2d topAllianceZoneCorner1 = new Translation2d(Meters.of(2.3), Meters.of(6));
+    private static final Translation2d topAllianceZoneCorner2 = new Translation2d(Meters.of(2.3), Meters.of(6));
+    private static final Translation2d bottomAllianceZoneCorner1 = new Translation2d(Meters.of(2.3), Meters.of(2));
+    private static final Translation2d bottomAllianceZoneCorner2 = new Translation2d(Meters.of(2.3), Meters.of(2));
+
+    public static final Supplier<Rectangle2d> allianceZone = flippedRectangle(allianceZoneCorner1, allianceZoneCorner2);
+    public static final Supplier<Rectangle2d> topAllianceZone = flippedRectangle(topAllianceZoneCorner1, topAllianceZoneCorner2);
+    public static final Supplier<Rectangle2d> bottomAllianceZone = flippedRectangle(bottomAllianceZoneCorner1, bottomAllianceZoneCorner2);
+
+    public static final Supplier<Rectangle2d> topZone = flippedRectangle(topZoneCorner1, topZoneCorner2);
+    public static final Supplier<Rectangle2d> centerZone = flippedRectangle(centerZoneCorner1, centerZoneCorner2);
+    public static final Supplier<Rectangle2d> bottomZone = flippedRectangle(bottomZoneCorner1, bottomZoneCorner2);
+
     // ============= TRANSLATIONS =============
     // ============= DISTANCES =============
     public static final Distance kOriginToTrenchBlue = Meters.of(4.6);
     public static final Distance kOriginToTrenchRed = Meters.of(11.9);
+
+    private static Supplier<Rectangle2d> flippedRectangle(Translation2d corner1, Translation2d corner2) {
+        return AllianceFlipUtil.constant(new Rectangle2d(corner1, corner2), 
+                new Rectangle2d(ChoreoAllianceFlipUtil.flip(corner1), ChoreoAllianceFlipUtil.flip(corner2)));
+    }
     
     // ============= PRIVATE RECTANGLES =============
         /** Number of meters over the center/side lines acceptable for the auto game piece pickup. */

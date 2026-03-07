@@ -4,7 +4,11 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
@@ -12,20 +16,22 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import choreo.auto.AutoChooser;
-import choreo.auto.AutoFactory;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
 import frc.robot.generated.ChoreoVars;
@@ -34,22 +40,17 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.NoneFlyWheelS;
 import frc.robot.subsystems.flywheel.RealFlyWheelS;
-import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.NoneHoodS;
 import frc.robot.subsystems.hood.RealHoodS;
-import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.indexer.IndexerS;
 import frc.robot.subsystems.indexer.NoneIndexerS;
 import frc.robot.subsystems.indexer.RealIndexerS;
 import frc.robot.subsystems.intakepivot.IntakePivotS;
-import frc.robot.subsystems.intakepivot.NoneIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
-import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
-import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
@@ -64,9 +65,10 @@ import frc.robot.subsystems.vision.detection.RealODVision;
 import frc.robot.subsystems.vision.detection.SimODVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
-import frc.robot.util.ClimbConstants;
 import frc.robot.util.POI;
+import frc.robot.util.ShooterController;
 import frc.robot.util.Telemetry;
+import frc.robot.util.ShooterController.ShooterTargetData;
 import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
 import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
@@ -100,21 +102,24 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     @Logged(name = "Flywheel")
-    private final FlyWheelS m_flywheel = new NoneFlyWheelS();
+    private final FlyWheelS m_flywheel = new RealFlyWheelS();
+    //TODO: logging hood currently causes error with epilogue
     @Logged(name = "Hood")
-//     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, ()-> m_drivetrain.state.Speeds);
-    private final HoodS m_hood = new NoneHoodS();
+    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    //private final HoodS m_hood = new NoneHoodS();
+
     @Logged(name = "Indexer")
-    private final IndexerS m_indexer = new NoneIndexerS();
+    private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new NoneSpindexerS();
+    private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")
-//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-    private final TurretS m_turret = new NoneTurretS();
+    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    //private final TurretS m_turret = new NoneTurretS();
+
 
     // @Logged(name = "ObjectDetection")
     private final ObjectVision m_objectVision = new SimODVision(() -> m_drivetrain.state.Pose);
@@ -131,12 +136,13 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.Velocity);
 
     public RobotContainer() {
+        ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, (pose) -> ShooterController.getAimLocation(pose));
 
         m_drivetrain.resetOdometry(new Pose2d());
         VISUALIZER = logger.MECH_VISUALIZER;
 
         SmartDashboard.putData("Visualzer", VISUALIZER);
-
+        
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,
                 m_turret,
@@ -144,7 +150,6 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Mode", m_chooser);
         setDefaultCommands();
         configureBindings();
-
     }
 
     public void periodic() {
@@ -183,7 +188,19 @@ public class RobotContainer {
                                     .withRotationalRate(
                                             rotationSpeed); // Drive counterclockwise with negative X (left)
                         }));
+        // m_turret.setDefaultCommand(m_turret.aimAtHub());
+        // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
+        m_turret.setDefaultCommand(
+                m_turret.runSOTF(ShooterController.getInstance()::getCachedData)
+        );
 
+        m_hood.setDefaultCommand(
+                m_hood.runSOTF(ShooterController.getInstance()::getCachedData)
+        );
+
+        m_flywheel.setDefaultCommand(
+                m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData)
+        );
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
@@ -242,8 +259,8 @@ public class RobotContainer {
         // DegreesPerSecond.of(0)));
 
         // start button home turret
-        joystick.start()
-                .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
+        joystick.x()
+                .onTrue(m_turret.driveToHome());
         // select button home all, reset on disable
         // JS: This could be one parallel group, with
         // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
@@ -259,10 +276,15 @@ public class RobotContainer {
                 m_indexer.resetEncoder(),
                 m_hood.resetEncoder()));
 
+        joystick.a().onTrue(m_turret.driveToHome());
+        joystick.x().whileTrue(m_hood.autoHoodAngle());
+
+
+        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
+
         m_drivetrain.registerTelemetry(logger::telemeterize);
         // JS: Why is this a deferred proxy?
-        RobotModeTriggers.autonomous().onTrue(Commands.deferredProxy(() -> m_turret.driveToHome()));
-
+        RobotModeTriggers.autonomous().onTrue(m_turret.driveToHome().andThen(m_turret.aimAtFieldPose(()->POI.HUB1.get().getTranslation(), ()-> m_drivetrain.state.Pose)).until(() -> !DriverStation.isAutonomous()));
     }
 
     private RobotCentric m_robotCentricRequest = new RobotCentric().withDriveRequestType(DriveRequestType.Velocity);

@@ -35,9 +35,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
+import frc.robot.util.POI;
 import frc.robot.util.RobotVisualizer;
 import frc.robot.util.UnitUtil;
-import frc.robot.util.POI;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -60,23 +60,24 @@ public class RealTurretS extends TurretS {
         public static double kG = 0.0;
         public static double kV = 0.0;
         public static double kA = 0.0;
-        public static AngularVelocity kVelocity = DegreesPerSecond.of(200.0);
-        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(200.0);
+        public static AngularVelocity kVelocity = DegreesPerSecond.of(180.0);
+        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(360.0);
 
-        public static double kSimP = 40;
+        public static double kSimP = 30;
         public static double kSimI = 0.0;
         public static double kSimD = 0.0;
         public static double kSimS = 0.0;
         public static double kSimG = 0.0;
-        public static double kSimV = 0.0;
+        public static double kSimV = 4.0;
         public static double kSimA = 0.0;
-        public static AngularVelocity kSimVelocity = DegreesPerSecond.of(200.0);
-        public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(200.0);
+        public static AngularVelocity kSimVelocity = DegreesPerSecond.of(180.0);
+        public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(360.0);
         public static Angle kStowedAngle = Degrees.of(90);
+
         
-        public static Angle kCWLimit = Degrees.of(-165);
-        public static Angle kCCWLimit = Degrees.of(165);
-        public static Angle kStartAngle = kCCWLimit;
+        public static Angle kCWLimit = Degrees.of(-180);
+        public static Angle kCCWLimit = Degrees.of(150);
+        public static Angle kStartAngle = Degrees.zero();
         public static Angle kTolerance = Degrees.of(5);
         public static Angle kStowedAngleMin = kStowedAngle.minus(kTolerance);
         public static Angle kStowedAngleMax = kStowedAngle.plus(kTolerance);
@@ -92,7 +93,7 @@ public class RealTurretS extends TurretS {
 
         // WIP
         public static MomentOfInertia kMOI = Units.KilogramSquareMeters.of(0.1); // kg*m^2
-        public static Distance kRadius = Units.Inches.of(4.0); // Radius of the Turret from center
+        public static Distance kRadius = Units.Inches.of(3.1875); // Radius of the Turret from center
 
     }
 
@@ -137,7 +138,7 @@ public class RealTurretS extends TurretS {
           //  .withWrapping(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
             
             // WIP
-            .withMOI(Meters.of(0.25), Pounds.of(4));
+            .withMOI(Units.Inches.of(3.1875), Pounds.of(14.245));
             
     private final Pivot m_turret = new Pivot(m_config);
 
@@ -158,11 +159,11 @@ public class RealTurretS extends TurretS {
         return Radians.of(MathUtil.inputModulus(angle.getRadians(), -Math.PI, Math.PI));
     }
     public Command setAngle(Supplier<Rotation2d> angle) {
-        return m_turret.setAngle(() -> toAngle(angle.get()));
+        return m_turret.setAngle(() -> applyDynamicLimits(toAngle(angle.get())));
     }
 
     public Command setAngle(Rotation2d angle) {
-        return m_turret.setAngle(toAngle(angle));
+        return m_turret.setAngle(applyDynamicLimits(toAngle(angle)));
     }
 
     public Command setVoltage(Supplier<Voltage> voltageSupplier) {
@@ -176,7 +177,7 @@ public class RealTurretS extends TurretS {
      * @return
      */
     public Command setVoltage(Voltage voltage) {
-        return m_turret.setVoltage(voltage);
+        return Commands.runOnce(() -> turretMotorSMC.setVoltage(voltage));
     }
 
     public Command sysId() {
@@ -216,7 +217,7 @@ public class RealTurretS extends TurretS {
         return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolerance);
     }
 
-    public Current getCurrent() {
+    public Current getSupplyCurrent() {
         return m_turretMotor.getSupplyCurrent().getValue();
     }
 
@@ -276,8 +277,8 @@ public class RealTurretS extends TurretS {
     public Command driveToHome() {
         return Commands.sequence(
                 setVoltage(TurretConstants.kHomingDrive)
-                        .until(() -> getCurrent().gt(TurretConstants.kHomingCurrentThreshold)),
-                this.runOnce(() -> m_turretMotor.setPosition(Degrees.zero())).ignoringDisable(true))
-                .andThen(setVoltage(Volts.zero())).withTimeout(2.0);
+                        .until(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold)),
+                this.runOnce(() -> m_turretMotor.setPosition(TurretConstants.kCWLimit)).ignoringDisable(true)).withTimeout(2.0)
+                .andThen(setVoltage(Volts.zero()));
     }
 }
