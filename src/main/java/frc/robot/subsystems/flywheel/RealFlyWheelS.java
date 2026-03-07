@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.Degrees;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
+
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -87,7 +89,7 @@ public class RealFlyWheelS extends FlyWheelS {
     .withFeedforward(new SimpleMotorFeedforward(FlywheelConstants.kS, FlywheelConstants.kV, FlywheelConstants.kA))
     .withSimFeedforward(new SimpleMotorFeedforward(FlywheelConstants.kSimS, FlywheelConstants.kSimV, FlywheelConstants.kSimA))
       // Set Telemetry mode
-    .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
+    .withTelemetry("ShooterMotor", RobotContainer.kTelemetryVerbosity)
       // Gear Ratio(Needs tuning)
     .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.25)))
       // Motor Configs
@@ -110,7 +112,7 @@ public class RealFlyWheelS extends FlyWheelS {
       // Maximum Speed
     .withUpperSoftLimit(FlywheelConstants.kMaxSpeed)
       // Telemetry Config
-    .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+    .withTelemetry("ShooterMech", RobotContainer.kTelemetryVerbosity);
 
   private FlyWheel m_shooter = new FlyWheel(shooterConfig);
 

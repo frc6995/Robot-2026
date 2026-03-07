@@ -14,6 +14,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -56,7 +57,7 @@ public class RealClimbExtensionS extends ClimbExtensionS {
                         constants.kSimVExtension(),
                         constants.kSimAExtension()))
                 // Telemetry name and verbosity level
-                .withTelemetry("ElevatorMotor", TelemetryVerbosity.HIGH)
+                .withTelemetry("ElevatorMotor", RobotContainer.kTelemetryVerbosity)
                 // Gearing from the motor rotor to final shaft.
                 // In this example GearBox.fromReductionStages(3,4) is the same as
                 // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
@@ -75,7 +76,7 @@ public class RealClimbExtensionS extends ClimbExtensionS {
         elevconfig = new ElevatorConfig(talonSmartMotorController)
                 .withStartingHeight(Meters.of(constants.kHeight()))
                 .withHardLimits(Meters.of(constants.kMinHeight()), Meters.of(constants.kMaxHeight()))
-                .withTelemetry("Elevator", TelemetryVerbosity.HIGH)
+                .withTelemetry("Elevator", RobotContainer.kTelemetryVerbosity)
                 .withMass(Pounds.of(constants.kMass()));
         m_elevator = new Elevator(elevconfig);
 

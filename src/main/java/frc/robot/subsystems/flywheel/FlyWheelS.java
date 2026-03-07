@@ -28,7 +28,7 @@ public abstract class FlyWheelS extends SubsystemBase {
   ) {
       return setVelocity(() ->
           edu.wpi.first.units.Units.RotationsPerSecond
-              .of(solution.get().rpm() / 60.0)
+              .of(solution.get().rpm / 60.0)
       );
   }
 }

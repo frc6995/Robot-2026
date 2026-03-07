@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -39,7 +40,7 @@ public class RealIndexerS extends IndexerS {
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.OPEN_LOOP)
             // Apply Telemetry Config
-        .withTelemetry("IndexerMotor", TelemetryVerbosity.HIGH)
+        .withTelemetry("IndexerMotor", RobotContainer.kTelemetryVerbosity)
             // Motor Physicsal Properties
         .withGearing(new MechanismGearing(GearBox.fromReductionStages(IndexerConstants.kGearRatio)))
         .withMotorInverted(IndexerConstants.kInverted)

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -74,7 +75,7 @@ import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
-    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.HIGH;
+    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.LOW;
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                   // speed
@@ -95,6 +96,7 @@ public class RobotContainer {
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
+            false,
             TunerConstants.DrivetrainConstants,
             TunerConstants.FrontLeft,
             TunerConstants.FrontRight,
@@ -102,27 +104,27 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     @Logged(name = "Flywheel")
-    private final FlyWheelS m_flywheel = new RealFlyWheelS();
+    private final FlyWheelS m_flywheel = new NoneFlyWheelS();
     //TODO: logging hood currently causes error with epilogue
     @Logged(name = "Hood")
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    //private final HoodS m_hood = new NoneHoodS();
+    //private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new NoneHoodS();
 
     @Logged(name = "Indexer")
-    private final IndexerS m_indexer = new RealIndexerS();
+    private final IndexerS m_indexer = new NoneIndexerS();
     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new RealSpindexerS();
+    private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
     //private final TurretS m_turret = new NoneTurretS();
 
 
     // @Logged(name = "ObjectDetection")
-    private final ObjectVision m_objectVision = new SimODVision(() -> m_drivetrain.state.Pose);
+    private final ObjectVision m_objectVision = new NoneODVision(() -> m_drivetrain.state.Pose);
 
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
@@ -160,7 +162,7 @@ public class RobotContainer {
     public boolean intakeState = false;
 
     private void setDefaultCommands() {
-        m_turret.setDefaultCommand(m_turret.aimAtHub());
+       // m_turret.setDefaultCommand(m_turret.aimAtHub());
         m_hood.setDefaultCommand(m_hood.autoHoodAngle());
 
     }
@@ -247,7 +249,7 @@ public class RobotContainer {
                 m_autoCommands.APToClusterChain(200, true));
 
         // right trigger hold to score
-        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+        joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
         joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
@@ -278,6 +280,7 @@ public class RobotContainer {
 
         joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
+        
 
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
