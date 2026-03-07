@@ -78,11 +78,14 @@ public class POI {
     private static final Translation2d bottomZoneCorner1 = new Translation2d(Meters.of(4.7), Meters.of(0.5));
     private static final Translation2d bottomZoneCorner2 = centerZoneCorner2;
 
+    private static final Translation2d allianceZoneCorner1 = new Translation2d(Meters.of(0), Meters.of(0));
+    private static final Translation2d allianceZoneCorner2 = new Translation2d(Meters.of(4), Meters.of(8));
     private static final Translation2d topAllianceZoneCorner1 = new Translation2d(Meters.of(2.3), Meters.of(6));
     private static final Translation2d topAllianceZoneCorner2 = new Translation2d(Meters.of(2.3), Meters.of(6));
     private static final Translation2d bottomAllianceZoneCorner1 = new Translation2d(Meters.of(2.3), Meters.of(2));
     private static final Translation2d bottomAllianceZoneCorner2 = new Translation2d(Meters.of(2.3), Meters.of(2));
 
+    public static final Supplier<Rectangle2d> allianceZone = flippedRectangle(allianceZoneCorner1, allianceZoneCorner2);
     public static final Supplier<Rectangle2d> topAllianceZone = flippedRectangle(topAllianceZoneCorner1, topAllianceZoneCorner2);
     public static final Supplier<Rectangle2d> bottomAllianceZone = flippedRectangle(bottomAllianceZoneCorner1, bottomAllianceZoneCorner2);
 

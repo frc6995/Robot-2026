@@ -91,7 +91,7 @@ public class ShooterController {
                 return POI.bottomAllianceZone.get().getCenter();
         }
         else {
-            if (drivePose.getX() < Meters.of(4).magnitude()) {
+            if (POI.allianceZone.get().contains(drivePose.getTranslation())) {
                 return POI.HUB1.get();
             }
             else {
