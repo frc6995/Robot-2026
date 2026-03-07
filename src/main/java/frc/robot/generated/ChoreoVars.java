@@ -1,5 +1,5 @@
-// spotless:off
 package frc.robot.generated;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Units;
@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.*;
  * in the Choreo GUI.
  */
 public final class ChoreoVars {
-    public static final Distance fieldWidth = Units.Meters.of(8.0518);
+    public static final Distance fieldWidth = Units.Meters.of(8.052);
 
     public static final class Poses {
         public static final Pose2d BALLL1 = new Pose2d(6.917, 6.701, Rotation2d.fromRadians(-0.785));
@@ -28,11 +28,11 @@ public final class ChoreoVars {
         public static final Pose2d DEPOTSTART = new Pose2d(0.973, 5.975, Rotation2d.fromRadians(3.142));
         public static final Pose2d HELPD1 = new Pose2d(3, 7.375, Rotation2d.fromRadians(3.142));
         public static final Pose2d HELPL1 = new Pose2d(8.976, 7.3, Rotation2d.fromRadians(-0.349));
-        public static final Pose2d HELPL2 = new Pose2d(5.627, 8.995, Rotation2d.fromRadians(-1.571));
-        public static final Pose2d HELPL3 = new Pose2d(5.627, 8.995, Rotation2d.fromRadians(3.142));
+        public static final Pose2d HELPL2 = new Pose2d(4.697, 8.995, Rotation2d.fromRadians(-1.571));
+        public static final Pose2d HELPL3 = new Pose2d(4.697, 8.995, Rotation2d.fromRadians(3.142));
         public static final Pose2d HELPR1 = new Pose2d(8.976, 0.752, Rotation2d.fromRadians(0.349));
-        public static final Pose2d HELPR2 = new Pose2d(5.627, -0.943, Rotation2d.fromRadians(1.571));
-        public static final Pose2d HELPR3 = new Pose2d(5.627, -0.943, Rotation2d.fromRadians(3.142));
+        public static final Pose2d HELPR2 = new Pose2d(4.697, -0.943, Rotation2d.fromRadians(1.571));
+        public static final Pose2d HELPR3 = new Pose2d(4.697, -0.943, Rotation2d.fromRadians(3.142));
         public static final Pose2d STA1 = new Pose2d(0.474, 0.661, Rotation2d.kZero);
         public static final Pose2d STOPL1 = new Pose2d(8.284, 4.586, Rotation2d.fromRadians(4.712));
         public static final Pose2d STOPL2 = new Pose2d(7.301, 4.6, Rotation2d.fromRadians(-1.571));

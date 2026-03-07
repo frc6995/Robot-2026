@@ -234,6 +234,7 @@ public class AutoCommands {
                                 hasTurned = true;
                                 return new AutoAlign(new Pose2d(m_drivebase.state.Pose.getTranslation(), DriveUtil.getAngleTowards(bounds.getCenter(), m_drivebase.state.Pose)), m_drivebase).andThen(APToClusterChain(numBalls, bounds));
                         } else {
+                                hasTurned = false;
                                 tempNumberPickedUp = 0;
                                 return Commands.none();
                         }

@@ -22,7 +22,7 @@ public class Robot extends TimedRobot {
 
     @Logged(name = "RobotContainer")
     private final RobotContainer m_robotContainer;
-    private double autoSimTime = 20;
+    private double autoSimTime = 40;
 
     public Robot() {
 
