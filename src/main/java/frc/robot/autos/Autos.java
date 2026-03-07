@@ -101,7 +101,7 @@ public class Autos {
                 .until(() -> m_objectVision.getBestCluster().isPresent()
                         && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(2.0)).getAsBoolean())
 
-                .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(7.0);
+                .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(20.0);
 
         Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
                 .until(() -> m_objectVision.getBestCluster().isPresent()
