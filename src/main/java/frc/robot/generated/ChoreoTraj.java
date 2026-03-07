@@ -1,4 +1,4 @@
-
+// spotless:off
 package frc.robot.generated;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -6,10 +6,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Map;
 import java.util.OptionalInt;
 
-// If these imports cause errors because you're not using ChoreoLib,
-// turn off "Include ChoreoLib-specific Helpers" in Choreo's codegen settings.
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+// If the 2 imports above cause errors because you're not using ChoreoLib,
+// turn off "Include ChoreoLib-specific Helpers" in Choreo's codegen settings.
 
 /**
  * A class containing the name, start pose, end pose, and total time of every Choreo trajectory.
@@ -24,6 +24,20 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
+    public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
+        "Center_Line_Poses",
+        OptionalInt.empty(),
+        9.69692,
+        new Pose2d(4.40258, 7.41264, Rotation2d.fromRadians(0)),
+        new Pose2d(7.30141, 4.60048, Rotation2d.fromRadians(-1.5708))
+    );
+    public static final ChoreoTraj ClimbTest = new ChoreoTraj(
+        "ClimbTest",
+        OptionalInt.empty(),
+        1.34839,
+        new Pose2d(3.12002, 7.13968, Rotation2d.fromRadians(0)),
+        new Pose2d(0.67401, 4.08217, Rotation2d.fromRadians(0))
+    );
     public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
 	    "Climb_Poses",
 	    OptionalInt.empty(),
@@ -45,31 +59,17 @@ public record ChoreoTraj(
 	    new Pose2d(4.403, 7.413, Rotation2d.fromRadians(0)),
 	    new Pose2d(8.306, 6.792, Rotation2d.fromRadians(-1.571))
 	);
-	public static final ChoreoTraj ClimbTest = new ChoreoTraj(
-	    "ClimbTest",
-	    OptionalInt.empty(),
-	    1.34839,
-	    new Pose2d(3.12, 7.14, Rotation2d.fromRadians(0)),
-	    new Pose2d(0.674, 4.082, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
-	    "Center_Line_Poses",
-	    OptionalInt.empty(),
-	    118.01822,
-	    new Pose2d(4.403, 7.413, Rotation2d.fromRadians(0)),
-	    new Pose2d(5.627, 8.995, Rotation2d.fromRadians(-3.142))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("Climb_Poses", Climb_Poses),
-		Map.entry("OP", OP),
-		Map.entry("TRL1_I1", TRL1_I1),
-		Map.entry("ClimbTest", ClimbTest),
-		Map.entry("Center_Line_Poses", Center_Line_Poses)
+        Map.entry("Center_Line_Poses", Center_Line_Poses),
+        Map.entry("ClimbTest", ClimbTest),
+        Map.entry("Climb_Poses", Climb_Poses),
+        Map.entry("OP", OP),
+        Map.entry("TRL1_I1", TRL1_I1)
     );
 
     /**
@@ -96,3 +96,4 @@ public record ChoreoTraj(
         return routine.trajectory(this.name);
     }
 }
+// spotless:on

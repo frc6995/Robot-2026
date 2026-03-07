@@ -19,6 +19,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import com.therekrab.autopilot.APTarget;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.PIDController;
@@ -75,6 +76,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.ApplyFieldSpeeds m_pathApplyFieldSpeeds = new SwerveRequest.ApplyFieldSpeeds()
             .withDriveRequestType(DriveRequestType.Velocity);
+    private final SwerveRequest.FieldCentricFacingAngle m_angleRequest = new SwerveRequest.FieldCentricFacingAngle()
+            .withDriveRequestType(DriveRequestType.Velocity)
+            .withVelocityX(0)
+            .withVelocityY(0);
     private final PIDController m_pathXController = new PIDController(14, 0, 0.2);
     private final PIDController m_pathYController = new PIDController(14, 0, 0.2);
     private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
@@ -298,6 +303,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
+    }
+
+    public Command turnToAngle(Rotation2d angle) {
+        return applyRequest(() -> m_angleRequest.withTargetDirection(angle)).until(() -> MathUtil.isNear(angle.getDegrees(), state.Pose.getRotation().getDegrees(), 5));
     }
 
     public Pose2d targetPose() {

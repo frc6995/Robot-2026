@@ -10,6 +10,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.util.ShooterController.ShooterTargetData;
 
 public class NoneHoodS extends HoodS{
 
@@ -44,11 +45,6 @@ public class NoneHoodS extends HoodS{
     }
 
     @Override
-    public Angle getAutoHoodAngle() {
-        return Degrees.of(-6995);
-    }
-
-    @Override
     public Optional<Angle> getSetpoint() {
         return Optional.of(Degrees.of(-6995));
     }
@@ -67,5 +63,10 @@ public class NoneHoodS extends HoodS{
     public void setDefaultCommand(Command defaultCommand) {
         defaultCommand.addRequirements(this);
         super.setDefaultCommand(defaultCommand);
+    }
+
+    @Override
+    public Command runSOTF(Supplier<ShooterTargetData> dataSupplier) {
+        return Commands.none();
     }
 }

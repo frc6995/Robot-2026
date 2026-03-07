@@ -99,9 +99,10 @@ public class Autos {
         // (L/R) Center Line Middle GPD
         Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
                 .until(() -> m_objectVision.getBestCluster().isPresent()
-                        && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(), () -> m_drivebase.state.Pose, () -> Meters.of(2.0)).getAsBoolean())
+                        && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
+                                () -> m_drivebase.state.Pose, () -> Meters.of(2.0)).getAsBoolean())
 
-                .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(7.0);
+                .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(20.0);
 
         Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
                 .until(() -> m_objectVision.getBestCluster().isPresent()
@@ -134,19 +135,19 @@ public class Autos {
                         AutoAlign.kDefaultVelocityLimitedProfile));
 
         // (L) Back From Center Line To Depot
-        Supplier<Command> leftBackToStartDefaultPlusDepot = () ->autoCommands.APBackFromIntake(POI.HELPL3.get(),
+        Supplier<Command> leftBackToStartDefaultPlusDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
                 POI.HELPL2Entry.get(), Meters.of(2.8),
                 POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
-                            .until(
-                                    TriggerUtil.isWithinRadius(
-                                            () -> POI.DEPOT_HELP.get()
-                                                    .getTranslation(),
-                                            () -> m_drivebase.state.Pose,
-                                            () -> Meters.of(0.1))).andThen(
+                .until(
+                        TriggerUtil.isWithinRadius(
+                                () -> POI.DEPOT_HELP.get()
+                                        .getTranslation(),
+                                () -> m_drivebase.state.Pose,
+                                () -> Meters.of(0.1)))
+                .andThen(
 
-                    autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
-                            .alongWith(autoCommands.APtoDepot()));
-                
+                        autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
+                                .alongWith(autoCommands.APtoDepot()));
 
         // (L/R) Back From Center Line To Climb
 
@@ -213,8 +214,8 @@ public class Autos {
                 () -> auto(POI.TRL1.get(), c -> {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
-                     c.addCommands(leftBackToStartDefault.get());
-                     c.addCommands(leftToCenterLineGPD.get());
+                    c.addCommands(leftBackToStartDefault.get());
+                    c.addCommands(leftToCenterLineGPD.get());
 
                     c.addCommands(leftBackToStartDefaultPlusDepot.get());
 
@@ -242,8 +243,8 @@ public class Autos {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
                     c.addCommands(autoCommands.APBackFromIntake(POI.HELPL3.get(),
-                POI.HELPL2Entry.get(), Meters.of(2.8),
-                POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
+                            POI.HELPL2Entry.get(), Meters.of(2.8),
+                            POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
                             .until(
                                     TriggerUtil.isWithinRadius(
                                             () -> POI.DEPOT_HELP.get()
@@ -285,7 +286,6 @@ public class Autos {
 
         // Let the builder add more commands
         builder.accept(group);
-
         return group;
     }
 
