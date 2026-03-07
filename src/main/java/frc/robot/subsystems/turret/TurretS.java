@@ -35,6 +35,6 @@ public abstract class TurretS extends SubsystemBase {
     @Logged
     public abstract boolean atSetpoint();
     @Logged
-    public abstract Current getCurrent();
+    public abstract Current getSupplyCurrent();
 
 }

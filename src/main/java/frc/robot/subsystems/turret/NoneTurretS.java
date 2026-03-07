@@ -95,7 +95,7 @@ public class NoneTurretS extends TurretS {
     }
 
     @Override
-    public Current getCurrent() {
+    public Current getSupplyCurrent() {
         return Amps.of(-6995);
     }
     

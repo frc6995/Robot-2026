@@ -216,7 +216,7 @@ public class RealTurretS extends TurretS {
         return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolerance);
     }
 
-    public Current getCurrent() {
+    public Current getSupplyCurrent() {
         return m_turretMotor.getSupplyCurrent().getValue();
     }
 
@@ -276,8 +276,8 @@ public class RealTurretS extends TurretS {
     public Command driveToHome() {
         return Commands.sequence(
                 setVoltage(TurretConstants.kHomingDrive)
-                        .until(() -> getCurrent().gt(TurretConstants.kHomingCurrentThreshold)),
-                this.runOnce(() -> m_turretMotor.setPosition(Degrees.zero())).ignoringDisable(true))
-                .andThen(setVoltage(Volts.zero())).withTimeout(2.0);
+                        .until(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold)),
+                this.runOnce(() -> m_turretMotor.setPosition(Degrees.zero())).ignoringDisable(true)).withTimeout(2.0)
+                .andThen(setVoltage(Volts.zero()));
     }
 }

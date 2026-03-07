@@ -113,8 +113,8 @@ public class RobotContainer {
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
-//     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-    private final TurretS m_turret = new NoneTurretS();
+    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
+    //private final TurretS m_turret = new NoneTurretS();
 
     // @Logged(name = "ObjectDetection")
     private final ObjectVision m_objectVision = new SimODVision(() -> m_drivetrain.state.Pose);
@@ -242,8 +242,8 @@ public class RobotContainer {
         // DegreesPerSecond.of(0)));
 
         // start button home turret
-        joystick.start()
-                .onTrue(m_turret.driveToHome().onlyIf(() -> DriverStation.isEnabled()));
+        joystick.x()
+                .onTrue(m_turret.driveToHome());
         // select button home all, reset on disable
         // JS: This could be one parallel group, with
         // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
