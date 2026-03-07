@@ -47,7 +47,7 @@ public class RealIndexerS extends IndexerS {
         .withStatorCurrentLimit(Amps.of(IndexerConstants.kStatorCurrentLimit))
         .withSupplyCurrentLimit(Amps.of(IndexerConstants.kSupplyCurrentLimit));
 
-    private TalonFX m_indexerMotor = new TalonFX(IndexerConstants.kCAN_ID, TunerConstants.kCANBus);
+    private TalonFX m_indexerMotor = new TalonFX(IndexerConstants.kCAN_ID, TunerConstants.kHigherBus);
     private SmartMotorController m_indexerController = new TalonFXWrapper(m_indexerMotor, DCMotor.getKrakenX44(1),smcConfig);
 
     public Command setVoltage(Supplier<Voltage> voltage) {  

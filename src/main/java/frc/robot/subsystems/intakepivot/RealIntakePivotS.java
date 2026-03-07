@@ -104,7 +104,7 @@ public class RealIntakePivotS extends IntakePivotS {
       .withStatorCurrentLimit(Amps.of(IntakePivotConstants.kStatorCurrentLimit));
 
   // Vendor motor controller object
-  private TalonFX intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kCANBus);
+  private TalonFX intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kLowerBus);
 
   // Create our SmartMotorController from our Spark and config with the NEO.
   private SmartMotorController IntakeSMC = new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);

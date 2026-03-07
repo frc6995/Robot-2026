@@ -84,7 +84,7 @@ public class RealSpindexerS extends SpindexerS {
             .withSupplyCurrentLimit(Amps.of(SpindexerConstants.kSupplyCurrentLimit));
 
     // Motor Object
-    private TalonFX m_spindexerMotor = new TalonFX(SpindexerConstants.kCANID, TunerConstants.kCANBus);
+    private TalonFX m_spindexerMotor = new TalonFX(SpindexerConstants.kCANID, TunerConstants.kHigherBus);
     // SmartMotorController Object
     private SmartMotorController m_spindexerController = new TalonFXWrapper(m_spindexerMotor, DCMotor.getKrakenX44(1),
             smcConfig);
