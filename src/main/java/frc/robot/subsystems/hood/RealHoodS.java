@@ -159,11 +159,6 @@ public class RealHoodS extends HoodS {
       TriggerUtil.or(
         makeShouldApplyDynamicLimit(POI.kOriginToTrenchBlue, robotTranslation),
         makeShouldApplyDynamicLimit(POI.kOriginToTrenchRed, robotTranslation));
-    
-    for(double[] entry : HoodConstants.kAngleData){
-      table.put(entry[0], entry[1]);
-      
-    }
   }
 
   private Trigger makeShouldApplyDynamicLimit(Distance distanceToTrench, Supplier<Translation2d> robotTranslation) {
