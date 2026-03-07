@@ -176,7 +176,7 @@ public class RealTurretS extends TurretS {
      * @return
      */
     public Command setVoltage(Voltage voltage) {
-        return m_turret.setVoltage(voltage);
+        return Commands.runOnce(() -> turretMotorSMC.setVoltage(voltage));
     }
 
     public Command sysId() {
