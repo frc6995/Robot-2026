@@ -2,6 +2,7 @@ package frc.robot.util;
 
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 import java.util.Map;
 import java.util.Optional;
@@ -92,7 +93,7 @@ public class AutoAlign extends Command {
 
     public static APProfile kGPDProfile = new APProfile(
             AutoAlignConstants.SLOW_DRIVE_CONSTRAINTS)
-            .withErrorXY(Centimeters.of(40))
+            .withErrorXY(Meters.of(0.2))
             .withErrorTheta(Degrees.of(10))
             .withBeelineRadius(Centimeters.of(8));
 

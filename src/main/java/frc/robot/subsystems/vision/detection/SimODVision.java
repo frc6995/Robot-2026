@@ -22,7 +22,7 @@ import frc.robot.subsystems.vision.detection.RealODVision.ODVisionConstants;;
 
 public class SimODVision extends ObjectVision {
 
-    public static final Pose3d[] m_fuel = new Pose3d[200];
+    public static final Pose3d[] m_fuel = new Pose3d[300];
 
     private final StructArrayPublisher<Pose3d> allFuelPoses;
 

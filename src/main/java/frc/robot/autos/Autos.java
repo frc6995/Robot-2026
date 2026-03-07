@@ -102,7 +102,7 @@ public class Autos {
                         && TriggerUtil.isWithinTolerance(
                                 () -> m_drivebase.state.Pose.getRotation().getDegrees(),
                                 AllianceFlipUtil.constant(-90.0, 90.0),
-                                () -> 15.0).getAsBoolean())
+                                () -> 75.0).getAsBoolean())
                 .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(7.0);
 
         Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()

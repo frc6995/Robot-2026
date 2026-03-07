@@ -117,7 +117,7 @@ public class RobotContainer {
     private final TurretS m_turret = new NoneTurretS();
 
     // @Logged(name = "ObjectDetection")
-    private final ObjectVision m_objectVision = new RealODVision(() -> m_drivetrain.state.Pose);
+    private final ObjectVision m_objectVision = new SimODVision(() -> m_drivetrain.state.Pose);
 
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);

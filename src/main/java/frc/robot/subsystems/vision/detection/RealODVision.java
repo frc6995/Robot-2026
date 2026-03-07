@@ -27,7 +27,7 @@ public class RealODVision extends ObjectVision {
         private static final Distance kValidMaxDetectRadius = Meters.of(3);
         private static final Distance kValidMinDetectRadius = Inches.of(24);
 
-        public static final double kDistanceWeight = -50;
+        public static final double kDistanceWeight = -20;
         public static final double kPieceCountWeight = 2;
 
             // Calculated Constants
