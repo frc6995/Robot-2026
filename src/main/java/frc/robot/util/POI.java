@@ -70,28 +70,31 @@ public class POI {
     public static final Supplier<Rotation2d> depotStartEntry = flipped(new Rotation2d(Degrees.of(200)));
 
     // Passing zones
-    public static final Translation2d centerZoneCorner1 = new Translation2d(Meters.of(4.7), Meters.of(4.7));
+    public static final Translation2d topZoneCorner1 = new Translation2d(Meters.of(11.7), Meters.of(7.6));
+    public static final Translation2d topZoneCorner2 = new Translation2d(Meters.of(4.7), Meters.of(4.7));
+    public static final Translation2d centerZoneCorner1 = topZoneCorner2;
     public static final Translation2d centerZoneCorner2 = new Translation2d(Meters.of(11.7), Meters.of(3.3));
-    public static final Supplier<Rectangle2d> topAllianceZone = ()-> new Rectangle2d(
-            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get(), 
-            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get());
-    public static final Supplier<Rectangle2d> bottomAllianceZone = ()-> new Rectangle2d(
-            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get(), 
-            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get());
-    public static final Supplier<Rectangle2d> topZone = ()-> new Rectangle2d(
-            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get(), 
-            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get());
-    public static final Supplier<Rectangle2d> centerZone = () -> flippedRectangle(centerZoneCorner1, centerZoneCorner2);
-    public static final Supplier<Rectangle2d> bottomZone = ()-> new Rectangle2d(
-            flipped(new Translation2d(Meters.of(4.7), Meters.of(0.5))).get(), 
-            flipped(new Translation2d(Meters.of(0), Meters.of(0))).get());
+    public static final Translation2d bottomZoneCorner1 = new Translation2d(Meters.of(4.7), Meters.of(0.5));
+    public static final Translation2d bottomZoneCorner2 = centerZoneCorner2;
+
+    public static final Translation2d topAllianceZoneCorner1 = new Translation2d();
+    public static final Translation2d topAllianceZoneCorner2 = new Translation2d();
+    public static final Translation2d bottomAllianceZoneCorner1 = new Translation2d();
+    public static final Translation2d bottomAllianceZoneCorner2 = new Translation2d();
+
+    public static final Supplier<Rectangle2d> topAllianceZone = flippedRectangle(topAllianceZoneCorner1, topAllianceZoneCorner2);
+    public static final Supplier<Rectangle2d> bottomAllianceZone = flippedRectangle(bottomAllianceZoneCorner1, bottomAllianceZoneCorner2);
+    
+    public static final Supplier<Rectangle2d> topZone = flippedRectangle(topZoneCorner1, topZoneCorner2);
+    public static final Supplier<Rectangle2d> centerZone = flippedRectangle(centerZoneCorner1, centerZoneCorner2);
+    public static final Supplier<Rectangle2d> bottomZone = flippedRectangle(bottomZoneCorner1, bottomZoneCorner2);
 
     // ============= TRANSLATIONS =============
     // ============= DISTANCES =============
     public static final Distance kOriginToTrenchBlue = Meters.of(4.6);
     public static final Distance kOriginToTrenchRed = Meters.of(11.9);
 
-    private static Rectangle2d flippedRectangle(Translation2d corner1, Translation2d corner2) {
-        return new Rectangle2d(flipped(corner1).get(), flipped(corner2).get());
+    private static Supplier<Rectangle2d> flippedRectangle(Translation2d corner1, Translation2d corner2) {
+        return AllianceFlipUtil.constant(new Rectangle2d(corner1, corner2), new Rectangle2d(flipped(corner1).get(), flipped(corner2).get()));
     }
 }
