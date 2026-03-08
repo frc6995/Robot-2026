@@ -55,15 +55,15 @@ public class RealTurretS extends TurretS {
     public static class TurretConstants {
         public static int kCANID = 51;
 
-        public static double kP = 7.5;
+        public static double kP = 11.5;
         public static double kI = 0.0;
         public static double kD = 0.0;
         public static double kS = 0.0;
         public static double kG = 0.0;
         public static double kV = 1;
         public static double kA = 0.0;
-        public static AngularVelocity kVelocity = DegreesPerSecond.of(360.0);
-        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(720.0);
+        public static AngularVelocity kVelocity = DegreesPerSecond.of(720.0);
+        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1500.0);
 
         public static Angle kStowedAngle = Degrees.of(-90);
 

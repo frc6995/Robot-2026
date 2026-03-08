@@ -39,7 +39,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class RealFlyWheelS extends FlyWheelS {
     public static class FlywheelConstants {
         // PID Constants
-        public static final double kP = 0.4;
+        public static final double kP = 0.6;
         public static final double kI = 0;
         public static final double kD = 0.0;
         // Feedforward Constants
