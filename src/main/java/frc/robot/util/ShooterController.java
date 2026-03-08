@@ -6,6 +6,8 @@ import java.util.concurrent.Flow.Publisher;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.*;
@@ -15,14 +17,27 @@ import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
+
 public class ShooterController {
-    public record ShooterTargetData(
-        Rotation2d turretAngle,
-        double rpm,
-        double hoodAngleDeg)
-    {}
+    public static class ShooterTargetData {
+        public Rotation2d turretAngle;
+        public double rpm;
+        public double hoodAngleDeg;
+
+        public ShooterTargetData(
+            Rotation2d turretAngle,
+            double rpm,
+            double hoodAngleDeg) {
+                this.turretAngle = turretAngle;
+                this.rpm = rpm;
+                this.hoodAngleDeg = hoodAngleDeg;
+            }
+    }
+
     private static final double[][] kTimeOfFlightData = {
         {1.0, 0.30},
         {5.0, 0.60}
@@ -133,12 +148,13 @@ public class ShooterController {
             );
 
         Pose2d projectedPose =
-            new Pose2d(projectedTranslation, currentPose.getRotation());
+            new Pose2d(projectedTranslation, currentPose.getRotation().plus(Rotation2d.fromDegrees(speeds.omegaRadiansPerSecond)));
 
         Translation2d goalTranslation = goalPose.apply(projectedPose).getTranslation();
         Translation2d delta = goalTranslation.minus(projectedPose.getTranslation());
 
-        targetPosePub.accept(new Pose2d(goalTranslation, new Rotation2d()));
+        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
+            targetPosePub.accept(new Pose2d(goalTranslation, new Rotation2d()));
 
         double distance = delta.getNorm();
 
@@ -196,11 +212,9 @@ public class ShooterController {
                 HOOD_MAX
             );
 
-        cachedData = new ShooterTargetData(
-            turretRobotAngle,
-            finalRPM,
-            finalHood
-        );
+        cachedData.hoodAngleDeg = finalHood;
+        cachedData.rpm = finalRPM;
+        cachedData.turretAngle = turretRobotAngle;
 
         return cachedData;
     }

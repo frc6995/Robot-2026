@@ -26,6 +26,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Telemetry;
 import yams.gearing.GearBox;
@@ -75,7 +76,7 @@ public class RealSpindexerS extends SpindexerS {
             // Feedforward Constants
             .withFeedforward(new SimpleMotorFeedforward(SpindexerConstants.kS, 0, 0))
             // Telemetry name and verbosity level
-            .withTelemetry("SpindexerMotor", TelemetryVerbosity.HIGH)
+            .withTelemetry("SpindexerMotor", RobotContainer.kTelemetryVerbosity)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(SpindexerConstants.kGearRatio)))
             // Motor Properties
             .withMotorInverted(SpindexerConstants.kInverted)
@@ -93,7 +94,7 @@ public class RealSpindexerS extends SpindexerS {
             .withDiameter(SpindexerConstants.kDiameter)
             .withMass(SpindexerConstants.kMass)
             .withUpperSoftLimit(RPM.of(1000))
-            .withTelemetry("Spindexer", TelemetryVerbosity.HIGH);
+            .withTelemetry("Spindexer", RobotContainer.kTelemetryVerbosity);
 
             private FlyWheel m_spindexer = new FlyWheel(spindexerConfig);
 

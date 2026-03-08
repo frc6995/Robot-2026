@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -33,6 +34,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.util.POI;
@@ -53,41 +55,42 @@ public class RealTurretS extends TurretS {
     public static class TurretConstants {
         public static int kCANID = 51;
 
-        public static double kP = 0;
+        public static double kP = 7.5;
         public static double kI = 0.0;
         public static double kD = 0.0;
         public static double kS = 0.0;
         public static double kG = 0.0;
-        public static double kV = 0.0;
+        public static double kV = 1;
         public static double kA = 0.0;
-        public static AngularVelocity kVelocity = DegreesPerSecond.of(180.0);
-        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(360.0);
+        public static AngularVelocity kVelocity = DegreesPerSecond.of(360.0);
+        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
-        public static double kSimP = 30;
+        public static double kSimP = 6;
         public static double kSimI = 0.0;
         public static double kSimD = 0.0;
         public static double kSimS = 0.0;
         public static double kSimG = 0.0;
-        public static double kSimV = 4.0;
+        public static double kSimV = 1.0;
         public static double kSimA = 0.0;
         public static AngularVelocity kSimVelocity = DegreesPerSecond.of(180.0);
         public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(360.0);
-        public static Angle kStowedAngle = Degrees.of(90);
+        public static Angle kStowedAngle = Degrees.of(-90);
 
         
-        public static Angle kCWLimit = Degrees.of(-180);
-        public static Angle kCCWLimit = Degrees.of(150);
-        public static Angle kStartAngle = Degrees.zero();
+        public static Angle kCWLimit = Degrees.of(-135);
+        public static Angle kCCWLimit = Degrees.of(192.6);
+        public static Angle kStartAngle = Degrees.of(-90);
         public static Angle kTolerance = Degrees.of(5);
         public static Angle kStowedAngleMin = kStowedAngle.minus(kTolerance);
         public static Angle kStowedAngleMax = kStowedAngle.plus(kTolerance);
 
-        public static double kReduction = 50.0;
+        public static double kReduction = 12.5;
         public static double kStatorLimit = 80.0;
         public static double kSupplyLimit = 40.0;
 
         public static Voltage kHomingDrive = Volts.of(-1.0);
-        public static Current kHomingCurrentThreshold = Amps.of(3.0);
+        public static Current kHomingCurrentThreshold = Amps.of(39.0);
+        public static double kHomingTime = 0.5;
 
         public static boolean kIsInverted = false;
 
@@ -95,16 +98,6 @@ public class RealTurretS extends TurretS {
         public static MomentOfInertia kMOI = Units.KilogramSquareMeters.of(0.1); // kg*m^2
         public static Distance kRadius = Units.Inches.of(3.1875); // Radius of the Turret from center
 
-    }
-
-    private Supplier<Pose2d> robotPose;
-    private Supplier<ChassisSpeeds> robotSpeeds;
-    private Supplier<Boolean> isIntakeDeployed;
-
-    public RealTurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Supplier<Boolean> isIntakeDeployed) {
-        this.robotPose = robotPose;
-        this.robotSpeeds = robotSpeeds;
-        this.isIntakeDeployed = isIntakeDeployed;
     }
 
     private final TalonFX m_turretMotor = new TalonFX(TurretConstants.kCANID, TunerConstants.kHigherBus);
@@ -117,7 +110,7 @@ public class RealTurretS extends TurretS {
                     TurretConstants.kSimAcceleration)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(TurretConstants.kReduction)))
             .withIdleMode(MotorMode.BRAKE)
-            .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
+            .withTelemetry("TurretMotor", RobotContainer.kTelemetryVerbosity)
             .withStatorCurrentLimit(Amps.of(TurretConstants.kStatorLimit))
             .withSupplyCurrentLimit(Amps.of(TurretConstants.kSupplyLimit))
             .withMotorInverted(TurretConstants.kIsInverted)
@@ -133,7 +126,7 @@ public class RealTurretS extends TurretS {
             .withHardLimit(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
             // .withSoftLimits(TurretConstants.kCWLimit.plus(Degrees.of(10)),
             //         TurretConstants.kCCWLimit.minus(Degrees.of(10)))
-            .withTelemetry("Turret", TelemetryVerbosity.HIGH)
+            .withTelemetry("Turret", RobotContainer.kTelemetryVerbosity)
             .withStartingPosition(TurretConstants.kStartAngle)
           //  .withWrapping(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
             
@@ -141,6 +134,10 @@ public class RealTurretS extends TurretS {
             .withMOI(Units.Inches.of(3.1875), Pounds.of(14.245));
             
     private final Pivot m_turret = new Pivot(m_config);
+
+    public RealTurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, BooleanSupplier isIntakeDeployed) {
+        super(robotPose, robotSpeeds, isIntakeDeployed);
+    }
 
     @Override
     public void periodic() {
@@ -155,9 +152,6 @@ public class RealTurretS extends TurretS {
         m_turret.simIterate();
     }
 
-    private Angle toAngle(Rotation2d angle) {
-        return Radians.of(MathUtil.inputModulus(angle.getRadians(), -Math.PI, Math.PI));
-    }
     public Command setAngle(Supplier<Rotation2d> angle) {
         return m_turret.setAngle(() -> applyDynamicLimits(toAngle(angle.get())));
     }
@@ -184,26 +178,6 @@ public class RealTurretS extends TurretS {
         return m_turret.sysId(Volts.of(3), Volts.of(3).per(Second), Second.of(30));
     }
 
-    /**no allocations: returns the parameter or a constant*/
-    public Angle clampToHardLimits(Angle angle) {
-        return UnitUtil.clamp(angle, TurretConstants.kCWLimit, TurretConstants.kCCWLimit);
-    }
-    /**no allocations: returns the parameter or a constant*/
-    public Angle clampToStowedLimits(Angle angle) {
-        return UnitUtil.clamp(angle, TurretConstants.kStowedAngleMin, TurretConstants.kStowedAngleMax);
-    }
-    /**no allocations: returns the parameter or a constant*/
-    public Angle applyDynamicLimits(Angle angle) {
-        if (isIntakeDeployed.get()) {
-            return clampToHardLimits(angle);
-        } else {
-            return clampToStowedLimits(angle);
-        }
-    }
-    public Supplier<Angle> applyDynamicLimits(Supplier<Angle> angle) {
-        return () -> applyDynamicLimits(angle.get());
-    }
-
     public Angle getAngle() {
         return m_turret.getAngle();
     }
@@ -212,73 +186,11 @@ public class RealTurretS extends TurretS {
         return m_turret.getMechanismSetpoint();
     }
 
-    public boolean atSetpoint() {
-        var refOpt = getSetpoint();
-        return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolerance);
-    }
-
     public Current getSupplyCurrent() {
         return m_turretMotor.getSupplyCurrent().getValue();
     }
 
     public Command resetEncoder() {
-        return runOnce(() -> turretMotorSMC.setEncoderPosition(
-                Degrees.zero())).ignoringDisable(true);
-    }
-
-    /**
-     * aims the turret at a given field pose
-     * 
-     * @param targetLocation
-     * @param drivebasePose
-     * @return run command that calculates the angle and passes it to
-     *         setAngleFieldRelative()
-     */
-    
-    public Command aimAtFieldPose(Supplier<Translation2d> targetLocation, Supplier<Pose2d> drivebasePose) {
-        return setAngleFieldRelative(new Supplier<Rotation2d>() {
-                public Rotation2d get() {
-                    Translation2d targetRobotRelative = targetLocation.get().minus(drivebasePose.get().getTranslation());
-                    Rotation2d angleFieldRelative = Rotation2d.fromRadians(Math.atan2(targetRobotRelative.getY(), targetRobotRelative.getX()));
-                    return angleFieldRelative;
-                };
-            },
-            () -> drivebasePose.get().getRotation());
-    }
-
-    @SuppressWarnings("unchecked")
-    public Command aimAtClosestPose(Supplier<Pose2d> drivebasePose, Supplier<Translation2d>... translations) {
-        
-        return aimAtFieldPose(() -> {
-            var trs = new Pose2d[translations.length];
-            for(int i = 0; i < translations.length; i++) {
-                trs[i] = new Pose2d(translations[i].get(), new Rotation2d());
-            }
-            return drivebasePose.get().nearest(Set.of(trs)).getTranslation();
-        }, drivebasePose); 
-    }
-
-    public Command aimAtHub() {
-        return aimAtFieldPose(() -> POI.HUB1.get().getTranslation(), robotPose);
-    }
-
-    /**
-     * sets the turret angle to a given field relative angle
-     * 
-     * @param targetFieldRelativeAngle
-     * @param drivebaseAngle
-     * @return setAngle Command with the given field relative ange converted into
-     *         robot relative
-     */
-    public Command setAngleFieldRelative(Supplier<Rotation2d> targetFieldRelativeAngle,Supplier<Rotation2d> drivebaseAngle) {
-        return setAngle(() -> targetFieldRelativeAngle.get().minus(drivebaseAngle.get()));
-    }
-
-    public Command driveToHome() {
-        return Commands.sequence(
-                setVoltage(TurretConstants.kHomingDrive)
-                        .until(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold)),
-                this.runOnce(() -> m_turretMotor.setPosition(TurretConstants.kCWLimit)).ignoringDisable(true)).withTimeout(2.0)
-                .andThen(setVoltage(Volts.zero()));
+        return runOnce(() -> m_turretMotor.setPosition(TurretConstants.kCWLimit)).ignoringDisable(true);
     }
 }

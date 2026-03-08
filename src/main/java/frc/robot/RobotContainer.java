@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -102,11 +103,10 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     @Logged(name = "Flywheel")
-    private final FlyWheelS m_flywheel = new RealFlyWheelS();
-    //TODO: logging hood currently causes error with epilogue
+    private final FlyWheelS m_flywheel = new NoneFlyWheelS();
     @Logged(name = "Hood")
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    //private final HoodS m_hood = new NoneHoodS();
+    //private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new NoneHoodS();
 
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
@@ -160,7 +160,7 @@ public class RobotContainer {
     public boolean intakeState = false;
 
     private void setDefaultCommands() {
-        m_turret.setDefaultCommand(m_turret.aimAtHub());
+       // m_turret.setDefaultCommand(m_turret.aimAtHub());
         m_hood.setDefaultCommand(m_hood.autoHoodAngle());
 
     }
@@ -247,7 +247,7 @@ public class RobotContainer {
                 m_autoCommands.APToClusterChain(200, true));
 
         // right trigger hold to score
-        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+        joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
         // right trigger hold to score
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
         joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
@@ -259,7 +259,7 @@ public class RobotContainer {
         // DegreesPerSecond.of(0)));
 
         // start button home turret
-        joystick.x()
+        joystick.start()
                 .onTrue(m_turret.driveToHome());
         // select button home all, reset on disable
         // JS: This could be one parallel group, with
@@ -276,8 +276,8 @@ public class RobotContainer {
                 m_indexer.resetEncoder(),
                 m_hood.resetEncoder()));
 
-        joystick.a().onTrue(m_turret.driveToHome());
         joystick.x().whileTrue(m_hood.autoHoodAngle());
+        
 
 
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());

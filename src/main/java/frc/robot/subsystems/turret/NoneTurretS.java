@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -16,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class NoneTurretS extends TurretS {
-
+    public NoneTurretS() {
+        super(() -> Pose2d.kZero, () -> new ChassisSpeeds(), () -> false);
+    }
     @Override
     public Command setAngle(Supplier<Rotation2d> angle) {
         return Commands.none();
@@ -52,12 +55,6 @@ public class NoneTurretS extends TurretS {
         return Commands.none();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Command aimAtClosestPose(Supplier<Pose2d> drivebasePose, Supplier<Translation2d>... translations) {
-        return Commands.none();
-    }
-
     @Override
     public Command aimAtHub() {
         return Commands.none();
@@ -72,11 +69,6 @@ public class NoneTurretS extends TurretS {
     @Override
     public Command driveToHome() {
         return Commands.none();
-    }
-
-    @Override
-    public Supplier<Angle> applyDynamicLimits(Supplier<Angle> angle) {
-        return () -> Degrees.zero();
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 
 import yams.mechanisms.config.ArmConfig;
@@ -48,7 +49,7 @@ public class RealClimbPivotS extends ClimbPivotS {
                 .withSimFeedforward(
                         new ArmFeedforward(constants.kSimSAngle(), constants.kSimGAngle(), constants.kSimVAngle()))
                 // telemetry
-                .withTelemetry("Climb Pivot Motor", TelemetryVerbosity.HIGH)
+                .withTelemetry("Climb Pivot Motor", RobotContainer.kTelemetryVerbosity)
                 // gearing
                 .withGearing(new MechanismGearing(GearBox.fromReductionStages(constants.kReduction())))
                 // motor properities
@@ -66,7 +67,7 @@ public class RealClimbPivotS extends ClimbPivotS {
                 .withStartingPosition(constants.kStartingAngle())
                 .withLength(constants.kLength())
                 .withMOI(constants.kMOI())
-                .withTelemetry("Climb Arm", TelemetryVerbosity.HIGH);
+                .withTelemetry("Climb Arm", RobotContainer.kTelemetryVerbosity);
 
         climbArm = new Arm(armCfg);
     }

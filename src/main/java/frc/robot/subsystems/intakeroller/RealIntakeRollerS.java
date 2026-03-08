@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -75,7 +76,7 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
   .withFeedforward(new SimpleMotorFeedforward(IntakeRollerConstants.kS, IntakeRollerConstants.kV, IntakeRollerConstants.kA))
   .withSimFeedforward(new SimpleMotorFeedforward(IntakeRollerConstants.kS, IntakeRollerConstants.kV, IntakeRollerConstants.kA))
   // Telemetry name and verbosity level
-  .withTelemetry("RollerMotor", TelemetryVerbosity.HIGH)
+  .withTelemetry("RollerMotor", RobotContainer.kTelemetryVerbosity)
   // Gearing from the motor rotor to final shaft.
   // In this example GearBox.fromReductionStages(3,4) is the same as GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your motor.
   // You could also use .withGearing(12) which does the same thing.

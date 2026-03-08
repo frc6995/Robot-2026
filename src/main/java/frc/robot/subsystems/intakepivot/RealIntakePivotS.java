@@ -28,6 +28,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.RobotVisualizer;
 import yams.gearing.GearBox;
@@ -97,7 +98,7 @@ public class RealIntakePivotS extends IntakePivotS {
     //  .withSimFeedforward(
     //      new ArmFeedforward(IntakePivotConstants.kSimS, IntakePivotConstants.kSimG, IntakePivotConstants.kSimV, IntakePivotConstants.kSimA))
       // Telemetry name and verbosity level
-      .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
+      .withTelemetry("ArmMotor", RobotContainer.kTelemetryVerbosity)
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(IntakePivotConstants.kReduction)))
       .withMotorInverted(true)
       .withIdleMode(MotorMode.BRAKE)
@@ -122,7 +123,7 @@ public class RealIntakePivotS extends IntakePivotS {
       .withMOI(IntakePivotConstants.kMOI)
 
       // Telemetry name and verbosity for the arm.
-      .withTelemetry("Intake", TelemetryVerbosity.HIGH);
+      .withTelemetry("Intake", RobotContainer.kTelemetryVerbosity);
 
   // Arm Mechanism
   private Arm intakePivot = new Arm(intakeCfg);

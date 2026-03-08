@@ -40,6 +40,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotContainer;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.POI;
 import frc.robot.util.RobotVisualizer;
@@ -118,7 +119,7 @@ public class RealHoodS extends HoodS {
             .withFeedforward(new SimpleMotorFeedforward(HoodConstants.kS, HoodConstants.kV, HoodConstants.kA))
             .withSimFeedforward(new SimpleMotorFeedforward(HoodConstants.kSimS, HoodConstants.kSimV, HoodConstants.kSimA))
             // Telemetry name and verbosity level
-            .withTelemetry("ArmMotor", TelemetryVerbosity.HIGH)
+            .withTelemetry("HoodMotor", RobotContainer.kTelemetryVerbosity)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(HoodConstants.kReduction)))
             // Motor properties to prevent over currenting.
             .withMotorInverted(HoodConstants.kMotorInverted)
@@ -140,7 +141,7 @@ public class RealHoodS extends HoodS {
             .withStartingPosition(HoodConstants.kStowAngle)
             .withMOI(HoodConstants.kMOI)
             // Telemetry name and verbosity for the arm.
-            .withTelemetry("Hood", TelemetryVerbosity.HIGH);
+            .withTelemetry("Hood", RobotContainer.kTelemetryVerbosity);
 
     private Pivot hood = new Pivot(hoodCfg);
 
@@ -209,7 +210,7 @@ public class RealHoodS extends HoodS {
     public Command runSOTF(Supplier<ShooterTargetData> dataSupplier) {
         return setAngle(() ->
             applyDynamicLimits(
-                Degrees.of(dataSupplier.get().hoodAngleDeg()),
+                Degrees.of(dataSupplier.get().hoodAngleDeg),
                 robotPose.get()
             )
         );
