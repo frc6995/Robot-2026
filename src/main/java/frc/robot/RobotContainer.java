@@ -233,8 +233,8 @@ public class RobotContainer {
          //               m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
          //               m_intakeRoller.setVoltage(Volts.of(0))));
 
-        joystick.rightBumper().whileTrue(
-                m_autoCommands.APToClusterChain(200, true));
+        //joystick.rightBumper().whileTrue(
+           //     m_autoCommands.APToClusterChain(200, true));
 
         // right trigger hold to score
         joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
@@ -250,6 +250,7 @@ public class RobotContainer {
         joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
 
         joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
+
         joystick.leftBumper().whileTrue(
                 AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
         // joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() ->
@@ -277,9 +278,6 @@ public class RobotContainer {
 
         //joystick.x().whileTrue(m_hood.autoHoodAngle());
         
-
-
-        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
         // JS: Why is this a deferred proxy?
