@@ -56,6 +56,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run(); 
     ShooterController.getInstance().calculate();
     m_robotContainer.periodic();
+    
     SmartDashboard.putNumber("dt", (System.nanoTime()-lastTime) / 1e9 );
     lastTime = System.nanoTime();
   }

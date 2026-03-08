@@ -43,6 +43,7 @@ public class RealODVision extends ObjectVision {
             // Sim Constants
         public static final double kCameraFOVDegrees = 120;
     }
+    
     private Limelight camera = new Limelight(ODVisionConstants.kCameraID);
     NetworkTableEntry rawDetections = camera.getNTTable().getEntry("rawdetections");
 
