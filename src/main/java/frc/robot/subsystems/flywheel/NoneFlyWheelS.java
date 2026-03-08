@@ -31,7 +31,7 @@ public class NoneFlyWheelS extends FlyWheelS {
 
     @Override
     public AngularVelocity getVelocity() {
-        return DegreesPerSecond.of(-6995);
+        return DegreesPerSecond.zero();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class NoneFlyWheelS extends FlyWheelS {
 
     @Override
     public Current getCurrent() {
-        return Amps.of(-6995);
+        return Amps.zero();
     }
 
     @Override

@@ -10,6 +10,7 @@ import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -49,23 +50,14 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
     }
 
+  private long lastTime = System.nanoTime();
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
     ShooterController.getInstance().calculate();
     m_robotContainer.periodic();
-    /*if (enableLimelight) {
-      var driveState = m_robotContainer.drivetrain.getState();
-      double headingDeg = driveState.Pose.getRotation().getDegrees();
-      //double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
-    LimelightHelpers.SetRobotOrientation(kLimelightName, headingDeg, 0.0, 0.0, 0.0, 0.0, 0.0);
-    //Periodically retrieve the results from the limelight and extract the pose.
-    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(kLimelightName);
-    if (limelightMeasurement.tagCount > 0) {
-      m_robotContainer.drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999));
-      m_robotContainer.drivetrain.addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
-    }*/
-
+    SmartDashboard.putNumber("dt", (System.nanoTime()-lastTime) / 1e9 );
+    lastTime = System.nanoTime();
   }
 
   @Override

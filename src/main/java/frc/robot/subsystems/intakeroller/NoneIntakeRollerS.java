@@ -28,7 +28,7 @@ public class NoneIntakeRollerS extends IntakeRollerS {
 
     @Override
     public Current getCurrent() {
-        return Amps.of(-6995);
+        return Amps.zero();
     }
     
     @Override

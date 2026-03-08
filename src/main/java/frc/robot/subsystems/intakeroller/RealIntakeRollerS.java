@@ -109,7 +109,7 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
     @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    talonFXSmartMotorController.updateTelemetry();
+    // talonFXSmartMotorController.updateTelemetry();
   }
 
   @Override

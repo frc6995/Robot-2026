@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,6 +21,11 @@ public class NoneTurretS extends TurretS {
     public NoneTurretS() {
         super(() -> Pose2d.kZero, () -> new ChassisSpeeds(), () -> false);
     }
+
+    public NoneTurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, BooleanSupplier isIntakeDeployed) {
+        super(robotPose, robotSpeeds, isIntakeDeployed);
+    }
+
     @Override
     public Command setAngle(Supplier<Rotation2d> angle) {
         return Commands.none();
@@ -78,7 +84,7 @@ public class NoneTurretS extends TurretS {
 
     @Override
     public Angle getAngle() {
-        return Degrees.of(-6995);
+        return Degrees.zero();
     }
 
     @Override
@@ -88,7 +94,7 @@ public class NoneTurretS extends TurretS {
 
     @Override
     public Current getSupplyCurrent() {
-        return Amps.of(-6995);
+        return Amps.zero();
     }
     
     @Override

@@ -38,7 +38,7 @@ public class NoneIntakePivotS extends IntakePivotS {
 
     @Override
     public Angle getAngle() {
-        return Degrees.of(-6995);
+        return Degrees.zero();
     }
 
     @Override

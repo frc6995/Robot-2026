@@ -80,7 +80,7 @@ public class AprilTagModule {
     private void updateTelemetry() {
         if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
             var poseSupp = getPose();
-            estimatePublisher.accept(poseSupp.isPresent() ? poseSupp.get().pose : new Pose3d());
+            estimatePublisher.accept(poseSupp.isPresent() ? poseSupp.get().pose : Pose3d.kZero);
             isActivePublisher.accept(isActive());
             modePublisher.accept(lastMode.toString());
             defaultModePublisher.accept(defaultMode.toString());

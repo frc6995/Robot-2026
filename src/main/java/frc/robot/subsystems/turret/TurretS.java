@@ -1,5 +1,6 @@
 package frc.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -100,7 +101,7 @@ public abstract class TurretS extends SubsystemBase {
     public Command driveToHome() {
         return Commands.sequence(
                 setVoltage(TurretConstants.kHomingDrive)
-                        .until(TriggerUtil.debounce(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold), TurretConstants.kHomingTime)),
+                        .until(TriggerUtil.debounce(() -> getSupplyCurrent().abs(BaseUnits.CurrentUnit) > TurretConstants.kHomingCurrentThreshold.baseUnitMagnitude(), TurretConstants.kHomingTime)),
                 resetEncoder()).withTimeout(2.0)
                 .andThen(setVoltage(Volts.zero()));
     }

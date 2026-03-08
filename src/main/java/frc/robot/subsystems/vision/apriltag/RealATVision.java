@@ -52,10 +52,11 @@ public class RealATVision extends AprilTagVision {
         public static final Matrix<N3, N1> kVisionStdDevs = VecBuilder.fill(0.05, 0.05, 999999);
 
     }
-    private static final AngularVelocity3d zeroAngularVelocity3d = new AngularVelocity3d(
-                        DegreesPerSecond.of(0),
-                        DegreesPerSecond.of(0),
-                        DegreesPerSecond.of(0));
+    
+    private final AngularVelocity3d zeroAngularVelocity = new AngularVelocity3d(
+                        DegreesPerSecond.zero(),
+                        DegreesPerSecond.zero(),
+                        DegreesPerSecond.zero());
 
     private AprilTagModule[] limelights;
 
@@ -89,10 +90,6 @@ public class RealATVision extends AprilTagVision {
         }
     }
 
-    private final AngularVelocity3d zeroAngularVelocity = new AngularVelocity3d(
-                        DegreesPerSecond.zero(),
-                        DegreesPerSecond.zero(),
-                        DegreesPerSecond.zero());
     public void periodic() {
         estimates.clear();
         if(!headingSeeded) {
@@ -112,14 +109,15 @@ public class RealATVision extends AprilTagVision {
             // seededPosePublisher.accept(initialPose);
             headingSeeded = true;
         } else {
+            Orientation3d newOrientation = new Orientation3d(
+                        gyroRotation.get(),
+                        zeroAngularVelocity);
+                        
             for(AprilTagModule limelight : limelights) {
                 limelight.periodic();
                 
                 limelight.seedOrientation(
-                    new Orientation3d(
-                        gyroRotation.get(),
-                        zeroAngularVelocity
-                    )
+                    newOrientation
                 );
                 var estSupp = limelight.getPose();
 

@@ -120,7 +120,9 @@ public class RealSpindexerS extends SpindexerS {
         return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
     }
 
-    public Command getVelocity() {return m_spindexer.run(m_spindexer.getSpeed());}
+    public AngularVelocity getVelocity() {
+      return m_spindexer.getSpeed();
+    }
 
     public Command setVelocity(Supplier<AngularVelocity> speed) {
         return runOnce(() -> m_spindexerController.setVelocity(speed.get()));

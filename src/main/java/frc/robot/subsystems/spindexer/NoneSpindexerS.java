@@ -29,7 +29,7 @@ public class NoneSpindexerS extends SpindexerS {
 
     @Override
     public Current getCurrent() {
-        return Amps.of(-6995);
+        return Amps.zero();
     }
     
     @Override

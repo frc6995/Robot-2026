@@ -41,12 +41,12 @@ public class NoneHoodS extends HoodS{
 
     @Override
     public Angle applyDynamicLimits(Angle targetAngle, Pose2d pose) {
-        return Degrees.of(-6995);
+        return Degrees.zero();
     }
 
     @Override
     public Optional<Angle> getSetpoint() {
-        return Optional.of(Degrees.of(-6995));
+        return Optional.of(Degrees.zero());
     }
 
     @Override
