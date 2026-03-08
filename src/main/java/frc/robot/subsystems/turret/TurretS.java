@@ -103,7 +103,8 @@ public abstract class TurretS extends SubsystemBase {
                 setVoltage(TurretConstants.kHomingDrive)
                         .until(TriggerUtil.debounce(() -> getSupplyCurrent().abs(BaseUnits.CurrentUnit) > TurretConstants.kHomingCurrentThreshold.baseUnitMagnitude(), TurretConstants.kHomingTime)),
                 resetEncoder()).withTimeout(2.0)
-                .andThen(setVoltage(Volts.zero()));
+                .andThen(setVoltage(Volts.zero()))
+                .onlyIf(isIntakeDeployed);
     }
 
     protected Angle toAngle(Rotation2d angle) {

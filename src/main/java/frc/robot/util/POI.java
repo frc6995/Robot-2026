@@ -140,11 +140,11 @@ public class POI {
             AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 - kLineToleranceMeters)
     ,
         new Translation2d(
-            0, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters)
+            6, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters)
     );
     private static final Rectangle2d kRightBlueBounds = new Rectangle2d(
         new Translation2d(
-            0, kLineToleranceMeters),
+            6, kLineToleranceMeters),
         new Translation2d(
             AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 + kLineToleranceMeters
         )
@@ -166,4 +166,4 @@ public class POI {
     public static final Supplier<Rectangle2d> kLeftAutoBounds = AllianceFlipUtil.constant(kLeftBlueBounds, kLeftRedBounds);
     public static final Supplier<Rectangle2d> kRightAutoBounds = AllianceFlipUtil.constant(kRightBlueBounds, kRightRedBounds);
     public static final Rectangle2d kFieldBounds = new Rectangle2d(new Translation2d(0, 0), new Translation2d(AllianceFlipUtil.FIELD_LENGTH, AllianceFlipUtil.FIELD_WIDTH));
-}
+} 

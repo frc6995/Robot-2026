@@ -79,7 +79,7 @@ public class RealTurretS extends TurretS {
         public static double kSupplyLimit = 40.0;
 
         public static Voltage kHomingDrive = Volts.of(-1.0);
-        public static Current kHomingCurrentThreshold = Amps.of(39.0);
+        public static Current kHomingCurrentThreshold = Amps.of(15.0);
         public static double kHomingTime = 0.5;
 
         public static boolean kIsInverted = false;

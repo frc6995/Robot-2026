@@ -59,6 +59,7 @@ import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.detection.NoneODVision;
 import frc.robot.subsystems.vision.detection.ObjectVision;
 import frc.robot.subsystems.vision.detection.RealODVision;
+import frc.robot.subsystems.vision.detection.SimODVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.POI;
@@ -103,9 +104,9 @@ public class RobotContainer {
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
-    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
+    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
     @Logged(name = "IntakeRoller")
-    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS(); 
+    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS(); 
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")
@@ -114,7 +115,7 @@ public class RobotContainer {
 
 
     // @Logged(name = "ObjectDetection")
-    private final ObjectVision m_objectVision = new RealODVision(() -> m_drivetrain.state.Pose);
+    private final ObjectVision m_objectVision = new NoneODVision(() -> m_drivetrain.state.Pose);
 
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
