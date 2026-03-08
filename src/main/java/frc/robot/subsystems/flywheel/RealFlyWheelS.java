@@ -38,21 +38,13 @@ import edu.wpi.first.units.measure.Voltage;
 public class RealFlyWheelS extends FlyWheelS {
   public static class FlywheelConstants {
       // PID Constants
-    public static final double kP = 0;
+    public static final double kP = 0.2;
     public static final double kI = 0;
-    public static final double kD = 0;
+    public static final double kD = 0.0;
       // Feedforward Constants
     public static final double kS = 0;
-    public static final double kV = 0;
-    public static final double kA = 0;
-      // Sim PID Constants
-    public static final double kSimP = 60;
-    public static final double kSimI = 0;
-    public static final double kSimD = 0;
-      // Sim Feedforward Constants
-    public static final double kSimS = 0;
-    public static final double kSimV = 0;
-    public static final double kSimA = 0;
+    public static final double kV = 0.0;
+    public static final double kA = 0.0;
       // CAN IDs
     public static final int kLeadMotorCANID = 53;
     public static final int kFollowMotorCANID = 54;
@@ -62,8 +54,8 @@ public class RealFlyWheelS extends FlyWheelS {
     public static final double kSupplyCurrentLimit = 40;
     public static final double kStatorCurrentLimit = 80;
       // Sim Constants
-    public static final double kDiameter = 1;
-    public static final double kMass = 1;
+    public static final double kDiameter = 2;
+    public static final double kMass = 4.15;
       // Setpoints
     public static final AngularVelocity kMaxSpeed = RotationsPerSecond.of(4400.0 / 60.0);
     public static final AngularVelocity kShootSpeed = RotationsPerSecond.of(3000 / 60.0);
@@ -84,10 +76,8 @@ public class RealFlyWheelS extends FlyWheelS {
     .withControlMode(ControlMode.CLOSED_LOOP)
       // Apply PID constants
     .withClosedLoopController(FlywheelConstants.kP, FlywheelConstants.kI, FlywheelConstants.kD)
-    .withSimClosedLoopController(FlywheelConstants.kSimP, FlywheelConstants.kSimI, FlywheelConstants.kSimD)
       // Apply Feedforward constants
     .withFeedforward(new SimpleMotorFeedforward(FlywheelConstants.kS, FlywheelConstants.kV, FlywheelConstants.kA))
-    .withSimFeedforward(new SimpleMotorFeedforward(FlywheelConstants.kSimS, FlywheelConstants.kSimV, FlywheelConstants.kSimA))
       // Set Telemetry mode
     .withTelemetry("ShooterMotor", RobotContainer.kTelemetryVerbosity)
       // Gear Ratio(Needs tuning)

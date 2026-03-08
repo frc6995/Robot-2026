@@ -34,8 +34,10 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.NoneFlyWheelS;
+import frc.robot.subsystems.flywheel.RealFlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.NoneHoodS;
+import frc.robot.subsystems.hood.RealHoodS;
 import frc.robot.subsystems.indexer.IndexerS;
 import frc.robot.subsystems.indexer.NoneIndexerS;
 import frc.robot.subsystems.indexer.RealIndexerS;
@@ -91,10 +93,10 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     @Logged(name = "Flywheel")
-    private final FlyWheelS m_flywheel = new NoneFlyWheelS();
+    private final FlyWheelS m_flywheel = new RealFlyWheelS();
     @Logged(name = "Hood")
-    //private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    private final HoodS m_hood = new NoneHoodS();
+    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    // private final HoodS m_hood = new NoneHoodS();
 
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
