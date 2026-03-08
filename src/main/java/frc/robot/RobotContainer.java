@@ -74,7 +74,7 @@ import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
-    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.HIGH;
+    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.LOW;
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                   // speed
@@ -122,7 +122,7 @@ public class RobotContainer {
 
 
     // @Logged(name = "ObjectDetection")
-    private final ObjectVision m_objectVision = new SimODVision(() -> m_drivetrain.state.Pose);
+    private final ObjectVision m_objectVision = new RealODVision(() -> m_drivetrain.state.Pose);
 
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);

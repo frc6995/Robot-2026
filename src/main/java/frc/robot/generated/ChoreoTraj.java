@@ -24,7 +24,14 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
+    public static final ChoreoTraj B = new ChoreoTraj(
+	    "B",
+	    OptionalInt.empty(),
+	    1.79713,
+	    new Pose2d(8.297, 4.238, Rotation2d.fromRadians(-1.574)),
+	    new Pose2d(4.285, 7.584, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
 	    "Climb_Poses",
 	    OptionalInt.empty(),
 	    6.00106,
@@ -59,25 +66,18 @@ public record ChoreoTraj(
 	    new Pose2d(4.403, 7.413, Rotation2d.fromRadians(0)),
 	    new Pose2d(7.097, 18.995, Rotation2d.fromRadians(3.142))
 	);
-	public static final ChoreoTraj B = new ChoreoTraj(
-	    "B",
-	    OptionalInt.empty(),
-	    1.73329,
-	    new Pose2d(8.297, 4.238, Rotation2d.fromRadians(-1.574)),
-	    new Pose2d(4.285, 7.584, Rotation2d.fromRadians(0))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("Climb_Poses", Climb_Poses),
+    	Map.entry("B", B),
+		Map.entry("Climb_Poses", Climb_Poses),
 		Map.entry("OP", OP),
 		Map.entry("TRL1_I1", TRL1_I1),
 		Map.entry("ClimbTest", ClimbTest),
-		Map.entry("Center_Line_Poses", Center_Line_Poses),
-		Map.entry("B", B)
+		Map.entry("Center_Line_Poses", Center_Line_Poses)
     );
 
     /**
