@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.sim.CANdleSimState;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
@@ -56,6 +57,9 @@ import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.climb.climbextension.NoneClimbExtensionS;
+import frc.robot.subsystems.climb.climbextension.RealClimbExtensionS;
+import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.vision.detection.NoneODVision;
 import frc.robot.subsystems.vision.detection.ObjectVision;
 import frc.robot.subsystems.vision.detection.RealODVision;
@@ -64,6 +68,7 @@ import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.POI;
 import frc.robot.util.ShooterController;
 import frc.robot.util.Telemetry;
+import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
@@ -111,13 +116,15 @@ public class RobotContainer {
     @Logged(name = "Turret")
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
     //private final TurretS m_turret = new NoneTurretS();
+    @Logged(name = "ClimbExtension")
+    private final ClimbExtensionS m_climbExtension = new NoneClimbExtensionS();
 
 
     // @Logged(name = "ObjectDetection")
     private final ObjectVision m_objectVision = new RealODVision(() -> m_drivetrain.state.Pose);
 
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
+            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbExtension, m_objectVision);
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -152,14 +159,28 @@ public class RobotContainer {
     public boolean intakeState = false;
 
     private void setDefaultCommands() {
+        m_intakePivot.setDefaultCommand(
+        m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle)
+        );
+
+        m_intakeRoller.setDefaultCommand(
+        m_intakeRoller.setVoltage(Volts.of(0))
+        );
        // m_turret.setDefaultCommand(m_turret.aimAtHub());
       //  m_hood.setDefaultCommand(m_hood.autoHoodAngle());
 
     }
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
+        // Left stick: Movement
+        // Right stick: Rotation
+        // D-pad: Robot relative translation
+        // A: Intake toggle
+        // B: Cardinal direction hold
+        // X: Climb
+        // RT: Hold to Shoot
+        // Start: Current home turret (enabled)
+        // Back: Home all (enabled); Set positions (disabled)
         m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
                 m_drivetrain.applyRequest(
                         () -> {
@@ -200,7 +221,15 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         // A intake toggle
-        joystick.a().onTrue(m_autoCommands.fuelIntake());
+        joystick.a().toggleOnTrue(m_autoCommands.fuelIntake());
+        // joystick.a().toggleOnTrue(
+        // m_autoCommands.fuelIntake().finallyDo(() -> {
+        //         Commands.parallel(
+        //         m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
+        //         m_intakeRoller.setVoltage(Volts.of(0))
+        //         ).schedule();
+        // })
+        // );
 
         // B button align to cardinal direction
         joystick.b().whileTrue(
@@ -226,42 +255,29 @@ public class RobotContainer {
                 ));
 
         // X: climb
-        // Y: stow intake
+        // joystick.x().whileTrue(
+        // Commands.sequence(
+        //         m_autoCommands.prepL1Climb(POI.CL1.get()),
+        //         m_autoCommands.L1Climb(),
+        //         m_autoCommands.finishL1Climb()));
+        // Y: stow intake (blank currently)
         //joystick.y().whileTrue(
          //       Commands.parallel(
          //               m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
          //               m_intakeRoller.setVoltage(Volts.of(0))));
 
-        joystick.rightBumper().whileTrue(
-                m_autoCommands.APToClusterChain(200, true));
 
-        // right trigger hold to score
-        joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
-        // right trigger hold to score
-        joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
-        joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
+        // RT: hold to shoot
+        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
-        // joystick.x().whileTrue(m_flywheel.setVelocity(() -> DegreesPerSecond.of(1000)));
-        // joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
+        // RB: Blank
+        // joystick.rightBumper().whileTrue(
+                // m_autoCommands.APToClusterChain(200, true));
+                        
+        // Start: Current home turret (enabled)
+        joystick.start().onTrue(m_turret.driveToHome());
 
-       // joystick.rightTrigger().whileTrue(m_autoCommands.Score());
-       joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
-        joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
-
-        joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
-        joystick.leftBumper().whileTrue(
-                AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
-        // joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() ->
-        // DegreesPerSecond.of(1000)));
-        // joystick.rightBumper().onFalse(m_spindexer.setVelocity(() ->
-        // DegreesPerSecond.of(0)));
-
-        // start button home turret
-        joystick.start()
-                .onTrue(m_turret.driveToHome());
-        // select button home all, reset on disable
-        // JS: This could be one parallel group, with
-        // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
+        // Back: Home all, set all positions in disable
         joystick.back().onTrue(Commands.parallel(
                 Commands.either(
                         m_turret.driveToHome(),
@@ -273,6 +289,28 @@ public class RobotContainer {
                 m_intakePivot.resetEncoder(),
                 m_indexer.resetEncoder(),
                 m_hood.resetEncoder()));
+        // Left trigger hold to score
+        // joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
+        // // right trigger hold to score
+        // joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
+        // joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
+
+        // joystick.x().whileTrue(m_flywheel.setVelocity(() -> DegreesPerSecond.of(1000)));
+        // joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
+
+       // joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+        // joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
+        // joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
+
+        // joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
+        // joystick.leftBumper().whileTrue(
+        //         AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
+        // // joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() ->
+        // DegreesPerSecond.of(1000)));
+        // joystick.rightBumper().onFalse(m_spindexer.setVelocity(() ->
+        // DegreesPerSecond.of(0)));
+
+
 
         //joystick.x().whileTrue(m_hood.autoHoodAngle());
         
