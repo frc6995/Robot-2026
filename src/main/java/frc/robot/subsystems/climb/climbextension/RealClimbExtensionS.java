@@ -150,6 +150,7 @@ public class RealClimbExtensionS extends ClimbExtensionS {
     public void periodic() {
         // This method will be called once per scheduler run
         double currentDistanceMeter = m_elevator.getHeight().in(Meters);
+        RobotVisualizer.updatePivot();
         RobotVisualizer.updateExtend(currentDistanceMeter);
         m_elevator.updateTelemetry();
     }
