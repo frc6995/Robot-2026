@@ -34,8 +34,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.climb.climbextension.RealClimbExtensionS;
-import frc.robot.subsystems.climb.climbpivot.ClimbPivotS;
-import frc.robot.subsystems.climb.climbpivot.RealClimbPivotS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.NoneFlyWheelS;
 import frc.robot.subsystems.flywheel.RealFlyWheelS;
@@ -65,11 +63,8 @@ import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.vision.RealVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
-import frc.robot.util.ClimbConstants;
 import frc.robot.util.POI;
 import frc.robot.util.Telemetry;
-import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
-import frc.robot.util.ClimbConstants.ClimbPivotConstantsRecord;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
@@ -112,16 +107,14 @@ public class RobotContainer {
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new NoneSpindexerS();
     @Logged(name = "Turret")
-    private final ClimbPivotS m_climbPivot = new RealClimbPivotS(ClimbConstants.InnerClimbConstants.kPivotConstants);
-    private final ClimbExtensionS m_climbExtension = new RealClimbExtensionS(
-            ClimbConstants.InnerClimbConstants.kExtensionConstants);
+    private final ClimbExtensionS m_climbExtension = new RealClimbExtensionS();
     // private final TurretS m_turret = new RealTurretS(() ->
     // m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()->
     // m_intakePivot.isIntakeDeployed());
     private final TurretS m_turret = new NoneTurretS();
 
     private final AutoCommands m_AutoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbPivot, m_climbExtension);
+            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbExtension);
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;
@@ -140,7 +133,7 @@ public class RobotContainer {
 
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller, m_turret,
-                m_indexer, m_spindexer, m_flywheel, m_climbPivot, m_climbExtension);
+                m_indexer, m_spindexer, m_flywheel, m_climbExtension);
         SmartDashboard.putData("Auto Mode", m_chooser);
         configureBindings();
 
@@ -216,7 +209,6 @@ public class RobotContainer {
         // X: climb
         joystick.x().whileTrue(
                 Commands.sequence(
-                        m_AutoCommands.prepclimbPivot(),
                         m_AutoCommands.prepL1Climb(POI.CL1.get()),
                         m_AutoCommands.L1Climb(),
                         m_AutoCommands.finishL1Climb()));

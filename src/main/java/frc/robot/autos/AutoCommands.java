@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
-import frc.robot.subsystems.climb.climbpivot.ClimbPivotS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
@@ -50,7 +49,6 @@ public class AutoCommands {
     private final IndexerS m_indexer;
     private final SpindexerS m_Spindexer;
     private final FlyWheelS m_flywheel;
-    private final ClimbPivotS m_climbPivot;
     private final ClimbExtensionS m_climbExtension;
 
     SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
@@ -59,7 +57,7 @@ public class AutoCommands {
 
     public AutoCommands(CommandSwerveDrivetrain drivebase, Autos autos, HoodS hood, IntakePivotS intakePivot,
             IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer, SpindexerS spindexer,
-            FlyWheelS flyWheel, ClimbPivotS climbPivot, ClimbExtensionS climbExtension) {
+            FlyWheelS flyWheel, ClimbExtensionS climbExtension) {
         this.m_drivebase = drivebase;
         this.autos = autos;
         this.m_hood = hood;
@@ -69,7 +67,6 @@ public class AutoCommands {
         this.m_indexer = indexer;
         this.m_Spindexer = spindexer;
         this.m_flywheel = flyWheel;
-        this.m_climbPivot = climbPivot;
         this.m_climbExtension = climbExtension;
 
     }
@@ -265,17 +262,12 @@ public class AutoCommands {
      * @return Command that aligns to target pose and climbs
      */
 
-    public Command prepclimbPivot(){
-        return m_climbPivot.setAngle(()->Degrees.of(94)).withTimeout(Seconds.of(0.25));
-    }
-
     public Command prepL1Climb(
             Pose2d targetpose) {
         return Commands.race(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
                 new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
-                m_climbExtension.setHeight(()->Inches.of(8)),
-                m_climbPivot.setAngle(()->Degrees.of(84)));
+                m_climbExtension.setHeight(()->Inches.of(8)));
                 }
 
     public Command L1Climb() {
@@ -285,14 +277,11 @@ public class AutoCommands {
 
     public Command finishL1Climb() {
             return Commands.sequence(
-                m_climbExtension.setHeight(()->Inches.of(8)).withTimeout(0.5),
-                m_climbPivot.setAngle(()->Degrees.of(94)));
+                m_climbExtension.setHeight(()->Inches.of(8)).withTimeout(0.5));
     }
 
     public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
-        return Commands.parallel(
-                m_climbPivot.setAngle(pivotAngle),
-                m_climbExtension.setHeight(extensionDistance));
+                return m_climbExtension.setHeight(extensionDistance);
     }
 
     public Command fuelIntake() {
