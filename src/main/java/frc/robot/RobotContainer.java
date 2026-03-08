@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -38,6 +39,7 @@ import frc.robot.subsystems.flywheel.RealFlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.NoneHoodS;
 import frc.robot.subsystems.hood.RealHoodS;
+import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.indexer.IndexerS;
 import frc.robot.subsystems.indexer.NoneIndexerS;
 import frc.robot.subsystems.indexer.RealIndexerS;
@@ -151,7 +153,7 @@ public class RobotContainer {
 
     private void setDefaultCommands() {
        // m_turret.setDefaultCommand(m_turret.aimAtHub());
-        m_hood.setDefaultCommand(m_hood.autoHoodAngle());
+      //  m_hood.setDefaultCommand(m_hood.autoHoodAngle());
 
     }
 
@@ -180,17 +182,14 @@ public class RobotContainer {
                         }));
         // m_turret.setDefaultCommand(m_turret.aimAtHub());
         // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
-        m_turret.setDefaultCommand(
-                m_turret.runSOTF(ShooterController.getInstance()::getCachedData)
-        );
+       // m_turret.setDefaultCommand(
+        //        m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
-        m_hood.setDefaultCommand(
-                m_hood.runSOTF(ShooterController.getInstance()::getCachedData)
-        );
+      //  m_hood.setDefaultCommand(
+        //        m_hood.runSOTF(ShooterController.getInstance()::getCachedData));
 
-        m_flywheel.setDefaultCommand(
-                m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData)
-        );
+       // m_flywheel.setDefaultCommand(
+       //         m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
@@ -228,10 +227,10 @@ public class RobotContainer {
 
         // X: climb
         // Y: stow intake
-        joystick.y().whileTrue(
-                Commands.parallel(
-                        m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
-                        m_intakeRoller.setVoltage(Volts.of(0))));
+        //joystick.y().whileTrue(
+         //       Commands.parallel(
+         //               m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
+         //               m_intakeRoller.setVoltage(Volts.of(0))));
 
         joystick.rightBumper().whileTrue(
                 m_autoCommands.APToClusterChain(200, true));
@@ -239,7 +238,16 @@ public class RobotContainer {
         // right trigger hold to score
         joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
         // right trigger hold to score
-        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+        joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
+        joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
+
+        // joystick.x().whileTrue(m_flywheel.setVelocity(() -> DegreesPerSecond.of(1000)));
+        // joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
+
+       // joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+       joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
+        joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
+
         joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
         joystick.leftBumper().whileTrue(
                 AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
@@ -266,7 +274,7 @@ public class RobotContainer {
                 m_indexer.resetEncoder(),
                 m_hood.resetEncoder()));
 
-        joystick.x().whileTrue(m_hood.autoHoodAngle());
+        //joystick.x().whileTrue(m_hood.autoHoodAngle());
         
 
 

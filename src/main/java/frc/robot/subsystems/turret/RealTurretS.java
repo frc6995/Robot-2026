@@ -65,18 +65,8 @@ public class RealTurretS extends TurretS {
         public static AngularVelocity kVelocity = DegreesPerSecond.of(360.0);
         public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
-        public static double kSimP = 6;
-        public static double kSimI = 0.0;
-        public static double kSimD = 0.0;
-        public static double kSimS = 0.0;
-        public static double kSimG = 0.0;
-        public static double kSimV = 1.0;
-        public static double kSimA = 0.0;
-        public static AngularVelocity kSimVelocity = DegreesPerSecond.of(180.0);
-        public static AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(360.0);
         public static Angle kStowedAngle = Degrees.of(-90);
 
-        
         public static Angle kCWLimit = Degrees.of(-135);
         public static Angle kCCWLimit = Degrees.of(192.6);
         public static Angle kStartAngle = Degrees.of(-90);
@@ -105,9 +95,6 @@ public class RealTurretS extends TurretS {
             .withClosedLoopController(TurretConstants.kP, TurretConstants.kI, TurretConstants.kD,
                     TurretConstants.kVelocity,
                     TurretConstants.kAcceleration)
-            .withSimClosedLoopController(TurretConstants.kSimP, TurretConstants.kSimI, TurretConstants.kSimD,
-                    TurretConstants.kSimVelocity,
-                    TurretConstants.kSimAcceleration)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(TurretConstants.kReduction)))
             .withIdleMode(MotorMode.BRAKE)
             .withTelemetry("TurretMotor", RobotContainer.kTelemetryVerbosity)
@@ -116,26 +103,26 @@ public class RealTurretS extends TurretS {
             .withMotorInverted(TurretConstants.kIsInverted)
             .withFeedforward(
                     new ArmFeedforward(TurretConstants.kS, TurretConstants.kG, TurretConstants.kV, TurretConstants.kA))
-            .withSimFeedforward(
-                    new ArmFeedforward(TurretConstants.kSimS, TurretConstants.kSimG, TurretConstants.kSimV,
-                            TurretConstants.kSimA))            .withControlMode(ControlMode.CLOSED_LOOP);
+
+            .withControlMode(ControlMode.CLOSED_LOOP);
     private final SmartMotorController turretMotorSMC = new TalonFXWrapper(m_turretMotor, DCMotor.getKrakenX44(1),
             motorConfig);
 
     private final PivotConfig m_config = new PivotConfig(turretMotorSMC)
             .withHardLimit(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
             // .withSoftLimits(TurretConstants.kCWLimit.plus(Degrees.of(10)),
-            //         TurretConstants.kCCWLimit.minus(Degrees.of(10)))
+            // TurretConstants.kCCWLimit.minus(Degrees.of(10)))
             .withTelemetry("Turret", RobotContainer.kTelemetryVerbosity)
             .withStartingPosition(TurretConstants.kStartAngle)
-          //  .withWrapping(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
-            
+            // .withWrapping(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
+
             // WIP
             .withMOI(Units.Inches.of(3.1875), Pounds.of(14.245));
-            
+
     private final Pivot m_turret = new Pivot(m_config);
 
-    public RealTurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, BooleanSupplier isIntakeDeployed) {
+    public RealTurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds,
+            BooleanSupplier isIntakeDeployed) {
         super(robotPose, robotSpeeds, isIntakeDeployed);
     }
 
@@ -144,7 +131,7 @@ public class RealTurretS extends TurretS {
         double currentAngleRad = m_turret.getAngle().in(Radians);
         RobotVisualizer.updateTurret(currentAngleRad);
         m_turret.updateTelemetry();
-        
+
     }
 
     @Override

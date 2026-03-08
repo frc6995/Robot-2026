@@ -41,6 +41,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
+import frc.robot.generated.TunerConstants;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.POI;
 import frc.robot.util.RobotVisualizer;
@@ -66,7 +67,7 @@ public class RealHoodS extends HoodS {
         // PID-FF Constants
         public static final double kP = 38;
         public static final double kI = 0;
-        public static final double kD = 0.41;
+        public static final double kD = 0.1;
         public static final double kS = 0;
         public static final double kV = 2.99;
         public static final double kA = 0.03;
@@ -114,7 +115,7 @@ public class RealHoodS extends HoodS {
             .withStatorCurrentLimit(Amps.of(HoodConstants.kStatorCurrentLimit))
             .withSupplyCurrentLimit(Amps.of(HoodConstants.kSupplyCurrentLimit));
 
-    private TalonFX motor = new TalonFX(HoodConstants.kCANID);
+    private TalonFX motor = new TalonFX(HoodConstants.kCANID, TunerConstants.kHigherBus);
 
     private SmartMotorController talonSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX44(1),
             smcConfig);
@@ -137,32 +138,32 @@ public class RealHoodS extends HoodS {
     private Supplier<ChassisSpeeds> robotSpeeds;
     private BooleanSupplier shouldApplyDynamicLimit;
 
-  public RealHoodS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
-    this.robotPose = robotPose;
-    this.robotTranslation = ()->robotPose.get().getTranslation();
-    this.robotSpeeds = robotSpeeds;
+    public RealHoodS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
+        this.robotPose = robotPose;
+        this.robotTranslation = () -> robotPose.get().getTranslation();
+        this.robotSpeeds = robotSpeeds;
 
-    
-    this.shouldApplyDynamicLimit = 
-      TriggerUtil.or(
-        makeShouldApplyDynamicLimit(POI.kOriginToTrenchBlue, robotTranslation),
-        makeShouldApplyDynamicLimit(POI.kOriginToTrenchRed, robotTranslation));
-  }
+        this.shouldApplyDynamicLimit = TriggerUtil.or(
+                makeShouldApplyDynamicLimit(POI.kOriginToTrenchBlue, robotTranslation),
+                makeShouldApplyDynamicLimit(POI.kOriginToTrenchRed, robotTranslation));
+    }
 
-  private Trigger makeShouldApplyDynamicLimit(Distance distanceToTrench, Supplier<Translation2d> robotTranslation) {
-      Pose2d trenchCenter = new Pose2d(new Translation2d(distanceToTrench, Meters.of(AllianceFlipUtil.FIELD_WIDTH).div(2)), Rotation2d.kZero);
-      Rectangle2d trenchSafety = new Rectangle2d(
-          trenchCenter, HoodConstants.kSafetyOverride_NoSpeed.times(2), FieldSize.FIELD_WIDTH
-        );
-      
-      Rectangle2d trench = new Rectangle2d(trenchCenter, HoodConstants.kSafetyOverride_Final.times(2), FieldSize.FIELD_WIDTH);
-      final var kSafetyOverrideVelocity = HoodConstants.kSafetyOverrideVelocity.in(MetersPerSecond);
-      return new Trigger(
-        ()-> {
-          var translation = robotTranslation.get();
-          return (Math.abs(robotSpeeds.get().vxMetersPerSecond) > kSafetyOverrideVelocity && trenchSafety.contains(translation)) || trench.contains(translation);
-        });
-  }
+    private Trigger makeShouldApplyDynamicLimit(Distance distanceToTrench, Supplier<Translation2d> robotTranslation) {
+        Pose2d trenchCenter = new Pose2d(
+                new Translation2d(distanceToTrench, Meters.of(AllianceFlipUtil.FIELD_WIDTH).div(2)), Rotation2d.kZero);
+        Rectangle2d trenchSafety = new Rectangle2d(
+                trenchCenter, HoodConstants.kSafetyOverride_NoSpeed.times(2), FieldSize.FIELD_WIDTH);
+
+        Rectangle2d trench = new Rectangle2d(trenchCenter, HoodConstants.kSafetyOverride_Final.times(2),
+                FieldSize.FIELD_WIDTH);
+        final var kSafetyOverrideVelocity = HoodConstants.kSafetyOverrideVelocity.in(MetersPerSecond);
+        return new Trigger(
+                () -> {
+                    var translation = robotTranslation.get();
+                    return (Math.abs(robotSpeeds.get().vxMetersPerSecond) > kSafetyOverrideVelocity
+                            && trenchSafety.contains(translation)) || trench.contains(translation);
+                });
+    }
 
     public Command setAngle(Supplier<Angle> angle) {
         return hood.setAngle(() -> applyDynamicLimits(angle.get(), robotPose.get()));
@@ -180,9 +181,10 @@ public class RealHoodS extends HoodS {
         return runSOTF(ShooterController.getInstance()::getCachedData);
     }
 
-  public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
-    return UnitUtil.clamp(targetAngle, HoodConstants.kLowerLimit, shouldApplyDynamicLimit.getAsBoolean() ? HoodConstants.kStowAngle : HoodConstants.kUpperLimit);
-  }
+    public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
+        return UnitUtil.clamp(targetAngle, HoodConstants.kLowerLimit,
+                shouldApplyDynamicLimit.getAsBoolean() ? HoodConstants.kStowAngle : HoodConstants.kUpperLimit);
+    }
 
     public boolean isHoodSafe() {
         return hood.getAngle().isNear(HoodConstants.kStowAngle, HoodConstants.kTolerance);
@@ -195,13 +197,10 @@ public class RealHoodS extends HoodS {
     }
 
     public Command runSOTF(Supplier<ShooterTargetData> dataSupplier) {
-        return setAngle(() ->
-            applyDynamicLimits(
+        return setAngle(() -> applyDynamicLimits(
                 Degrees.of(dataSupplier.get().hoodAngleDeg),
-                robotPose.get()
-            )
-        );
-    }   
+                robotPose.get()));
+    }
 
     public Optional<Angle> getSetpoint() {
         return hood.getMechanismSetpoint();
@@ -220,10 +219,10 @@ public class RealHoodS extends HoodS {
         hood.updateTelemetry();
     }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-    hood.simIterate();
-  }
+    @Override
+    public void simulationPeriodic() {
+        // This method will be called once per scheduler run during simulation
+        hood.simIterate();
+    }
 
 }

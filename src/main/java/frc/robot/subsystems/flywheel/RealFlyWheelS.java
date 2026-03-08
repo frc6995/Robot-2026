@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.generated.TunerConstants;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
@@ -36,122 +37,122 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 
 public class RealFlyWheelS extends FlyWheelS {
-  public static class FlywheelConstants {
-      // PID Constants
-    public static final double kP = 0.2;
-    public static final double kI = 0;
-    public static final double kD = 0.0;
-      // Feedforward Constants
-    public static final double kS = 0;
-    public static final double kV = 0.0;
-    public static final double kA = 0.0;
-      // CAN IDs
-    public static final int kLeadMotorCANID = 53;
-    public static final int kFollowMotorCANID = 54;
-      // Motor Config Constants
-    public static final boolean kInvertLeadMotor = true;
-    public static final boolean kInvertFollowMotor = false;
-    public static final double kSupplyCurrentLimit = 40;
-    public static final double kStatorCurrentLimit = 80;
-      // Sim Constants
-    public static final double kDiameter = 2;
-    public static final double kMass = 4.15;
-      // Setpoints
-    public static final AngularVelocity kMaxSpeed = RotationsPerSecond.of(4400.0 / 60.0);
-    public static final AngularVelocity kShootSpeed = RotationsPerSecond.of(3000 / 60.0);
-    public static final AngularVelocity kTolerance = RotationsPerSecond.of(2);
+    public static class FlywheelConstants {
+        // PID Constants
+        public static final double kP = 0.1;
+        public static final double kI = 0;
+        public static final double kD = 0.0;
+        // Feedforward Constants
+        public static final double kS = 0;
+        public static final double kV = 0.0;
+        public static final double kA = 0.0;
+        // CAN IDs
+        public static final int kLeadMotorCANID = 53;
+        public static final int kFollowMotorCANID = 54;
+        // Motor Config Constants
+        public static final boolean kInvertLeadMotor = true;
+        public static final boolean kInvertFollowMotor = false;
+        public static final double kSupplyCurrentLimit = 40;
+        public static final double kStatorCurrentLimit = 80;
+        // Sim Constants
+        public static final double kDiameter = 2;
+        public static final double kMass = 4.15;
+        // Setpoints
+        public static final AngularVelocity kMaxSpeed = RotationsPerSecond.of(4400.0 / 60.0);
+        public static final AngularVelocity kShootSpeed = RotationsPerSecond.of(3000 / 60.0);
+        public static final AngularVelocity kTolerance = RotationsPerSecond.of(2);
 
-    public static final double[][] kShooterData = {
-      {0.0, 1200},
-      {5.0, 1200}
-    };
-  }
+        public static final double[][] kShooterData = {
+                { 0.0, 1200 },
+                { 5.0, 1200 }
+        };
+    }
 
     // Motors
-  private TalonFX m_leadMotor = new TalonFX(FlywheelConstants.kLeadMotorCANID);
-  private TalonFX m_followerMotor = new TalonFX(FlywheelConstants.kFollowMotorCANID);
+    private TalonFX m_leadMotor = new TalonFX(FlywheelConstants.kLeadMotorCANID, TunerConstants.kHigherBus);
+    private TalonFX m_followerMotor = new TalonFX(FlywheelConstants.kFollowMotorCANID, TunerConstants.kHigherBus);
 
     // SmartMotorController Config
-  private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-    .withControlMode(ControlMode.CLOSED_LOOP)
-      // Apply PID constants
-    .withClosedLoopController(FlywheelConstants.kP, FlywheelConstants.kI, FlywheelConstants.kD)
-      // Apply Feedforward constants
-    .withFeedforward(new SimpleMotorFeedforward(FlywheelConstants.kS, FlywheelConstants.kV, FlywheelConstants.kA))
-      // Set Telemetry mode
-    .withTelemetry("ShooterMotor", RobotContainer.kTelemetryVerbosity)
-      // Gear Ratio(Needs tuning)
-    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.25)))
-      // Motor Configs
-    .withMotorInverted(FlywheelConstants.kInvertLeadMotor)
-    .withIdleMode(MotorMode.COAST)
-    .withStatorCurrentLimit(Amps.of((FlywheelConstants.kStatorCurrentLimit)))
-    .withSupplyCurrentLimit(Amps.of(FlywheelConstants.kSupplyCurrentLimit))
-      // Follower Motor Setup
-    .withFollowers(Pair.of(m_followerMotor, FlywheelConstants.kInvertFollowMotor));
-      
+    private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+            .withControlMode(ControlMode.CLOSED_LOOP)
+            // Apply PID constants
+            .withClosedLoopController(FlywheelConstants.kP, FlywheelConstants.kI, FlywheelConstants.kD)
+            // Apply Feedforward constants
+            .withFeedforward(
+                    new SimpleMotorFeedforward(FlywheelConstants.kS, FlywheelConstants.kV, FlywheelConstants.kA))
+            // Set Telemetry mode
+            .withTelemetry("ShooterMotor", RobotContainer.kTelemetryVerbosity)
+            // Gear Ratio(Needs tuning)
+            .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.25)))
+            // Motor Configs
+            .withMotorInverted(FlywheelConstants.kInvertLeadMotor)
+            .withIdleMode(MotorMode.COAST)
+            .withStatorCurrentLimit(Amps.of((FlywheelConstants.kStatorCurrentLimit)))
+            .withSupplyCurrentLimit(Amps.of(FlywheelConstants.kSupplyCurrentLimit))
+            // Follower Motor Setup
+            .withFollowers(Pair.of(m_followerMotor, FlywheelConstants.kInvertFollowMotor));
 
     // SmartMotorController Object
-  private SmartMotorController m_motorController = new TalonFXWrapper(m_leadMotor, DCMotor.getKrakenX60(2),
-      smcConfig);
+    private SmartMotorController m_motorController = new TalonFXWrapper(m_leadMotor, DCMotor.getKrakenX60(2),
+            smcConfig);
 
-  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(m_motorController)
-      // Physical Properties
-    .withDiameter(Inches.of(FlywheelConstants.kDiameter))
-    .withMass(Pounds.of(FlywheelConstants.kMass))
-      // Maximum Speed
-    .withUpperSoftLimit(FlywheelConstants.kMaxSpeed)
-      // Telemetry Config
-    .withTelemetry("ShooterMech", RobotContainer.kTelemetryVerbosity);
+    private final FlyWheelConfig shooterConfig = new FlyWheelConfig(m_motorController)
+            // Physical Properties
+            .withDiameter(Inches.of(FlywheelConstants.kDiameter))
+            .withMass(Pounds.of(FlywheelConstants.kMass))
+            // Maximum Speed
+            .withUpperSoftLimit(FlywheelConstants.kMaxSpeed)
+            // Telemetry Config
+            .withTelemetry("ShooterMech", RobotContainer.kTelemetryVerbosity);
 
-  private FlyWheel m_shooter = new FlyWheel(shooterConfig);
+    private FlyWheel m_shooter = new FlyWheel(shooterConfig);
 
-  private Optional<AngularVelocity> setpoint = Optional.empty(); 
+    private Optional<AngularVelocity> setpoint = Optional.empty();
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    m_shooter.updateTelemetry();
-  }
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        m_shooter.updateTelemetry();
+    }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-    m_shooter.simIterate();
-  }
+    @Override
+    public void simulationPeriodic() {
+        // This method will be called once per scheduler run during simulation
+        m_shooter.simIterate();
+    }
 
-  public Command setVelocity(Supplier<AngularVelocity> speed) {
-    return m_shooter.setSpeed(() -> {
-          var spd = speed.get();
-          setpoint = Optional.of(spd);
-          return spd;
-    });
-  }
+    public Command setVelocity(Supplier<AngularVelocity> speed) {
+        return m_shooter.setSpeed(() -> {
+            var spd = speed.get();
+            setpoint = Optional.of(spd);
+            return spd;
+        });
+    }
 
-  public Command setVoltage(Supplier<Voltage> voltage) {
-    return m_shooter.setVoltage(voltage);
-  }
+    public Command setVoltage(Supplier<Voltage> voltage) {
+        return m_shooter.setVoltage(voltage);
+    }
 
-  public AngularVelocity getVelocity() {
-    return m_shooter.getSpeed();
-  }
+    public AngularVelocity getVelocity() {
+        return m_shooter.getSpeed();
+    }
 
-  public Optional<AngularVelocity> getSetpoint() {
-    return setpoint;
-  }
+    public Optional<AngularVelocity> getSetpoint() {
+        return setpoint;
+    }
 
-  public boolean atSetpoint() {
-    return setpoint.isPresent() && getVelocity().isNear(setpoint.get(), FlywheelConstants.kTolerance);
-  }
+    public boolean atSetpoint() {
+        return setpoint.isPresent() && getVelocity().isNear(setpoint.get(), FlywheelConstants.kTolerance);
+    }
 
-  public Current getCurrent() {
-    var currentOptional = m_shooter.getMotorController().getSupplyCurrent();
+    public Current getCurrent() {
+        var currentOptional = m_shooter.getMotorController().getSupplyCurrent();
 
-    return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
-  }
+        return currentOptional.isPresent() ? currentOptional.get() : Amps.of(-1);
+    }
 
-  public Command resetEncoder() {
-    return runOnce(() -> m_motorController.setEncoderPosition(Degrees.zero())).ignoringDisable(true);
-  } 
+    public Command resetEncoder() {
+        return runOnce(() -> m_motorController.setEncoderPosition(Degrees.zero())).ignoringDisable(true);
+    }
 
 }
