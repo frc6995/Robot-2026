@@ -76,15 +76,15 @@ public class RobotVisualizer {
         components[3] = HOOK_LOCATION
                 .transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, hookRadians, 0)));
         layoutPub.set(components);
-    }
+    }   
 
     public static void updatePivot(double climbRadians) {
         components[5] = CLIMB_STINGER_EXTENSION_LOCATION
-                .rotateAround(CLIMB_STINGER_PIVOT_LOCATION.getTranslation(), new Rotation3d(0, climbRadians, 0))
+                .rotateAround(CLIMB_STINGER_PIVOT_LOCATION.getTranslation(), new Rotation3d(0, 90, 0))
                 .transformBy(
                         new Transform3d(-climbExtensionMeters, 0, 0, new Rotation3d(0, 0, 0)));
         components[4] = CLIMB_STINGER_PIVOT_LOCATION
-                .transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, climbRadians, 0)));
+                .transformBy(new Transform3d(Translation3d.kZero, new Rotation3d(0, 90, 0)));
     }
 
     public static void updateExtend(double extensionLength) {
