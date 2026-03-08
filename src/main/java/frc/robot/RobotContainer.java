@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -153,14 +154,6 @@ public class RobotContainer {
     public boolean intakeState = false;
 
     private void setDefaultCommands() {
-       // m_turret.setDefaultCommand(m_turret.aimAtHub());
-      //  m_hood.setDefaultCommand(m_hood.autoHoodAngle());
-
-    }
-
-    private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
         m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
                 m_drivetrain.applyRequest(
                         () -> {
@@ -181,7 +174,7 @@ public class RobotContainer {
                                     .withRotationalRate(
                                             rotationSpeed); // Drive counterclockwise with negative X (left)
                         }));
-        // m_turret.setDefaultCommand(m_turret.aimAtHub());
+         m_turret.setDefaultCommand(m_turret.aimAtHub());
         // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
        // m_turret.setDefaultCommand(
         //        m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
@@ -191,6 +184,10 @@ public class RobotContainer {
 
        // m_flywheel.setDefaultCommand(
        //         m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
+    }
+
+    private void configureBindings() {
+        
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
@@ -239,13 +236,13 @@ public class RobotContainer {
         // right trigger hold to score
         joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
         // right trigger hold to score
-        joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
-        joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
+        // joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
+        // joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
 
-        // joystick.x().whileTrue(m_flywheel.setVelocity(() -> DegreesPerSecond.of(1000)));
-        // joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
+        joystick.x().whileTrue(m_flywheel.setVelocity(() -> RotationsPerSecond.of(10)));
+        joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
 
-       // joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
        joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
         joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
 

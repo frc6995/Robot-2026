@@ -137,7 +137,7 @@ public class RealSpindexerS extends SpindexerS {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_spindexer.updateTelemetry();
+   // m_spindexer.updateTelemetry();
   }
 
   @Override

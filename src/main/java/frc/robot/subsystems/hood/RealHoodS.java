@@ -74,7 +74,7 @@ public class RealHoodS extends HoodS {
 
         // Setpoints and Limits
         public static final Angle kLowerLimit = Degrees.of(12.5); // CW Limit
-        public static final Angle kUpperLimit = Degrees.of(40); // CCW Limit
+        public static final Angle kUpperLimit = Degrees.of(38); // CCW Limit
         public static final Angle kStowAngle = kLowerLimit;
         public static final Angle kTolerance = Degrees.of(2);
         public static final double[][] kAngleData = {
@@ -85,7 +85,7 @@ public class RealHoodS extends HoodS {
         // Motor Setup
         public static final double kStatorCurrentLimit = 40;
         public static final double kSupplyCurrentLimit = 25;
-        public static final double kReduction = 40;
+        public static final double kReduction = 73.33;
         public static final boolean kMotorInverted = false;
         public static final AngularVelocity kVelocity = DegreesPerSecond.of(180);
         public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(360);
@@ -216,7 +216,7 @@ public class RealHoodS extends HoodS {
         // This method will be called once per scheduler run
         double currentAngleRad = hood.getAngle().in(Radians);
         RobotVisualizer.updateHood(currentAngleRad);
-        hood.updateTelemetry();
+       // hood.updateTelemetry();
     }
 
     @Override

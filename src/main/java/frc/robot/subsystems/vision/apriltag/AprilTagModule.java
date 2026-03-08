@@ -68,7 +68,7 @@ public class AprilTagModule {
      * Must be called periodically in {@link frc.robot.subsystems.vision.apriltag.RealATVision#periodic()}
      */
     public void periodic() {
-        updateTelemetry();
+        //updateTelemetry();
     }
 
     /**

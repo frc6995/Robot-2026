@@ -95,6 +95,6 @@ public class RealODVision extends ObjectVision {
         //     }
         // }
 
-        updateTelemetry();
+       // updateTelemetry();
     }
 }

@@ -39,7 +39,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class RealFlyWheelS extends FlyWheelS {
     public static class FlywheelConstants {
         // PID Constants
-        public static final double kP = 0.1;
+        public static final double kP = 0.4;
         public static final double kI = 0;
         public static final double kD = 0.0;
         // Feedforward Constants
@@ -50,8 +50,8 @@ public class RealFlyWheelS extends FlyWheelS {
         public static final int kLeadMotorCANID = 53;
         public static final int kFollowMotorCANID = 54;
         // Motor Config Constants
-        public static final boolean kInvertLeadMotor = true;
-        public static final boolean kInvertFollowMotor = false;
+        public static final boolean kInvertLeadMotor = false;
+        public static final boolean kInvertFollowMotor = true;
         public static final double kSupplyCurrentLimit = 40;
         public static final double kStatorCurrentLimit = 80;
         // Sim Constants
@@ -83,7 +83,7 @@ public class RealFlyWheelS extends FlyWheelS {
             // Set Telemetry mode
             .withTelemetry("ShooterMotor", RobotContainer.kTelemetryVerbosity)
             // Gear Ratio(Needs tuning)
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.25)))
+            .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.33)))
             // Motor Configs
             .withMotorInverted(FlywheelConstants.kInvertLeadMotor)
             .withIdleMode(MotorMode.COAST)
@@ -112,7 +112,7 @@ public class RealFlyWheelS extends FlyWheelS {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        m_shooter.updateTelemetry();
+       // m_shooter.updateTelemetry();
     }
 
     @Override

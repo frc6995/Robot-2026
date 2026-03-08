@@ -160,7 +160,7 @@ public class RealIntakePivotS extends IntakePivotS {
   @Override
   public void periodic() {
     super.periodic();
-    intakePivot.updateTelemetry();
+    //intakePivot.updateTelemetry();
   }
 
   @Override

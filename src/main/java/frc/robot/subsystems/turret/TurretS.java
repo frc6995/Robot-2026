@@ -76,7 +76,7 @@ public abstract class TurretS extends SubsystemBase {
                 public Rotation2d get() {
                     Translation2d targetRobotRelative = targetLocation.get().minus(drivebasePose.get().getTranslation());
                     Rotation2d angleFieldRelative = Rotation2d.fromRadians(Math.atan2(targetRobotRelative.getY(), targetRobotRelative.getX()));
-                    return angleFieldRelative;
+                    return angleFieldRelative.plus(Rotation2d.k180deg);
                 };
             },
             () -> drivebasePose.get().getRotation());
@@ -100,8 +100,8 @@ public abstract class TurretS extends SubsystemBase {
 
     public Command driveToHome() {
         return Commands.sequence(
-                setVoltage(TurretConstants.kHomingDrive)
-                        .until(TriggerUtil.debounce(() -> getSupplyCurrent().abs(BaseUnits.CurrentUnit) > TurretConstants.kHomingCurrentThreshold.baseUnitMagnitude(), TurretConstants.kHomingTime)),
+                setVoltage(() -> TurretConstants.kHomingDrive)
+                        .until(TriggerUtil.debounce(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold), TurretConstants.kHomingTime)),
                 resetEncoder()).withTimeout(2.0)
                 .andThen(setVoltage(Volts.zero()))
                 .onlyIf(isIntakeDeployed);

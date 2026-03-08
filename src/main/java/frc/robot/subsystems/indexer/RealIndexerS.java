@@ -69,7 +69,7 @@ public class RealIndexerS extends IndexerS {
     @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_indexerController.updateTelemetry();
+   // m_indexerController.updateTelemetry();
 
   }
 

@@ -69,18 +69,18 @@ public class RealTurretS extends TurretS {
 
         public static Angle kCWLimit = Degrees.of(-135);
         public static Angle kCCWLimit = Degrees.of(192.6);
-        public static Angle kStartAngle = Degrees.of(-90);
+        public static Angle kStartAngle = kStowedAngle;
         public static Angle kTolerance = Degrees.of(5);
         public static Angle kStowedAngleMin = kStowedAngle.minus(kTolerance);
         public static Angle kStowedAngleMax = kStowedAngle.plus(kTolerance);
 
-        public static double kReduction = 12.5;
-        public static double kStatorLimit = 80.0;
-        public static double kSupplyLimit = 40.0;
+        public static final double kReduction = 12.5;
+        public static final double kStatorLimit = 80.0;
+        public static final double kSupplyLimit = 40.0;
 
-        public static Voltage kHomingDrive = Volts.of(-1.0);
-        public static Current kHomingCurrentThreshold = Amps.of(15.0);
-        public static double kHomingTime = 0.5;
+        public static final Voltage kHomingDrive = Volts.of(-1.0);
+        public static final Current kHomingCurrentThreshold = Amps.of(1.0);
+        public static final double kHomingTime = 0.33;
 
         public static boolean kIsInverted = false;
 
@@ -130,7 +130,7 @@ public class RealTurretS extends TurretS {
     public void periodic() {
         double currentAngleRad = m_turret.getAngle().in(Radians);
         RobotVisualizer.updateTurret(currentAngleRad);
-        m_turret.updateTelemetry();
+       // m_turret.updateTelemetry();
 
     }
 
@@ -178,6 +178,6 @@ public class RealTurretS extends TurretS {
     }
 
     public Command resetEncoder() {
-        return runOnce(() -> m_turretMotor.setPosition(TurretConstants.kCWLimit)).ignoringDisable(true);
+        return runOnce(() -> turretMotorSMC.setEncoderPosition(TurretConstants.kCWLimit)).ignoringDisable(true);
     }
 }

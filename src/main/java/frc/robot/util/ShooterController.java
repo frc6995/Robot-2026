@@ -190,7 +190,7 @@ public class ShooterController {
 
 
         Rotation2d turretRobotAngle =
-            turretFieldAngle.minus(projectedPose.getRotation());
+            turretFieldAngle.minus(projectedPose.getRotation()).plus(Rotation2d.k180deg);
 
 
         double velocityDelta =

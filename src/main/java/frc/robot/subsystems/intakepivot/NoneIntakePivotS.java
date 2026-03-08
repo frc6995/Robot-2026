@@ -43,7 +43,7 @@ public class NoneIntakePivotS extends IntakePivotS {
 
     @Override
     public boolean isIntakeDeployed() {
-        return false;
+        return true;
     }
     
     @Override
