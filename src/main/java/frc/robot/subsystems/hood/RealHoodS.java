@@ -44,7 +44,7 @@ import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.POI;
-import frc.robot.util.RobotVisualizer;
+// import frc.robot.util.RobotVisualizer;
 import frc.robot.util.ShooterController;
 import frc.robot.util.TriggerUtil;
 import frc.robot.util.UnitUtil;
@@ -214,9 +214,9 @@ public class RealHoodS extends HoodS {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        double currentAngleRad = hood.getAngle().in(Radians);
-        RobotVisualizer.updateHood(currentAngleRad);
-       // hood.updateTelemetry();
+        // double currentAngleRad = hood.getAngle().in(Radians);
+        // RobotVisualizer.updateHood(currentAngleRad);
+        hood.updateTelemetry();
     }
 
     @Override

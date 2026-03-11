@@ -10,7 +10,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.RobotVisualizer;
+// import frc.robot.util.RobotVisualizer;
 
 public abstract class IntakePivotS extends SubsystemBase {
     public abstract Command setAngle(Supplier<Angle> angle);
@@ -25,7 +25,7 @@ public abstract class IntakePivotS extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double currentAngleRad = getAngle().in(Radians);
-        RobotVisualizer.updateIntake(currentAngleRad);
+        // double currentAngleRad = getAngle().in(Radians);
+        // RobotVisualizer.updateIntake(currentAngleRad);
     }
 }
