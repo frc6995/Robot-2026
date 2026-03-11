@@ -240,6 +240,8 @@ public class RobotContainer {
         // joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
 
         joystick.x().whileTrue(m_flywheel.setVelocity(() -> RotationsPerSecond.of((3000.0 / 60.0))));
+                joystick.x().onTrue(m_turret.setAngle(new Rotation2d()));
+
         joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());

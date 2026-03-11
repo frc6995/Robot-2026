@@ -270,6 +270,6 @@ public class AutoCommands {
                                 Commands.parallel(
                                                 m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                                                 m_Spindexer.setVoltage(
-                                                                () -> SpindexerConstants.kSlowVoltage)));
+                                                                () -> SpindexerConstants.kFastVoltage)));
         }
 }
