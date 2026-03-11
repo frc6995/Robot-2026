@@ -54,6 +54,8 @@ public class RealSpindexerS extends SpindexerS {
         public static final AngularVelocity kVelocity = DegreesPerSecond.of(900);
         public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(90000000);
         public static final Voltage kSlowVoltage = Volts.of(2);
+        public static final Voltage kFastVoltage = Volts.of(2);
+
         // Feedforward Constants
         public static final double kS = 0;
         // Motor Properties
@@ -90,13 +92,13 @@ public class RealSpindexerS extends SpindexerS {
     private SmartMotorController m_spindexerController = new TalonFXWrapper(m_spindexerMotor, DCMotor.getKrakenX44(1),
             smcConfig);
 
-            private final FlyWheelConfig spindexerConfig = new FlyWheelConfig(m_spindexerController)
+    private final FlyWheelConfig spindexerConfig = new FlyWheelConfig(m_spindexerController)
             .withDiameter(SpindexerConstants.kDiameter)
             .withMass(SpindexerConstants.kMass)
             .withUpperSoftLimit(RPM.of(1000))
             .withTelemetry("Spindexer", RobotContainer.kTelemetryVerbosity);
 
-            private FlyWheel m_spindexer = new FlyWheel(spindexerConfig);
+    private FlyWheel m_spindexer = new FlyWheel(spindexerConfig);
 
     /**
      * Sends a specified voltage to the spindexer motor.
@@ -106,7 +108,8 @@ public class RealSpindexerS extends SpindexerS {
      *         specified voltage to the motor.
      */
     public Command setVoltage(Supplier<Voltage> voltage) {
-        return run(() -> m_spindexerController.setVoltage(voltage.get())).finallyDo(() -> m_spindexerController.setVoltage(Volts.zero()));
+        return run(() -> m_spindexerController.setVoltage(voltage.get()))
+                .finallyDo(() -> m_spindexerController.setVoltage(Volts.zero()));
     }
 
     /**
@@ -121,7 +124,7 @@ public class RealSpindexerS extends SpindexerS {
     }
 
     public AngularVelocity getVelocity() {
-      return m_spindexer.getSpeed();
+        return m_spindexer.getSpeed();
     }
 
     public Command setVelocity(Supplier<AngularVelocity> speed) {
@@ -133,17 +136,16 @@ public class RealSpindexerS extends SpindexerS {
                 Degrees.zero())).ignoringDisable(true);
     }
 
-    
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-   // m_spindexer.updateTelemetry();
-  }
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        // m_spindexer.updateTelemetry();
+    }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-    m_spindexer.simIterate();
-  }
+    @Override
+    public void simulationPeriodic() {
+        // This method will be called once per scheduler run during simulation
+        m_spindexer.simIterate();
+    }
 
 }

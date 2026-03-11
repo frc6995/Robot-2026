@@ -130,7 +130,7 @@ public class RealTurretS extends TurretS {
     public void periodic() {
         double currentAngleRad = m_turret.getAngle().in(Radians);
         // RobotVisualizer.updateTurret(currentAngleRad);
-        m_turret.updateTelemetry();
+       // m_turret.updateTelemetry();
 
     }
 

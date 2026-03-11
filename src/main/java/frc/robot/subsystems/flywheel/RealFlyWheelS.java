@@ -7,6 +7,7 @@ package frc.robot.subsystems.flywheel;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
@@ -22,6 +23,7 @@ import java.util.function.Supplier;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -39,12 +41,12 @@ import edu.wpi.first.units.measure.Voltage;
 public class RealFlyWheelS extends FlyWheelS {
     public static class FlywheelConstants {
         // PID Constants
-        public static final double kP = 0.6;
+        public static final double kP = 0.90;
         public static final double kI = 0;
         public static final double kD = 0.0;
         // Feedforward Constants
-        public static final double kS = 0;
-        public static final double kV = 0.0;
+        public static final double kS = 0.25;
+        public static final double kV = 0.20;
         public static final double kA = 0.0;
         // CAN IDs
         public static final int kLeadMotorCANID = 53;
@@ -52,8 +54,10 @@ public class RealFlyWheelS extends FlyWheelS {
         // Motor Config Constants
         public static final boolean kInvertLeadMotor = false;
         public static final boolean kInvertFollowMotor = true;
-        public static final double kSupplyCurrentLimit = 40;
+        public static final double kSupplyCurrentLimit = 60;
         public static final double kStatorCurrentLimit = 80;
+        public static final double kMaxVoltage = 10;
+        public static final double kMinVoltage = 0;
         // Sim Constants
         public static final double kDiameter = 2;
         public static final double kMass = 4.15;
@@ -108,6 +112,15 @@ public class RealFlyWheelS extends FlyWheelS {
     private FlyWheel m_shooter = new FlyWheel(shooterConfig);
 
     private Optional<AngularVelocity> setpoint = Optional.empty();
+
+    public RealFlyWheelS() {
+        VoltageConfigs voltageConfigs = new VoltageConfigs()
+            .withPeakForwardVoltage(FlywheelConstants.kMaxVoltage)
+            .withPeakReverseVoltage(FlywheelConstants.kMinVoltage);
+            
+        m_leadMotor.getConfigurator().apply(voltageConfigs);
+        m_followerMotor.getConfigurator().apply(voltageConfigs);
+    }
 
     @Override
     public void periodic() {

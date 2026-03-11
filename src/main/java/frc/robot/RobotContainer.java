@@ -239,7 +239,7 @@ public class RobotContainer {
         // joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
         // joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
 
-        joystick.x().whileTrue(m_flywheel.setVelocity(() -> RotationsPerSecond.of(10)));
+        joystick.x().whileTrue(m_flywheel.setVelocity(() -> RotationsPerSecond.of((3000.0 / 60.0))));
         joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());

@@ -35,6 +35,8 @@ public class RealIndexerS extends IndexerS {
         public static final int kGearRatio = 5;
             // Setpoints
         public static final Voltage kSlowVoltage = Volts.of(6.0);
+                public static final Voltage kFastVoltage = Volts.of(10.0);
+
 
     }
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)

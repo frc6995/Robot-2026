@@ -216,7 +216,7 @@ public class RealHoodS extends HoodS {
         // This method will be called once per scheduler run
         // double currentAngleRad = hood.getAngle().in(Radians);
         // RobotVisualizer.updateHood(currentAngleRad);
-        hood.updateTelemetry();
+        //hood.updateTelemetry();
     }
 
     @Override
