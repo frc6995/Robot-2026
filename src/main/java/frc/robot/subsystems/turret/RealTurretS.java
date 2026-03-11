@@ -67,8 +67,10 @@ public class RealTurretS extends TurretS {
 
         public static Angle kStowedAngle = Degrees.of(-90);
 
-        public static Angle kCWLimit = Degrees.of(-135);
-        public static Angle kCCWLimit = Degrees.of(192.6);
+        public static Angle kCWSoftLimit = Degrees.of(-135);
+        public static Angle kCCWSoftLimit = Degrees.of(192.6);
+        public static Angle kCWHardLimit = Degrees.of(-130);
+        public static Angle kCCWHardLimit = Degrees.of(187.6);
         public static Angle kStartAngle = kStowedAngle;
         public static Angle kTolerance = Degrees.of(5);
         public static Angle kStowedAngleMin = kStowedAngle.minus(kTolerance);
@@ -109,7 +111,7 @@ public class RealTurretS extends TurretS {
             motorConfig);
 
     private final PivotConfig m_config = new PivotConfig(turretMotorSMC)
-            .withHardLimit(TurretConstants.kCWLimit, TurretConstants.kCCWLimit)
+            .withHardLimit(TurretConstants.kCWSoftLimit, TurretConstants.kCCWSoftLimit)
             // .withSoftLimits(TurretConstants.kCWLimit.plus(Degrees.of(10)),
             // TurretConstants.kCCWLimit.minus(Degrees.of(10)))
             .withTelemetry("Turret", RobotContainer.kTelemetryVerbosity)
@@ -178,6 +180,6 @@ public class RealTurretS extends TurretS {
     }
 
     public Command resetEncoder() {
-        return runOnce(() -> turretMotorSMC.setEncoderPosition(TurretConstants.kCWLimit)).ignoringDisable(true);
+        return runOnce(() -> turretMotorSMC.setEncoderPosition(TurretConstants.kCWHardLimit)).ignoringDisable(true);
     }
 }

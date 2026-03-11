@@ -113,7 +113,7 @@ public abstract class TurretS extends SubsystemBase {
 
     /**no allocations: returns the parameter or a constant*/
     public Angle clampToHardLimits(Angle angle) {
-        return UnitUtil.clamp(angle, TurretConstants.kCWLimit, TurretConstants.kCCWLimit);
+        return UnitUtil.clamp(angle, TurretConstants.kCWSoftLimit, TurretConstants.kCCWSoftLimit);
     }
 
     /**no allocations: returns the parameter or a constant*/
