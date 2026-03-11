@@ -69,7 +69,7 @@ import frc.robot.util.Telemetry;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
-    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.LOW;
+    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.MID;
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                   // speed
@@ -131,8 +131,6 @@ public class RobotContainer {
 
     public RobotContainer() {
         ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, (pose) -> ShooterController.getAimLocation(pose));
-
-        m_drivetrain.resetOdometry(new Pose2d());
         VISUALIZER = logger.MECH_VISUALIZER;
 
         SmartDashboard.putData("Visualzer", VISUALIZER);
@@ -174,10 +172,10 @@ public class RobotContainer {
                                     .withRotationalRate(
                                             rotationSpeed); // Drive counterclockwise with negative X (left)
                         }));
-         m_turret.setDefaultCommand(m_turret.aimAtHub());
+       //  m_turret.setDefaultCommand(m_turret.aimAtHub());
         // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
-       // m_turret.setDefaultCommand(
-        //        m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
+        m_turret.setDefaultCommand(
+                m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
       //  m_hood.setDefaultCommand(
         //        m_hood.runSOTF(ShooterController.getInstance()::getCachedData));

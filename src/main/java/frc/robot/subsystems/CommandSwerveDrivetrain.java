@@ -25,6 +25,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -169,7 +170,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
             () -> this.getRotation3d(),
-            (rot) -> this.resetRotation(rot.toRotation2d())
+            (pose) -> {
+                resetPose(pose);
+            }
         );
     }
 
@@ -195,7 +198,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         this.m_vision = Robot.isSimulation() ? new NoneATVision() : new RealATVision(
             () -> this.getRotation3d(),
-            (rot) -> this.resetRotation(rot.toRotation2d())
+            (pose) -> {
+                resetPose(pose);
+            }
         );
         // JS: Replace with this(!Robot.isSimulation(), drivetrainConstants, modules)
     }
@@ -227,7 +232,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         
         this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
             () -> this.getRotation3d(),
-            (rot) -> this.resetRotation(rot.toRotation2d())
+          (pose) -> {
+                resetPose(pose);
+            }
         );
     }
 
@@ -279,8 +286,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
-            () -> this.getRotation3d(),
-            (rot) -> this.resetRotation(rot.toRotation2d())
+            () -> new Rotation3d(this.state().Pose.getRotation()),
+            (pose) -> {
+                resetPose(pose);
+            }
         );
     }
 
@@ -460,13 +469,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         currentTrajectory = isStarting ? traj.samples().toArray(SwerveSample[]::new) : emptyTrajectory;
     }
 
-    public void resetOdometry(Pose2d pose) {
-        zeroHeading();
-        m_gyro.setYaw(-m_gyro.getYaw().getValueAsDouble());
-
-        // m_vision.resetPose();
-    }
-        private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
     /* Robot swerve drive state */
     private final NetworkTable driveStateTable = inst.getTable("DriveState");

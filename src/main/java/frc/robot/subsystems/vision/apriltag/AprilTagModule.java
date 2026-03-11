@@ -59,7 +59,6 @@ public class AprilTagModule {
         mt1Pose = new PoseEstimate(limelight, "botpose_wpiblue", false);
         mt2Pose = new PoseEstimate(limelight, "botpose_orb_wpiblue", true);
 
-
         robotToCameraPublisher.accept(offset);
         defaultModePublisher.setDefault(defaultMode.name());
     }
@@ -68,7 +67,7 @@ public class AprilTagModule {
      * Must be called periodically in {@link frc.robot.subsystems.vision.apriltag.RealATVision#periodic()}
      */
     public void periodic() {
-        //updateTelemetry();
+        updateTelemetry();
     }
 
     /**

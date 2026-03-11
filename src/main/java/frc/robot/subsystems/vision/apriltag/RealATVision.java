@@ -6,11 +6,13 @@ import static edu.wpi.first.units.Units.Inches;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -61,7 +63,7 @@ public class RealATVision extends AprilTagVision {
     private AprilTagModule[] limelights;
 
     private final Supplier<Rotation3d> gyroRotation;
-    private final Consumer<Rotation3d> resetRotation;
+    private final Consumer<Pose2d> resetPose;
 
     private final NetworkTable visionTable;
 
@@ -70,10 +72,10 @@ public class RealATVision extends AprilTagVision {
     private final BooleanPublisher headingSeededPublisher;
     private final StructPublisher<Pose3d> seededPosePublisher;
 
-    public RealATVision(Supplier<Rotation3d> gyroRotation, Consumer<Rotation3d> resetRotation) {
+    public RealATVision(Supplier<Rotation3d> gyroRotation, Consumer<Pose2d> resetPose) {
         this.gyroRotation = gyroRotation;
-        this.resetRotation = resetRotation;
-        
+        this.resetPose = resetPose;
+
         limelights = new AprilTagModule[ATVisionConstants.LL_IDS.length];
 
         visionTable = NetworkTableInstance.getDefault().getTable("Vision");
@@ -93,20 +95,29 @@ public class RealATVision extends AprilTagVision {
     public void periodic() {
         estimates.clear();
         if(!headingSeeded) {
-            // var initialEstimate = limelights[0].getPoseMT1();
+            Optional<PoseEstimate> initialEstimate = Optional.empty();
+
+            for(AprilTagModule limelight : limelights) {
+                limelight.periodic();
+                var result = limelight.getPoseMT1();
+                if(result.isPresent() && result.get().pose.getTranslation().getDistance(Translation3d.kZero) > 0.05) {
+                    initialEstimate = result;
+                    break;
+                }
+            }
             
-            // if(initialEstimate.isEmpty()|| initialEstimate.get().pose.getTranslation().getDistance(new Translation3d()) < 0.05) return;
+            if(initialEstimate.isEmpty()) return;
 
-            // var initialPose = initialEstimate.get().pose;
+            var initialPose = initialEstimate.get().pose;
 
-            // for(VisionModule limelight : limelights) {
-            //     limelight.seedOrientation(new Orientation3d(
-            //         initialPose.getRotation(), 
-            //         zeroAngularVelocity));
-            // }
+            for(AprilTagModule limelight : limelights) {
+                limelight.seedOrientation(new Orientation3d(
+                    initialPose.getRotation(), 
+                    zeroAngularVelocity));
+            }
 
-            // resetRotation.accept(initialPose.getRotation());
-            // seededPosePublisher.accept(initialPose);
+            resetPose.accept(initialPose.toPose2d());
+            seededPosePublisher.accept(initialPose);
             headingSeeded = true;
         } else {
             Orientation3d newOrientation = new Orientation3d(
