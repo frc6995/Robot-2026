@@ -197,7 +197,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         this.m_vision = Robot.isSimulation() ? new NoneATVision() : new RealATVision(
-            () -> this.getRotation3d(),
+            () -> new Rotation3d(this.state.Pose.getRotation()),
             (pose) -> {
                 resetPose(pose);
             }
@@ -231,7 +231,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         
         this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
-            () -> this.getRotation3d(),
+            () -> new Rotation3d(this.state.Pose.getRotation()),
           (pose) -> {
                 resetPose(pose);
             }
@@ -286,7 +286,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
-            () -> new Rotation3d(this.state().Pose.getRotation()),
+            () -> new Rotation3d(this.state.Pose.getRotation()),
             (pose) -> {
                 resetPose(pose);
             }
@@ -399,7 +399,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         var estimates = m_vision.getAllEstimates();
         for(var estimate : estimates) {
             if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.25) {
-                addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.kVisionStdDevs);
+                if(DriverStation.isEnabled()) {
+                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.KNormalStdDevs);
+                } else {
+                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.kDisabledStdDevs);
+                }
             }
         }
     }

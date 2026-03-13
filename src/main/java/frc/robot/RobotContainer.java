@@ -22,6 +22,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -69,7 +70,7 @@ import frc.robot.util.Telemetry;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
-    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.MID;
+    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.LOW;
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                   // speed
@@ -150,6 +151,7 @@ public class RobotContainer {
 
     public double xButtonPressedTime = 0;
     public boolean intakeState = false;
+    public Angle hoodTarget = HoodConstants.kLowerLimit;
 
     private void setDefaultCommands() {
         m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -177,11 +179,11 @@ public class RobotContainer {
         m_turret.setDefaultCommand(
                 m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
-      //  m_hood.setDefaultCommand(
-        //        m_hood.runSOTF(ShooterController.getInstance()::getCachedData));
+       m_hood.setDefaultCommand(
+               m_hood.setAngle(() -> hoodTarget));
 
-       // m_flywheel.setDefaultCommand(
-       //         m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
+       m_flywheel.setDefaultCommand(
+               m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
     }
 
     private void configureBindings() {
@@ -237,14 +239,23 @@ public class RobotContainer {
         // joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
         // joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
 
-        joystick.x().whileTrue(m_flywheel.setVelocity(() -> RotationsPerSecond.of((3000.0 / 60.0))));
-                joystick.x().onTrue(m_turret.setAngle(new Rotation2d()));
+        joystick.x().whileTrue(m_flywheel.setVelocity(() -> RotationsPerSecond.of((1750.0 / 60.0))));
+                // joystick.x().onTrue(m_turret.setAngle(new Rotation2d()));
 
         joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
-       joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
-        joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
+    //    joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
+    //     joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
+
+        joystick.y().onTrue(
+            Commands.runOnce(() -> {
+                hoodTarget = hoodTarget.plus(Degrees.of(2));
+                if(hoodTarget.gt(HoodConstants.kUpperLimit)) {
+                    hoodTarget = HoodConstants.kLowerLimit;
+                }
+            })
+        );
 
         joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
 
