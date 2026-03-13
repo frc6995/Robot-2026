@@ -79,8 +79,9 @@ public class RealHoodS extends HoodS {
         public static final Angle kTolerance = Degrees.of(2);
         public static final double[][] kAngleData = {
                 // Distance (Meters), Angle(Degrees)
-                { 1, 12.5 },
-                { 5, 40 },
+                {1, 12.5},
+                {4, 35},
+                {5, 40},
         };
         // Motor Setup
         public static final double kStatorCurrentLimit = 40;

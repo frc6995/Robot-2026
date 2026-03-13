@@ -41,12 +41,12 @@ import edu.wpi.first.units.measure.Voltage;
 public class RealFlyWheelS extends FlyWheelS {
     public static class FlywheelConstants {
         // PID Constants
-        public static final double kP = 0.90;
+        public static final double kP = 0.70;
         public static final double kI = 0;
         public static final double kD = 0.0;
         // Feedforward Constants
         public static final double kS = 0.25;
-        public static final double kV = 0.20;
+        public static final double kV = 0.18;
         public static final double kA = 0.0;
         // CAN IDs
         public static final int kLeadMotorCANID = 53;
@@ -67,8 +67,10 @@ public class RealFlyWheelS extends FlyWheelS {
         public static final AngularVelocity kTolerance = RotationsPerSecond.of(2);
 
         public static final double[][] kShooterData = {
-                { 0.0, 1200 },
-                { 5.0, 1200 }
+                {0.0, 1750},
+                {3.0, 1750},
+                {4.0, 1850},
+                {5.0, 1950}
         };
     }
 

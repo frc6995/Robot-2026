@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -63,6 +64,7 @@ public class ShooterController {
 
     public NetworkTable goalPoseTable; 
     public StructPublisher<Pose2d> targetPosePub;
+    public DoublePublisher distanceToTargetPub;
 
     private ShooterController(
         Supplier<Pose2d> robotPose,
@@ -75,6 +77,7 @@ public class ShooterController {
 
         goalPoseTable = NetworkTableInstance.getDefault().getTable("Aim");
         targetPosePub = goalPoseTable.getStructTopic("target", Pose2d.struct).publish();
+        distanceToTargetPub = goalPoseTable.getDoubleTopic("distance").publish();
 
         populateLUTs();
     }
@@ -155,6 +158,7 @@ public class ShooterController {
 
         if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
             targetPosePub.accept(new Pose2d(goalTranslation, new Rotation2d()));
+        distanceToTargetPub.accept(goalTranslation.getDistance(projectedTranslation));
 
         double distance = delta.getNorm();
 
