@@ -40,8 +40,10 @@ public class ShooterController {
     }
 
     private static final double[][] kTimeOfFlightData = {
-        {1.0, 0.30},
-        {5.0, 0.60}
+        {1.09, 1.295},
+        {2.28, 1.09},
+        {3.0, 1.195},
+        {4.0, 1.1}
     };
 
     private static final double RPM_CORRECTION_GAIN = 0.7;   // bias small corrections to RPM
@@ -64,6 +66,7 @@ public class ShooterController {
 
     public NetworkTable goalPoseTable; 
     public StructPublisher<Pose2d> targetPosePub;
+    public StructPublisher<Pose2d> projectedPosePub;
     public DoublePublisher distanceToTargetPub;
 
     private ShooterController(
@@ -77,6 +80,7 @@ public class ShooterController {
 
         goalPoseTable = NetworkTableInstance.getDefault().getTable("Aim");
         targetPosePub = goalPoseTable.getStructTopic("target", Pose2d.struct).publish();
+        projectedPosePub = goalPoseTable.getStructTopic("projected", Pose2d.struct).publish();
         distanceToTargetPub = goalPoseTable.getDoubleTopic("distance").publish();
 
         populateLUTs();
@@ -152,12 +156,12 @@ public class ShooterController {
 
         Pose2d projectedPose =
             new Pose2d(projectedTranslation, currentPose.getRotation().plus(Rotation2d.fromDegrees(speeds.omegaRadiansPerSecond)));
-
         Translation2d goalTranslation = goalPose.apply(projectedPose).getTranslation();
         Translation2d delta = goalTranslation.minus(projectedPose.getTranslation());
 
         if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
             targetPosePub.accept(new Pose2d(goalTranslation, new Rotation2d()));
+            projectedPosePub.accept(projectedPose);
         distanceToTargetPub.accept(goalTranslation.getDistance(projectedTranslation));
 
         double distance = delta.getNorm();

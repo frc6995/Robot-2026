@@ -79,9 +79,10 @@ public class RealHoodS extends HoodS {
         public static final Angle kTolerance = Degrees.of(2);
         public static final double[][] kAngleData = {
                 // Distance (Meters), Angle(Degrees)
-                {1, 12.5},
-                {4, 35},
-                {5, 40},
+                { 1, 12.5 },
+                { 2.2, 20 },
+                { 4, 35 },
+                { 5, 40 },
         };
         // Motor Setup
         public static final double kStatorCurrentLimit = 40;
@@ -217,7 +218,7 @@ public class RealHoodS extends HoodS {
         // This method will be called once per scheduler run
         // double currentAngleRad = hood.getAngle().in(Radians);
         // RobotVisualizer.updateHood(currentAngleRad);
-        //hood.updateTelemetry();
+        // hood.updateTelemetry();
     }
 
     @Override
