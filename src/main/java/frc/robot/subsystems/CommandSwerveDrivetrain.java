@@ -299,8 +299,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public SwerveDriveState lastState = getState().clone();
 
     /** Re-expose the state as a method of the subclass so Epilogue finds it. */
+    @Logged
     public SwerveDriveState state() {
-        return state;
+        return getState();
     }
 
     /**
@@ -476,13 +477,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
     /* Robot swerve drive state */
-    private final NetworkTable driveStateTable = inst.getTable("DriveState");
-    private final StructPublisher<Pose2d> drivePose = driveStateTable.getStructTopic("TargetPose", Pose2d.struct).publish();
+    //private final NetworkTable driveStateTable = inst.getTable("DriveState");
+    //private final StructPublisher<Pose2d> drivePose = driveStateTable.getStructTopic("TargetPose", Pose2d.struct).publish();
 
     public void followPath(SwerveSample sample) {
         m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
         var pose = state().Pose;
-        drivePose.accept(sample.getPose());
+      //  drivePose.accept(sample.getPose());
         double targetHeading = sample.heading;
         double actualHeading = pose.getRotation().getRadians();
         double error = Math.IEEEremainder(targetHeading - actualHeading, 2 * Math.PI);

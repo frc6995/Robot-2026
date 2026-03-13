@@ -90,6 +90,7 @@ public class RobotContainer {
 
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
+    @Logged
     public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
             TunerConstants.DrivetrainConstants,
             TunerConstants.FrontLeft,
