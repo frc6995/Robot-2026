@@ -162,9 +162,9 @@ public class AutoCommands {
                         Pose2d targetpose,
                         Rotation2d targetPoseEntryAngle) {
                 return Commands.sequence(
-                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
+                               // Commands.waitUntil(() -> m_hood.isHoodSafe()),
                                 new AutoAlign(helpPose, m_drivebase,
-                                                AutoAlign.kHighJerkProfile).until(
+                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
                                                                 TriggerUtil.isWithinRadius(
                                                                                 () -> helpPose.getTranslation(),
                                                                                 () -> m_drivebase.state.Pose,
