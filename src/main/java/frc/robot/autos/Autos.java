@@ -142,7 +142,7 @@ public class Autos {
                         AutoAlign.kDefaultVelocityLimitedProfile));
 
         // (L) Back From Center Line To Depot
-        Supplier<Command> leftBackToStartDefaultPlusDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
+        Supplier<Command> leftBackToDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
                 POI.HELPL2Entry.get(), Meters.of(12.2),
                 POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
                 .until(
@@ -156,19 +156,19 @@ public class Autos {
                         autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
                                 .alongWith(autoCommands.APtoDepot()));
 
-        // Supplier<Command> leftBackToStartDefaultPlusDepot = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
-        //         POI.HELP2Entry.get(), Meters.of(12.2),
-        //         POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
-        //         .until(
-        //                 TriggerUtil.isWithinRadius(
-        //                         () -> POI.DEPOT_HELP.get()
-        //                                 .getTranslation(),
-        //                         () -> m_drivebase.state.Pose,
-        //                         () -> Meters.of(0.1)))
-        //         .andThen(
+        Supplier<Command> rightBackToHP = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
+                POI.HELPR2Entry.get(), Meters.of(12.5),
+                POI.HELPS.get(), POI.TRL1Entry.get())
+                .until(
+                        TriggerUtil.isWithinRadius(
+                                () -> POI.HELPS.get()
+                                        .getTranslation(),
+                                () -> m_drivebase.state.Pose,
+                                () -> Meters.of(0.3)))
+                .andThen(
 
-        //                 autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
-        //                         .alongWith(autoCommands.APtoDepot()));
+                        autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
+                                .alongWith(new AutoAlign(POI.STA1.get(), m_drivebase, AutoAlign.kSlowDriveProfile)));
 
         // (L/R) Back From Center Line To Climb
 
@@ -216,6 +216,13 @@ public class Autos {
                     c.addCommands(rightBackToStartClose.get());
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                }));
+
+        autos.put("R 1x center-line + HP",
+                () -> auto(POI.TRR1.get(), c -> {
+                    c.addCommands(rightToCenterLineMiddleHardCoded.get());
+
+                    c.addCommands(rightBackToHP.get());
                 }));
 
 

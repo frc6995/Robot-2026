@@ -79,6 +79,8 @@ public class POI {
 
     // Other poses
     public static final Supplier<Pose2d> STA1 = flipped(ChoreoVars.Poses.STA1);
+    public static final Supplier<Pose2d> HELPS = flipped(ChoreoVars.Poses.HELPS);
+
     public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
 
     // ============= ROTATIONS =============

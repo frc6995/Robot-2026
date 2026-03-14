@@ -34,23 +34,16 @@ public record ChoreoTraj(
 	public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
 	    "Climb_Poses",
 	    OptionalInt.empty(),
-	    6.00106,
+	    6.63246,
 	    new Pose2d(1.586, 4.196, Rotation2d.fromRadians(0)),
-	    new Pose2d(1.586, 3.3, Rotation2d.fromRadians(0))
+	    new Pose2d(3.822, 0.539, Rotation2d.fromRadians(3.142))
 	);
-	public static final ChoreoTraj OP = new ChoreoTraj(
-	    "OP",
+	public static final ChoreoTraj HP_test = new ChoreoTraj(
+	    "HP_test",
 	    OptionalInt.empty(),
-	    0.74439,
-	    new Pose2d(2.034, 6.939, Rotation2d.fromRadians(-0.042)),
-	    new Pose2d(3.359, 5.964, Rotation2d.fromRadians(-0.689))
-	);
-	public static final ChoreoTraj TRL1_I1 = new ChoreoTraj(
-	    "TRL1_I1",
-	    OptionalInt.empty(),
-	    1.23402,
-	    new Pose2d(4.403, 7.413, Rotation2d.fromRadians(0)),
-	    new Pose2d(8.306, 6.792, Rotation2d.fromRadians(-1.222))
+	    3.59794,
+	    new Pose2d(8.32, 3.571, Rotation2d.fromRadians(1.557)),
+	    new Pose2d(0.423, 0.696, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj ClimbTest = new ChoreoTraj(
 	    "ClimbTest",
@@ -66,13 +59,6 @@ public record ChoreoTraj(
 	    new Pose2d(4.403, 7.513, Rotation2d.fromRadians(0)),
 	    new Pose2d(5.994, 1.262, Rotation2d.fromRadians(1.571))
 	);
-	public static final ChoreoTraj NewPath = new ChoreoTraj(
-	    "NewPath",
-	    OptionalInt.empty(),
-	    3.70724,
-	    new Pose2d(8.32, 3.571, Rotation2d.fromRadians(1.557)),
-	    new Pose2d(0.423, 0.696, Rotation2d.fromRadians(0))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -81,11 +67,9 @@ public record ChoreoTraj(
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("B", B),
 		Map.entry("Climb_Poses", Climb_Poses),
-		Map.entry("OP", OP),
-		Map.entry("TRL1_I1", TRL1_I1),
+		Map.entry("HP_test", HP_test),
 		Map.entry("ClimbTest", ClimbTest),
-		Map.entry("Center_Line_Poses", Center_Line_Poses),
-		Map.entry("NewPath", NewPath)
+		Map.entry("Center_Line_Poses", Center_Line_Poses)
     );
 
     /**
