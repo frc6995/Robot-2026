@@ -22,11 +22,15 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.PoseEstimate;
@@ -70,6 +74,9 @@ public class RealATVision extends AprilTagVision {
     private final NetworkTable visionTable;
 
     private boolean headingSeeded = false;
+
+    private boolean wasAuto = false;
+    private boolean wasTele = false;
 
     private final BooleanPublisher headingSeededPublisher;
     private final StructPublisher<Pose3d> seededPosePublisher;
@@ -121,10 +128,32 @@ public class RealATVision extends AprilTagVision {
             }
         }
         headingSeededPublisher.accept(headingSeeded);
+
+        if (RobotModeTriggers.autonomous().getAsBoolean()) {
+            wasTele = false;
+            wasAuto = true;
+        } else if (!RobotModeTriggers.autonomous().getAsBoolean() && wasAuto == true) {
+            wasAuto = false;
+            captureRewinds(20);
+        }
+        else if (RobotModeTriggers.teleop().getAsBoolean()) {
+            wasAuto = false;
+            wasTele = true;
+        } else if (!RobotModeTriggers.teleop().getAsBoolean() && wasTele == true) {
+            wasTele = false;
+            captureRewinds(140);
+        }
     }
 
     @Override
     public List<PoseEstimate> getAllEstimates() {
         return estimates;
+    }
+
+    private void captureRewinds(double seconds) {
+            for(int i = 0; i < limelights.length; i++) {
+                double[] lastRecord = limelights[i].rewindSubscriber.get();
+                limelights[i].rewindPublisher.set(new double[] {lastRecord[0] + 1, seconds});
+            }
     }
 }
