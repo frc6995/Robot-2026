@@ -297,4 +297,9 @@ public class AutoCommands {
                                                 m_Spindexer.setVoltage(
                                                                 () -> SpindexerConstants.kFastVoltage)));
         }
+        public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
+                return Commands.repeatingSequence(
+                                m_intakePivot.setAngle(upperLimit).withTimeout(seconds),
+                                m_intakePivot.setAngle(lowerLimit).withTimeout(seconds));
+        }
 }

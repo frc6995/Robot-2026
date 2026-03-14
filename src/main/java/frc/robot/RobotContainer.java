@@ -265,9 +265,10 @@ public class RobotContainer {
         // joystick.x().whileTrue(m_flywheel.setVelocity(() -> DegreesPerSecond.of(1000)));
         // joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
 
-       // joystick.rightTrigger().whileTrue(m_autoCommands.Score());
-        // joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
-        // joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
+        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+        joystick.leftTrigger().whileTrue(m_autoCommands.intakeWiggle(Degrees.of(30), Degrees.of(0), 0.4));
+    //    joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
+    //     joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
 
         // joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
         // joystick.leftBumper().whileTrue(
