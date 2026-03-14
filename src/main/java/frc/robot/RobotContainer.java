@@ -267,6 +267,8 @@ public class RobotContainer {
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
         joystick.leftTrigger().whileTrue(m_autoCommands.intakeWiggle(Degrees.of(30), Degrees.of(0), 0.4));
+                joystick.leftTrigger().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
+
     //    joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
     //     joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
 
