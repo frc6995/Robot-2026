@@ -41,10 +41,9 @@ public class ShooterController {
     }
 
     private static final double[][] kTimeOfFlightData = {
-        {1.09, 1.295},
-        {2.28, 1.09},
-        {3.0, 1.195},
-        {4.0, 1.1}
+        {1.23, 1.356},
+        {3.64, 1.186},
+        {4.44, 1.164}
     };
 
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
@@ -116,7 +115,7 @@ public class ShooterController {
                 return POI.HUB1.get();
             }
             else {
-                return POI.topAllianceZone.get().getCenter();
+                return POI.HUB1.get();
             }
         }
     }

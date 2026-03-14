@@ -69,7 +69,7 @@ public class RealTurretS extends TurretS {
 
         public static Angle kCWSoftLimit = Degrees.of(-135);
         public static Angle kCCWSoftLimit = Degrees.of(192.6);
-        public static Angle kCWHardLimit = Degrees.of(-130);
+        public static Angle kCWHardLimit = Degrees.of(-138.64);
         public static Angle kCCWHardLimit = Degrees.of(187.6);
         public static Angle kStartAngle = kStowedAngle;
         public static Angle kTolerance = Degrees.of(5);
