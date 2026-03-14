@@ -106,9 +106,9 @@ public class RobotContainer {
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
-    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
+    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
-    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS(); 
+    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS(); 
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")
@@ -245,6 +245,7 @@ public class RobotContainer {
         joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+        joystick.leftTrigger().whileTrue(m_autoCommands.intakeWiggle(Degrees.of(30), Degrees.of(0), 0.4));
     //    joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
     //     joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
 

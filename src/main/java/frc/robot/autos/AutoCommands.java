@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
@@ -271,5 +272,10 @@ public class AutoCommands {
                                                 m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                                                 m_Spindexer.setVoltage(
                                                                 () -> SpindexerConstants.kFastVoltage)));
+        }
+        public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
+                return Commands.repeatingSequence(
+                                m_intakePivot.setAngle(upperLimit).withTimeout(seconds),
+                                m_intakePivot.setAngle(lowerLimit).withTimeout(seconds));
         }
 }
