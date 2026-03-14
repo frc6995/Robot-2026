@@ -169,7 +169,7 @@ public class RobotContainer {
                 m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
        m_hood.setDefaultCommand(
-               m_hood.setAngle(() -> hoodTarget));
+               m_hood.runSOTF(ShooterController.getInstance()::getCachedData));
 
        m_flywheel.setDefaultCommand(
                m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
