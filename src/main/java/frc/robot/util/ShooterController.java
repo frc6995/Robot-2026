@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
@@ -19,6 +20,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
@@ -49,6 +51,7 @@ public class ShooterController {
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
     private static final double HOOD_MAX = HoodConstants.kUpperLimit.in(Degrees);
 
+    private static final double LOOP_PERIOD_SECONDS = 0.02;
     private static final double LATENCY_SECONDS = 0.03; // adjust later
 
     private static ShooterController instance = null;
@@ -60,6 +63,7 @@ public class ShooterController {
 
     private final Supplier<Pose2d> robotPose;
     private final Supplier<ChassisSpeeds> robotSpeeds;
+    private final Supplier<ChassisSpeeds> lastSpeeds;
     private final Function<Pose2d, Pose2d> goalPose;
 
     public NetworkTable goalPoseTable; 
@@ -70,10 +74,12 @@ public class ShooterController {
     private ShooterController(
         Supplier<Pose2d> robotPose,
         Supplier<ChassisSpeeds> robotSpeeds,
+        Supplier<ChassisSpeeds> lastSpeeds,
         Function<Pose2d, Pose2d> goalPose
     ) {
         this.robotPose = robotPose;
         this.robotSpeeds = robotSpeeds;
+        this.lastSpeeds = lastSpeeds;
         this.goalPose = goalPose;
 
         goalPoseTable = NetworkTableInstance.getDefault().getTable("Aim");
@@ -84,9 +90,14 @@ public class ShooterController {
         populateLUTs();
     }
 
-    public static void initialize(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Function<Pose2d, Pose2d> targetPose) {
+    public static void initialize(Supplier<SwerveDriveState> currentState, Supplier<SwerveDriveState> lastState, Function<Pose2d, Pose2d> targetPose) {
         if(instance == null) {
-            instance = new ShooterController(robotPose, robotSpeeds, targetPose);
+            instance = new ShooterController(
+                () -> currentState.get().Pose,
+                () -> currentState.get().Speeds,
+                () -> lastState.get().Speeds,
+                targetPose
+            );
         }
     }
 
@@ -143,6 +154,7 @@ public class ShooterController {
 
         Pose2d currentPose = robotPose.get();
         ChassisSpeeds speeds = robotSpeeds.get();
+        ChassisSpeeds lastSpeeds = this.lastSpeeds.get();
 
         Pose2d estimatedPose = currentPose.exp(
             new Twist2d(
@@ -162,10 +174,7 @@ public class ShooterController {
 
         for(int i = 0; i < 20; i++) {
             timeOfFlight = tofMap.get(distance);
-            projectedTranslation = estimatedPose.getTranslation().plus(new Translation2d(
-                speeds.vxMetersPerSecond * timeOfFlight,
-                speeds.vyMetersPerSecond * timeOfFlight
-            ));
+            projectedTranslation = CommandSwerveDrivetrain.getProjectedTranslation(projectedTranslation, speeds, lastSpeeds, LOOP_PERIOD_SECONDS, timeOfFlight);
             delta = goalTranslation.minus(projectedTranslation);
             distance = delta.getNorm();
         }
