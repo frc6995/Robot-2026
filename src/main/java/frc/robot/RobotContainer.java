@@ -106,9 +106,9 @@ public class RobotContainer {
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
-    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
+    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
     @Logged(name = "IntakeRoller")
-    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS(); 
+    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS(); 
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")

@@ -158,30 +158,24 @@ public class ShooterController {
         double distance = goalTranslation.getDistance(estimatedPose.getTranslation());
         double timeOfFlight = tofMap.get(distance);
         
-        Pose2d projectedPose = estimatedPose;
+        Translation2d projectedTranslation = estimatedPose.getTranslation();
+        Translation2d delta = goalTranslation.minus(projectedTranslation);
 
         for(int i = 0; i < 20; i++) {
             timeOfFlight = tofMap.get(distance);
-            projectedPose = new Pose2d(
+            projectedTranslation = estimatedPose.getTranslation().plus(new Translation2d(
                 speeds.vxMetersPerSecond * timeOfFlight,
-                speeds.vyMetersPerSecond * timeOfFlight,
-                projectedPose.getRotation()
-            );
-            distance = goalTranslation.getDistance(projectedPose.getTranslation());
+                speeds.vyMetersPerSecond * timeOfFlight
+            ));
+            delta = goalTranslation.minus(projectedTranslation);
+            distance = delta.getNorm();
         }
 
-        Translation2d delta = goalTranslation.minus(projectedPose.getTranslation());
-        distance = delta.getNorm();
-
-        Rotation2d turretFieldAngle =
-            new Rotation2d(
-                delta.getX(),
-                delta.getY()
-            );
+        Rotation2d turretFieldAngle = delta.getAngle();
 
 
         Rotation2d turretRobotAngle =
-            turretFieldAngle.minus(projectedPose.getRotation()).plus(Rotation2d.k180deg);
+            turretFieldAngle.minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg);
 
         double finalRPM = rpmMap.get(distance);
 
@@ -196,15 +190,15 @@ public class ShooterController {
         cachedData.rpm = finalRPM;
         cachedData.turretAngle = turretRobotAngle;
 
-        updateTelemetry(goalTranslation, projectedPose, distance);
+        updateTelemetry(goalTranslation, projectedTranslation, distance);
 
         return cachedData;
     }
 
-    private void updateTelemetry(Translation2d goal, Pose2d projectedPose, double distance) {
-        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
-            targetPosePub.accept(new Pose2d(goal, Rotation2d.kZero));
-            projectedPosePub.accept(projectedPose);
+    private void updateTelemetry(Translation2d goal, Translation2d projectedPose, double distance) {
+        // if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
+        targetPosePub.accept(new Pose2d(goal, Rotation2d.kZero));
+        projectedPosePub.accept(new Pose2d(projectedPose, Rotation2d.kZero));
         distanceToTargetPub.accept(distance);
     }
 }
