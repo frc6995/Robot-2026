@@ -86,7 +86,7 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry();
 
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
@@ -124,7 +124,6 @@ public class RobotContainer {
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
 
     private final AutoFactory autoFactory;
-    private Mechanism2d VISUALIZER;
     private final Autos autoRoutines;
     public final AutoChooser m_chooser = new AutoChooser();
 
@@ -133,9 +132,6 @@ public class RobotContainer {
 
     public RobotContainer() {
         ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, (pose) -> ShooterController.getAimLocation(pose));
-        VISUALIZER = logger.MECH_VISUALIZER;
-
-        SmartDashboard.putData("Visualzer", VISUALIZER);
         
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,
