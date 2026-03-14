@@ -253,11 +253,7 @@ public class RobotContainer {
         joystick.back()
                 .onTrue(Commands.parallel(
                 m_turret.resetEncoder(),
-                m_flywheel.resetEncoder(),
-                m_spindexer.resetEncoder(),
-                m_intakeRoller.resetEncoder(),
                 m_intakePivot.resetEncoder(),
-                m_indexer.resetEncoder(),
                 m_hood.resetEncoder()).ignoringDisable(true));
         // Left trigger hold to score
         // joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
