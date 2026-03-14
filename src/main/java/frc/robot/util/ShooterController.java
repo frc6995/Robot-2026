@@ -158,13 +158,17 @@ public class ShooterController {
         double distance = goalTranslation.getDistance(estimatedPose.getTranslation());
         double timeOfFlight = tofMap.get(distance);
         
-        Pose2d projectedPose = estimatedPose.exp(
-            new Twist2d(
+        Pose2d projectedPose = estimatedPose;
+
+        for(int i = 0; i < 20; i++) {
+            timeOfFlight = tofMap.get(distance);
+            projectedPose = new Pose2d(
                 speeds.vxMetersPerSecond * timeOfFlight,
                 speeds.vyMetersPerSecond * timeOfFlight,
-                speeds.omegaRadiansPerSecond * timeOfFlight
-            )
-        );
+                projectedPose.getRotation()
+            );
+            distance = goalTranslation.getDistance(projectedPose.getTranslation());
+        }
 
         Translation2d delta = goalTranslation.minus(projectedPose.getTranslation());
         distance = delta.getNorm();
