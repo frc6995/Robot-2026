@@ -209,7 +209,7 @@ public class RealHoodS extends HoodS {
 
     public Command resetEncoder() {
         return runOnce(() -> talonSmartMotorController.setEncoderPosition(
-                Degrees.zero())).ignoringDisable(true);
+                HoodConstants.kStowAngle)).ignoringDisable(true);
     }
 
     @Override

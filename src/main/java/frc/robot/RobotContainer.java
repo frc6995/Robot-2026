@@ -112,9 +112,9 @@ public class RobotContainer {
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
-    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
+    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
     @Logged(name = "IntakeRoller")
-    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS(); 
+    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS(); 
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")
@@ -163,27 +163,19 @@ public class RobotContainer {
 
     private void setDefaultCommands() {
         m_intakePivot.setDefaultCommand(
-        m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle)
-        );
+        m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 
         m_intakeRoller.setDefaultCommand(
-        m_intakeRoller.setVoltage(Volts.of(0))
-        );
-       // m_turret.setDefaultCommand(m_turret.aimAtHub());
-      //  m_hood.setDefaultCommand(m_hood.autoHoodAngle());
+        m_intakeRoller.setVoltage(Volts.of(0)));
 
-    }
+ m_turret.setDefaultCommand(
+                m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
-    private void configureBindings() {
-        // Left stick: Movement
-        // Right stick: Rotation
-        // D-pad: Robot relative translation
-        // A: Intake toggle
-        // B: Cardinal direction hold
-        // X: Climb
-        // RT: Hold to Shoot
-        // Start: Current home turret (enabled)
-        // Back: Home all (enabled); Set positions (disabled)
+       m_hood.setDefaultCommand(
+               m_hood.setAngle(() -> hoodTarget));
+
+       m_flywheel.setDefaultCommand(
+               m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
         m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
                 m_drivetrain.applyRequest(
                         () -> {
@@ -204,19 +196,21 @@ public class RobotContainer {
                                     .withRotationalRate(
                                             rotationSpeed); // Drive counterclockwise with negative X (left)
                         }));
-       //  m_turret.setDefaultCommand(m_turret.aimAtHub());
-        // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
-        m_turret.setDefaultCommand(
-                m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
-       m_hood.setDefaultCommand(
-               m_hood.setAngle(() -> hoodTarget));
-
-       m_flywheel.setDefaultCommand(
-               m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
     }
 
     private void configureBindings() {
+        // Left stick: Movement
+        // Right stick: Rotation
+        // D-pad: Robot relative translation
+        // A: Intake toggle
+        // B: Cardinal direction hold
+        // X: Climb
+        // RT: Hold to Shoot
+        // Start: Current home turret (enabled)
+        // Back: Home all (enabled); Set positions (disabled)
+
+    
         
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
@@ -229,14 +223,6 @@ public class RobotContainer {
 
         // A intake toggle
         joystick.a().toggleOnTrue(m_autoCommands.fuelIntake());
-        // joystick.a().toggleOnTrue(
-        // m_autoCommands.fuelIntake().finallyDo(() -> {
-        //         Commands.parallel(
-        //         m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
-        //         m_intakeRoller.setVoltage(Volts.of(0))
-        //         ).schedule();
-        // })
-        // );
 
         // B button align to cardinal direction
         joystick.b().whileTrue(
@@ -261,40 +247,16 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
 
-        // X: climb
-        // joystick.x().whileTrue(
-        // Commands.sequence(
-        //         m_autoCommands.prepL1Climb(POI.CL1.get()),
-        //         m_autoCommands.L1Climb(),
-        //         m_autoCommands.finishL1Climb()));
-        // Y: stow intake (blank currently)
-        //joystick.y().whileTrue(
-         //       Commands.parallel(
-         //               m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
-         //               m_intakeRoller.setVoltage(Volts.of(0))));
-
-
         // RT: hold to shoot
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
-        // RB: Blank
-        // joystick.rightBumper().whileTrue(
-                // m_autoCommands.APToClusterChain(200, true));
-                        
         // Start: Current home turret (enabled)
         joystick.start().onTrue(m_turret.driveToHome());
 
         // Back: Home all, set all positions in disable
         joystick.back().onTrue(Commands.parallel(
-                Commands.either(
-                        m_turret.driveToHome(),
                         m_turret.resetEncoder(),
-                        () -> DriverStation.isEnabled()),
-                m_flywheel.resetEncoder(),
-                m_spindexer.resetEncoder(),
-                m_intakeRoller.resetEncoder(),
                 m_intakePivot.resetEncoder(),
-                m_indexer.resetEncoder(),
                 m_hood.resetEncoder()));
         // Left trigger hold to score
         // joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
