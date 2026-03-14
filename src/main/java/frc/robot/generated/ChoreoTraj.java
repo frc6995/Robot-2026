@@ -62,9 +62,16 @@ public record ChoreoTraj(
 	public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
 	    "Center_Line_Poses",
 	    OptionalInt.empty(),
-	    52.26919,
-	    new Pose2d(4.403, 7.413, Rotation2d.fromRadians(0)),
-	    new Pose2d(8.28, 1.924, Rotation2d.fromRadians(-1.571))
+	    53.08169,
+	    new Pose2d(4.403, 7.513, Rotation2d.fromRadians(0)),
+	    new Pose2d(5.994, 1.262, Rotation2d.fromRadians(1.571))
+	);
+	public static final ChoreoTraj NewPath = new ChoreoTraj(
+	    "NewPath",
+	    OptionalInt.empty(),
+	    3.70724,
+	    new Pose2d(8.32, 3.571, Rotation2d.fromRadians(1.557)),
+	    new Pose2d(0.423, 0.696, Rotation2d.fromRadians(0))
 	);
 
     /**
@@ -77,7 +84,8 @@ public record ChoreoTraj(
 		Map.entry("OP", OP),
 		Map.entry("TRL1_I1", TRL1_I1),
 		Map.entry("ClimbTest", ClimbTest),
-		Map.entry("Center_Line_Poses", Center_Line_Poses)
+		Map.entry("Center_Line_Poses", Center_Line_Poses),
+		Map.entry("NewPath", NewPath)
     );
 
     /**
