@@ -5,9 +5,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -16,37 +15,29 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import org.ejml.dense.row.decomposition.hessenberg.HessenbergSimilarDecomposition_FDRM;
-
-import org.opencv.core.Rect2d;
-
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import choreo.util.FieldSize;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
-import frc.robot.util.AllianceFlipUtil;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.POI;
-// import frc.robot.util.RobotVisualizer;
 import frc.robot.util.ShooterController;
-import frc.robot.util.TriggerUtil;
 import frc.robot.util.UnitUtil;
 import frc.robot.util.ShooterController.ShooterTargetData;
 import yams.gearing.GearBox;
@@ -57,7 +48,6 @@ import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class RealHoodS extends HoodS {
@@ -93,11 +83,12 @@ public class RealHoodS extends HoodS {
         public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(2700);
         // Sim Constants
         public static final Distance kArmLength = Inches.of(9.384);
-        public static final Double kMOI = 0.00671959172;
+        public static final MomentOfInertia kMOI = KilogramSquareMeters.of(0.00671959172);
         // Hood Safety Constants
-        public static final Distance kSafetyOverride_NoSpeed = Meters.of(1.5);
-        public static final Distance kSafetyOverride_Final = Meters.of(0.01);
-        public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.2);
+        // public static final Distance kSafetyOverride_NoSpeed = Meters.of(1.5);
+        public static final Distance kSafetyOverride_Final = Meters.of(0.153);
+        // public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.2);
+        public static final double kHoodRetractTime = 0.25;
     }
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -138,33 +129,37 @@ public class RealHoodS extends HoodS {
     private Supplier<Pose2d> robotPose;
     private Supplier<Translation2d> robotTranslation;
     private Supplier<ChassisSpeeds> robotSpeeds;
+    private Supplier<ChassisSpeeds> lastSpeeds;
+    private double poseEstPeriod = 0.02;
+
     private BooleanSupplier shouldApplyDynamicLimit;
 
-    public RealHoodS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds) {
-        this.robotPose = robotPose;
+    public RealHoodS(Supplier<SwerveDriveState> currentState, Supplier<SwerveDriveState> lastState) {
+        this.robotPose = () -> currentState.get().Pose;
         this.robotTranslation = () -> robotPose.get().getTranslation();
-        this.robotSpeeds = robotSpeeds;
+        this.robotSpeeds = () -> currentState.get().Speeds;
+        this.lastSpeeds = () -> lastState.get().Speeds;
 
-        this.shouldApplyDynamicLimit = TriggerUtil.or(
-                makeShouldApplyDynamicLimit(POI.kOriginToTrenchBlue, robotTranslation),
-                makeShouldApplyDynamicLimit(POI.kOriginToTrenchRed, robotTranslation));
+        this.shouldApplyDynamicLimit = makeShouldApplyDynamicLimit();
     }
 
-    private Trigger makeShouldApplyDynamicLimit(Distance distanceToTrench, Supplier<Translation2d> robotTranslation) {
-        Pose2d trenchCenter = new Pose2d(
-                new Translation2d(distanceToTrench, Meters.of(AllianceFlipUtil.FIELD_WIDTH).div(2)), Rotation2d.kZero);
-        Rectangle2d trenchSafety = new Rectangle2d(
-                trenchCenter, HoodConstants.kSafetyOverride_NoSpeed.times(2), FieldSize.FIELD_WIDTH);
+    private BooleanSupplier makeShouldApplyDynamicLimit() {
+        Distance halfField = FieldSize.FIELD_WIDTH.div(2);
+        Pose2d trenchCenterBlue = new Pose2d(
+                new Translation2d(POI.kOriginToTrenchBlue, halfField), Rotation2d.kZero);
+        Pose2d trenchCenterRed = new Pose2d(
+            new Translation2d(POI.kOriginToTrenchRed, halfField), Rotation2d.kZero);
 
-        Rectangle2d trench = new Rectangle2d(trenchCenter, HoodConstants.kSafetyOverride_Final.times(2),
-                FieldSize.FIELD_WIDTH);
-        final var kSafetyOverrideVelocity = HoodConstants.kSafetyOverrideVelocity.in(MetersPerSecond);
-        return new Trigger(
-                () -> {
+        var safetyLength = HoodConstants.kSafetyOverride_Final.times(2);
+
+        Rectangle2d trenchBlue = new Rectangle2d(trenchCenterBlue, safetyLength, FieldSize.FIELD_WIDTH);
+        Rectangle2d trenchRed = new Rectangle2d(trenchCenterRed, safetyLength, FieldSize.FIELD_WIDTH);
+        return () -> {
                     var translation = robotTranslation.get();
-                    return (Math.abs(robotSpeeds.get().vxMetersPerSecond) > kSafetyOverrideVelocity
-                            && trenchSafety.contains(translation)) || trench.contains(translation);
-                });
+                    var projTranslation = CommandSwerveDrivetrain.getProjectedTranslation(translation, robotSpeeds.get(), lastSpeeds.get(), poseEstPeriod, HoodConstants.kHoodRetractTime);
+                    return (trenchBlue.contains(translation) || trenchBlue.contains(projTranslation))
+                            || (trenchRed.contains(translation) || trenchBlue.contains(projTranslation));
+                };
     }
 
     public Command setAngle(Supplier<Angle> angle) {
@@ -227,4 +222,5 @@ public class RealHoodS extends HoodS {
         hood.simIterate();
     }
 
+    
 }
