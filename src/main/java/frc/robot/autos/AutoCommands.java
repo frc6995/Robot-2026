@@ -2,6 +2,7 @@ package frc.robot.autos;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Inches;
 
 import java.util.Optional;
 import java.util.Set;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
@@ -56,6 +59,7 @@ public class AutoCommands {
         private final IndexerS m_indexer;
         private final SpindexerS m_Spindexer;
         private final FlyWheelS m_flywheel;
+        private final ClimbExtensionS m_climbExtension;
         private final ObjectVision m_objectVision;
 
         SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
@@ -69,7 +73,7 @@ public class AutoCommands {
         HoodS hood, IntakePivotS intakePivot,
         IntakeRollerS intakeRoller, TurretS turret,
         IndexerS indexer, SpindexerS spindexer,
-        FlyWheelS flyWheel, ObjectVision objectVision)
+        FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision)
         {
                 this.m_drivebase = drivebase;
                 this.autos = autos;
@@ -80,6 +84,7 @@ public class AutoCommands {
                 this.m_indexer = indexer;
                 this.m_Spindexer = spindexer;
                 this.m_flywheel = flyWheel;
+                this.m_climbExtension = climbExtension;
                 this.m_objectVision = objectVision;
         }
 
@@ -253,7 +258,27 @@ public class AutoCommands {
                                 () -> clusterChainFunction.apply(numberOfBalls, bounds),
                                 Set.of(m_drivebase, m_intakePivot, m_intakeRoller));
         }
+        public Command prepL1Climb(
+            Pose2d targetpose) {
+                return Commands.race(
+                        m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
+                        new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
+                        m_climbExtension.setHeight(()->Inches.of(8)));
+                }
 
+        public Command L1Climb() {
+        return Commands.sequence(
+                m_climbExtension.setHeight(()->Inches.of(2)).withTimeout(1));
+        }
+
+        public Command finishL1Climb() {
+                return Commands.sequence(
+                m_climbExtension.setHeight(()->Inches.of(8)).withTimeout(0.5));
+        }
+
+        public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
+                        return m_climbExtension.setHeight(extensionDistance);
+        }
         public Command fuelIntake() {
                 return Commands.parallel(
                                 m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle),
