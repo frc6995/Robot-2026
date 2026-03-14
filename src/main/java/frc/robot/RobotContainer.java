@@ -106,7 +106,7 @@ public class RobotContainer {
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new RealFlyWheelS();
     @Logged(name = "Hood")
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state, () -> m_drivetrain.lastState);
     // private final HoodS m_hood = new NoneHoodS();
 
     @Logged(name = "Indexer")
@@ -138,7 +138,8 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.Velocity);
 
     public RobotContainer() {
-        ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, (pose) -> ShooterController.getAimLocation(pose));
+        ShooterController.initialize(() -> m_drivetrain.state, () -> m_drivetrain.lastState, (pose) -> ShooterController.getAimLocation(pose));
+
         
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,

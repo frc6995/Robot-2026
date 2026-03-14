@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
@@ -19,10 +20,12 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
+// Inspiration taken from 6328
 public class ShooterController {
     public static class ShooterTargetData {
         public Rotation2d turretAngle;
@@ -40,16 +43,16 @@ public class ShooterController {
     }
 
     private static final double[][] kTimeOfFlightData = {
-        {1.0, 0.30},
-        {5.0, 0.60}
+        {1.23, 1.356},
+        {3.64, 1.186},
+        {4.44, 1.164}
     };
 
-    private static final double RPM_CORRECTION_GAIN = 0.7;   // bias small corrections to RPM
-    private static final double HOOD_CORRECTION_GAIN = 0.3;
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
     private static final double HOOD_MAX = HoodConstants.kUpperLimit.in(Degrees);
 
-    private static final double LATENCY_SECONDS = 0.02; // adjust later
+    private static final double LOOP_PERIOD_SECONDS = 0.02;
+    private static final double LATENCY_SECONDS = 0.03; // adjust later
 
     private static ShooterController instance = null;
     private ShooterTargetData cachedData = new ShooterTargetData(Rotation2d.kZero, 0,HOOD_MIN);
@@ -60,31 +63,41 @@ public class ShooterController {
 
     private final Supplier<Pose2d> robotPose;
     private final Supplier<ChassisSpeeds> robotSpeeds;
+    private final Supplier<ChassisSpeeds> lastSpeeds;
     private final Function<Pose2d, Pose2d> goalPose;
 
     public NetworkTable goalPoseTable; 
     public StructPublisher<Pose2d> targetPosePub;
+    public StructPublisher<Pose2d> projectedPosePub;
     public DoublePublisher distanceToTargetPub;
 
     private ShooterController(
         Supplier<Pose2d> robotPose,
         Supplier<ChassisSpeeds> robotSpeeds,
+        Supplier<ChassisSpeeds> lastSpeeds,
         Function<Pose2d, Pose2d> goalPose
     ) {
         this.robotPose = robotPose;
         this.robotSpeeds = robotSpeeds;
+        this.lastSpeeds = lastSpeeds;
         this.goalPose = goalPose;
 
         goalPoseTable = NetworkTableInstance.getDefault().getTable("Aim");
         targetPosePub = goalPoseTable.getStructTopic("target", Pose2d.struct).publish();
+        projectedPosePub = goalPoseTable.getStructTopic("projected", Pose2d.struct).publish();
         distanceToTargetPub = goalPoseTable.getDoubleTopic("distance").publish();
 
         populateLUTs();
     }
 
-    public static void initialize(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, Function<Pose2d, Pose2d> targetPose) {
+    public static void initialize(Supplier<SwerveDriveState> currentState, Supplier<SwerveDriveState> lastState, Function<Pose2d, Pose2d> targetPose) {
         if(instance == null) {
-            instance = new ShooterController(robotPose, robotSpeeds, targetPose);
+            instance = new ShooterController(
+                () -> currentState.get().Pose,
+                () -> currentState.get().Speeds,
+                () -> lastState.get().Speeds,
+                targetPose
+            );
         }
     }
 
@@ -113,7 +126,7 @@ public class ShooterController {
                 return POI.HUB1.get();
             }
             else {
-                return POI.topAllianceZone.get().getCenter();
+                return POI.HUB1.get();
             }
         }
     }
@@ -141,77 +154,42 @@ public class ShooterController {
 
         Pose2d currentPose = robotPose.get();
         ChassisSpeeds speeds = robotSpeeds.get();
+        ChassisSpeeds lastSpeeds = this.lastSpeeds.get();
 
-        Translation2d projectedTranslation =
-            currentPose.getTranslation().plus(
-                new Translation2d(
-                    speeds.vxMetersPerSecond * LATENCY_SECONDS,
-                    speeds.vyMetersPerSecond * LATENCY_SECONDS
-                )
-            );
+        Pose2d estimatedPose = currentPose.exp(
+            new Twist2d(
+                speeds.vxMetersPerSecond * LATENCY_SECONDS,
+                speeds.vyMetersPerSecond * LATENCY_SECONDS,
+                speeds.omegaRadiansPerSecond * LATENCY_SECONDS
+            )
+        );
 
-        Pose2d projectedPose =
-            new Pose2d(projectedTranslation, currentPose.getRotation().plus(Rotation2d.fromDegrees(speeds.omegaRadiansPerSecond)));
+        Translation2d goalTranslation = goalPose.apply(estimatedPose).getTranslation();
 
-        Translation2d goalTranslation = goalPose.apply(projectedPose).getTranslation();
-        Translation2d delta = goalTranslation.minus(projectedPose.getTranslation());
-
-        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
-            targetPosePub.accept(new Pose2d(goalTranslation, new Rotation2d()));
-        distanceToTargetPub.accept(goalTranslation.getDistance(projectedTranslation));
-
-        double distance = delta.getNorm();
-
-        double baseRPM = rpmMap.get(distance);
-        double baseHood = hoodMap.get(distance);
+        double distance = goalTranslation.getDistance(estimatedPose.getTranslation());
         double timeOfFlight = tofMap.get(distance);
+        
+        Translation2d projectedTranslation = estimatedPose.getTranslation();
+        Translation2d delta = goalTranslation.minus(projectedTranslation);
 
-        double baselineVelocity =
-            distance / timeOfFlight; // m/s
+        for(int i = 0; i < 20; i++) {
+            timeOfFlight = tofMap.get(distance);
+            projectedTranslation = CommandSwerveDrivetrain.getProjectedTranslation(projectedTranslation, speeds, lastSpeeds, LOOP_PERIOD_SECONDS, timeOfFlight);
+            delta = goalTranslation.minus(projectedTranslation);
+            distance = delta.getNorm();
+        }
 
-        Translation2d shotUnit = delta.div(distance);
-
-        Translation2d shotVelocityVector =
-            shotUnit.times(baselineVelocity);
-
-        Translation2d robotVel =
-            new Translation2d(
-                speeds.vxMetersPerSecond,
-                speeds.vyMetersPerSecond
-            );
-
-        Translation2d correctedVector =
-            shotVelocityVector.minus(robotVel);
-
-        double correctedSpeed = correctedVector.getNorm();
-
-
-        Rotation2d turretFieldAngle =
-            new Rotation2d(
-                correctedVector.getX(),
-                correctedVector.getY()
-            );
+        Rotation2d turretFieldAngle = delta.getAngle();
 
 
         Rotation2d turretRobotAngle =
-            turretFieldAngle.minus(projectedPose.getRotation()).plus(Rotation2d.k180deg);
+            turretFieldAngle.minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg);
 
-
-        double velocityDelta =
-            correctedSpeed - baselineVelocity;
-
-        double rpmCorrection =
-            velocityDelta * RPM_CORRECTION_GAIN * 100.0; // scale factor placeholder
-
-        double hoodCorrection =
-            velocityDelta * HOOD_CORRECTION_GAIN * 2.0; // degrees scaling placeholder
-
-        double finalRPM =
-            baseRPM + rpmCorrection;
+        double finalRPM = rpmMap.get(distance);
 
         double finalHood =
             MathUtil.clamp(
-                baseHood + hoodCorrection,
+                hoodMap.get(distance),
                 HOOD_MIN,
                 HOOD_MAX
             );
@@ -220,7 +198,16 @@ public class ShooterController {
         cachedData.rpm = finalRPM;
         cachedData.turretAngle = turretRobotAngle;
 
+        updateTelemetry(goalTranslation, projectedTranslation, distance);
+
         return cachedData;
+    }
+
+    private void updateTelemetry(Translation2d goal, Translation2d projectedPose, double distance) {
+        // if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
+        targetPosePub.accept(new Pose2d(goal, Rotation2d.kZero));
+        projectedPosePub.accept(new Pose2d(projectedPose, Rotation2d.kZero));
+        distanceToTargetPub.accept(distance);
     }
 }
 

@@ -26,6 +26,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -46,6 +48,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.subsystems.vision.apriltag.NoneATVision;
 import frc.robot.subsystems.vision.apriltag.RealATVision;
+import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.vision.apriltag.AprilTagVision;
 import frc.robot.subsystems.vision.apriltag.RealATVision.ATVisionConstants;
 
@@ -398,8 +401,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/8)) {
  
         var estimates = m_vision.getAllEstimates();
+        var gyroRotation = m_gyro.getRotation3d();
         for(var estimate : estimates) {
-            if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.25) {
+            if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.25 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
                 if(DriverStation.isEnabled()) {
                     addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.KNormalStdDevs);
                 } else {
@@ -505,5 +509,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public double calculateThetaPID(Rotation2d target) {
         return m_pathThetaController.calculate(state.Pose.getRotation().getRadians(), target.getRadians());
+    }
+
+    public static Translation2d getProjectedTranslation(Translation2d robotTranslation, ChassisSpeeds speeds, ChassisSpeeds lastSpeeds, double period, double timeSeconds) {
+        double accelX = (speeds.vxMetersPerSecond - lastSpeeds.vxMetersPerSecond) / period;
+        double accelY = (speeds.vyMetersPerSecond - lastSpeeds.vyMetersPerSecond) / period;
+        return robotTranslation.plus(
+            new Translation2d(
+                (0.5 * accelX) * Math.pow(timeSeconds, 2) + speeds.vxMetersPerSecond * timeSeconds,
+                (0.5 * accelY) * Math.pow(timeSeconds, 2) + speeds.vyMetersPerSecond * timeSeconds
+            )
+        );
     }
 }
