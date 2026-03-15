@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.sim.CANdleSimState;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
@@ -58,6 +59,9 @@ import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.climb.climbextension.NoneClimbExtensionS;
+import frc.robot.subsystems.climb.climbextension.RealClimbExtensionS;
+import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.vision.detection.NoneODVision;
 import frc.robot.subsystems.vision.detection.ObjectVision;
 import frc.robot.subsystems.vision.detection.RealODVision;
@@ -67,6 +71,7 @@ import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.POI;
 import frc.robot.util.ShooterController;
 import frc.robot.util.Telemetry;
+import frc.robot.util.ClimbConstants.ClimbExtensionConstantsRecord;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
@@ -86,7 +91,7 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry();
 
     public static final CommandXboxController joystick = new CommandXboxController(0);
 
@@ -101,7 +106,7 @@ public class RobotContainer {
     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new RealFlyWheelS();
     @Logged(name = "Hood")
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
+    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state, () -> m_drivetrain.lastState);
     // private final HoodS m_hood = new NoneHoodS();
 
     @Logged(name = "Indexer")
@@ -109,22 +114,23 @@ public class RobotContainer {
     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
     @Logged(name = "IntakeRoller")
-    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS(); 
+    private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
     @Logged(name = "Turret")
-    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-    //private final TurretS m_turret = new NoneTurretS();
-
+    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds,
+            () -> m_intakePivot.isIntakeDeployed());
+//     private final TurretS m_turret = new NoneTurretS();
+    @Logged(name = "ClimbExtension")
+    private final ClimbExtensionS m_climbExtension = new NoneClimbExtensionS();
 
     // @Logged(name = "ObjectDetection")
     private final ObjectVision m_objectVision = new NoneODVision(() -> m_drivetrain.state.Pose);
 
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
+            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbExtension, m_objectVision);
 
     private final AutoFactory autoFactory;
-    private Mechanism2d VISUALIZER;
     private final Autos autoRoutines;
     public final AutoChooser m_chooser = new AutoChooser();
 
@@ -132,11 +138,9 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.Velocity);
 
     public RobotContainer() {
-        ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, (pose) -> ShooterController.getAimLocation(pose));
-        VISUALIZER = logger.MECH_VISUALIZER;
+        ShooterController.initialize(() -> m_drivetrain.state, () -> m_drivetrain.lastState,
+                (pose) -> ShooterController.getAimLocation(pose));
 
-        SmartDashboard.putData("Visualzer", VISUALIZER);
-        
         autoFactory = m_drivetrain.createAutoFactory();
         autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,
                 m_turret,
@@ -155,6 +159,19 @@ public class RobotContainer {
     public Angle hoodTarget = HoodConstants.kLowerLimit;
 
     private void setDefaultCommands() {
+        m_intakePivot.setDefaultCommand(
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
+
+        m_intakeRoller.setDefaultCommand(
+                m_intakeRoller.setVoltage(Volts.of(0)));
+
+        m_turret.setDefaultCommand(
+                m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
+
+        m_hood.setDefaultCommand(m_hood.setAngle(() -> Degrees.zero()));
+
+        m_flywheel.setDefaultCommand(
+                m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
         m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
                 m_drivetrain.applyRequest(
                         () -> {
@@ -175,20 +192,20 @@ public class RobotContainer {
                                     .withRotationalRate(
                                             rotationSpeed); // Drive counterclockwise with negative X (left)
                         }));
-       //  m_turret.setDefaultCommand(m_turret.aimAtHub());
-        // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
-        m_turret.setDefaultCommand(
-                m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
-       m_hood.setDefaultCommand(
-               m_hood.setAngle(() -> hoodTarget));
-
-       m_flywheel.setDefaultCommand(
-               m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
     }
 
     private void configureBindings() {
-        
+        // Left stick: Movement
+        // Right stick: Rotation
+        // D-pad: Robot relative translation
+        // A: Intake toggle
+        // B: Cardinal direction hold
+        // X: Climb
+        // RT: Hold to Shoot
+        // Start: Current home turret (enabled)
+        // Back: Home all (enabled); Set positions (disabled)
+
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
@@ -199,7 +216,7 @@ public class RobotContainer {
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         // A intake toggle
-        joystick.a().onTrue(m_autoCommands.fuelIntake());
+        joystick.a().toggleOnTrue(m_autoCommands.fuelIntake());
 
         // B button align to cardinal direction
         joystick.b().whileTrue(
@@ -224,73 +241,34 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
 
-        // X: climb
-        // Y: stow intake
-        //joystick.y().whileTrue(
-         //       Commands.parallel(
-         //               m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
-         //               m_intakeRoller.setVoltage(Volts.of(0))));
+        // RT: hold to shoot
+        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
-        //joystick.rightBumper().whileTrue(
-           //     m_autoCommands.APToClusterChain(200, true));
+        // Start: Current home turret (enabled)
+        joystick.start().onTrue(m_turret.driveToHome());
 
-        // right trigger hold to score
-        joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
-        // right trigger hold to score
-        // joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
-        // joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
 
-        joystick.x().whileTrue(m_flywheel.setVelocity(() -> RotationsPerSecond.of((1750.0 / 60.0))));
-                // joystick.x().onTrue(m_turret.setAngle(new Rotation2d()));
+         joystick.y().onTrue(m_hood.setAngle(()->Degrees.of(30)));
 
-        joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
+        // Back: Home all, set all positions in disable
+        joystick.back()
+                .onTrue(Commands.parallel(
+                        m_turret.resetEncoder(),
+                        m_intakePivot.resetEncoder(),
+                        m_hood.resetEncoder()));
+       
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
-    //    joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
-    //     joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
-
-        joystick.y().onTrue(
-            Commands.runOnce(() -> {
-                hoodTarget = hoodTarget.plus(Degrees.of(2));
-                if(hoodTarget.gt(HoodConstants.kUpperLimit)) {
-                    hoodTarget = HoodConstants.kLowerLimit;
-                }
-            })
-        );
-
-        joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
-
-        joystick.leftBumper().whileTrue(
-                AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
-        // joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() ->
-        // DegreesPerSecond.of(1000)));
-        // joystick.rightBumper().onFalse(m_spindexer.setVelocity(() ->
-        // DegreesPerSecond.of(0)));
-
-        // start button home turret
-        joystick.start()
-                .onTrue(m_turret.driveToHome());
-        // select button home all, reset on disable
-        // JS: This could be one parallel group, with
-        // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
-        joystick.back().onTrue(Commands.parallel(
-                Commands.either(
-                        m_turret.driveToHome(),
-                        m_turret.resetEncoder(),
-                        () -> DriverStation.isEnabled()),
-                m_flywheel.resetEncoder(),
-                m_spindexer.resetEncoder(),
-                m_intakeRoller.resetEncoder(),
-                m_intakePivot.resetEncoder(),
-                m_indexer.resetEncoder(),
-                m_hood.resetEncoder()));
-
-        //joystick.x().whileTrue(m_hood.autoHoodAngle());
-        
+        joystick.leftTrigger()
+                .whileTrue(m_autoCommands.intakeWiggle(Degrees.of(30), IntakePivotConstants.kLowerLimit, 0.4));
+        joystick.leftTrigger().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
         // JS: Why is this a deferred proxy?
-        RobotModeTriggers.autonomous().onTrue(m_turret.driveToHome().andThen(m_turret.aimAtFieldPose(()->POI.HUB1.get().getTranslation(), ()-> m_drivetrain.state.Pose)).until(() -> !DriverStation.isAutonomous()));
+        RobotModeTriggers.autonomous()
+                .onTrue(m_turret.driveToHome().andThen(
+                        m_turret.aimAtFieldPose(() -> POI.HUB1.get().getTranslation(), () -> m_drivetrain.state.Pose))
+                        .until(() -> !DriverStation.isAutonomous()));
     }
 
     private RobotCentric m_robotCentricRequest = new RobotCentric().withDriveRequestType(DriveRequestType.Velocity);

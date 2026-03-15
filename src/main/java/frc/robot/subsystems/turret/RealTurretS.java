@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
@@ -25,6 +26,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import static edu.wpi.first.math.util.Units.radiansToRotations;
+import static edu.wpi.first.math.util.Units.rotationsToRadians;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -54,29 +57,29 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class RealTurretS extends TurretS {
     public static class TurretConstants {
         public static int kCANID = 51;
-
+        public static final double kReduction = 12.5;
+        // found experimentally, 3/14/26
         public static double kP = 11.5;
         public static double kI = 0.0;
-        public static double kD = 0.2;
-        public static double kS = 0.3;
+        public static double kD = 0.0;
+        public static double kS = 0.29;
         public static double kG = 0.0;
-        public static double kV = 1;
-        public static double kA = 0.0;
+        public static double kV = 1.16;
+        public static double kA = 0.11;
         public static AngularVelocity kVelocity = DegreesPerSecond.of(720.0);
-        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1500.0);
+        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1500.0*2);
 
-        public static Angle kStowedAngle = Degrees.of(-88.86);
-
-        public static Angle kCWSoftLimit = Degrees.of(-135);
-        public static Angle kCCWSoftLimit = Degrees.of(192.6);
-        public static Angle kCWHardLimit = Degrees.of(-130);
+        public static Angle kCWHardLimit = Degrees.of(-138.64);
         public static Angle kCCWHardLimit = Degrees.of(187.6);
+                public static Angle kCWSoftLimit =kCWHardLimit;
+        public static Angle kCCWSoftLimit = kCCWHardLimit;
+        public static Angle kStowedAngle = Degrees.of(-90);
         public static Angle kStartAngle = kStowedAngle;
-        public static Angle kTolerance = Degrees.of(5);
+        public static Angle kTolerance = Degrees.of(2);
         public static Angle kStowedAngleMin = kStowedAngle.minus(kTolerance);
         public static Angle kStowedAngleMax = kStowedAngle.plus(kTolerance);
 
-        public static final double kReduction = 12.5;
+
         public static final double kStatorLimit = 80.0;
         public static final double kSupplyLimit = 40.0;
 
@@ -142,12 +145,21 @@ public class RealTurretS extends TurretS {
     }
 
     public Command setAngle(Supplier<Rotation2d> angle) {
+        // Command setangle = Commands.run(() -> setAngle(angle.get()));
+        // setangle.addRequirements(this);
+        // return setangle;
         return m_turret.setAngle(() -> applyDynamicLimits(toAngle(angle.get())));
     }
 
     public Command setAngle(Rotation2d angle) {
         return m_turret.setAngle(applyDynamicLimits(toAngle(angle)));
     }
+
+    // private PositionVoltage positionPid = new PositionVoltage(0).withVelocity(0);
+
+    // public Command setAngle(Rotation2d angle) {
+    //     return this.run(()->m_turretMotor.setControl(positionPid.withPosition(applyDynamicLimits(toAngle(angle))).withVelocity(radiansToRotations(Math.PI))));//radiansToRotations(-robotSpeeds.get().omegaRadiansPerSecond))));
+    // }
 
     public Command setVoltage(Supplier<Voltage> voltageSupplier) {
         return m_turret.setVoltage(voltageSupplier);
