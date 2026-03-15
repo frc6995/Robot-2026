@@ -29,11 +29,11 @@ public final class ChoreoVars {
         public static final Pose2d DEPOTEND = new Pose2d(0.555, 5.975, Rotation2d.fromRadians(3.132));
         public static final Pose2d DEPOTSTART = new Pose2d(0.973, 5.975, Rotation2d.fromRadians(3.142));
         public static final Pose2d HELPD1 = new Pose2d(3, 7.375, Rotation2d.fromRadians(3.142));
-        public static final Pose2d HELPL1 = new Pose2d(8.976, 7.3, Rotation2d.fromRadians(-0.349));
+        public static final Pose2d HELPL1 = new Pose2d(8.976, 7.3, Rotation2d.fromRadians(-0.105));
         public static final Pose2d HELPL2 = new Pose2d(7.097, 18.995, Rotation2d.fromRadians(-1.571));
         public static final Pose2d HELPL3 = new Pose2d(7.097, 18.995, Rotation2d.fromRadians(3.142));
         public static final Pose2d HELPL4 = new Pose2d(5.843, 8.768, Rotation2d.fromRadians(-1.571));
-        public static final Pose2d HELPR1 = new Pose2d(8.976, 0.752, Rotation2d.fromRadians(0.349));
+        public static final Pose2d HELPR1 = new Pose2d(8.976, 0.752, Rotation2d.fromRadians(0.105));
         public static final Pose2d HELPR2 = new Pose2d(7.097, -10.943, Rotation2d.fromRadians(1.571));
         public static final Pose2d HELPR3 = new Pose2d(7.097, -10.943, Rotation2d.fromRadians(3.142));
         public static final Pose2d HELPR4 = new Pose2d(5.843, -0.844, Rotation2d.fromRadians(1.571));

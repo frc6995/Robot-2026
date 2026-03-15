@@ -164,7 +164,6 @@ public class AutoCommands {
             Pose2d targetpose,
             Rotation2d targetPoseEntryAngle) {
         return Commands.sequence(
-                m_hood.setAngle(() -> HoodConstants.kStowAngle),
                 new AutoAlign(helpPose, m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile).until(
                                 TriggerUtil.isWithinRadius(
