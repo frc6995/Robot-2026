@@ -43,9 +43,9 @@ public class ShooterController {
     }
 
     private static final double[][] kTimeOfFlightData = {
-        {1.23, 1.356},
-        {3.64, 1.186},
-        {4.44, 1.164}
+        {1.23, 1.356 / 2.0},
+        {3.64, 1.186 / 2.0},
+        {4.44, 1.164 / 2.0}
     };
 
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
@@ -60,6 +60,17 @@ public class ShooterController {
     private final InterpolatingDoubleTreeMap rpmMap = new InterpolatingDoubleTreeMap();
     private final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
     private final InterpolatingDoubleTreeMap tofMap = new InterpolatingDoubleTreeMap();
+
+    private static final double[] c = {
+        1.192642,
+        5.328464,
+        2.495469,
+        1.036451
+    };
+
+    private final Function<Double, Double> tofFunction = (d) -> {
+        return c[3] + ((c[0] - c[3]) / (1 + Math.pow(d / c[2], c[1])));
+    };
 
     private final Supplier<Pose2d> robotPose;
     private final Supplier<ChassisSpeeds> robotSpeeds;
@@ -155,6 +166,7 @@ public class ShooterController {
         Pose2d currentPose = robotPose.get();
         ChassisSpeeds speeds = robotSpeeds.get();
         ChassisSpeeds lastSpeeds = this.lastSpeeds.get();
+        
 
         Pose2d estimatedPose = currentPose.exp(
             new Twist2d(
@@ -165,22 +177,40 @@ public class ShooterController {
         );
 
         Translation2d goalTranslation = goalPose.apply(estimatedPose).getTranslation();
-
+        Translation2d delta = goalTranslation.minus(estimatedPose.getTranslation());
+        
         double distance = goalTranslation.getDistance(estimatedPose.getTranslation());
-        double timeOfFlight = tofMap.get(distance);
+        // double timeOfFlight = tofMap.get(distance);
+        double timeOfFlight = tofFunction.apply(distance);
+
+        boolean isLongRange = distance > 5.5;
+
+        if(isLongRange) {
+            updateTelemetry(goalTranslation, delta, distance);
+            cachedData = new ShooterTargetData(
+                delta.getAngle().minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg),
+                rpmMap.get(distance),
+                hoodMap.get(distance)
+            );
+            return cachedData;
+        }
         
         Translation2d projectedTranslation = estimatedPose.getTranslation();
-        Translation2d delta = goalTranslation.minus(projectedTranslation);
+        delta = goalTranslation.minus(projectedTranslation);
+        distance = delta.getNorm();
 
         for(int i = 0; i < 20; i++) {
-            timeOfFlight = tofMap.get(distance);
-            projectedTranslation = CommandSwerveDrivetrain.getProjectedTranslation(projectedTranslation, speeds, lastSpeeds, LOOP_PERIOD_SECONDS, timeOfFlight);
+            // timeOfFlight = tofMap.get(distance);
+            timeOfFlight = tofFunction.apply(distance);
+            projectedTranslation = estimatedPose.getTranslation().plus(new Translation2d(
+                speeds.vxMetersPerSecond * timeOfFlight,
+                speeds.vyMetersPerSecond * timeOfFlight
+            ));
             delta = goalTranslation.minus(projectedTranslation);
             distance = delta.getNorm();
         }
 
         Rotation2d turretFieldAngle = delta.getAngle();
-
 
         Rotation2d turretRobotAngle =
             turretFieldAngle.minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg);
