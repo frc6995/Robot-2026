@@ -34,16 +34,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
 	    "Climb_Poses",
 	    OptionalInt.empty(),
-	    6.63246,
+	    6.64742,
 	    new Pose2d(1.586, 4.196, Rotation2d.fromRadians(0)),
 	    new Pose2d(3.822, 0.539, Rotation2d.fromRadians(3.142))
-	);
-	public static final ChoreoTraj HP_test = new ChoreoTraj(
-	    "HP_test",
-	    OptionalInt.empty(),
-	    3.59794,
-	    new Pose2d(8.32, 3.571, Rotation2d.fromRadians(1.557)),
-	    new Pose2d(0.423, 0.696, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj ClimbTest = new ChoreoTraj(
 	    "ClimbTest",
@@ -51,6 +44,13 @@ public record ChoreoTraj(
 	    1.34839,
 	    new Pose2d(3.12, 7.14, Rotation2d.fromRadians(0)),
 	    new Pose2d(0.674, 4.082, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj HP_test = new ChoreoTraj(
+	    "HP_test",
+	    OptionalInt.empty(),
+	    3.59794,
+	    new Pose2d(8.32, 3.571, Rotation2d.fromRadians(1.557)),
+	    new Pose2d(0.423, 0.696, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
 	    "Center_Line_Poses",
@@ -67,8 +67,8 @@ public record ChoreoTraj(
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("B", B),
 		Map.entry("Climb_Poses", Climb_Poses),
-		Map.entry("HP_test", HP_test),
 		Map.entry("ClimbTest", ClimbTest),
+		Map.entry("HP_test", HP_test),
 		Map.entry("Center_Line_Poses", Center_Line_Poses)
     );
 

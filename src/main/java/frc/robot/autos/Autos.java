@@ -177,16 +177,6 @@ public class Autos {
 
         // ============= DEFINE AUTOS =============
 
-        autos.put("L 1x center-line GPD test",
-                () -> auto(POI.TRL1.get(), c -> {
-
-                    c.addCommands(leftToCenterLineGPD.get());
-
-                    c.addCommands(leftBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
-
-                }));
 
         autos.put("L 2x center-line Preplanned",
                 () -> auto(POI.TRL1.get(), c -> {
@@ -225,13 +215,6 @@ public class Autos {
                     c.addCommands(rightBackToHP.get());
                 }));
 
-
-        autos.put("Depot test", () -> auto(POI.TRL1.get(), c -> {
-            c.addCommands(new AutoAlign(POI.DEPOT_HELP.get(), m_drivebase));
-
-            c.addCommands(autoCommands.APtoDepot());
-
-        }));
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
