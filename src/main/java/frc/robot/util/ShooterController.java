@@ -41,11 +41,12 @@ public class ShooterController {
                 this.hoodAngleDeg = hoodAngleDeg;
             }
     }
-
+static double timeFudge = -0.2;
     private static final double[][] kTimeOfFlightData = {
-        {1.23, 1.356 / 2.0},
-        {3.64, 1.186 / 2.0},
-        {4.44, 1.164 / 2.0}
+        {1.23, 1.356+timeFudge},
+        {2.5, 1.0347966805},
+        {3.64, 1.186+timeFudge},
+        {4.44, 1.164+timeFudge}
     };
 
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
@@ -62,7 +63,7 @@ public class ShooterController {
     private final InterpolatingDoubleTreeMap tofMap = new InterpolatingDoubleTreeMap();
 
     private static final double[] c = {
-        1.192642,
+        1.192642 - 0.1,
         5.328464,
         2.495469,
         1.036451
@@ -180,8 +181,8 @@ public class ShooterController {
         Translation2d delta = goalTranslation.minus(estimatedPose.getTranslation());
         
         double distance = goalTranslation.getDistance(estimatedPose.getTranslation());
-        // double timeOfFlight = tofMap.get(distance);
-        double timeOfFlight = tofFunction.apply(distance);
+        double timeOfFlight = tofMap.get(distance);
+        // double timeOfFlight = tofFunction.apply(distance);
 
         boolean isLongRange = distance > 5.5;
 
@@ -200,8 +201,8 @@ public class ShooterController {
         distance = delta.getNorm();
 
         for(int i = 0; i < 20; i++) {
-            // timeOfFlight = tofMap.get(distance);
-            timeOfFlight = tofFunction.apply(distance);
+            timeOfFlight = tofMap.get(distance);
+            // timeOfFlight = tofFunction.apply(distance);
             projectedTranslation = estimatedPose.getTranslation().plus(new Translation2d(
                 speeds.vxMetersPerSecond * timeOfFlight,
                 speeds.vyMetersPerSecond * timeOfFlight

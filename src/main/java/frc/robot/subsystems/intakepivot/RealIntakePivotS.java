@@ -15,6 +15,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.UnitUtil;
 // import frc.robot.util.RobotVisualizer;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -79,7 +81,9 @@ public class RealIntakePivotS extends IntakePivotS {
         public static final Angle kUpperLimit = Degrees.of(120);
         public static final Angle kFuelIntakeAngle = kLowerLimit;
         public static final Angle kStowAngle = kUpperLimit;
-        public static final Angle kTolerance = Degrees.of(20);
+        public static final Angle kTolerance = Degrees.of(35);
+
+        public static final Angle kSafetyUpperLimit = Degrees.of(90);
     }
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -125,6 +129,12 @@ public class RealIntakePivotS extends IntakePivotS {
 
     // Arm Mechanism
     private Arm intakePivot = new Arm(intakeCfg);
+    private BooleanSupplier isTurretStowed;
+    private Angle setpoint;
+
+    public RealIntakePivotS(BooleanSupplier isTurretStowed) {
+        this.isTurretStowed = isTurretStowed;
+    }
 
     /**
      * Set the angle of the arm.
@@ -132,11 +142,17 @@ public class RealIntakePivotS extends IntakePivotS {
      * @param angle Angle to go to.
      */
     public Command setAngle(Supplier<Angle> angle) {
-        return intakePivot.setAngle(angle);
+        return intakePivot.setAngle(() -> {
+            Angle ang = applyDynamicLimits(angle.get());
+            setpoint = ang;
+            return ang;
+        });
     }
 
     public Command setAngle(Angle angle) {
-        return intakePivot.setAngle(angle);
+        Angle withLimits = applyDynamicLimits(angle);
+        setpoint = withLimits;
+        return intakePivot.setAngle(withLimits);
     }
 
     public Command setVoltage(Supplier<Voltage> volts) {
@@ -170,7 +186,13 @@ public class RealIntakePivotS extends IntakePivotS {
         return intakePivot.getAngle();
     }
 
+    private Angle applyDynamicLimits(Angle angle) {
+        return isTurretStowed.getAsBoolean() ? 
+            UnitUtil.clamp(angle, IntakePivotConstants.kLowerLimit, IntakePivotConstants.kUpperLimit) 
+            : UnitUtil.clamp(angle, IntakePivotConstants.kLowerLimit, IntakePivotConstants.kSafetyUpperLimit);
+    }
+
     public boolean isIntakeDeployed() {
-        return intakePivot.getAngle().isNear(IntakePivotConstants.kFuelIntakeAngle, IntakePivotConstants.kTolerance);
+        return !getAngle().isNear(IntakePivotConstants.kStowAngle, IntakePivotConstants.kTolerance);
     }
 }

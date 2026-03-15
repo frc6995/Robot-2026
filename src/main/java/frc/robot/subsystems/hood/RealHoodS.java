@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -30,6 +31,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -85,9 +87,9 @@ public class RealHoodS extends HoodS {
         public static final Distance kArmLength = Inches.of(9.384);
         public static final MomentOfInertia kMOI = KilogramSquareMeters.of(0.00671959172);
         // Hood Safety Constants
-        // public static final Distance kSafetyOverride_NoSpeed = Meters.of(1.5);
+        public static final Distance kSafetyOverride_NoSpeed = Meters.of(1.5);
         public static final Distance kSafetyOverride_Final = Meters.of(0.8);
-        // public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.2);
+        public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.5);
         public static final double kHoodRetractTime = 0.25;
     }
 
@@ -151,12 +153,22 @@ public class RealHoodS extends HoodS {
             new Translation2d(POI.kOriginToTrenchRed, halfField), Rotation2d.kZero);
 
         var safetyLength = HoodConstants.kSafetyOverride_Final.times(2);
+        var speedSafetyLength = HoodConstants.kSafetyOverride_NoSpeed.times(2);
 
         Rectangle2d trenchBlue = new Rectangle2d(trenchCenterBlue, safetyLength, FieldSize.FIELD_WIDTH);
         Rectangle2d trenchRed = new Rectangle2d(trenchCenterRed, safetyLength, FieldSize.FIELD_WIDTH);
-        return () -> {
-                    /* very unoptimized, revisit */
+        Rectangle2d speedTrenchBlue = new Rectangle2d(trenchCenterBlue, speedSafetyLength, FieldSize.FIELD_WIDTH);
+        Rectangle2d speedTrenchRed = new Rectangle2d(trenchCenterRed, speedSafetyLength, FieldSize.FIELD_WIDTH);
 
+        return () -> {
+                    
+                    var translation = robotTranslation.get();
+
+                    boolean speedCondition = Math.abs(robotSpeeds.get().vxMetersPerSecond) > HoodConstants.kSafetyOverrideVelocity.baseUnitMagnitude();
+                    boolean speedTrenchBlueActive = speedTrenchBlue.contains(translation) && speedCondition;
+                    boolean speedTrenchRedActive = speedTrenchRed.contains(translation) && speedCondition;
+
+                    /* very unoptimized, revisit */
                     // var translation = robotTranslation.get();
                     // var projTranslation = CommandSwerveDrivetrain.getProjectedTranslation(translation, robotSpeeds.get(), lastSpeeds.get(), poseEstPeriod, HoodConstants.kHoodRetractTime);
                     // for(int i = 0; i < 2; i++) {
@@ -165,7 +177,7 @@ public class RealHoodS extends HoodS {
                     //         return true;
                     //     }
                     // }
-                    return false;
+                    return speedTrenchBlueActive || speedTrenchRedActive || trenchBlue.contains(translation) || trenchRed.contains(translation);
                 };
     }
 

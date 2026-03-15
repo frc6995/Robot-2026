@@ -60,7 +60,7 @@ public class RealSpindexerS extends SpindexerS {
         public static final double kS = 0;
         // Motor Properties
         public static final int kStatorCurrentLimit = 120;
-        public static final int kSupplyCurrentLimit = 10;
+        public static final int kSupplyCurrentLimit = 50;
         public static final int kGearRatio = 50;
         public static final boolean kInverted = true;
         // Sim Constants

@@ -53,12 +53,14 @@ import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
 import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.NoneSpindexerS;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
 import frc.robot.subsystems.turret.NoneTurretS;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.subsystems.climb.climbextension.NoneClimbExtensionS;
 import frc.robot.subsystems.climb.climbextension.RealClimbExtensionS;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
@@ -112,7 +114,7 @@ public class RobotContainer {
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
-    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
+    private final IntakePivotS m_intakePivot = new RealIntakePivotS(this::isTurretStowed);
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
@@ -163,7 +165,10 @@ public class RobotContainer {
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 
         m_intakeRoller.setDefaultCommand(
-                m_intakeRoller.setVoltage(Volts.of(0)));
+                m_intakeRoller.setVoltage(() -> {
+                        return m_intakePivot.isIntakeDeployed() ? IntakeRollerConstants.kIntakeVoltage : Volts.zero();
+                }));
+
 
         m_turret.setDefaultCommand(
                 m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
@@ -193,6 +198,10 @@ public class RobotContainer {
                                             rotationSpeed); // Drive counterclockwise with negative X (left)
                         }));
 
+    }
+
+    private boolean isTurretStowed() {
+        return m_turret.getAngle().isNear(TurretConstants.kStowedAngle, TurretConstants.kTolerance);
     }
 
     private void configureBindings() {
@@ -259,15 +268,15 @@ public class RobotContainer {
        
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
-        joystick.leftTrigger()
-                .whileTrue(m_autoCommands.intakeWiggle(Degrees.of(30), IntakePivotConstants.kLowerLimit, 0.4));
-        joystick.leftTrigger().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
+        joystick.rightBumper()
+                .whileTrue(m_autoCommands.intakeWiggle(Degrees.of(75), IntakePivotConstants.kLowerLimit, 0.4));
+        joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
         // JS: Why is this a deferred proxy?
         RobotModeTriggers.autonomous()
-                .onTrue(m_turret.driveToHome().andThen(
-                        m_turret.aimAtFieldPose(() -> POI.HUB1.get().getTranslation(), () -> m_drivetrain.state.Pose))
+                .onTrue(
+                        m_turret.aimAtFieldPose(() -> POI.HUB1.get().getTranslation(), () -> m_drivetrain.state.Pose)
                         .until(() -> !DriverStation.isAutonomous()));
     }
 
@@ -275,6 +284,7 @@ public class RobotContainer {
 
     public Command driveIntakeRelativePOV() {
         return m_drivetrain.applyRequest(() -> {
+
             double pov = Units.degreesToRadians(-joystick.getHID().getPOV());
             double adjustSpeed = Units.feetToMeters(3); // m/s
             return m_robotCentricRequest.withVelocityX(

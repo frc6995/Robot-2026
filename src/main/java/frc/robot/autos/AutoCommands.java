@@ -250,13 +250,13 @@ public class AutoCommands {
                 return Commands.defer(
                                 () -> clusterChainFunction.apply(numberOfBalls,
                                                 isLeftSide ? POI.kLeftAutoBounds.get() : POI.kRightAutoBounds.get()),
-                                Set.of(m_drivebase, m_intakePivot, m_intakeRoller));
+                                Set.of(m_drivebase, m_intakePivot));
         }
 
         public Command APToClusterChain(int numberOfBalls, Rectangle2d bounds) {
                 return Commands.defer(
                                 () -> clusterChainFunction.apply(numberOfBalls, bounds),
-                                Set.of(m_drivebase, m_intakePivot, m_intakeRoller));
+                                Set.of(m_drivebase, m_intakePivot));
         }
         public Command prepL1Climb(
             Pose2d targetpose) {
@@ -280,9 +280,7 @@ public class AutoCommands {
                         return m_climbExtension.setHeight(extensionDistance);
         }
         public Command fuelIntake() {
-                return Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle),
-                                m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kIntakeVoltage));
+                return m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle);
 
         }
 
