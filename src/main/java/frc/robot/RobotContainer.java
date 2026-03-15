@@ -112,7 +112,7 @@ public class RobotContainer {
     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
     @Logged(name = "IntakePivot")
-    private final IntakePivotS m_intakePivot = new RealIntakePivotS();
+    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
     @Logged(name = "Spindexer")
@@ -120,7 +120,7 @@ public class RobotContainer {
     @Logged(name = "Turret")
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds,
             () -> m_intakePivot.isIntakeDeployed());
-    // private final TurretS m_turret = new NoneTurretS();
+//     private final TurretS m_turret = new NoneTurretS();
     @Logged(name = "ClimbExtension")
     private final ClimbExtensionS m_climbExtension = new NoneClimbExtensionS();
 
@@ -168,8 +168,7 @@ public class RobotContainer {
         m_turret.setDefaultCommand(
                 m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
-        m_hood.setDefaultCommand(
-                m_hood.runSOTF(ShooterController.getInstance()::getCachedData));
+        m_hood.setDefaultCommand(m_hood.setAngle(() -> Degrees.zero()));
 
         m_flywheel.setDefaultCommand(
                 m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
@@ -247,6 +246,9 @@ public class RobotContainer {
 
         // Start: Current home turret (enabled)
         joystick.start().onTrue(m_turret.driveToHome());
+
+
+         joystick.y().onTrue(m_hood.setAngle(()->Degrees.of(30)));
 
         // Back: Home all, set all positions in disable
         joystick.back()

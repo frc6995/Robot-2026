@@ -516,8 +516,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         double accelY = (speeds.vyMetersPerSecond - lastSpeeds.vyMetersPerSecond) / period;
         return robotTranslation.plus(
             new Translation2d(
-                (0.5 * accelX) * Math.pow(timeSeconds, 2) + speeds.vxMetersPerSecond * timeSeconds,
-                (0.5 * accelY) * Math.pow(timeSeconds, 2) + speeds.vyMetersPerSecond * timeSeconds
+                speeds.vxMetersPerSecond * timeSeconds,
+                speeds.vyMetersPerSecond * timeSeconds
             )
         );
     }

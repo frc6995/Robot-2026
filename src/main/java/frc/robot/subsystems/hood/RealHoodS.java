@@ -86,7 +86,7 @@ public class RealHoodS extends HoodS {
         public static final MomentOfInertia kMOI = KilogramSquareMeters.of(0.00671959172);
         // Hood Safety Constants
         // public static final Distance kSafetyOverride_NoSpeed = Meters.of(1.5);
-        public static final Distance kSafetyOverride_Final = Meters.of(0.153);
+        public static final Distance kSafetyOverride_Final = Meters.of(0.8);
         // public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.2);
         public static final double kHoodRetractTime = 0.25;
     }
@@ -155,10 +155,17 @@ public class RealHoodS extends HoodS {
         Rectangle2d trenchBlue = new Rectangle2d(trenchCenterBlue, safetyLength, FieldSize.FIELD_WIDTH);
         Rectangle2d trenchRed = new Rectangle2d(trenchCenterRed, safetyLength, FieldSize.FIELD_WIDTH);
         return () -> {
-                    var translation = robotTranslation.get();
-                    var projTranslation = CommandSwerveDrivetrain.getProjectedTranslation(translation, robotSpeeds.get(), lastSpeeds.get(), poseEstPeriod, HoodConstants.kHoodRetractTime);
-                    return (trenchBlue.contains(translation) || trenchBlue.contains(projTranslation))
-                            || (trenchRed.contains(translation) || trenchBlue.contains(projTranslation));
+                    /* very unoptimized, revisit */
+
+                    // var translation = robotTranslation.get();
+                    // var projTranslation = CommandSwerveDrivetrain.getProjectedTranslation(translation, robotSpeeds.get(), lastSpeeds.get(), poseEstPeriod, HoodConstants.kHoodRetractTime);
+                    // for(int i = 0; i < 2; i++) {
+                    //     var futureTranslation = translation.interpolate(projTranslation, i / 2.0);
+                    //     if(trenchBlue.contains(futureTranslation) || trenchRed.contains(translation)) {
+                    //         return true;
+                    //     }
+                    // }
+                    return false;
                 };
     }
 

@@ -58,15 +58,16 @@ public class RealTurretS extends TurretS {
     public static class TurretConstants {
         public static int kCANID = 51;
         public static final double kReduction = 12.5;
-        public static double kP = 0;
+        // found experimentally, 3/14/26
+        public static double kP = 11.5;
         public static double kI = 0.0;
-        public static double kD = 0.2;
-        public static double kS = 0.3;
+        public static double kD = 0.0;
+        public static double kS = 0.29;
         public static double kG = 0.0;
-        public static double kV = rotationsToRadians(0.12 * kReduction);
-        public static double kA = 0.0;
+        public static double kV = 1.16;
+        public static double kA = 0.11;
         public static AngularVelocity kVelocity = DegreesPerSecond.of(720.0);
-        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1500.0);
+        public static AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1500.0*2);
 
         public static Angle kCWHardLimit = Degrees.of(-138.64);
         public static Angle kCCWHardLimit = Degrees.of(187.6);
