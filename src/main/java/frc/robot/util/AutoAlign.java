@@ -87,7 +87,7 @@ public class AutoAlign extends Command {
 
     public static APProfile kDefaultVelocityLimitedProfile = new APProfile(
             AutoAlignConstants.VELOCITY_LIMITED_CONSTRAINTS)
-            .withErrorXY(Centimeters.of(6))
+            .withErrorXY(Centimeters.of(12))
             .withErrorTheta(Degrees.of(1.5))
             .withBeelineRadius(Centimeters.of(8));
 
