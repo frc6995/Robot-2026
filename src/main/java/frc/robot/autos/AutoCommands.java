@@ -51,7 +51,6 @@ import frc.robot.util.TriggerUtil;
 public class AutoCommands {
     // You need these dependencies passed in
     private final CommandSwerveDrivetrain m_drivebase;
-    private final Autos autos; // Reference to your Autos class
     private final HoodS m_hood;
     private final IntakePivotS m_intakePivot;
     private final IntakeRollerS m_intakeRoller;
@@ -67,13 +66,12 @@ public class AutoCommands {
             .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
     public AutoCommands(
-            CommandSwerveDrivetrain drivebase, Autos autos,
+            CommandSwerveDrivetrain drivebase,
             HoodS hood, IntakePivotS intakePivot,
             IntakeRollerS intakeRoller, TurretS turret,
             IndexerS indexer, SpindexerS spindexer,
             FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision) {
         this.m_drivebase = drivebase;
-        this.autos = autos;
         this.m_hood = hood;
         this.m_intakePivot = intakePivot;
         this.m_intakeRoller = intakeRoller;

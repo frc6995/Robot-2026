@@ -148,10 +148,14 @@ public class RealTurretS extends TurretS {
         // Command setangle = Commands.run(() -> setAngle(angle.get()));
         // setangle.addRequirements(this);
         // return setangle;
-        return m_turret.setAngle(() -> applyDynamicLimits(toAngle(angle.get())));
+        return m_turret.setAngle(() -> {
+            setpoint = angle.get();
+            return applyDynamicLimits(toAngle(setpoint));
+        });
     }
 
     public Command setAngle(Rotation2d angle) {
+        setpoint = angle;
         return m_turret.setAngle(applyDynamicLimits(toAngle(angle)));
     }
 

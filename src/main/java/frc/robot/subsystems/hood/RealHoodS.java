@@ -133,6 +133,7 @@ public class RealHoodS extends HoodS {
     private Supplier<ChassisSpeeds> robotSpeeds;
     private Supplier<ChassisSpeeds> lastSpeeds;
     private double poseEstPeriod = 0.02;
+    private Angle setpointNoLimit;
 
     private BooleanSupplier shouldApplyDynamicLimit;
 
@@ -182,11 +183,17 @@ public class RealHoodS extends HoodS {
     }
 
     public Command setAngle(Supplier<Angle> angle) {
-        return hood.setAngle(() -> applyDynamicLimits(angle.get(), robotPose.get()));
+        return hood.setAngle(() -> {
+            setpointNoLimit = angle.get();
+            return applyDynamicLimits(setpointNoLimit, robotPose.get());
+        });
     }
 
     public Command setAngle_OVERRIDE_SAFETY(Supplier<Angle> angle) {
-        return hood.setAngle(angle);
+        return hood.setAngle(() -> {
+            setpointNoLimit = angle.get();
+            return setpointNoLimit;
+        });
     }
 
     public Command setVoltage(Supplier<Voltage> voltage) {
@@ -215,9 +222,7 @@ public class RealHoodS extends HoodS {
     }
 
     public boolean isHoodReady() {
-        var setpoint = getSetpoint();
-        return hood.getAngle().isNear(setpoint.isPresent() ? setpoint.get() : HoodConstants.kStowAngle,
-                HoodConstants.kTolerance);
+        return hood.getAngle().isNear(setpointNoLimit, HoodConstants.kTolerance);
     }
 
     public Command runSOTF(Supplier<ShooterTargetData> dataSupplier) {
