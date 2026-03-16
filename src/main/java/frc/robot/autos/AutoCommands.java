@@ -49,202 +49,204 @@ import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
 
 public class AutoCommands {
-        // You need these dependencies passed in
-        private final CommandSwerveDrivetrain m_drivebase;
-        private final Autos autos; // Reference to your Autos class
-        private final HoodS m_hood;
-        private final IntakePivotS m_intakePivot;
-        private final IntakeRollerS m_intakeRoller;
-        private final TurretS m_turret;
-        private final IndexerS m_indexer;
-        private final SpindexerS m_Spindexer;
-        private final FlyWheelS m_flywheel;
-        private final ClimbExtensionS m_climbExtension;
-        private final ObjectVision m_objectVision;
+    // You need these dependencies passed in
+    private final CommandSwerveDrivetrain m_drivebase;
+    private final Autos autos; // Reference to your Autos class
+    private final HoodS m_hood;
+    private final IntakePivotS m_intakePivot;
+    private final IntakeRollerS m_intakeRoller;
+    private final TurretS m_turret;
+    private final IndexerS m_indexer;
+    private final SpindexerS m_Spindexer;
+    private final FlyWheelS m_flywheel;
+    private final ClimbExtensionS m_climbExtension;
+    private final ObjectVision m_objectVision;
 
-        SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
-                .withDriveRequestType(DriveRequestType.Velocity)
-                .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
+    SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
+            .withDriveRequestType(DriveRequestType.Velocity)
+            .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
-        
+    public AutoCommands(
+            CommandSwerveDrivetrain drivebase, Autos autos,
+            HoodS hood, IntakePivotS intakePivot,
+            IntakeRollerS intakeRoller, TurretS turret,
+            IndexerS indexer, SpindexerS spindexer,
+            FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision) {
+        this.m_drivebase = drivebase;
+        this.autos = autos;
+        this.m_hood = hood;
+        this.m_intakePivot = intakePivot;
+        this.m_intakeRoller = intakeRoller;
+        this.m_turret = turret;
+        this.m_indexer = indexer;
+        this.m_Spindexer = spindexer;
+        this.m_flywheel = flyWheel;
+        this.m_climbExtension = climbExtension;
+        this.m_objectVision = objectVision;
+    }
 
-        public AutoCommands(
-        CommandSwerveDrivetrain drivebase, Autos autos,
-        HoodS hood, IntakePivotS intakePivot,
-        IntakeRollerS intakeRoller, TurretS turret,
-        IndexerS indexer, SpindexerS spindexer,
-        FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision)
-        {
-                this.m_drivebase = drivebase;
-                this.autos = autos;
-                this.m_hood = hood;
-                this.m_intakePivot = intakePivot;
-                this.m_intakeRoller = intakeRoller;
-                this.m_turret = turret;
-                this.m_indexer = indexer;
-                this.m_Spindexer = spindexer;
-                this.m_flywheel = flyWheel;
-                this.m_climbExtension = climbExtension;
-                this.m_objectVision = objectVision;
+    // Create a trigger that watches your condition
+    /**
+     * Creates a routine that intakes from the center line
+     * 
+     * @param helpPose             Pose to go through on the way to the final pose
+     *                             to intake
+     * @param helpPoseEntryAngle
+     * @param helpPoseTolerance    Minimum radius for robot to be in from helpPose
+     *                             that triggers the next command
+     * @param intakePose           Pose to go through before slowDriveForward
+     * @param intakePoseEntryAngle
+     * @param intakePoseTolerance  Mnimum radius for robot to be in from intakePose
+     *                             that triggers the next command
+     * @param stopPose             Pose to drive slowly towards while intaking
+     * @return command that intakes from the center line
+     */
+    public Command APToIntake(Pose2d helpPose, Distance helpPoseTolerance, Pose2d intakePose,
+            Rotation2d intakePoseEntryAngle, Distance intakePoseTolerance, Pose2d stopPose) {
+        return Commands.deadline(
+                Commands.sequence(
+                        new AutoAlign(helpPose, m_drivebase,
+                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                        TriggerUtil.isWithinRadius(
+                                                () -> helpPose.getTranslation(),
+                                                () -> m_drivebase.state.Pose,
+                                                () -> helpPoseTolerance)),
+                        new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
+                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                        TriggerUtil.isWithinRadius(
+                                                () -> intakePose.getTranslation(),
+                                                () -> m_drivebase.state.Pose,
+                                                () -> intakePoseTolerance)),
+                        new AutoAlign(stopPose, m_drivebase, AutoAlign.kSlowDriveProfile)),
+                Commands.parallel(fuelIntake(), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
+    }
+
+    /**
+     * Creates a routine that intakes at the depot
+     * 
+     * @param helpPose           Pose to go through on the way to the final pose
+     *                           to intake
+     * @param helpPoseEntryAngle
+     */
+
+    public Command APtoDepot() {
+        return Commands.deadline(
+                Commands.sequence(
+                        new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(),
+                                m_drivebase,
+                                AutoAlign.kSlowDriveProfile).until(
+                                        TriggerUtil.isWithinRadius(
+                                                () -> POI.DEPOT_START
+                                                        .get()
+                                                        .getTranslation(),
+                                                () -> m_drivebase.state.Pose,
+                                                () -> Meters.of(0.1))),
+                        new AutoAlign(POI.DEPOT_END.get(), m_drivebase,
+                                AutoAlign.kSlowDriveProfile)),
+                Commands.parallel(fuelIntake()));
+    }
+
+    /**
+     * Creates a command that intakes from the center line
+     * 
+     * @param helpPose             Pose to go through on the way to the final pose
+     *                             for scoring
+     * @param helpPoseEntryAngle
+     * @param helpPoseTolerance    Minimum radius for robot to be in from helpPose
+     *                             that triggers the next command
+     * @param targetpose           Final pose to drive to for scoring
+     * @param targetPoseEntryAngle
+     * @return command that intakes from the center line
+     */
+    public Command APBackFromIntake(Pose2d helpPose,
+            Rotation2d helpPoseEntryAngle,
+            Distance helpPoseTolerance,
+            Pose2d targetpose,
+            Rotation2d targetPoseEntryAngle) {
+        return Commands.sequence(
+                new AutoAlign(helpPose, m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                TriggerUtil.isWithinRadius(
+                                        () -> helpPose.getTranslation(),
+                                        () -> m_drivebase.state.Pose,
+                                        () -> helpPoseTolerance)),
+                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile));
+
+    }
+
+    /**
+     * Command that aligns to target pose and climbs
+     * 
+     * @param targetpose Target pose to autoallign to
+     * @return Command that aligns to target pose and climbs
+     */
+    public Command APL1Climb(
+            Pose2d targetpose) {
+        return Commands.parallel(
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
+                Commands.sequence(
+
+                        new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile)
+                // ADD CLIMB COMMAND
+                ));
+
+    }
+
+    // public Command APToAverageFuelPose() {
+    // return Commands.parallel(
+    // new AutoAlign(new Pose2d(m_objectVision.getAverageObjectLocation().get(), new
+    // Rotation2d()), m_drivebase),
+    // fuelIntake()
+    // );
+    // }
+
+    public Command APToBestCluster() {
+        return Commands.deferredProxy(
+                () -> {
+                    Optional<Cluster> clusterOpt = m_objectVision.getBestCluster();
+                    if (clusterOpt.isPresent()) {
+                        var clusterLoc = clusterOpt.get().getCenter();
+                        var at = new AutoAlign(
+                                new Pose2d(clusterLoc,
+                                        clusterLoc.minus(m_drivebase.state.Pose
+                                                .getTranslation())
+                                                .getAngle()),
+                                m_drivebase, AutoAlign.kGPDProfile);
+                        return Commands.deadline(
+                                at,
+                                fuelIntake());
+                    }
+                    return Commands.none();
+                });
+    }
+
+    private static int tempNumberPickedUp = 0;
+    private static boolean hasTurned = false;
+    private BiFunction<Integer, Rectangle2d, Command> clusterChainFunction = new BiFunction<Integer, Rectangle2d, Command>() {
+        public Command apply(Integer numBalls, Rectangle2d bounds) {
+            var clusterOpt = m_objectVision.getBestCluster(bounds);
+            if (clusterOpt.isPresent() && tempNumberPickedUp < numBalls) {
+                tempNumberPickedUp += clusterOpt.get().getPieceCount();
+                var clusterLoc = clusterOpt.get().getCenter();
+                var at = new AutoAlign(
+                        new Pose2d(clusterLoc,
+                                DriveUtil.getAngleTowards(clusterLoc, m_drivebase.state.Pose.getTranslation())),
+                        m_drivebase, AutoAlign.kGPDProfile);
+                return Commands.deadline(at, fuelIntake()).andThen(APToClusterChain(numBalls, bounds));
+            } else if (!hasTurned && tempNumberPickedUp < numBalls) {
+                hasTurned = true;
+                return new AutoAlign(
+                        new Pose2d(m_drivebase.state.Pose.getTranslation(),
+                                DriveUtil.getAngleTowards(bounds.getCenter(), m_drivebase.state.Pose)),
+                        m_drivebase, AutoAlign.kGPDProfile).andThen(APToClusterChain(numBalls, bounds));
+            } else {
+                hasTurned = false;
+                tempNumberPickedUp = 0;
+                return Commands.none();
+            }
         }
-
-        // Create a trigger that watches your condition
-        /**
-         * Creates a routine that intakes from the center line
-         * 
-         * @param helpPose             Pose to go through on the way to the final pose
-         *                             to intake
-         * @param helpPoseEntryAngle
-         * @param helpPoseTolerance    Minimum radius for robot to be in from helpPose
-         *                             that triggers the next command
-         * @param intakePose           Pose to go through before slowDriveForward
-         * @param intakePoseEntryAngle
-         * @param intakePoseTolerance  Mnimum radius for robot to be in from intakePose
-         *                             that triggers the next command
-         * @param stopPose             Pose to drive slowly towards while intaking
-         * @return command that intakes from the center line
-         */
-        public Command APToIntake(Pose2d helpPose, Distance helpPoseTolerance, Pose2d intakePose,
-                        Rotation2d intakePoseEntryAngle, Distance intakePoseTolerance, Pose2d stopPose) {
-                return Commands.deadline(
-                                Commands.sequence(
-                                                new AutoAlign(helpPose, m_drivebase,
-                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
-                                                                                TriggerUtil.isWithinRadius(
-                                                                                                () -> helpPose.getTranslation(),
-                                                                                                () -> m_drivebase.state.Pose,
-                                                                                                () -> helpPoseTolerance)),
-                                                new AutoAlign(intakePose, intakePoseEntryAngle, m_drivebase,
-                                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
-                                                                                TriggerUtil.isWithinRadius(
-                                                                                                () -> intakePose.getTranslation(),
-                                                                                                () -> m_drivebase.state.Pose,
-                                                                                                () -> intakePoseTolerance)),
-                                                new AutoAlign(stopPose, m_drivebase, AutoAlign.kSlowDriveProfile)),
-                                Commands.parallel(fuelIntake(), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
-        }
-
-        /**
-         * Creates a routine that intakes at the depot
-         * 
-         * @param helpPose           Pose to go through on the way to the final pose
-         *                           to intake
-         * @param helpPoseEntryAngle
-         */
-
-        public Command APtoDepot() {
-                return Commands.deadline(
-                                Commands.sequence(
-                                                new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(),
-                                                                m_drivebase,
-                                                                AutoAlign.kSlowDriveProfile).until(
-                                                                                TriggerUtil.isWithinRadius(
-                                                                                                () -> POI.DEPOT_START
-                                                                                                                .get()
-                                                                                                                .getTranslation(),
-                                                                                                () -> m_drivebase.state.Pose,
-                                                                                                () -> Meters.of(0.1))),
-                                                new AutoAlign(POI.DEPOT_END.get(), m_drivebase,
-                                                                AutoAlign.kSlowDriveProfile)),
-                                Commands.parallel(fuelIntake()));
-        }
-
-        /**
-         * Creates a command that intakes from the center line
-         * 
-         * @param helpPose             Pose to go through on the way to the final pose
-         *                             for scoring
-         * @param helpPoseEntryAngle
-         * @param helpPoseTolerance    Minimum radius for robot to be in from helpPose
-         *                             that triggers the next command
-         * @param targetpose           Final pose to drive to for scoring
-         * @param targetPoseEntryAngle
-         * @return command that intakes from the center line
-         */
-        public Command APBackFromIntake(Pose2d helpPose,
-                        Rotation2d helpPoseEntryAngle,
-                        Distance helpPoseTolerance,
-                        Pose2d targetpose,
-                        Rotation2d targetPoseEntryAngle) {
-                return Commands.sequence(
-                                Commands.waitUntil(() -> m_hood.isHoodSafe()),
-                                new AutoAlign(helpPose, m_drivebase,
-                                                AutoAlign.kHighJerkProfile).until(
-                                                                TriggerUtil.isWithinRadius(
-                                                                                () -> helpPose.getTranslation(),
-                                                                                () -> m_drivebase.state.Pose,
-                                                                                () -> helpPoseTolerance)),
-                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase,
-                                                AutoAlign.kDefaultVelocityLimitedProfile));
-
-        }
-
-        /**
-         * Command that aligns to target pose and climbs
-         * 
-         * @param targetpose Target pose to autoallign to
-         * @return Command that aligns to target pose and climbs
-         */
-        public Command APL1Climb(
-                        Pose2d targetpose) {
-                return Commands.parallel(
-                                m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
-                                Commands.sequence(
-
-                                                new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile)
-                                // ADD CLIMB COMMAND
-                                ));
-
-        }
-
-        // public Command APToAverageFuelPose() {
-        // return Commands.parallel(
-        // new AutoAlign(new Pose2d(m_objectVision.getAverageObjectLocation().get(), new
-        // Rotation2d()), m_drivebase),
-        // fuelIntake()
-        // );
-        // }
-
-        public Command APToBestCluster() {
-                return Commands.deferredProxy(
-                                () -> {
-                                        Optional<Cluster> clusterOpt = m_objectVision.getBestCluster();
-                                        if (clusterOpt.isPresent()) {
-                                                var clusterLoc = clusterOpt.get().getCenter();
-                                                var at = new AutoAlign(
-                                                                new Pose2d(clusterLoc,
-                                                                                clusterLoc.minus(m_drivebase.state.Pose
-                                                                                                .getTranslation())
-                                                                                                .getAngle()),
-                                                                m_drivebase, AutoAlign.kGPDProfile);
-                                                return Commands.deadline(
-                                                                at,
-                                                                fuelIntake());
-                                        }
-                                        return Commands.none();
-                                });
-        }
-
-        private static int tempNumberPickedUp = 0;
-        private static boolean hasTurned = false;
-        private BiFunction<Integer, Rectangle2d, Command> clusterChainFunction = new BiFunction<Integer,Rectangle2d,Command>() {
-                public Command apply(Integer numBalls,Rectangle2d bounds) {
-                        var clusterOpt = m_objectVision.getBestCluster(bounds);
-                        if(clusterOpt.isPresent() && tempNumberPickedUp<numBalls) {
-                                tempNumberPickedUp += clusterOpt.get().getPieceCount();
-                                var clusterLoc = clusterOpt.get().getCenter();
-                                var at = new AutoAlign(new Pose2d(clusterLoc, DriveUtil.getAngleTowards(clusterLoc, m_drivebase.state.Pose.getTranslation())), m_drivebase, AutoAlign.kGPDProfile);
-                                return Commands.deadline(at,fuelIntake()).andThen(APToClusterChain(numBalls,bounds));
-                        } else if(!hasTurned && tempNumberPickedUp < numBalls) {
-                                hasTurned = true;
-                                return new AutoAlign(new Pose2d(m_drivebase.state.Pose.getTranslation(), DriveUtil.getAngleTowards(bounds.getCenter(), m_drivebase.state.Pose)), m_drivebase, AutoAlign.kGPDProfile).andThen(APToClusterChain(numBalls, bounds));
-                        } else {
-                                hasTurned = false;
-                                tempNumberPickedUp = 0;
-                                return Commands.none();
-                        }
-                }
-        };
+    };
 
         public Command APToClusterChain(int numberOfBalls, boolean isLeftSide) {
                 return Commands.defer(
@@ -260,21 +262,21 @@ public class AutoCommands {
         }
         public Command prepL1Climb(
             Pose2d targetpose) {
-                return Commands.race(
-                        m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
-                        new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
-                        m_climbExtension.setHeight(()->Inches.of(8)));
-                }
+        return Commands.race(
+                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
+                new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
+                m_climbExtension.setHeight(() -> Inches.of(8)));
+    }
 
-        public Command L1Climb() {
+    public Command L1Climb() {
         return Commands.sequence(
-                m_climbExtension.setHeight(()->Inches.of(2)).withTimeout(1));
-        }
+                m_climbExtension.setHeight(() -> Inches.of(2)).withTimeout(1));
+    }
 
-        public Command finishL1Climb() {
-                return Commands.sequence(
-                m_climbExtension.setHeight(()->Inches.of(8)).withTimeout(0.5));
-        }
+    public Command finishL1Climb() {
+        return Commands.sequence(
+                m_climbExtension.setHeight(() -> Inches.of(8)).withTimeout(0.5));
+    }
 
         public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
                         return m_climbExtension.setHeight(extensionDistance);
@@ -282,22 +284,21 @@ public class AutoCommands {
         public Command fuelIntake() {
                 return m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle);
 
-        }
+    }
 
-        // auto hood angle command
-        public Command Score() {
-                return Commands.parallel(
-                                m_hood.autoHoodAngle(),
-                                // Commands.waitUntil(() -> m_hood.isHoodReady() && m_turret.atSetpoint() &&
-                                // m_flywheel.atSetpoint()),
-                                Commands.parallel(
-                                                m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
-                                                m_Spindexer.setVoltage(
-                                                                () -> SpindexerConstants.kFastVoltage)));
-        }
-        public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
-                return Commands.repeatingSequence(
-                                m_intakePivot.setAngle(upperLimit).withTimeout(seconds),
-                                m_intakePivot.setAngle(lowerLimit).withTimeout(seconds));
-        }
+    // auto hood angle command
+    public Command Score() {
+        return Commands.parallel(
+                m_hood.autoHoodAngle(),
+                Commands.parallel(
+                        m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
+                        m_Spindexer.setVoltage(
+                                () -> SpindexerConstants.kFastVoltage)));
+    }
+
+    public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
+        return Commands.repeatingSequence(
+                m_intakePivot.setAngle(upperLimit).withTimeout(seconds),
+                m_intakePivot.setAngle(lowerLimit).withTimeout(seconds));
+    }
 }

@@ -42,10 +42,10 @@ public class Autos {
         private static Time kDefaultAutoScoreTime = Seconds.of(2.0);
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
-        private static Distance kBackToStartRadius = Meters.of(12.8);
-        private static Distance kHardCodedStartRadius = Meters.of(3.5);
-                private static Distance kHardCodedBeginIntakingRadius = Meters.of(0.2);
-
+        private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
+        private static Distance kCloseBackToStartRadius = Meters.of(2.0);
+        private static Distance kDefaultStartRadius = Meters.of(3.5);
+        private static Distance kDefaultBeginIntakingRadius = Meters.of(0.2);
 
     }
 
@@ -62,20 +62,6 @@ public class Autos {
     private final FlyWheelS m_FlyWheel;
     private final ObjectVision m_objectVision;
 
-    /*
-     * . CHOREO AUTO EXAMPLE
-     * 
-     * String choreoAutoName = "Choreo Auto";
-     * 
-     * public AutoRoutine choreoAuto() {
-     * final AutoRoutine routine = factory.newRoutine(choreoAutoName);
-     * final AutoTrajectory traj = routine.trajectory("OP");
-     * routine.active().onTrue(
-     * traj.resetOdometry()
-     * .andThen(traj.cmd()));
-     * return routine;
-     * }
-     */
     public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory,
             RobotContainer container, HoodS hood,
             IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer,
@@ -94,14 +80,22 @@ public class Autos {
 
         // ============= PREDEFINED HELPERS =============
 
-        // (L/R) Center Line Middle Preplanned
+        // (L/R) Center Line Preplanned
         Supplier<Command> leftToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
-                AutoConstants.kHardCodedStartRadius,
-                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kHardCodedBeginIntakingRadius, POI.STOPL1.get());
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPL1.get());
+
+        Supplier<Command> leftToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLL5.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPL4.get());
 
         Supplier<Command> rightToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-               AutoConstants.kHardCodedStartRadius,
-                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kHardCodedBeginIntakingRadius, POI.STOPR1.get());
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPR1.get());
+
+        Supplier<Command> rightToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLR5.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPR4.get());
 
         // (L/R) Center Line Middle GPD
         Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
@@ -119,29 +113,37 @@ public class Autos {
 
         // (L/R) Back From Center Line Default
         Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                POI.HELPL2Entry.get(), AutoConstants.kBackToStartRadius,
+                POI.HELPL2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
+                POI.TRL1.get(), POI.TRL1Entry.get());
+
+        Supplier<Command> leftBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
+                POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
                 POI.TRL1.get(), POI.TRL1Entry.get());
 
         Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR2.get(),
-                POI.HELPR2Entry.get(), AutoConstants.kBackToStartRadius,
+                POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
                 POI.TRR1.get(), POI.TRR1Entry.get());
+
+        Supplier<Command> rightBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
+                POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
+                POI.TRR1.get(), POI.TRL1Entry.get());
 
         // (L/R) Sweep Default
         Supplier<Command> leftStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPL1.get(),
-                Meters.of(3.5),
-                POI.BALLL2.get(), POI.BALLL2Entry.get(),AutoConstants.kHardCodedStartRadius, POI.STOPL3.get())
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultStartRadius, POI.STOPL3.get())
                 .andThen(new AutoAlign(POI.TRR2.get(), POI.TRR1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile));
 
         Supplier<Command> rightStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-                Meters.of(3.5),
-                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kHardCodedStartRadius, POI.STOPR3.get())
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultStartRadius, POI.STOPR3.get())
                 .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile));
 
         // (L) Back From Center Line To Depot
-        Supplier<Command> leftBackToStartDefaultPlusDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
-                POI.HELPL2Entry.get(), Meters.of(12.0),
+        Supplier<Command> leftBackToDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
+                POI.HELPL2Entry.get(), Meters.of(12.2),
                 POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
                 .until(
                         TriggerUtil.isWithinRadius(
@@ -154,6 +156,20 @@ public class Autos {
                         autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
                                 .alongWith(autoCommands.APtoDepot()));
 
+        Supplier<Command> rightBackToHP = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
+                POI.HELPR2Entry.get(), Meters.of(12.5),
+                POI.HELPS.get(), POI.TRL1Entry.get())
+                .until(
+                        TriggerUtil.isWithinRadius(
+                                () -> POI.HELPS.get()
+                                        .getTranslation(),
+                                () -> m_drivebase.state.Pose,
+                                () -> Meters.of(0.3)))
+                .andThen(
+
+                        autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
+                                .alongWith(new AutoAlign(POI.STA1.get(), m_drivebase, AutoAlign.kSlowDriveProfile)));
+
         // (L/R) Back From Center Line To Climb
 
         // ============= CHOREO PATHS =============
@@ -161,18 +177,8 @@ public class Autos {
 
         // ============= DEFINE AUTOS =============
 
-        autos.put("L 1x center-line GPD test",
-                () -> auto(POI.TRL1.get(), c -> {
 
-                    c.addCommands(leftToCenterLineGPD.get());
-
-                    c.addCommands(leftBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
-
-                }));
-
-        autos.put("L 3x center-line",
+        autos.put("L 2x center-line Preplanned",
                 () -> auto(POI.TRL1.get(), c -> {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
@@ -180,20 +186,14 @@ public class Autos {
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
 
-                    c.addCommands(leftToCenterLineGPD.get());
+                    c.addCommands(leftToCenterLineCloseHardCoded.get());
 
-                    c.addCommands(leftBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
-
-                    c.addCommands(leftToCenterLineGPD.get());
-
-                    c.addCommands(leftBackToStartDefault.get());
+                    c.addCommands(leftBackToStartClose.get());
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
-        autos.put("R 3x center-line",
+        autos.put("R 2x center-line Preplanned",
                 () -> auto(POI.TRR1.get(), c -> {
                     c.addCommands(rightToCenterLineMiddleHardCoded.get());
 
@@ -201,57 +201,20 @@ public class Autos {
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
 
-                    c.addCommands(rightToCenterLineGPD.get());
+                    c.addCommands(rightToCenterLineCloseHardCoded.get());
 
-                    c.addCommands(rightBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
-
-                    c.addCommands(rightToCenterLineGPD.get());
-
-                    c.addCommands(rightBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
-                    // ADD GPD ONES
-                }));
-
-        autos.put("L 2x center-line + Depot",
-                () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(leftToCenterLineMiddleHardCoded.get());
-
-                    c.addCommands(leftBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
-
-                    c.addCommands(leftToCenterLineGPD.get());
-
-                    c.addCommands(leftBackToStartDefaultPlusDepot.get());
-
-                }));
-
-        autos.put("L center-line 1x tune",
-                () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(leftToCenterLineMiddleHardCoded.get());
-
-                    c.addCommands(leftBackToStartDefault.get());
+                    c.addCommands(rightBackToStartClose.get());
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
-        autos.put("L Sweep test",
-                () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(leftStartSweepDefault.get());
+        autos.put("R 1x center-line + HP",
+                () -> auto(POI.TRR1.get(), c -> {
+                    c.addCommands(rightToCenterLineMiddleHardCoded.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
-
+                    c.addCommands(rightBackToHP.get());
                 }));
 
-        autos.put("Depot test", () -> auto(POI.TRL1.get(), c -> {
-            c.addCommands(new AutoAlign(POI.DEPOT_HELP.get(), m_drivebase));
-
-            c.addCommands(autoCommands.APtoDepot());
-
-        }));
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());

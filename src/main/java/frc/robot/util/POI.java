@@ -26,19 +26,29 @@ public class POI {
     public static final Supplier<Pose2d> BALLL1 = flipped(ChoreoVars.Poses.BALLL1);
     public static final Supplier<Pose2d> BALLL2 = flipped(ChoreoVars.Poses.BALLL2);
     public static final Supplier<Pose2d> BALLL3 = flipped(ChoreoVars.Poses.BALLL3);
+    public static final Supplier<Pose2d> BALLL4 = flipped(ChoreoVars.Poses.BALLL4);
+    public static final Supplier<Pose2d> BALLL5 = flipped(ChoreoVars.Poses.BALLL5);
+
 
     public static final Supplier<Pose2d> BALLR1 = flipped(ChoreoVars.Poses.BALLR1);
     public static final Supplier<Pose2d> BALLR2 = flipped(ChoreoVars.Poses.BALLR2);
     public static final Supplier<Pose2d> BALLR3 = flipped(ChoreoVars.Poses.BALLR3);
+   // public static final Supplier<Pose2d> BALLR4 = flipped(ChoreoVars.Poses.BALLR4);
+    public static final Supplier<Pose2d> BALLR5 = flipped(ChoreoVars.Poses.BALLR5);
+
 
     // Center line intake stop poses
     public static final Supplier<Pose2d> STOPL1 = flipped(ChoreoVars.Poses.STOPL1);
     public static final Supplier<Pose2d> STOPL2 = flipped(ChoreoVars.Poses.STOPL2);
     public static final Supplier<Pose2d> STOPL3 = flipped(ChoreoVars.Poses.STOPL3);
+    public static final Supplier<Pose2d> STOPL4 = flipped(ChoreoVars.Poses.STOPL4);
+
 
     public static final Supplier<Pose2d> STOPR1 = flipped(ChoreoVars.Poses.STOPR1);
     public static final Supplier<Pose2d> STOPR2 = flipped(ChoreoVars.Poses.STOPR2);
     public static final Supplier<Pose2d> STOPR3 = flipped(ChoreoVars.Poses.STOPR3);
+        public static final Supplier<Pose2d> STOPR4 = flipped(ChoreoVars.Poses.STOPR4);
+
 
     // Auto start poses
     public static final Supplier<Pose2d> TRL1 = flipped(ChoreoVars.Poses.TRL1);
@@ -51,10 +61,12 @@ public class POI {
     public static final Supplier<Pose2d> HELPL1 = flipped(ChoreoVars.Poses.HELPL1);
     public static final Supplier<Pose2d> HELPL2 = flipped(ChoreoVars.Poses.HELPL2);
     public static final Supplier<Pose2d> HELPL3 = flipped(ChoreoVars.Poses.HELPL3);
+    public static final Supplier<Pose2d> HELPL4 = flipped(ChoreoVars.Poses.HELPL4);
 
     public static final Supplier<Pose2d> HELPR1 = flipped(ChoreoVars.Poses.HELPR1);
     public static final Supplier<Pose2d> HELPR2 = flipped(ChoreoVars.Poses.HELPR2);
     public static final Supplier<Pose2d> HELPR3 = flipped(ChoreoVars.Poses.HELPR3);
+    public static final Supplier<Pose2d> HELPR4 = flipped(ChoreoVars.Poses.HELPR4);
 
     // Climb poses
     public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
@@ -67,6 +79,8 @@ public class POI {
 
     // Other poses
     public static final Supplier<Pose2d> STA1 = flipped(ChoreoVars.Poses.STA1);
+    public static final Supplier<Pose2d> HELPS = flipped(ChoreoVars.Poses.HELPS);
+
     public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
 
     // ============= ROTATIONS =============
@@ -74,9 +88,13 @@ public class POI {
     // Center line intake pose rotations
     public static final Supplier<Rotation2d> BALLL2Entry = flipped(new Rotation2d(Degrees.of(-35)));
     public static final Supplier<Rotation2d> BALLL2CloseEntry = flipped(new Rotation2d(Degrees.of(0)));
+        public static final Supplier<Rotation2d> BALLL4Entry = flipped(new Rotation2d(Degrees.of(-90)));
+
 
     public static final Supplier<Rotation2d> BALLR2Entry = flipped(new Rotation2d(Degrees.of(35)));
     public static final Supplier<Rotation2d> BALLR2CloseEntry = flipped(new Rotation2d(Degrees.of(180)));
+    public static final Supplier<Rotation2d> BALLR4Entry = flipped(new Rotation2d(Degrees.of(90)));
+
 
     // Auto start pose rotations
     public static final Supplier<Rotation2d> TRL1Entry = flipped(new Rotation2d(Degrees.of(180)));
@@ -88,7 +106,6 @@ public class POI {
     public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(200)));
     public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
     public static final Supplier<Rotation2d> HELPD1ntry = flipped(new Rotation2d(Degrees.of(160)));
-
 
     public static final Supplier<Rotation2d> HELPR1Entry = flipped(new Rotation2d(Degrees.of(-30)));
     public static final Supplier<Rotation2d> HELPR2Entry = flipped(new Rotation2d(Degrees.of(-172)));
@@ -115,8 +132,10 @@ public class POI {
     private static final Translation2d bottomAllianceZoneCorner2 = new Translation2d(Meters.of(2.3), Meters.of(2));
 
     public static final Supplier<Rectangle2d> allianceZone = flippedRectangle(allianceZoneCorner1, allianceZoneCorner2);
-    public static final Supplier<Rectangle2d> topAllianceZone = flippedRectangle(topAllianceZoneCorner1, topAllianceZoneCorner2);
-    public static final Supplier<Rectangle2d> bottomAllianceZone = flippedRectangle(bottomAllianceZoneCorner1, bottomAllianceZoneCorner2);
+    public static final Supplier<Rectangle2d> topAllianceZone = flippedRectangle(topAllianceZoneCorner1,
+            topAllianceZoneCorner2);
+    public static final Supplier<Rectangle2d> bottomAllianceZone = flippedRectangle(bottomAllianceZoneCorner1,
+            bottomAllianceZoneCorner2);
 
     public static final Supplier<Rectangle2d> topZone = flippedRectangle(topZoneCorner1, topZoneCorner2);
     public static final Supplier<Rectangle2d> centerZone = flippedRectangle(centerZoneCorner1, centerZoneCorner2);
@@ -128,42 +147,46 @@ public class POI {
     public static final Distance kOriginToTrenchRed = Meters.of(11.9);
 
     private static Supplier<Rectangle2d> flippedRectangle(Translation2d corner1, Translation2d corner2) {
-        return AllianceFlipUtil.constant(new Rectangle2d(corner1, corner2), 
+        return AllianceFlipUtil.constant(new Rectangle2d(corner1, corner2),
                 new Rectangle2d(ChoreoAllianceFlipUtil.flip(corner1), ChoreoAllianceFlipUtil.flip(corner2)));
     }
-    
+
     // ============= PRIVATE RECTANGLES =============
-        /** Number of meters over the center/side lines acceptable for the auto game piece pickup. */
+    /**
+     * Number of meters over the center/side lines acceptable for the auto game
+     * piece pickup.
+     */
     private static final double kLineToleranceMeters = 0.5;
     public static final Rectangle2d kLeftBlueBounds = new Rectangle2d(
-        new Translation2d(
-            AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 - kLineToleranceMeters)
-    ,
-        new Translation2d(
-            6, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters)
-    );
+            new Translation2d(
+                    AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters,
+                    AllianceFlipUtil.FIELD_WIDTH / 2.0 - kLineToleranceMeters),
+            new Translation2d(
+                    6, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters));
     private static final Rectangle2d kRightBlueBounds = new Rectangle2d(
-        new Translation2d(
-            6, kLineToleranceMeters),
-        new Translation2d(
-            AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 + kLineToleranceMeters
-        )
-    );
+            new Translation2d(
+                    6, kLineToleranceMeters),
+            new Translation2d(
+                    AllianceFlipUtil.FIELD_LENGTH / 2.0 + kLineToleranceMeters,
+                    AllianceFlipUtil.FIELD_WIDTH / 2.0 + kLineToleranceMeters));
     public static final Rectangle2d kLeftRedBounds = new Rectangle2d(
-        new Translation2d(
-            AllianceFlipUtil.FIELD_LENGTH, 0),
-        new Translation2d(
-            AllianceFlipUtil.FIELD_LENGTH / 2.0 - kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 + kLineToleranceMeters)
-    );
+            new Translation2d(
+                    AllianceFlipUtil.FIELD_LENGTH, 0),
+            new Translation2d(
+                    AllianceFlipUtil.FIELD_LENGTH / 2.0 - kLineToleranceMeters,
+                    AllianceFlipUtil.FIELD_WIDTH / 2.0 + kLineToleranceMeters));
     private static final Rectangle2d kRightRedBounds = new Rectangle2d(
-        new Translation2d(
-            AllianceFlipUtil.FIELD_LENGTH, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters),
-        new Translation2d(
-            AllianceFlipUtil.FIELD_LENGTH / 2.0 - kLineToleranceMeters, AllianceFlipUtil.FIELD_WIDTH / 2.0 - kLineToleranceMeters)
-    );
+            new Translation2d(
+                    AllianceFlipUtil.FIELD_LENGTH, AllianceFlipUtil.FIELD_WIDTH - kLineToleranceMeters),
+            new Translation2d(
+                    AllianceFlipUtil.FIELD_LENGTH / 2.0 - kLineToleranceMeters,
+                    AllianceFlipUtil.FIELD_WIDTH / 2.0 - kLineToleranceMeters));
 
     // ============= RECTANGLES =============
-    public static final Supplier<Rectangle2d> kLeftAutoBounds = AllianceFlipUtil.constant(kLeftBlueBounds, kLeftRedBounds);
-    public static final Supplier<Rectangle2d> kRightAutoBounds = AllianceFlipUtil.constant(kRightBlueBounds, kRightRedBounds);
-    public static final Rectangle2d kFieldBounds = new Rectangle2d(new Translation2d(0, 0), new Translation2d(AllianceFlipUtil.FIELD_LENGTH, AllianceFlipUtil.FIELD_WIDTH));
-} 
+    public static final Supplier<Rectangle2d> kLeftAutoBounds = AllianceFlipUtil.constant(kLeftBlueBounds,
+            kLeftRedBounds);
+    public static final Supplier<Rectangle2d> kRightAutoBounds = AllianceFlipUtil.constant(kRightBlueBounds,
+            kRightRedBounds);
+    public static final Rectangle2d kFieldBounds = new Rectangle2d(new Translation2d(0, 0),
+            new Translation2d(AllianceFlipUtil.FIELD_LENGTH, AllianceFlipUtil.FIELD_WIDTH));
+}
