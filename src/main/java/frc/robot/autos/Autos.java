@@ -153,7 +153,7 @@ public class Autos {
                                 () -> Meters.of(0.1)))
                 .andThen(
 
-                        autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
+                        autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime)
                                 .alongWith(autoCommands.APtoDepot()));
 
         Supplier<Command> rightBackToHP = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
@@ -167,7 +167,7 @@ public class Autos {
                                 () -> Meters.of(0.3)))
                 .andThen(
 
-                        autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
+                        autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime)
                                 .alongWith(new AutoAlign(POI.STA1.get(), m_drivebase, AutoAlign.kSlowDriveProfile)));
 
         // (L/R) Back From Center Line To Climb
@@ -184,13 +184,13 @@ public class Autos {
 
                     c.addCommands(leftBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
 
                     c.addCommands(leftToCenterLineCloseHardCoded.get());
 
                     c.addCommands(leftBackToStartClose.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
         autos.put("R 2x center-line Preplanned",
@@ -199,13 +199,13 @@ public class Autos {
 
                     c.addCommands(rightBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
 
                     c.addCommands(rightToCenterLineCloseHardCoded.get());
 
                     c.addCommands(rightBackToStartClose.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
         autos.put("R 1x center-line + HP",

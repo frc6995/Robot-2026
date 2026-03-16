@@ -18,6 +18,7 @@ public abstract class HoodS extends SubsystemBase {
     public abstract Command setVoltage(Supplier<Voltage> voltage);
     public abstract Command sysId();
     public abstract Command autoHoodAngle();
+    public abstract Command autoHoodAngle_OVERRIDE_SAFETY();
     public abstract Command resetEncoder();
 
     public abstract Angle applyDynamicLimits(Angle targetAngle, Pose2d pose);

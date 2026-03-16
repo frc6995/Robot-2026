@@ -185,6 +185,10 @@ public class RealHoodS extends HoodS {
         return hood.setAngle(() -> applyDynamicLimits(angle.get(), robotPose.get()));
     }
 
+    public Command setAngle_OVERRIDE_SAFETY(Supplier<Angle> angle) {
+        return hood.setAngle(angle);
+    }
+
     public Command setVoltage(Supplier<Voltage> voltage) {
         return hood.setVoltage(voltage);
     }
@@ -195,6 +199,10 @@ public class RealHoodS extends HoodS {
 
     public Command autoHoodAngle() {
         return runSOTF(ShooterController.getInstance()::getCachedData);
+    }
+
+    public Command autoHoodAngle_OVERRIDE_SAFETY() {
+        return runSOTF_OVERRIDE_SAFETY(ShooterController.getInstance()::getCachedData);
     }
 
     public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
@@ -216,6 +224,10 @@ public class RealHoodS extends HoodS {
         return setAngle(() -> applyDynamicLimits(
                 Degrees.of(dataSupplier.get().hoodAngleDeg),
                 robotPose.get()));
+    }
+
+    public Command runSOTF_OVERRIDE_SAFETY(Supplier<ShooterTargetData> dataSupplier) {
+        return setAngle_OVERRIDE_SAFETY(() -> Degrees.of(dataSupplier.get().hoodAngleDeg));
     }
 
     public Optional<Angle> getSetpoint() {

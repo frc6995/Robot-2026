@@ -296,6 +296,15 @@ public class AutoCommands {
                                 () -> SpindexerConstants.kFastVoltage)));
     }
 
+    public Command AutoScore() {
+        return Commands.parallel(
+                m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
+                Commands.parallel(
+                        m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
+                        m_Spindexer.setVoltage(
+                                () -> SpindexerConstants.kFastVoltage)));
+    }
+
     public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
         return Commands.repeatingSequence(
                 m_intakePivot.setAngle(upperLimit).withTimeout(seconds),

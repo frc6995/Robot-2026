@@ -69,4 +69,9 @@ public class NoneHoodS extends HoodS{
     public Command runSOTF(Supplier<ShooterTargetData> dataSupplier) {
         return Commands.none();
     }
+
+    @Override
+    public Command autoHoodAngle_OVERRIDE_SAFETY() {
+       return Commands.none();
+    }
 }
