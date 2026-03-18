@@ -212,7 +212,7 @@ public class Autos {
 
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
-                    c.addCommands(leftAPSweepBack.get());
+                    c.addCommands(leftChoreoSweepBack.get());
 
                     c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
                 }));
