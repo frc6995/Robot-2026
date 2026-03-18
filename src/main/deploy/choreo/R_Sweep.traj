@@ -17,12 +17,12 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"R_SWEEP1.x", "val":8.301892280578613}, "y":{"exp":"R_SWEEP1.y", "val":3.091977359771729}, "heading":{"exp":"R_SWEEP1.heading", "val":2.077894033628614}, "intervals":52, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"L_SWEEP2.x", "val":6.884767532348633}, "y":{"exp":"26 ft - L_SWEEP2.y", "val":3.2041307304382327}, "heading":{"exp":"-L_SWEEP2.heading", "val":3.124500251056466}, "intervals":52, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"R_SWEEP3.x", "val":5.827211380004883}, "y":{"exp":"R_SWEEP3.y", "val":3.0650704879760733}, "heading":{"exp":"R_SWEEP3.heading", "val":-1.5946018383531562}, "intervals":42, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"R_SWEEP4.x", "val":5.911816120147705}, "y":{"exp":"R_SWEEP4.y", "val":1.750893547058105}, "heading":{"exp":"R_SWEEP4.heading", "val":0.0}, "intervals":37, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
-    {"x":{"exp":"R_SWEEP5.x", "val":5.922391414642334}, "y":{"exp":"R_SWEEP5.y", "val":1.0625468749999998}, "heading":{"exp":"R_SWEEP5.heading", "val":-2.177784084726981}, "intervals":45, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"L_SWEEP6.x", "val":5.11978006362915}, "y":{"exp":"L_SWEEP6.y - 26 ft", "val":-0.422627396392822}, "heading":{"exp":"-L_SWEEP6.heading", "val":-3.1230761972109606}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"R_SWEEP1.x", "val":8.301892280578613}, "y":{"exp":"R_SWEEP1.y", "val":2.8517735977172896}, "heading":{"exp":"R_SWEEP1.heading", "val":1.677894033628614}, "intervals":52, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"L_SWEEP2.x", "val":6.984767532348633}, "y":{"exp":"26 ft - L_SWEEP2.y", "val":2.934130730438232}, "heading":{"exp":"-L_SWEEP2.heading", "val":3.124500251056466}, "intervals":52, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"R_SWEEP3.x", "val":5.927211380004883}, "y":{"exp":"R_SWEEP3.y", "val":2.7650704879760735}, "heading":{"exp":"R_SWEEP3.heading", "val":-1.5946018383531562}, "intervals":42, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"R_SWEEP4.x", "val":6.111816120147705}, "y":{"exp":"R_SWEEP4.y", "val":1.750893547058105}, "heading":{"exp":"R_SWEEP4.heading", "val":0.0}, "intervals":37, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
+    {"x":{"exp":"R_SWEEP5.x", "val":6.122391414642334}, "y":{"exp":"R_SWEEP5.y", "val":1.0625468749999998}, "heading":{"exp":"R_SWEEP5.heading", "val":-2.177784084726981}, "intervals":45, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"L_SWEEP6.x", "val":5.11978006362915}, "y":{"exp":"L_SWEEP6.y - 26 ft", "val":-0.4726273963928227}, "heading":{"exp":"-L_SWEEP6.heading", "val":-3.1230761972109606}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},

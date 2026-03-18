@@ -297,7 +297,7 @@ public class AutoCommands {
 
     public Command autoScore() {
         return Commands.parallel(
-                m_hood.autoHoodAngle(),
+                m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
                 Commands.parallel(
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                         m_Spindexer.setVoltage(
