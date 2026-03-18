@@ -25,7 +25,6 @@ public abstract class IntakePivotS extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // double currentAngleRad = getAngle().in(Radians);
-        // RobotVisualizer.updateIntake(currentAngleRad);
+        
     }
 }
