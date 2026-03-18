@@ -180,6 +180,24 @@ public class Autos {
                 () -> Meters.of(0.2)))
                 .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile));
+                                    Supplier<Command> leftAPSweepBack = () -> Commands.sequence(new AutoAlign(POI.L_SWEEP2.get(), m_drivebase, AutoAlign.kSlowDriveProfile).until(TriggerUtil.isWithinRadius(
+                () -> POI.L_SWEEP2.get()
+                        .getTranslation(),
+                () -> m_drivebase.state.Pose,
+                () -> Meters.of(0.2))),
+            new AutoAlign(POI.L_SWEEP3.get(), m_drivebase, AutoAlign.kSlowDriveProfile).until(TriggerUtil.isWithinRadius(
+                () -> POI.L_SWEEP3.get()
+                        .getTranslation(),
+                () -> m_drivebase.state.Pose,
+                () -> Meters.of(0.2))),
+            new AutoAlign(POI.L_SWEEP100.get(), m_drivebase, AutoAlign.kSlowDriveProfile).until(TriggerUtil.isWithinRadius(
+                () -> POI.L_SWEEP2.get()
+                        .getTranslation(),
+                () -> m_drivebase.state.Pose,
+                () -> Meters.of(0.2))),
+            
+           (new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile)));
         // (L/R) Back From Center Line To Climb
 
         // ============= DEFINE AUTOS =============
@@ -194,7 +212,7 @@ public class Autos {
 
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
-                    c.addCommands(leftChoreoSweepBack.get());
+                    c.addCommands(leftAPSweepBack.get());
 
                     c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
                 }));

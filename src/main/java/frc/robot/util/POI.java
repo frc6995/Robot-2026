@@ -85,7 +85,11 @@ public class POI {
 
      // L_SWEEP path poses
      public static final Supplier<Pose2d> L_SWEEP6 = flipped(ChoreoVars.Poses.L_SWEEP6);
-
+     public static final Supplier<Pose2d> L_SWEEP100 = flipped(ChoreoVars.Poses.L_SWEEP100);
+        public static final Supplier<Pose2d> L_SWEEP5 = flipped(ChoreoVars.Poses.L_SWEEP5); 
+        public static final Supplier<Pose2d> L_SWEEP4 = flipped(ChoreoVars.Poses.L_SWEEP4);
+        public static final Supplier<Pose2d> L_SWEEP3 = flipped(ChoreoVars.Poses.L_SWEEP3);
+        public static final Supplier<Pose2d> L_SWEEP2 = flipped(ChoreoVars.Poses.L_SWEEP2);
 
     // ============= ROTATIONS =============
 
