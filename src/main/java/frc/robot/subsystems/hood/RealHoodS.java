@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -42,6 +43,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.util.POI;
+import frc.robot.util.RobotVisualizer;
 import frc.robot.util.ShooterController;
 import frc.robot.util.UnitUtil;
 import frc.robot.util.ShooterController.ShooterTargetData;
@@ -288,6 +290,8 @@ public class RealHoodS extends HoodS {
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
+        double currentAngleRad = hood.getAngle().in(Radians);
+        RobotVisualizer.updateHood(currentAngleRad);
         hood.simIterate();
     }
 

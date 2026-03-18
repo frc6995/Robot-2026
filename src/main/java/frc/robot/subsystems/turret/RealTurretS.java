@@ -41,6 +41,7 @@ import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.util.POI;
+import frc.robot.util.RobotVisualizer;
 // import frc.robot.util.RobotVisualizer;
 import frc.robot.util.UnitUtil;
 import yams.gearing.GearBox;
@@ -133,14 +134,14 @@ public class RealTurretS extends TurretS {
 
     @Override
     public void periodic() {
-        double currentAngleRad = m_turret.getAngle().in(Radians);
-        // RobotVisualizer.updateTurret(currentAngleRad);
        // m_turret.updateTelemetry();
 
     }
 
     @Override
-    public void simulationPeriodic() {
+    public void simulationPeriodic(){
+        double currentAngleRad = m_turret.getAngle().in(Radians);
+        RobotVisualizer.updateTurret(currentAngleRad);
         m_turret.simIterate();
     }
 

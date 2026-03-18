@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.RobotVisualizer;
 import frc.robot.util.UnitUtil;
 // import frc.robot.util.RobotVisualizer;
 import yams.gearing.GearBox;
@@ -172,13 +173,14 @@ public class RealIntakePivotS extends IntakePivotS {
 
     @Override
     public void periodic() {
-        super.periodic();
         // intakePivot.updateTelemetry();
     }
 
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
+        double currentAngleRad = getAngle().in(Radians);
+        RobotVisualizer.updateIntake(currentAngleRad);
         intakePivot.simIterate();
     }
 
