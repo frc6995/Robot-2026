@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultAutoScoreTime = Seconds.of(2.0);
+        private static Time kDefaultAutoScoreTime = Seconds.of(3.0);
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
         private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
@@ -196,7 +196,7 @@ public class Autos {
 
                     c.addCommands(leftChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
         autos.put("R 2x center-line Preplanned",
@@ -205,13 +205,13 @@ public class Autos {
 
                     c.addCommands(rightBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
 
                     c.addCommands(rightToCenterLineCloseHardCoded.get());
 
                     c.addCommands(rightBackToStartClose.get());
 
-                    c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
 
         autos.put("R 1x center-line + HP",
