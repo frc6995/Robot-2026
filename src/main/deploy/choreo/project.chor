@@ -363,6 +363,20 @@
      "val":-1.677894033628614
     }
    },
+   "L_SWEEP100":{
+    "x":{
+     "exp":"5.750753879547119 m",
+     "val":5.750753879547119
+    },
+    "y":{
+     "exp":"7.397235870361328 m",
+     "val":7.397235870361328
+    },
+    "heading":{
+     "exp":"1.6136269539300494 rad",
+     "val":1.6136269539300494
+    }
+   },
    "L_SWEEP2":{
     "x":{
      "exp":"6.984767532348633 m",
@@ -757,7 +771,7 @@
  },
  "generationFeatures":[],
  "codegen":{
-  "root":"..\\..\\java\\frc\\robot\\generated",
+  "root":"../../java/frc/robot/generated",
   "genVars":true,
   "genTrajData":true,
   "useChoreoLib":true
