@@ -111,7 +111,7 @@ public class RobotContainer {
         private final ObjectVision m_objectVision = new NoneODVision(() -> m_drivetrain.state.Pose);
 
         private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, m_hood, m_intakePivot,
-                        m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbExtension, m_objectVision);
+                        m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbExtension, m_objectVision, robotStates);
 
         private final AutoFactory autoFactory;
         private final Autos autoRoutines;
@@ -267,7 +267,7 @@ public class RobotContainer {
                 RobotModeTriggers.disabled().whileTrue(
                                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-                shootNotReadyTrigger.debounce(0.5).whileTrue(
+                shootNotReadyTrigger.debounce(0.5).and(DriverStation::isTeleopEnabled).and(joystick.rightTrigger()).whileTrue(
                         Commands.repeatingSequence(
                                 Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0.5)),
                                 Commands.waitSeconds(0.25),
@@ -300,7 +300,7 @@ public class RobotContainer {
 
         }
 
-        private class RobotStates {
+        public class RobotStates {
                 public boolean isShootReady() {
                         return isTurretReady() && isHoodReady() && isFlywheelReady();
                 }

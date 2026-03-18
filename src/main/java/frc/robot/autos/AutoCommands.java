@@ -24,10 +24,12 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.RobotContainer.RobotStates;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
@@ -61,6 +63,7 @@ public class AutoCommands {
     private final FlyWheelS m_flywheel;
     private final ClimbExtensionS m_climbExtension;
     private final ObjectVision m_objectVision;
+    private final RobotStates m_robotStates;
 
     SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
             .withDriveRequestType(DriveRequestType.Velocity)
@@ -71,7 +74,7 @@ public class AutoCommands {
             HoodS hood, IntakePivotS intakePivot,
             IntakeRollerS intakeRoller, TurretS turret,
             IndexerS indexer, SpindexerS spindexer,
-            FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision) {
+            FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision, RobotStates robotStates) {
         this.m_drivebase = drivebase;
         this.m_hood = hood;
         this.m_intakePivot = intakePivot;
@@ -82,6 +85,7 @@ public class AutoCommands {
         this.m_flywheel = flyWheel;
         this.m_climbExtension = climbExtension;
         this.m_objectVision = objectVision;
+        this.m_robotStates = robotStates;
     }
 
     // Create a trigger that watches your condition
@@ -292,7 +296,11 @@ public class AutoCommands {
                 Commands.parallel(
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                         m_Spindexer.setVoltage(
-                                () -> SpindexerConstants.kFastVoltage)));
+                                () -> SpindexerConstants.kFastVoltage))
+                )
+                .onlyWhile(
+                        m_robotStates::isShootReady
+                );
     }
 
     public Command autoScore() {

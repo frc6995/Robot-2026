@@ -62,7 +62,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj L_Sweep = new ChoreoTraj(
 	    "L_Sweep",
 	    OptionalInt.empty(),
-	    3.95982,
+	    3.97648,
 	    new Pose2d(8.302, 5.2, Rotation2d.fromRadians(-1.678)),
 	    new Pose2d(5.12, 7.452, Rotation2d.fromRadians(3.123))
 	);
