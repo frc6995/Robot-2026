@@ -20,6 +20,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -92,7 +93,7 @@ public class RobotContainer {
         @Logged(name = "Flywheel")
         private final FlyWheelS m_flywheel = new RealFlyWheelS();
         @Logged(name = "Hood")
-        private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state, () -> m_drivetrain.lastState);
+        private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state, () -> m_drivetrain.lastState, robotStates::isIntakeDeployed);
         @Logged(name = "Indexer")
         private final IndexerS m_indexer = new RealIndexerS();
         @Logged(name = "IntakePivot")
@@ -231,17 +232,24 @@ public class RobotContainer {
                 // RT: hold to shoot
                 joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
-                // Start: Current home turret (enabled)
-                joystick.start().onTrue(m_turret.driveToHome());
+                // Start: Current home turret (enabled) or reset positions (disabled)
+                joystick.start().debounce(0.5).onTrue(
+                        Commands.either(
+                                Commands.parallel(
+                                        m_turret.driveToHome()
+                                ),
+                                Commands.parallel(
+                                        m_turret.resetEncoder(),
+                                        m_hood.resetEncoder()
+                                ),
+                                DriverStation::isEnabled
+                        )
+                );
 
-                // Back: Home all, set all positions in disable
+                // Back: Set intake to Home (disabled)
                 joystick.back()
-                                .onTrue(Commands.parallel(
-                                                m_turret.resetEncoder(),
-                                                m_intakePivot.resetEncoder(),
-                                                m_hood.resetEncoder()));
+                                .onTrue(m_intakePivot.resetEncoder().onlyIf(DriverStation::isDisabled));
 
-                joystick.rightTrigger().whileTrue(m_autoCommands.Score());
                 joystick.rightBumper()
                                 .whileTrue(m_autoCommands.intakeWiggle(Degrees.of(75), IntakePivotConstants.kLowerLimit,
                                                 0.4));

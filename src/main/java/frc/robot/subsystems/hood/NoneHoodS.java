@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hood;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.Optional;
@@ -7,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -73,5 +75,15 @@ public class NoneHoodS extends HoodS{
     @Override
     public Command autoHoodAngle_OVERRIDE_SAFETY() {
        return Commands.none();
+    }
+
+    @Override
+    public Command driveToHome() {
+        return Commands.none();
+    }
+
+    @Override
+    public Current getCurrent() {
+        return Amps.zero();
     }
 }

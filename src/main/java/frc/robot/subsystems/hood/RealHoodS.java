@@ -30,18 +30,22 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.util.POI;
 import frc.robot.util.ShooterController;
 import frc.robot.util.UnitUtil;
 import frc.robot.util.ShooterController.ShooterTargetData;
+import frc.robot.util.TriggerUtil;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -79,6 +83,7 @@ public class RealHoodS extends HoodS {
         // Motor Setup
         public static final double kStatorCurrentLimit = 40;
         public static final double kSupplyCurrentLimit = 25;
+        public static final Current kDriveToHomeThreshold = Amps.of(50);
         public static final double kReduction = 73.33;
         public static final boolean kMotorInverted = false;
         public static final AngularVelocity kVelocity = DegreesPerSecond.of(1600);
@@ -91,6 +96,7 @@ public class RealHoodS extends HoodS {
         public static final Distance kSafetyOverride_Final = Meters.of(0.8);
         public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.5);
         public static final double kHoodRetractTime = 0.25;
+        public static final Voltage kHomingVoltage = Volts.of(-8);
     }
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -132,16 +138,18 @@ public class RealHoodS extends HoodS {
     private Supplier<Translation2d> robotTranslation;
     private Supplier<ChassisSpeeds> robotSpeeds;
     private Supplier<ChassisSpeeds> lastSpeeds;
+    private BooleanSupplier isIntakeDeployed;
     private double poseEstPeriod = 0.02;
-    private Angle setpointNoLimit;
+    private Angle setpointNoLimit = HoodConstants.kLowerLimit;
 
     private BooleanSupplier shouldApplyDynamicLimit;
 
-    public RealHoodS(Supplier<SwerveDriveState> currentState, Supplier<SwerveDriveState> lastState) {
+    public RealHoodS(Supplier<SwerveDriveState> currentState, Supplier<SwerveDriveState> lastState, BooleanSupplier isIntakeDeployed) {
         this.robotPose = () -> currentState.get().Pose;
         this.robotTranslation = () -> robotPose.get().getTranslation();
         this.robotSpeeds = () -> currentState.get().Speeds;
         this.lastSpeeds = () -> lastState.get().Speeds;
+        this.isIntakeDeployed = isIntakeDeployed;
 
         this.shouldApplyDynamicLimit = makeShouldApplyDynamicLimit();
     }
@@ -200,6 +208,10 @@ public class RealHoodS extends HoodS {
         return hood.setVoltage(voltage);
     }
 
+    private Command setVoltage(Voltage voltage) {
+        return Commands.runOnce(() -> talonSmartMotorController.setVoltage(voltage));
+    }
+
     public Command sysId() {
         return hood.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
     }
@@ -210,6 +222,22 @@ public class RealHoodS extends HoodS {
 
     public Command autoHoodAngle_OVERRIDE_SAFETY() {
         return runSOTF_OVERRIDE_SAFETY(ShooterController.getInstance()::getCachedData);
+    }
+
+    public Command driveToHome() {
+        return setVoltage(() -> HoodConstants.kHomingVoltage)
+            .until(() -> getCurrent().gt(HoodConstants.kDriveToHomeThreshold))
+            .andThen(resetEncoder())
+            .withTimeout(2)
+            .andThen(setVoltage(Volts.zero()))
+            .onlyIf(isIntakeDeployed);
+
+        // return Commands.sequence(
+        //     setVoltage(() -> TurretConstants.kHomingDrive)
+        //             .until(TriggerUtil.debounce(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold), TurretConstants.kHomingTime)),
+        //     resetEncoder()).withTimeout(2.0)
+        //     .andThen(setVoltage(Volts.zero()))
+        //     .onlyIf(isIntakeDeployed);
     }
 
     public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
@@ -242,6 +270,11 @@ public class RealHoodS extends HoodS {
     public Command resetEncoder() {
         return runOnce(() -> talonSmartMotorController.setEncoderPosition(
                 HoodConstants.kStowAngle)).ignoringDisable(true);
+    }
+
+    @Override
+    public Current getCurrent() {
+        return talonSmartMotorController.getSupplyCurrent().orElse(Amps.zero());
     }
 
     @Override
