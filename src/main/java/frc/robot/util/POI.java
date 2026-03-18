@@ -29,13 +29,12 @@ public class POI {
     public static final Supplier<Pose2d> BALLL4 = flipped(ChoreoVars.Poses.BALLL4);
     public static final Supplier<Pose2d> BALLL5 = flipped(ChoreoVars.Poses.BALLL5);
 
-
     public static final Supplier<Pose2d> BALLR1 = flipped(ChoreoVars.Poses.BALLR1);
     public static final Supplier<Pose2d> BALLR2 = flipped(ChoreoVars.Poses.BALLR2);
     public static final Supplier<Pose2d> BALLR3 = flipped(ChoreoVars.Poses.BALLR3);
-   // public static final Supplier<Pose2d> BALLR4 = flipped(ChoreoVars.Poses.BALLR4);
+    // public static final Supplier<Pose2d> BALLR4 =
+    // flipped(ChoreoVars.Poses.BALLR4);
     public static final Supplier<Pose2d> BALLR5 = flipped(ChoreoVars.Poses.BALLR5);
-
 
     // Center line intake stop poses
     public static final Supplier<Pose2d> STOPL1 = flipped(ChoreoVars.Poses.STOPL1);
@@ -43,12 +42,10 @@ public class POI {
     public static final Supplier<Pose2d> STOPL3 = flipped(ChoreoVars.Poses.STOPL3);
     public static final Supplier<Pose2d> STOPL4 = flipped(ChoreoVars.Poses.STOPL4);
 
-
     public static final Supplier<Pose2d> STOPR1 = flipped(ChoreoVars.Poses.STOPR1);
     public static final Supplier<Pose2d> STOPR2 = flipped(ChoreoVars.Poses.STOPR2);
     public static final Supplier<Pose2d> STOPR3 = flipped(ChoreoVars.Poses.STOPR3);
-        public static final Supplier<Pose2d> STOPR4 = flipped(ChoreoVars.Poses.STOPR4);
-
+    public static final Supplier<Pose2d> STOPR4 = flipped(ChoreoVars.Poses.STOPR4);
 
     // Auto start poses
     public static final Supplier<Pose2d> TRL1 = flipped(ChoreoVars.Poses.TRL1);
@@ -83,8 +80,13 @@ public class POI {
 
     public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
 
-     // L_SWEEP path poses
-     public static final Supplier<Pose2d> L_SWEEP6 = flipped(ChoreoVars.Poses.L_SWEEP6);
+    // L_SWEEP path poses
+    public static final Supplier<Pose2d> L_SWEEP2 = flipped(ChoreoVars.Poses.L_SWEEP2);
+    public static final Supplier<Pose2d> L_SWEEP3 = flipped(ChoreoVars.Poses.L_SWEEP3);
+    public static final Supplier<Pose2d> L_SWEEP4 = flipped(ChoreoVars.Poses.L_SWEEP4);
+    public static final Supplier<Pose2d> L_SWEEP5 = flipped(ChoreoVars.Poses.L_SWEEP5);
+    public static final Supplier<Pose2d> L_SWEEP6 = flipped(ChoreoVars.Poses.L_SWEEP6);
+     public static final Supplier<Pose2d> L_SWEEP100 = flipped(ChoreoVars.Poses.L_SWEEP100);
 
 
     // ============= ROTATIONS =============
@@ -92,13 +94,11 @@ public class POI {
     // Center line intake pose rotations
     public static final Supplier<Rotation2d> BALLL2Entry = flipped(new Rotation2d(Degrees.of(-35)));
     public static final Supplier<Rotation2d> BALLL2CloseEntry = flipped(new Rotation2d(Degrees.of(0)));
-        public static final Supplier<Rotation2d> BALLL4Entry = flipped(new Rotation2d(Degrees.of(-90)));
-
+    public static final Supplier<Rotation2d> BALLL4Entry = flipped(new Rotation2d(Degrees.of(-90)));
 
     public static final Supplier<Rotation2d> BALLR2Entry = flipped(new Rotation2d(Degrees.of(35)));
     public static final Supplier<Rotation2d> BALLR2CloseEntry = flipped(new Rotation2d(Degrees.of(180)));
     public static final Supplier<Rotation2d> BALLR4Entry = flipped(new Rotation2d(Degrees.of(90)));
-
 
     // Auto start pose rotations
     public static final Supplier<Rotation2d> TRL1Entry = flipped(new Rotation2d(Degrees.of(180)));
