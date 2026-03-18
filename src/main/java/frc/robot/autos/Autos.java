@@ -77,6 +77,9 @@ public class Autos {
         this.m_spindexer = spindexer;
         this.m_FlyWheel = flyWheel;
         this.m_objectVision = objectVision;
+        // ============= CHOREO PATHS =============
+        Command run = factory.trajectoryCmd("Poses");
+        Command L_Sweep = factory.trajectoryCmd("L_Sweep");
 
         // ============= PREDEFINED HELPERS =============
 
@@ -169,14 +172,17 @@ public class Autos {
 
                         autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime)
                                 .alongWith(new AutoAlign(POI.STA1.get(), m_drivebase, AutoAlign.kSlowDriveProfile)));
-
+        // (L/R) Back From Center Line To Climb
+        Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
+                () -> POI.L_SWEEP6.get()
+                        .getTranslation(),
+                () -> m_drivebase.state.Pose,
+                () -> Meters.of(0.2)))
+                .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile));
         // (L/R) Back From Center Line To Climb
 
-        // ============= CHOREO PATHS =============
-        Command run = factory.trajectoryCmd("Poses");
-
         // ============= DEFINE AUTOS =============
-
 
         autos.put("L 2x center-line Preplanned",
                 () -> auto(POI.TRL1.get(), c -> {
@@ -186,9 +192,9 @@ public class Autos {
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
 
-                    c.addCommands(leftToCenterLineCloseHardCoded.get());
+                    c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
-                    c.addCommands(leftBackToStartClose.get());
+                    c.addCommands(leftChoreoSweepBack.get());
 
                     c.addCommands(autoCommands.Score().withTimeout(AutoConstants.kDefaultAutoScoreTime));
                 }));
@@ -214,7 +220,6 @@ public class Autos {
 
                     c.addCommands(rightBackToHP.get());
                 }));
-
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
