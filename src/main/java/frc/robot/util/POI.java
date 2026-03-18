@@ -83,6 +83,10 @@ public class POI {
 
     public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
 
+     // L_SWEEP path poses
+     public static final Supplier<Pose2d> L_SWEEP6 = flipped(ChoreoVars.Poses.L_SWEEP6);
+
+
     // ============= ROTATIONS =============
 
     // Center line intake pose rotations

@@ -27,37 +27,44 @@ public record ChoreoTraj(
     public static final ChoreoTraj B = new ChoreoTraj(
 	    "B",
 	    OptionalInt.empty(),
-	    1.79713,
+	    3.96044,
 	    new Pose2d(8.297, 4.238, Rotation2d.fromRadians(-1.574)),
 	    new Pose2d(4.285, 7.584, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
 	    "Climb_Poses",
 	    OptionalInt.empty(),
-	    6.64742,
+	    13.92334,
 	    new Pose2d(1.586, 4.196, Rotation2d.fromRadians(0)),
-	    new Pose2d(3.822, 0.539, Rotation2d.fromRadians(3.142))
+	    new Pose2d(3.822, 0.539, Rotation2d.fromRadians(-3.142))
 	);
 	public static final ChoreoTraj ClimbTest = new ChoreoTraj(
 	    "ClimbTest",
 	    OptionalInt.empty(),
-	    1.34839,
+	    3.26392,
 	    new Pose2d(3.12, 7.14, Rotation2d.fromRadians(0)),
 	    new Pose2d(0.674, 4.082, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj HP_test = new ChoreoTraj(
 	    "HP_test",
 	    OptionalInt.empty(),
-	    3.59794,
+	    5.87655,
 	    new Pose2d(8.32, 3.571, Rotation2d.fromRadians(1.557)),
 	    new Pose2d(0.423, 0.696, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
 	    "Center_Line_Poses",
 	    OptionalInt.empty(),
-	    53.07159,
-	    new Pose2d(4.403, 7.513, Rotation2d.fromRadians(0)),
+	    93.66744,
+	    new Pose2d(4.103, 7.513, Rotation2d.fromRadians(0)),
 	    new Pose2d(5.994, 1.262, Rotation2d.fromRadians(1.571))
+	);
+	public static final ChoreoTraj L_Sweep = new ChoreoTraj(
+	    "L_Sweep",
+	    OptionalInt.empty(),
+	    4.90537,
+	    new Pose2d(8.302, 4.96, Rotation2d.fromRadians(-2.078)),
+	    new Pose2d(5.12, 7.612, Rotation2d.fromRadians(3.123))
 	);
 
     /**
@@ -69,7 +76,8 @@ public record ChoreoTraj(
 		Map.entry("Climb_Poses", Climb_Poses),
 		Map.entry("ClimbTest", ClimbTest),
 		Map.entry("HP_test", HP_test),
-		Map.entry("Center_Line_Poses", Center_Line_Poses)
+		Map.entry("Center_Line_Poses", Center_Line_Poses),
+		Map.entry("L_Sweep", L_Sweep)
     );
 
     /**

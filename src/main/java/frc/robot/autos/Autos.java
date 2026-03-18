@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultAutoScoreTime = Seconds.of(2.0);
+        private static Time kDefaultautoScoreTime = Seconds.of(3.0);
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
         private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
@@ -77,6 +77,9 @@ public class Autos {
         this.m_spindexer = spindexer;
         this.m_FlyWheel = flyWheel;
         this.m_objectVision = objectVision;
+        // ============= CHOREO PATHS =============
+        Command run = factory.trajectoryCmd("Poses");
+        Command L_Sweep = factory.trajectoryCmd("L_Sweep");
 
         // ============= PREDEFINED HELPERS =============
 
@@ -153,7 +156,7 @@ public class Autos {
                                 () -> Meters.of(0.1)))
                 .andThen(
 
-                        autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime)
+                        autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime)
                                 .alongWith(autoCommands.APtoDepot()));
 
         Supplier<Command> rightBackToHP = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
@@ -167,16 +170,19 @@ public class Autos {
                                 () -> Meters.of(0.3)))
                 .andThen(
 
-                        autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime)
+                        autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime)
                                 .alongWith(new AutoAlign(POI.STA1.get(), m_drivebase, AutoAlign.kSlowDriveProfile)));
-
+        // (L/R) Back From Center Line To Climb
+        Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
+                () -> POI.L_SWEEP6.get()
+                        .getTranslation(),
+                () -> m_drivebase.state.Pose,
+                () -> Meters.of(0.2)))
+                .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile));
         // (L/R) Back From Center Line To Climb
 
-        // ============= CHOREO PATHS =============
-        Command run = factory.trajectoryCmd("Poses");
-
         // ============= DEFINE AUTOS =============
-
 
         autos.put("L 2x center-line Preplanned",
                 () -> auto(POI.TRL1.get(), c -> {
@@ -184,13 +190,13 @@ public class Autos {
 
                     c.addCommands(leftBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
 
-                    c.addCommands(leftToCenterLineCloseHardCoded.get());
+                    c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
-                    c.addCommands(leftBackToStartClose.get());
+                    c.addCommands(leftChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
                 }));
 
         autos.put("R 2x center-line Preplanned",
@@ -199,13 +205,13 @@ public class Autos {
 
                     c.addCommands(rightBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
 
                     c.addCommands(rightToCenterLineCloseHardCoded.get());
 
                     c.addCommands(rightBackToStartClose.get());
 
-                    c.addCommands(autoCommands.AutoScore().withTimeout(AutoConstants.kDefaultAutoScoreTime));
+                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
                 }));
 
         autos.put("R 1x center-line + HP",
@@ -214,7 +220,6 @@ public class Autos {
 
                     c.addCommands(rightBackToHP.get());
                 }));
-
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());

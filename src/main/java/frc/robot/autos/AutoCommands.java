@@ -2,6 +2,7 @@ package frc.robot.autos;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
 import java.util.Optional;
@@ -294,13 +295,15 @@ public class AutoCommands {
                                 () -> SpindexerConstants.kFastVoltage)));
     }
 
-    public Command AutoScore() {
+    public Command autoScore() {
         return Commands.parallel(
-                m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
+                m_hood.autoHoodAngle(),
                 Commands.parallel(
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                         m_Spindexer.setVoltage(
-                                () -> SpindexerConstants.kFastVoltage)));
+                                () -> SpindexerConstants.kFastVoltage)),
+                        intakeWiggle(Degrees.of(60), IntakePivotConstants.kLowerLimit, 0.5)
+                        );
     }
 
     public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
