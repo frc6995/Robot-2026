@@ -32,11 +32,11 @@ public final class ChoreoVars {
         public static final Pose2d HELPL1 = new Pose2d(8.976, 7.3, Rotation2d.fromRadians(-0.105));
         public static final Pose2d HELPL2 = new Pose2d(7.097, 18.995, Rotation2d.fromRadians(-1.571));
         public static final Pose2d HELPL3 = new Pose2d(7.097, 18.995, Rotation2d.fromRadians(3.142));
-        public static final Pose2d HELPL4 = new Pose2d(5.843, 8.768, Rotation2d.fromRadians(-1.571));
+        public static final Pose2d HELPL4 = new Pose2d(5.843, 8.768, Rotation2d.fromRadians(-1.047));
         public static final Pose2d HELPR1 = new Pose2d(8.976, 0.752, Rotation2d.fromRadians(0.105));
         public static final Pose2d HELPR2 = new Pose2d(7.097, -10.943, Rotation2d.fromRadians(1.571));
         public static final Pose2d HELPR3 = new Pose2d(7.097, -10.943, Rotation2d.fromRadians(3.142));
-        public static final Pose2d HELPR4 = new Pose2d(5.843, -0.844, Rotation2d.fromRadians(1.571));
+        public static final Pose2d HELPR4 = new Pose2d(5.843, -0.844, Rotation2d.fromRadians(1.047));
         public static final Pose2d HELPS = new Pose2d(3.822, 0.549, Rotation2d.fromRadians(3.142));
         public static final Pose2d L_SWEEP1 = new Pose2d(8.302, 5.2, Rotation2d.fromRadians(-1.678));
         public static final Pose2d L_SWEEP100 = new Pose2d(5.751, 7.397, Rotation2d.fromRadians(1.614));
@@ -59,10 +59,10 @@ public final class ChoreoVars {
         public static final Pose2d STOPR2 = new Pose2d(7.301, 3.552, Rotation2d.fromRadians(1.571));
         public static final Pose2d STOPR3 = new Pose2d(8.28, 6.189, Rotation2d.fromRadians(1.571));
         public static final Pose2d STOPR4 = new Pose2d(6.107, 3.656, Rotation2d.fromRadians(1.571));
-        public static final Pose2d TRL1 = new Pose2d(4.503, 7.503, Rotation2d.kZero);
-        public static final Pose2d TRL2 = new Pose2d(5.112, 7.503, Rotation2d.fromRadians(3.142));
-        public static final Pose2d TRR1 = new Pose2d(4.503, 0.549, Rotation2d.kZero);
-        public static final Pose2d TRR2 = new Pose2d(4.503, 0.549, Rotation2d.fromRadians(3.142));
+        public static final Pose2d TRL1 = new Pose2d(4.003, 7.503, Rotation2d.kZero);
+        public static final Pose2d TRL2 = new Pose2d(4.612, 7.503, Rotation2d.fromRadians(3.142));
+        public static final Pose2d TRR1 = new Pose2d(4.003, 0.549, Rotation2d.kZero);
+        public static final Pose2d TRR2 = new Pose2d(4.003, 0.549, Rotation2d.fromRadians(3.142));
 
         private Poses() {}
     }

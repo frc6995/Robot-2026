@@ -115,8 +115,8 @@ public class Autos {
                 .andThen(autoCommands.APToClusterChain(90000, false)).withTimeout(AutoConstants.kGPDTimeout);
 
         // (L/R) Back From Center Line Default
-        Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL2.get(),
-                POI.HELPL2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
+        Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
+                POI.HELPL2Entry.get(), Meters.of(3),
                 POI.TRL1.get(), POI.TRL1Entry.get());
 
         Supplier<Command> leftBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
