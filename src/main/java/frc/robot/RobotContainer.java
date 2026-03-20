@@ -99,7 +99,7 @@ public class RobotContainer {
                         TunerConstants.BackRight);
 
         @Logged(name = "Flywheel")
-        private final FlyWheelS m_flywheel = new RealFlyWheelS();
+        private final FlyWheelS m_flywheel = new RealFlyWheelS(robotStates::isIntakeDeployed);
         @Logged(name = "Hood")
         private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state, () -> m_drivetrain.lastState, robotStates::isIntakeDeployed);
         @Logged(name = "Indexer")
@@ -266,7 +266,7 @@ public class RobotContainer {
 
                 joystick.rightBumper()
                                 .whileTrue(m_autoCommands.intakeWiggle(Degrees.of(75), IntakePivotConstants.kLowerLimit,
-                                                0.4));
+                                                0.8));
                 joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
                 m_drivetrain.registerTelemetry(logger::telemeterize);
@@ -285,14 +285,14 @@ public class RobotContainer {
                 RobotModeTriggers.disabled().whileTrue(
                                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-                shootNotReadyTrigger.debounce(0.5).and(DriverStation::isTeleopEnabled).and(joystick.rightTrigger()).whileTrue(
-                        Commands.repeatingSequence(
-                                Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0.5)),
-                                Commands.waitSeconds(0.25),
-                                Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0)),
-                                Commands.waitSeconds(0.25)
-                        )
-                );
+                // shootNotReadyTrigger.debounce(0.5).and(DriverStation::isTeleopEnabled).and(joystick.rightTrigger()).whileTrue(
+                //         Commands.repeatingSequence(
+                //                 Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0.5)),
+                //                 Commands.waitSeconds(0.25),
+                //                 Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0)),
+                //                 Commands.waitSeconds(0.25)
+                //         )
+                // );
 
                 RobotModeTriggers.autonomous().onTrue(
                         m_turret.aimAtFieldPose(

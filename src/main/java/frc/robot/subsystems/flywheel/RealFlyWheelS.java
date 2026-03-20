@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.UnitUtil;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
@@ -19,6 +20,7 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import yams.mechanisms.config.FlyWheelConfig;
@@ -35,6 +37,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import edu.wpi.first.math.system.plant.DCMotor;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 import yams.motorcontrollers.SmartMotorController;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -119,7 +122,10 @@ public class RealFlyWheelS extends FlyWheelS {
 
     private Optional<AngularVelocity> setpoint = Optional.empty();
 
-    public RealFlyWheelS() {
+    private BooleanSupplier isIntakeDeployed;
+
+    public RealFlyWheelS(BooleanSupplier isIntakeDeployed) {
+        this.isIntakeDeployed = isIntakeDeployed;
         VoltageConfigs voltageConfigs = new VoltageConfigs()
             .withPeakForwardVoltage(FlywheelConstants.kMaxVoltage)
             .withPeakReverseVoltage(FlywheelConstants.kMinVoltage);
@@ -142,7 +148,7 @@ public class RealFlyWheelS extends FlyWheelS {
 
     public Command setVelocity(Supplier<AngularVelocity> speed) {
         return m_shooter.setSpeed(() -> {
-            var spd = speed.get();
+            var spd = applyDynamicLimits(speed.get());
             setpoint = Optional.of(spd);
             return spd;
         });
@@ -172,6 +178,10 @@ public class RealFlyWheelS extends FlyWheelS {
 
     public Command resetEncoder() {
         return runOnce(() -> m_motorController.setEncoderPosition(Degrees.zero())).ignoringDisable(true);
+    }
+
+    private AngularVelocity applyDynamicLimits(AngularVelocity velocity) {
+        return !isIntakeDeployed.getAsBoolean() ? RPM.zero() : velocity;
     }
 
 }
