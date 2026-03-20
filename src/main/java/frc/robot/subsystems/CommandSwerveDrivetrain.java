@@ -94,8 +94,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null, // Use default ramp rate (1 V/s)
-                    Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
-                    null, // Use default timeout (10 s)
+                    Volts.of(2), // Reduce dynamic step voltage to 4 V to prevent brownout
+                    Seconds.of(5), // Use default timeout (10 s)
                     // Log state with SignalLogger class
                     state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
             new SysIdRoutine.Mechanism(
@@ -403,7 +403,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         var estimates = m_vision.getAllEstimates();
         var gyroRotation = m_gyro.getRotation3d();
         for(var estimate : estimates) {
-            if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.3 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
+            if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.35 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
                 if(DriverStation.isEnabled()) {
                     addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.KNormalStdDevs);
                 } else {

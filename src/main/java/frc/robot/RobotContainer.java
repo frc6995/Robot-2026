@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
@@ -27,9 +28,12 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
@@ -82,6 +86,7 @@ public class RobotContainer {
         private final Telemetry logger = new Telemetry();
 
         public static final CommandXboxController joystick = new CommandXboxController(0);
+        // public static final CommandXboxController testController = new CommandXboxController(1);
 
         RobotStates robotStates = new RobotStates();
 
@@ -140,6 +145,8 @@ public class RobotContainer {
                 configureDefaultCommands();
                 configureBindings();
                 configureTriggers();
+
+                SignalLogger.enableAutoLogging(false);
         }
 
         public void periodic() {
@@ -264,6 +271,10 @@ public class RobotContainer {
 
                 m_drivetrain.registerTelemetry(logger::telemeterize);
 
+                // testController.a().whileTrue(m_drivetrain.sysIdDynamic(Direction.kForward));
+                // testController.b().whileTrue(m_drivetrain.sysIdDynamic(Direction.kReverse));
+                // testController.x().whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kForward));
+                // testController.y().whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kReverse));
                 
         }
 
@@ -287,6 +298,12 @@ public class RobotContainer {
                         m_turret.aimAtFieldPose(
                                 () -> POI.HUB1.get().getTranslation(), () -> m_drivetrain.state.Pose)
                                 .until(() -> !DriverStation.isAutonomous()));
+                
+                RobotModeTriggers.autonomous().onTrue(
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(1),
+                                m_flywheel.setVoltage(() -> Volts.zero()))
+                );
         }
 
         private RobotCentric m_robotCentricRequest = new RobotCentric().withDriveRequestType(DriveRequestType.Velocity);

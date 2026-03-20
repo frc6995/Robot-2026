@@ -44,6 +44,7 @@ public class AprilTagModule {
             .withLimelightLEDMode(LEDMode.PipelineControl)
             .withCameraOffset(offset)
             .withImuMode(ImuMode.ExternalImu)
+            // .withImuAssistAlpha()
             .save();
 
         defaultMode = ATVisionConstants.kDefaultMode;

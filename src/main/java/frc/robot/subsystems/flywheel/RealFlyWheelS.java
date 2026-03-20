@@ -55,7 +55,7 @@ public class RealFlyWheelS extends FlyWheelS {
         // Motor Config Constants
         public static final boolean kInvertLeadMotor = false;
         public static final boolean kInvertFollowMotor = true;
-        public static final double kSupplyCurrentLimit = 60;
+        public static final double kSupplyCurrentLimit = 40;
         public static final double kStatorCurrentLimit = 80;
         public static final double kMaxVoltage = 10;
         public static final double kMinVoltage = 0;

@@ -673,8 +673,8 @@
    },
    "TRL1":{
     "x":{
-     "exp":"4.002580738067627 m",
-     "val":4.002580738067627
+     "exp":"4.702580738067627 m",
+     "val":4.702580738067627
     },
     "y":{
      "exp":"7.502641906738281 m",
@@ -688,7 +688,7 @@
    "TRL2":{
     "x":{
      "exp":"TRL1.x + 2 ft",
-     "val":4.612180738067627
+     "val":5.312180738067627
     },
     "y":{
      "exp":"TRL1.y",
@@ -702,7 +702,7 @@
    "TRR1":{
     "x":{
      "exp":"TRL1.x",
-     "val":4.002580738067627
+     "val":4.702580738067627
     },
     "y":{
      "exp":"fieldWidth - TRL1.y",
@@ -716,7 +716,7 @@
    "TRR2":{
     "x":{
      "exp":"TRR1.x",
-     "val":4.002580738067627
+     "val":4.702580738067627
     },
     "y":{
      "exp":"TRR1.y",
@@ -799,7 +799,7 @@
  },
  "generationFeatures":[],
  "codegen":{
-  "root":"../../java/frc/robot/generated",
+  "root":"..\\..\\java\\frc\\robot\\generated",
   "genVars":true,
   "genTrajData":true,
   "useChoreoLib":true
