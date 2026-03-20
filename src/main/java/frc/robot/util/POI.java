@@ -84,6 +84,9 @@ public class POI {
     public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
 
      // L_SWEEP path poses
+
+          public static final Supplier<Pose2d> L_SWEEP0 = flipped(ChoreoVars.Poses.L_SWEEP0);
+
      public static final Supplier<Pose2d> L_SWEEP6 = flipped(ChoreoVars.Poses.L_SWEEP6);
      public static final Supplier<Pose2d> L_SWEEP100 = flipped(ChoreoVars.Poses.L_SWEEP100);
         public static final Supplier<Pose2d> L_SWEEP5 = flipped(ChoreoVars.Poses.L_SWEEP5); 
@@ -96,7 +99,7 @@ public class POI {
     // Center line intake pose rotations
     public static final Supplier<Rotation2d> BALLL2Entry = flipped(new Rotation2d(Degrees.of(-35)));
     public static final Supplier<Rotation2d> BALLL2CloseEntry = flipped(new Rotation2d(Degrees.of(0)));
-        public static final Supplier<Rotation2d> BALLL4Entry = flipped(new Rotation2d(Degrees.of(-90)));
+        public static final Supplier<Rotation2d> BALLL4Entry = flipped(new Rotation2d(Degrees.of(-70)));
 
 
     public static final Supplier<Rotation2d> BALLR2Entry = flipped(new Rotation2d(Degrees.of(35)));
@@ -111,7 +114,7 @@ public class POI {
 
     // Autoalign help pose rotations
     public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));
-    public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(200)));
+    public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(190)));
     public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
     public static final Supplier<Rotation2d> HELPD1ntry = flipped(new Rotation2d(Degrees.of(160)));
 

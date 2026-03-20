@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -18,6 +19,7 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -36,6 +38,7 @@ import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.flywheel.RealFlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.hood.RealHoodS;
+import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.indexer.IndexerS;
 import frc.robot.subsystems.indexer.RealIndexerS;
 import frc.robot.subsystems.intakepivot.IntakePivotS;
@@ -163,12 +166,9 @@ public class RobotContainer {
                 m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
                                 m_drivetrain.applyRequest(
                                                 () -> {
-                                                        var xSpeed = MathUtil.applyDeadband(-joystick.getLeftY(), 0.1)
-                                                                        * 4.2;
-                                                        var ySpeed = MathUtil.applyDeadband(-joystick.getLeftX(), 0.1)
-                                                                        * 4.2;
-                                                        var rotationSpeed = MathUtil.applyDeadband(
-                                                                        -joystick.getRightX(), 0.1) * 2 * Math.PI;
+                                                        var xSpeed = -joystick.getLeftY() * 5.25;
+                                                        var ySpeed = -joystick.getLeftX() * 5.25;
+                                                        var rotationSpeed = -joystick.getRightX() * 2 * Math.PI;
                                                         if (DriverStation.isAutonomous()) {
                                                                 return m_driveRequest.withVelocityX(0).withVelocityY(0)
                                                                                 .withRotationalRate(0);
@@ -228,6 +228,13 @@ public class RobotContainer {
                                                                                         rotSpeed);
                                                 } // Drive counterclockwise with negative X (left)
                                 ));
+                joystick.x().toggleOnTrue(
+                        Commands.parallel(
+                                m_turret.setAngle(() -> Rotation2d.kZero),
+                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
+                                m_flywheel.setVelocity(() -> RPM.of(1750))
+                        )
+                );
 
                 // RT: hold to shoot
                 joystick.rightTrigger().whileTrue(m_autoCommands.Score());

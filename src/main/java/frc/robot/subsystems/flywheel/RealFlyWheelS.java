@@ -15,6 +15,7 @@ import frc.robot.generated.TunerConstants;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.Optional;
@@ -62,9 +63,9 @@ public class RealFlyWheelS extends FlyWheelS {
         public static final double kDiameter = 2;
         public static final double kMass = 4.15;
         // Setpoints
-        public static final AngularVelocity kMaxSpeed = RotationsPerSecond.of(4400.0 / 60.0);
-        public static final AngularVelocity kShootSpeed = RotationsPerSecond.of(3000 / 60.0);
-        public static final AngularVelocity kTolerance = RotationsPerSecond.of(2);
+        public static final AngularVelocity kMaxSpeed = RPM.of(4400.0);
+        public static final AngularVelocity kShootSpeed = RPM.of(3000);
+        public static final AngularVelocity kTolerance = RPM.of(100);
 
         public static final double[][] kShooterData = {
                 {0.0, 1750},
