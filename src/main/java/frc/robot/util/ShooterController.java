@@ -62,16 +62,16 @@ static double timeFudge = -0.2;
     private final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
     private final InterpolatingDoubleTreeMap tofMap = new InterpolatingDoubleTreeMap();
 
-    private static final double[] c = {
-        1.192642 - 0.1,
-        5.328464,
-        2.495469,
-        1.036451
-    };
+    // private static final double[] c = {
+    //     1.192642 - 0.1,
+    //     5.328464,
+    //     2.495469,
+    //     1.036451
+    // };
 
-    private final Function<Double, Double> tofFunction = (d) -> {
-        return c[3] + ((c[0] - c[3]) / (1 + Math.pow(d / c[2], c[1])));
-    };
+    // private final Function<Double, Double> tofFunction = (d) -> {
+    //     return c[3] + ((c[0] - c[3]) / (1 + Math.pow(d / c[2], c[1])));
+    // };
 
     private final Supplier<Pose2d> robotPose;
     private final Supplier<ChassisSpeeds> robotSpeeds;
@@ -104,10 +104,11 @@ static double timeFudge = -0.2;
 
     public static void initialize(Supplier<SwerveDriveState> currentState, Supplier<SwerveDriveState> lastState, Function<Pose2d, Pose2d> targetPose) {
         if(instance == null) {
+            Function<ChassisSpeeds, ChassisSpeeds> speedsFieldRelative = (ch) -> ChassisSpeeds.fromRobotRelativeSpeeds(ch, currentState.get().Pose.getRotation());
             instance = new ShooterController(
                 () -> currentState.get().Pose,
-                () -> currentState.get().Speeds,
-                () -> lastState.get().Speeds,
+                () -> speedsFieldRelative.apply(currentState.get().Speeds),
+                () -> speedsFieldRelative.apply(lastState.get().Speeds),
                 targetPose
             );
         }
@@ -121,20 +122,21 @@ static double timeFudge = -0.2;
     }
 
     public static Pose2d getAimLocation(Pose2d drivePose) {
-        if (POI.topZone.get().contains(drivePose.getTranslation())) {
+        Translation2d driveTranslation = drivePose.getTranslation();
+        if (POI.topZone.get().contains(driveTranslation)) {
             return POI.topAllianceZone.get().getCenter();
         }
-        else if (POI.bottomZone.get().contains(drivePose.getTranslation())) {
+        else if (POI.bottomZone.get().contains(driveTranslation)) {
             return POI.bottomAllianceZone.get().getCenter();
         }
-        else if (POI.centerZone.get().contains(drivePose.getTranslation())) {
+        else if (POI.centerZone.get().contains(driveTranslation)) {
             if (POI.centerZone.get().getCenter().getY() > drivePose.getY())
                 return POI.topAllianceZone.get().getCenter();
             else
                 return POI.bottomAllianceZone.get().getCenter();
         }
         else {
-            if (POI.allianceZone.get().contains(drivePose.getTranslation())) {
+            if (POI.allianceZone.get().contains(driveTranslation)) {
                 return POI.HUB1.get();
             }
             else {

@@ -294,12 +294,8 @@ public class AutoCommands {
         return Commands.parallel(
                 m_hood.autoHoodAngle(),
                 Commands.parallel(
-                        m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
-                        m_Spindexer.setVoltage(
-                                () -> SpindexerConstants.kFastVoltage))
-                )
-                .onlyWhile(
-                        m_robotStates::isShootReady
+                        m_indexer.setVoltage(() -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
+                        m_Spindexer.setVoltage(() -> m_robotStates.isShootReady() ? SpindexerConstants.kFastVoltage : Volts.zero()))
                 );
     }
 
