@@ -290,8 +290,14 @@ public class RealHoodS extends HoodS {
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
-        double currentAngleRad = hood.getAngle().in(Radians);
-        RobotVisualizer.updateHood(currentAngleRad);
+        Optional<Angle> optionalSetpoint = hood.getMechanismSetpoint();
+
+        // If there is no setpoint, default to 0 radians
+        Angle actualAngle = optionalSetpoint.orElse(Radians.of(0)); 
+
+        // Now you can safely use it
+        double radians = actualAngle.in(Radians);
+        RobotVisualizer.updateHood(radians);
         hood.simIterate();
     }
 
