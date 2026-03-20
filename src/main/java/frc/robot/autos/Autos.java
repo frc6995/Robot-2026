@@ -90,7 +90,7 @@ public class Autos {
 
         Supplier<Command> leftToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
                 AutoConstants.kDefaultStartRadius,
-                POI.BALLL5.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPL4.get());
+                POI.BALLL3.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPL2.get());
 
         Supplier<Command> rightToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
                 AutoConstants.kDefaultStartRadius,
@@ -210,11 +210,15 @@ public class Autos {
 
                     c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
 
-                    c.addCommands(leftToCenterLineMiddleHardCoded.get());
+                    c.addCommands(leftToCenterLineCloseHardCoded.get().until(TriggerUtil.isWithinRadius(
+                () -> POI.L_SWEEP0.get()
+                        .getTranslation(),
+                () -> m_drivebase.state.Pose,
+                () -> Meters.of(0.4))));
 
                     c.addCommands(leftChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
+                    c.addCommands(autoCommands.autoScore());
                 }));
 
         autos.put("R 2x center-line Preplanned",
@@ -229,15 +233,9 @@ public class Autos {
 
                     c.addCommands(rightBackToStartClose.get());
 
-                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
+                    c.addCommands(autoCommands.autoScore());
                 }));
 
-        autos.put("R 1x center-line + HP",
-                () -> auto(POI.TRR1.get(), c -> {
-                    c.addCommands(rightToCenterLineMiddleHardCoded.get());
-
-                    c.addCommands(rightBackToHP.get());
-                }));
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
