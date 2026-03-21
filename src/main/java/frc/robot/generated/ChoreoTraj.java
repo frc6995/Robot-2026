@@ -34,9 +34,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
 	    "Center_Line_Poses",
 	    OptionalInt.empty(),
-	    88.09063,
-	    new Pose2d(4.003, 7.503, Rotation2d.fromRadians(0)),
-	    new Pose2d(5.12, 7.452, Rotation2d.fromRadians(3.123))
+	    89.05707,
+	    new Pose2d(3.803, 7.503, Rotation2d.fromRadians(0)),
+	    new Pose2d(3.435, 8.806, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj ClimbTest = new ChoreoTraj(
 	    "ClimbTest",
