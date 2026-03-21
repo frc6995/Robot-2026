@@ -80,6 +80,8 @@ public class Autos {
         // ============= CHOREO PATHS =============
         Command run = factory.trajectoryCmd("Poses");
         Command L_Sweep = factory.trajectoryCmd("L_Sweep");
+                Command R_Sweep = factory.trajectoryCmd("R_Sweep");
+
 
         // ============= PREDEFINED HELPERS =============
 
@@ -98,7 +100,7 @@ public class Autos {
 
         Supplier<Command> rightToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
                 AutoConstants.kDefaultStartRadius,
-                POI.BALLR5.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPR4.get());
+                POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPR2.get());
 
         // (L/R) Center Line Middle GPD
         Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
@@ -180,24 +182,16 @@ public class Autos {
                 () -> Meters.of(0.2)))
                 .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile));
-                                    Supplier<Command> leftAPSweepBack = () -> Commands.sequence(new AutoAlign(POI.L_SWEEP2.get(), m_drivebase, AutoAlign.kSlowDriveProfile).until(TriggerUtil.isWithinRadius(
-                () -> POI.L_SWEEP2.get()
+
+        Supplier<Command> rightChoreoSweepBack = () -> R_Sweep.until(TriggerUtil.isWithinRadius(
+                () -> POI.R_SWEEP6.get()
                         .getTranslation(),
                 () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.2))),
-            new AutoAlign(POI.L_SWEEP3.get(), m_drivebase, AutoAlign.kSlowDriveProfile).until(TriggerUtil.isWithinRadius(
-                () -> POI.L_SWEEP3.get()
-                        .getTranslation(),
-                () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.2))),
-            new AutoAlign(POI.L_SWEEP100.get(), m_drivebase, AutoAlign.kSlowDriveProfile).until(TriggerUtil.isWithinRadius(
-                () -> POI.L_SWEEP2.get()
-                        .getTranslation(),
-                () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.2))),
-            
-           (new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile)));
+                () -> Meters.of(0.2)))
+                .andThen(new AutoAlign(POI.TRR2.get(), POI.TRL1Entry.get(), m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile));
+                                 
+                      
         // (L/R) Back From Center Line To Climb
 
         // ============= DEFINE AUTOS =============
@@ -231,7 +225,7 @@ public class Autos {
 
                     c.addCommands(rightToCenterLineCloseHardCoded.get());
 
-                    c.addCommands(rightBackToStartClose.get());
+                    c.addCommands(rightChoreoSweepBack.get());
 
                     c.addCommands(autoCommands.autoScore());
                 }));

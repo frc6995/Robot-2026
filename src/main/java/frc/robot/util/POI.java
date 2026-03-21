@@ -94,6 +94,9 @@ public class POI {
         public static final Supplier<Pose2d> L_SWEEP3 = flipped(ChoreoVars.Poses.L_SWEEP3);
         public static final Supplier<Pose2d> L_SWEEP2 = flipped(ChoreoVars.Poses.L_SWEEP2);
 
+             public static final Supplier<Pose2d> R_SWEEP6 = flipped(ChoreoVars.Poses.R_SWEEP6);
+
+
     // ============= ROTATIONS =============
 
     // Center line intake pose rotations

@@ -53,6 +53,7 @@ import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
+import frc.robot.subsystems.spindexer.RealSpindexerS.SpindexerConstants;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
@@ -242,6 +243,8 @@ public class RobotContainer {
                                 m_flywheel.setVelocity(() -> RPM.of(1750))
                         )
                 );
+
+                joystick.y().onTrue(m_spindexer.setVoltage(()->SpindexerConstants.kReverseVoltage).withTimeout(0.25));
 
                 // RT: hold to shoot
                 joystick.rightTrigger().whileTrue(m_autoCommands.Score());
