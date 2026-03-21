@@ -477,16 +477,16 @@
    },
    "R_SWEEP1":{
     "x":{
-     "exp":"L_SWEEP1.x",
-     "val":8.301892280578613
+     "exp":"L_SWEEP0.x",
+     "val":7.485109710693359
     },
     "y":{
-     "exp":"fieldWidth - L_SWEEP1.y",
-     "val":2.8517735977172896
+     "exp":"fieldWidth - L_SWEEP0.y",
+     "val":2.325069381713867
     },
     "heading":{
-     "exp":"-L_SWEEP1.heading",
-     "val":1.677894033628614
+     "exp":"-L_SWEEP0.heading",
+     "val":1.817750992750583
     }
    },
    "R_SWEEP2":{
@@ -715,11 +715,11 @@
    },
    "TRR2":{
     "x":{
-     "exp":"TRR1.x",
-     "val":3.802580738067627
+     "exp":"TRL2.x",
+     "val":4.092580738067627
     },
     "y":{
-     "exp":"TRR1.y",
+     "exp":"fieldWidth - TRL2.y",
      "val":0.549358093261719
     },
     "heading":{
