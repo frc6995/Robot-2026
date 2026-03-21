@@ -268,6 +268,10 @@ public class RobotContainer {
                                 .whileTrue(m_autoCommands. intakeWiggle(Degrees.of(60), Degrees.of(30), 0.5));
                 joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
+                                joystick.leftBumper()
+                                .whileTrue(m_intakePivot.setAngle (()-> IntakePivotConstants.kSafeAngle));
+                joystick.leftBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
+
                 m_drivetrain.registerTelemetry(logger::telemeterize);
 
                 // testController.a().whileTrue(m_drivetrain.sysIdDynamic(Direction.kForward));

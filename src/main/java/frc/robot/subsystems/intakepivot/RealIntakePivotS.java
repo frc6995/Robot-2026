@@ -83,6 +83,8 @@ public class RealIntakePivotS extends IntakePivotS {
         public static final Angle kFuelIntakeAngle = kLowerLimit;
         public static final Angle kStowAngle = kUpperLimit;
         public static final Angle kTolerance = Degrees.of(35);
+        public static final Angle kSafeAngle = Degrees.of(35);
+
 
         public static final Angle kSafetyUpperLimit = Degrees.of(90);
     }
