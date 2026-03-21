@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultautoScoreTime = Seconds.of(3.0);
+        private static Time kDefaultautoScoreTime = Seconds.of(3.5);
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
         private static Distance kDefaultBackToStartRadius = Meters.of(12.8);

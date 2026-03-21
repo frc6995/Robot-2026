@@ -105,7 +105,7 @@ public class RobotContainer {
         @Logged(name = "Indexer")
         private final IndexerS m_indexer = new RealIndexerS();
         @Logged(name = "IntakePivot")
-        private final IntakePivotS m_intakePivot = new RealIntakePivotS(robotStates::isTurretStowed);
+        private final IntakePivotS m_intakePivot = new RealIntakePivotS(robotStates::isTurretStowed, robotStates::isFlywheelSafe);
         @Logged(name = "IntakeRoller")
         private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
         @Logged(name = "Spindexer")
@@ -265,8 +265,7 @@ public class RobotContainer {
                                 .onTrue(m_intakePivot.resetEncoder().onlyIf(DriverStation::isDisabled));
 
                 joystick.rightBumper()
-                                .whileTrue(m_autoCommands.intakeWiggle(Degrees.of(75), IntakePivotConstants.kLowerLimit,
-                                                0.8));
+                                .whileTrue(m_autoCommands. intakeWiggle(Degrees.of(60), Degrees.of(30), 0.5));
                 joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
                 m_drivetrain.registerTelemetry(logger::telemeterize);
@@ -351,6 +350,10 @@ public class RobotContainer {
 
                 public boolean isFlywheelReady() {
                         return m_flywheel.atSetpoint();
+                }
+                
+                public boolean isFlywheelSafe() {
+                        return m_flywheel.isFlywheelSafe();
                 }
         }
 }

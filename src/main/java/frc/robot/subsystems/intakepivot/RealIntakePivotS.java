@@ -130,11 +130,12 @@ public class RealIntakePivotS extends IntakePivotS {
 
     // Arm Mechanism
     private Arm intakePivot = new Arm(intakeCfg);
-    private BooleanSupplier isTurretStowed;
+    private BooleanSupplier isTurretStowed, isFlywheelSafe;
     private Angle setpoint;
 
-    public RealIntakePivotS(BooleanSupplier isTurretStowed) {
+    public RealIntakePivotS(BooleanSupplier isTurretStowed, BooleanSupplier isFlywheelSafe) {
         this.isTurretStowed = isTurretStowed;
+        this.isFlywheelSafe = isFlywheelSafe;
     }
 
     /**
@@ -189,7 +190,7 @@ public class RealIntakePivotS extends IntakePivotS {
     }
 
     private Angle applyDynamicLimits(Angle angle) {
-        return isTurretStowed.getAsBoolean() ? 
+        return isTurretStowed.getAsBoolean() && isFlywheelSafe.getAsBoolean() ? 
             UnitUtil.clamp(angle, IntakePivotConstants.kLowerLimit, IntakePivotConstants.kUpperLimit) 
             : UnitUtil.clamp(angle, IntakePivotConstants.kLowerLimit, IntakePivotConstants.kSafetyUpperLimit);
     }
