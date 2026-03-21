@@ -47,7 +47,7 @@ public class RealIntakeRollerS extends IntakeRollerS {
     public static final boolean kMotorInverted = true;
 
 
-    public static final Voltage kDefaultIntake = Volts.of(8);
+    public static final Voltage kDefaultIntake = Volts.of(9);
 
     public static final double kSimP = 0;
     public static final double kSimI = 0;
