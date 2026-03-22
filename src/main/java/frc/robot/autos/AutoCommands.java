@@ -306,7 +306,7 @@ public class AutoCommands {
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                         m_Spindexer.setVoltage(
                                 () -> SpindexerConstants.kFastVoltage)),
-                        intakeWiggle(Degrees.of(60), Degrees.of(0), 0.75)
+                        intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75)
                         );
     }
 

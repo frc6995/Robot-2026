@@ -268,7 +268,7 @@ public class RobotContainer {
                                 .onTrue(m_intakePivot.resetEncoder().onlyIf(DriverStation::isDisabled));
 
                 joystick.rightBumper()
-                                .whileTrue(m_autoCommands. intakeWiggle(Degrees.of(60), Degrees.of(30), 0.5));
+                                .whileTrue(m_autoCommands. intakeWiggle(Degrees.of(60), Degrees.of(15), 0.8));
                 joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
                                 joystick.leftBumper()
