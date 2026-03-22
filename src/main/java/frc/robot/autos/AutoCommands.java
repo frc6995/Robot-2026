@@ -2,12 +2,14 @@ package frc.robot.autos;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -16,11 +18,13 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.therekrab.autopilot.APProfile;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
@@ -29,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer.RobotStates;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
@@ -69,6 +74,9 @@ public class AutoCommands {
             .withDriveRequestType(DriveRequestType.Velocity)
             .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
+        final BooleanSupplier isJammed;
+        final Supplier<Voltage> runSpindexerWithReverse;
+
     public AutoCommands(
             CommandSwerveDrivetrain drivebase,
             HoodS hood, IntakePivotS intakePivot,
@@ -86,6 +94,11 @@ public class AutoCommands {
         this.m_climbExtension = climbExtension;
         this.m_objectVision = objectVision;
         this.m_robotStates = robotStates;
+
+        isJammed = new Trigger(() ->  m_Spindexer.getCurrent().gt(kUnjamThreshold)).debounce(1, DebounceType.kRising).debounce(0.25, DebounceType.kFalling);
+        runSpindexerWithReverse = () -> {
+                return isJammed.getAsBoolean() ? SpindexerConstants.kReverseVoltage : SpindexerConstants.kFastVoltage;
+        };
     }
 
     // Create a trigger that watches your condition
@@ -295,19 +308,21 @@ public class AutoCommands {
                 m_hood.autoHoodAngle(),
                 Commands.parallel(
                         m_indexer.setVoltage(() -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
-                        m_Spindexer.setVoltage(() -> m_robotStates.isShootReady() ? SpindexerConstants.kFastVoltage : Volts.zero()))
+                        m_Spindexer.setVoltage(() -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero()))
                 );
     }
 
+    private static final Current kUnjamThreshold = Amps.of(40);
     public Command autoScore() {
+        
+
         return Commands.parallel(
                 m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
                 Commands.parallel(
-                        m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
-                        m_Spindexer.setVoltage(
-                                () -> SpindexerConstants.kFastVoltage)),
+                        m_indexer.setVoltage(() ->  IndexerConstants.kFastVoltage),
+                        m_Spindexer.setVoltage(runSpindexerWithReverse),
                         intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75)
-                        );
+                        ));
     }
 
     public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {

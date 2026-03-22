@@ -53,11 +53,11 @@ public final class ChoreoVars {
         public static final Pose2d R_SWEEP4 = new Pose2d(6.112, 1.751, Rotation2d.kZero);
         public static final Pose2d R_SWEEP5 = new Pose2d(6.122, 0.863, Rotation2d.fromRadians(-2.793));
         public static final Pose2d STA1 = new Pose2d(0.994, 0.661, Rotation2d.fromRadians(3.142));
-        public static final Pose2d STOPL1 = new Pose2d(8.284, 5.306, Rotation2d.fromRadians(4.712));
+        public static final Pose2d STOPL1 = new Pose2d(8.284, 5.886, Rotation2d.fromRadians(4.712));
         public static final Pose2d STOPL2 = new Pose2d(7.301, 5.655, Rotation2d.fromRadians(-1.571));
         public static final Pose2d STOPL3 = new Pose2d(8.28, 1.924, Rotation2d.fromRadians(-1.571));
         public static final Pose2d STOPL4 = new Pose2d(6.107, 4.269, Rotation2d.fromRadians(-1.571));
-        public static final Pose2d STOPR1 = new Pose2d(8.284, 2.746, Rotation2d.fromRadians(1.571));
+        public static final Pose2d STOPR1 = new Pose2d(8.284, 2.166, Rotation2d.fromRadians(1.571));
         public static final Pose2d STOPR2 = new Pose2d(7.301, 2.397, Rotation2d.fromRadians(1.571));
         public static final Pose2d STOPR3 = new Pose2d(8.28, 6.189, Rotation2d.fromRadians(1.571));
         public static final Pose2d STOPR4 = new Pose2d(6.107, 3.656, Rotation2d.fromRadians(1.571));

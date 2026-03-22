@@ -55,7 +55,7 @@ public class RealSpindexerS extends SpindexerS {
         public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(90000000);
         public static final Voltage kSlowVoltage = Volts.of(2);
         public static final Voltage kFastVoltage = Volts.of(4.52);
-        public static final Voltage kReverseVoltage = Volts.of(-2.0);
+        public static final Voltage kReverseVoltage = Volts.of(-4.0);
 
         // Feedforward Constants
         public static final double kS = 0;

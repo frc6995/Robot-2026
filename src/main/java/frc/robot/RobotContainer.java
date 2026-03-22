@@ -244,7 +244,7 @@ public class RobotContainer {
                         )
                 );
 
-                joystick.y().onTrue(m_spindexer.setVoltage(()->SpindexerConstants.kReverseVoltage).withTimeout(0.25));
+                joystick.y().onTrue(m_spindexer.runUnjam());
 
                 // RT: hold to shoot
                 joystick.rightTrigger().whileTrue(m_autoCommands.Score());
