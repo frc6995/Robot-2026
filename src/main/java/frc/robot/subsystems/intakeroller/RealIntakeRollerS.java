@@ -83,6 +83,7 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
   .withGearing(new MechanismGearing(GearBox.fromReductionStages(IntakeRollerConstants.kReduction)))  // Motor properties to prevent over currenting.
   .withMotorInverted(IntakeRollerConstants.kMotorInverted)
   .withIdleMode(MotorMode.BRAKE)
+  .withSupplyCurrentLimit(Amps.of(60))
   .withStatorCurrentLimit(Amps.of(IntakeRollerConstants.kStatorCurrentLimit));
 
   private TalonFX motor = new TalonFX(IntakeRollerConstants.kCANID, TunerConstants.kLowerBus);
