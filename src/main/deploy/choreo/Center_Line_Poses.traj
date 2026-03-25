@@ -52,8 +52,8 @@
  "params":{
   "waypoints":[
     {"x":{"exp":"TRL1.x", "val":3.802580738067627}, "y":{"exp":"TRL1.y", "val":7.502641906738281}, "heading":{"exp":"TRL1.heading", "val":0.0}, "intervals":86, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"HELPL2.x", "val":7.097064037322998}, "y":{"exp":"HELPL2.y", "val":18.994863166809083}, "heading":{"exp":"HELPL2.heading", "val":-1.5707963267948966}, "intervals":79, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"BALLL2.x", "val":8.805791759490967}, "y":{"exp":"BALLL2.y", "val":6.791913242340088}, "heading":{"exp":"BALLL2.heading", "val":-1.5707963267948966}, "intervals":25, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"HELPL2.x", "val":7.097064037322998}, "y":{"exp":"HELPL2.y", "val":18.994863166809083}, "heading":{"exp":"HELPL2.heading", "val":-1.5707963267948966}, "intervals":72, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"BALLL2.x", "val":8.805791759490967}, "y":{"exp":"BALLL2.y", "val":6.791913242340088}, "heading":{"exp":"BALLL2.heading", "val":-1.5707963267948966}, "intervals":27, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"BALLL3.x", "val":7.62562313079834}, "y":{"exp":"BALLL3.y", "val":6.593425521850586}, "heading":{"exp":"BALLL3.heading", "val":-1.3089969389957472}, "intervals":61, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"HELPR1.x", "val":8.976036262512206}, "y":{"exp":"HELPR1.y", "val":0.7519999999999998}, "heading":{"exp":"HELPR1.heading", "val":0.10471975511965978}, "intervals":59, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"BALLL1.x", "val":6.916625499725342}, "y":{"exp":"BALLL1.y", "val":6.701221466064453}, "heading":{"exp":"BALLL1.heading", "val":-0.7853981633974483}, "intervals":59, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
@@ -92,7 +92,8 @@
     {"x":{"exp":"L_SWEEP4.x", "val":6.111816120147705}, "y":{"exp":"L_SWEEP4.y", "val":6.3011064529418945}, "heading":{"exp":"L_SWEEP4.heading", "val":0.0}, "intervals":38, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"L_SWEEP5.x", "val":6.022391414642334}, "y":{"exp":"L_SWEEP5.y", "val":7.189453125}, "heading":{"exp":"L_SWEEP5.heading", "val":2.792526803190927}, "intervals":26, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"L_SWEEP6.x", "val":5.11978006362915}, "y":{"exp":"L_SWEEP6.y", "val":7.452172603607178}, "heading":{"exp":"L_SWEEP6.heading", "val":3.1230761972109606}, "intervals":49, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"3.4350388050079346 m", "val":3.4350388050079346}, "y":{"exp":"8.805848121643066 m", "val":8.805848121643066}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"3.4350388050079346 m", "val":3.4350388050079346}, "y":{"exp":"8.805848121643066 m", "val":8.805848121643066}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":61, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"6.134672164916992 m", "val":6.134672164916992}, "y":{"exp":"5.315167427062988 m", "val":5.315167427062988}, "heading":{"exp":"BUMPHELP1.heading", "val":2.792526803190927}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"17.548 m", "val":17.548}, "h":{"exp":"8.052 m", "val":8.052}}}, "enabled":false}],
   "targetDt":{

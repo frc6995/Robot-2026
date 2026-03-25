@@ -1,4 +1,4 @@
-
+// spotless:off
 package frc.robot.generated;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -6,10 +6,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Map;
 import java.util.OptionalInt;
 
-// If these imports cause errors because you're not using ChoreoLib,
-// turn off "Include ChoreoLib-specific Helpers" in Choreo's codegen settings.
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+// If the 2 imports above cause errors because you're not using ChoreoLib,
+// turn off "Include ChoreoLib-specific Helpers" in Choreo's codegen settings.
 
 /**
  * A class containing the name, start pose, end pose, and total time of every Choreo trajectory.
@@ -25,67 +25,67 @@ public record ChoreoTraj(
     Pose2d endPoseBlue
 ) {
     public static final ChoreoTraj B = new ChoreoTraj(
-	    "B",
-	    OptionalInt.empty(),
-	    3.23362,
-	    new Pose2d(8.297, 4.238, Rotation2d.fromRadians(-1.574)),
-	    new Pose2d(4.285, 7.584, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
-	    "Climb_Poses",
-	    OptionalInt.empty(),
-	    11.36097,
-	    new Pose2d(1.586, 4.196, Rotation2d.fromRadians(0)),
-	    new Pose2d(3.822, 0.539, Rotation2d.fromRadians(3.142))
-	);
-	public static final ChoreoTraj R_Sweep = new ChoreoTraj(
-	    "R_Sweep",
-	    OptionalInt.empty(),
-	    3.31228,
-	    new Pose2d(7.485, 2.325, Rotation2d.fromRadians(1.818)),
-	    new Pose2d(5.12, 0.6, Rotation2d.fromRadians(-3.123))
-	);
-	public static final ChoreoTraj L_Sweep = new ChoreoTraj(
-	    "L_Sweep",
-	    OptionalInt.empty(),
-	    3.299,
-	    new Pose2d(7.485, 5.727, Rotation2d.fromRadians(-1.818)),
-	    new Pose2d(5.12, 7.452, Rotation2d.fromRadians(3.123))
-	);
-	public static final ChoreoTraj ClimbTest = new ChoreoTraj(
-	    "ClimbTest",
-	    OptionalInt.empty(),
-	    3.26392,
-	    new Pose2d(3.12, 7.14, Rotation2d.fromRadians(0)),
-	    new Pose2d(0.674, 4.082, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj HP_test = new ChoreoTraj(
-	    "HP_test",
-	    OptionalInt.empty(),
-	    5.87655,
-	    new Pose2d(8.32, 3.571, Rotation2d.fromRadians(1.557)),
-	    new Pose2d(0.423, 0.696, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
-	    "Center_Line_Poses",
-	    OptionalInt.empty(),
-	    76.22921,
-	    new Pose2d(3.803, 7.503, Rotation2d.fromRadians(0)),
-	    new Pose2d(3.435, 8.806, Rotation2d.fromRadians(0))
-	);
+        "B",
+        OptionalInt.empty(),
+        3.23362,
+        new Pose2d(8.2971, 4.23834, Rotation2d.fromRadians(-1.57428)),
+        new Pose2d(4.28457, 7.58394, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
+        "Center_Line_Poses",
+        OptionalInt.empty(),
+        76.22921,
+        new Pose2d(3.80258, 7.50264, Rotation2d.fromRadians(0)),
+        new Pose2d(3.43504, 8.80585, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj ClimbTest = new ChoreoTraj(
+        "ClimbTest",
+        OptionalInt.empty(),
+        3.26392,
+        new Pose2d(3.12002, 7.13968, Rotation2d.fromRadians(0)),
+        new Pose2d(0.67401, 4.08217, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
+        "Climb_Poses",
+        OptionalInt.empty(),
+        11.36097,
+        new Pose2d(1.58574, 4.19588, Rotation2d.fromRadians(0)),
+        new Pose2d(3.82219, 0.53936, Rotation2d.fromRadians(3.14159))
+    );
+    public static final ChoreoTraj HP_test = new ChoreoTraj(
+        "HP_test",
+        OptionalInt.empty(),
+        5.87655,
+        new Pose2d(8.32043, 3.57088, Rotation2d.fromRadians(1.55671)),
+        new Pose2d(0.42325, 0.69616, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj L_Sweep = new ChoreoTraj(
+        "L_Sweep",
+        OptionalInt.empty(),
+        3.299,
+        new Pose2d(7.48511, 5.72693, Rotation2d.fromRadians(-1.81775)),
+        new Pose2d(5.11978, 7.45217, Rotation2d.fromRadians(3.12308))
+    );
+    public static final ChoreoTraj R_Sweep = new ChoreoTraj(
+        "R_Sweep",
+        OptionalInt.empty(),
+        3.31228,
+        new Pose2d(7.48511, 2.32507, Rotation2d.fromRadians(1.81775)),
+        new Pose2d(5.11978, 0.59983, Rotation2d.fromRadians(-3.12308))
+    );
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("B", B),
-		Map.entry("Climb_Poses", Climb_Poses),
-		Map.entry("R_Sweep", R_Sweep),
-		Map.entry("L_Sweep", L_Sweep),
-		Map.entry("ClimbTest", ClimbTest),
-		Map.entry("HP_test", HP_test),
-		Map.entry("Center_Line_Poses", Center_Line_Poses)
+        Map.entry("B", B),
+        Map.entry("Center_Line_Poses", Center_Line_Poses),
+        Map.entry("ClimbTest", ClimbTest),
+        Map.entry("Climb_Poses", Climb_Poses),
+        Map.entry("HP_test", HP_test),
+        Map.entry("L_Sweep", L_Sweep),
+        Map.entry("R_Sweep", R_Sweep)
     );
 
     /**
@@ -112,3 +112,4 @@ public record ChoreoTraj(
         return routine.trajectory(this.name);
     }
 }
+// spotless:on

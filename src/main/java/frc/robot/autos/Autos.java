@@ -38,224 +38,256 @@ import java.util.function.Supplier;
 
 public class Autos {
 
-    public class AutoConstants {
-        private static Time kDefaultautoScoreTime = Seconds.of(4.2);
-        private static Time kGPDTimeout = Seconds.of(6.0);
-        private static Distance kGPDStartRadius = Meters.of(2.0);
-        private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
-        private static Distance kCloseBackToStartRadius = Meters.of(2.0);
-        private static Distance kDefaultStartRadius = Meters.of(3.5);
-        private static Distance kDefaultBeginIntakingRadius = Meters.of(1.0);
+        public class AutoConstants {
+                private static Time kDefaultautoScoreTime = Seconds.of(4.2);
+                private static Time kGPDTimeout = Seconds.of(6.0);
+                private static Distance kGPDStartRadius = Meters.of(2.0);
+                private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
+                private static Distance kCloseBackToStartRadius = Meters.of(2.0);
+                private static Distance kDefaultStartRadius = Meters.of(3.5);
+                private static Distance kDefaultBeginIntakingRadius = Meters.of(1.0);
 
-    }
+        }
 
-    private final AutoCommands autoCommands;
-    private final AutoFactory factory;
-    private final CommandSwerveDrivetrain m_drivebase;
-    private final Map<String, Supplier<Command>> autos = new LinkedHashMap<>();
-    private final HoodS m_hood;
-    private final IntakePivotS m_intakePivot;
-    private final IntakeRollerS m_intakeRoller;
-    private final TurretS m_turret;
-    private final IndexerS m_indexer;
-    private final SpindexerS m_spindexer;
-    private final FlyWheelS m_FlyWheel;
-    private final ObjectVision m_objectVision;
+        private final AutoCommands autoCommands;
+        private final AutoFactory factory;
+        private final CommandSwerveDrivetrain m_drivebase;
+        private final Map<String, Supplier<Command>> autos = new LinkedHashMap<>();
+        private final HoodS m_hood;
+        private final IntakePivotS m_intakePivot;
+        private final IntakeRollerS m_intakeRoller;
+        private final TurretS m_turret;
+        private final IndexerS m_indexer;
+        private final SpindexerS m_spindexer;
+        private final FlyWheelS m_FlyWheel;
+        private final ObjectVision m_objectVision;
 
-    public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory,
-            RobotContainer container, HoodS hood,
-            IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer,
-            SpindexerS spindexer, FlyWheelS flyWheel, ObjectVision objectVision) {
-        this.factory = factory;
-        this.autoCommands = autoCommands;
-        this.m_hood = hood;
-        this.m_intakePivot = intakePivot;
-        this.m_intakeRoller = intakeRoller;
-        this.m_turret = turret;
-        this.m_drivebase = drive;
-        this.m_indexer = indexer;
-        this.m_spindexer = spindexer;
-        this.m_FlyWheel = flyWheel;
-        this.m_objectVision = objectVision;
-        // ============= CHOREO PATHS =============
-        Command run = factory.trajectoryCmd("Poses");
-        Command L_Sweep = factory.trajectoryCmd("L_Sweep");
+        public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory,
+                        RobotContainer container, HoodS hood,
+                        IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer,
+                        SpindexerS spindexer, FlyWheelS flyWheel, ObjectVision objectVision) {
+                this.factory = factory;
+                this.autoCommands = autoCommands;
+                this.m_hood = hood;
+                this.m_intakePivot = intakePivot;
+                this.m_intakeRoller = intakeRoller;
+                this.m_turret = turret;
+                this.m_drivebase = drive;
+                this.m_indexer = indexer;
+                this.m_spindexer = spindexer;
+                this.m_FlyWheel = flyWheel;
+                this.m_objectVision = objectVision;
+                // ============= CHOREO PATHS =============
+                Command run = factory.trajectoryCmd("Poses");
+                Command L_Sweep = factory.trajectoryCmd("L_Sweep");
                 Command R_Sweep = factory.trajectoryCmd("R_Sweep");
 
+                // ============= PREDEFINED HELPERS =============
 
-        // ============= PREDEFINED HELPERS =============
+                // (L/R) Center Line Preplanned
+                Supplier<Command> leftToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
+                                AutoConstants.kDefaultStartRadius,
+                                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                                POI.STOPL1.get());
 
-        // (L/R) Center Line Preplanned
-        Supplier<Command> leftToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPL1.get());
+                Supplier<Command> leftToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
+                                AutoConstants.kDefaultStartRadius,
+                                POI.BALLL3.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                                POI.STOPL2.get());
 
-        Supplier<Command> leftToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLL3.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPL2.get());
+                Supplier<Command> rightToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+                                AutoConstants.kDefaultStartRadius,
+                                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                                POI.STOPR1.get());
 
-        Supplier<Command> rightToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPR1.get());
+                Supplier<Command> rightToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+                                AutoConstants.kDefaultStartRadius,
+                                POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                                POI.STOPR2.get());
 
-        Supplier<Command> rightToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius, POI.STOPR2.get());
+                // (L/R) Center Line Middle GPD
+                Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
+                                .until(() -> m_objectVision.getBestCluster().isPresent()
+                                                && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> AutoConstants.kGPDStartRadius).getAsBoolean())
 
-        // (L/R) Center Line Middle GPD
-        Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
-                .until(() -> m_objectVision.getBestCluster().isPresent()
-                        && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
-                                () -> m_drivebase.state.Pose, () -> AutoConstants.kGPDStartRadius).getAsBoolean())
+                                .andThen(autoCommands.APToClusterChain(80000, true))
+                                .withTimeout(AutoConstants.kGPDTimeout);
 
-                .andThen(autoCommands.APToClusterChain(80000, true)).withTimeout(AutoConstants.kGPDTimeout);
+                Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
+                                .until(() -> m_objectVision.getBestCluster().isPresent()
+                                                && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> AutoConstants.kGPDStartRadius).getAsBoolean())
+                                .andThen(autoCommands.APToClusterChain(90000, false))
+                                .withTimeout(AutoConstants.kGPDTimeout);
 
-        Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
-                .until(() -> m_objectVision.getBestCluster().isPresent()
-                        && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
-                                () -> m_drivebase.state.Pose, () -> AutoConstants.kGPDStartRadius).getAsBoolean())
-                .andThen(autoCommands.APToClusterChain(90000, false)).withTimeout(AutoConstants.kGPDTimeout);
+                // (L/R) Back From Center Line Default
+                Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
+                                POI.HELPL2Entry.get(), Meters.of(3),
+                                POI.TRL1.get(), POI.TRL1Entry.get());
 
-        // (L/R) Back From Center Line Default
-        Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
-                POI.HELPL2Entry.get(), Meters.of(3),
-                POI.TRL1.get(), POI.TRL1Entry.get());
+                Supplier<Command> leftBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
+                                POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
+                                POI.TRL1.get(), POI.TRL1Entry.get());
 
-        Supplier<Command> leftBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
-                POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
-                POI.TRL1.get(), POI.TRL1Entry.get());
+                Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR2.get(),
+                                POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
+                                POI.TRR1.get(), POI.TRR1Entry.get());
 
-        Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR2.get(),
-                POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
-                POI.TRR1.get(), POI.TRR1Entry.get());
+                Supplier<Command> rightBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
+                                POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
+                                POI.TRR1.get(), POI.TRL1Entry.get());
 
-        Supplier<Command> rightBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
-                POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
-                POI.TRR1.get(), POI.TRL1Entry.get());
+                // (L/R) Sweep Default
+                Supplier<Command> leftStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPL1.get(),
+                                AutoConstants.kDefaultStartRadius,
+                                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultStartRadius,
+                                POI.STOPL3.get())
+                                .andThen(new AutoAlign(POI.TRR2.get(), POI.TRR1Entry.get(), m_drivebase,
+                                                AutoAlign.kDefaultVelocityLimitedProfile));
 
-        // (L/R) Sweep Default
-        Supplier<Command> leftStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPL1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultStartRadius, POI.STOPL3.get())
-                .andThen(new AutoAlign(POI.TRR2.get(), POI.TRR1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
+                Supplier<Command> rightStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+                                AutoConstants.kDefaultStartRadius,
+                                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultStartRadius,
+                                POI.STOPR3.get())
+                                .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
+                                                AutoAlign.kDefaultVelocityLimitedProfile));
 
-        Supplier<Command> rightStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultStartRadius, POI.STOPR3.get())
-                .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
+                // (L) Back From Center Line To Depot
+                Supplier<Command> leftBackToDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
+                                POI.HELPL2Entry.get(), Meters.of(12.2),
+                                POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
+                                .until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> POI.DEPOT_HELP.get()
+                                                                                .getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> Meters.of(0.1)))
+                                .andThen(
 
-        // (L) Back From Center Line To Depot
-        Supplier<Command> leftBackToDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
-                POI.HELPL2Entry.get(), Meters.of(12.2),
-                POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
-                .until(
-                        TriggerUtil.isWithinRadius(
-                                () -> POI.DEPOT_HELP.get()
-                                        .getTranslation(),
+                                                autoCommands.autoScore()
+                                                                .withTimeout(AutoConstants.kDefaultautoScoreTime)
+                                                                .alongWith(autoCommands.APtoDepot()));
+
+                Supplier<Command> rightBackToHP = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
+                                POI.HELPR2Entry.get(), Meters.of(12.5),
+                                POI.HELPS.get(), POI.TRL1Entry.get())
+                                .until(
+                                                TriggerUtil.isWithinRadius(
+                                                                () -> POI.HELPS.get()
+                                                                                .getTranslation(),
+                                                                () -> m_drivebase.state.Pose,
+                                                                () -> Meters.of(0.3)))
+                                .andThen(
+
+                                                autoCommands.autoScore()
+                                                                .withTimeout(AutoConstants.kDefaultautoScoreTime)
+                                                                .alongWith(new AutoAlign(POI.STA1.get(), m_drivebase,
+                                                                                AutoAlign.kSlowDriveProfile)));
+                // (L/R) Back From Center Line To Climb
+                Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
+                                () -> POI.L_SWEEP6.get()
+                                                .getTranslation(),
                                 () -> m_drivebase.state.Pose,
-                                () -> Meters.of(0.1)))
-                .andThen(
+                                () -> Meters.of(0.2)))
+                                .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
+                                                AutoAlign.kDefaultVelocityLimitedProfile));
 
-                        autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime)
-                                .alongWith(autoCommands.APtoDepot()));
-
-        Supplier<Command> rightBackToHP = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
-                POI.HELPR2Entry.get(), Meters.of(12.5),
-                POI.HELPS.get(), POI.TRL1Entry.get())
-                .until(
-                        TriggerUtil.isWithinRadius(
-                                () -> POI.HELPS.get()
-                                        .getTranslation(),
+                Supplier<Command> rightChoreoSweepBack = () -> R_Sweep.until(TriggerUtil.isWithinRadius(
+                                () -> POI.R_SWEEP6.get()
+                                                .getTranslation(),
                                 () -> m_drivebase.state.Pose,
-                                () -> Meters.of(0.3)))
-                .andThen(
+                                () -> Meters.of(0.2)))
+                                .andThen(new AutoAlign(POI.TRR2.get(), POI.TRL1Entry.get(), m_drivebase,
+                                                AutoAlign.kDefaultVelocityLimitedProfile));
 
-                        autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime)
-                                .alongWith(new AutoAlign(POI.STA1.get(), m_drivebase, AutoAlign.kSlowDriveProfile)));
-        // (L/R) Back From Center Line To Climb
-        Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
-                () -> POI.L_SWEEP6.get()
-                        .getTranslation(),
-                () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.2)))
-                .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
+                Supplier<Command> leftCirclePath = () -> autoCommands.APToIntake(POI.HELPL1.get(),
+                                AutoConstants.kDefaultStartRadius,
+                                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                                POI.STOPL1.get())
+                                .andThen(new AutoAlign(POI.BUMPHELP1.get(), m_drivebase, AutoAlign.kDefaultVelocityLimitedProfile))
+                                .andThen(autoCommands.driveOverBump(true))
+                                .andThen(Commands.parallel(new AutoAlign(POI.TRL1.get(), Rotation2d.fromDegrees(180), m_drivebase, AutoAlign.kSlowCrawlProfile),
+                                                                autoCommands.autoScore().until(TriggerUtil.isWithinRadius(
+                                                                        () -> POI.L_SWEEP0.get().getTranslation(),
+                                                                        () -> m_drivebase.state.Pose,
+                                                                        () -> Meters.of(0.4)))));
+                        
 
-        Supplier<Command> rightChoreoSweepBack = () -> R_Sweep.until(TriggerUtil.isWithinRadius(
-                () -> POI.R_SWEEP6.get()
-                        .getTranslation(),
-                () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.2)))
-                .andThen(new AutoAlign(POI.TRR2.get(), POI.TRL1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
-                                 
-                      
-        // (L/R) Back From Center Line To Climb
+                // (L/R) Back From Center Line To Climb
 
-        // ============= DEFINE AUTOS =============
+                // ============= DEFINE AUTOS =============
 
-        autos.put("L 2x center-line Preplanned",
-                () -> auto(POI.TRL1.get(), c -> {
-                    c.addCommands(leftToCenterLineMiddleHardCoded.get());
+                autos.put("L 2x center-line Preplanned",
+                                () -> auto(POI.TRL1.get(), c -> {
+                                        c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
-                    c.addCommands(leftBackToStartDefault.get());
+                                        c.addCommands(leftBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
+                                        c.addCommands(autoCommands.autoScore()
+                                                        .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
-                    c.addCommands(leftToCenterLineCloseHardCoded.get().until(TriggerUtil.isWithinRadius(
-                () -> POI.L_SWEEP0.get()
-                        .getTranslation(),
-                () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.4))));
+                                        c.addCommands(leftToCenterLineCloseHardCoded.get()
+                                                        .until(TriggerUtil.isWithinRadius(
+                                                                        () -> POI.L_SWEEP0.get()
+                                                                                        .getTranslation(),
+                                                                        () -> m_drivebase.state.Pose,
+                                                                        () -> Meters.of(0.4))));
 
-                    c.addCommands(leftChoreoSweepBack.get());
+                                        c.addCommands(leftChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.autoScore());
+                                        c.addCommands(autoCommands.autoScore());
+                                }));
+
+                autos.put("R 2x center-line Preplanned",
+                                () -> auto(POI.TRR1.get(), c -> {
+                                        c.addCommands(rightToCenterLineMiddleHardCoded.get());
+
+                                        c.addCommands(rightBackToStartDefault.get());
+
+                                        c.addCommands(autoCommands.autoScore()
+                                                        .withTimeout(AutoConstants.kDefaultautoScoreTime));
+
+                                        c.addCommands(rightToCenterLineCloseHardCoded.get());
+
+                                        c.addCommands(rightChoreoSweepBack.get());
+
+                                        c.addCommands(autoCommands.autoScore());
+                                }));
+
+                autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
+                        c.addCommands(Commands.none());
                 }));
 
-        autos.put("R 2x center-line Preplanned",
-                () -> auto(POI.TRR1.get(), c -> {
-                    c.addCommands(rightToCenterLineMiddleHardCoded.get());
-
-                    c.addCommands(rightBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.autoScore().withTimeout(AutoConstants.kDefaultautoScoreTime));
-
-                    c.addCommands(rightToCenterLineCloseHardCoded.get());
-
-                    c.addCommands(rightChoreoSweepBack.get());
-
-                    c.addCommands(autoCommands.autoScore());
+                autos.put("L Circle Path", () -> auto(POI.TRL1.get(), c -> {
+                        c.addCommands(leftCirclePath.get());
+                         c.addCommands(leftCirclePath.get());
+                          c.addCommands(leftCirclePath.get());
                 }));
+                // Auto-register
+                autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
 
+        }
+        // ============= FLEXIBLE AUTO BUILDER =============
 
-        autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
-            c.addCommands(Commands.none());
-        }));
-        // Auto-register
-        autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
+        /**
+         * Build any auto with command flexibility
+         * 
+         * @param startPose Starting pose (auto-resets odometry)
+         * @param builder   A consumer that builds the command sequence using
+         *                  addCommands()
+         */
+        private Command auto(Pose2d startPose, Consumer<SequentialCommandGroup> builder) {
+                SequentialCommandGroup group = new SequentialCommandGroup();
 
-    }
-    // ============= FLEXIBLE AUTO BUILDER =============
+                // Odometry reset first
+                group.addCommands(factory.resetOdometry(Optional.of(startPose), false));
 
-    /**
-     * Build any auto with command flexibility
-     * 
-     * @param startPose Starting pose (auto-resets odometry)
-     * @param builder   A consumer that builds the command sequence using
-     *                  addCommands()
-     */
-    private Command auto(Pose2d startPose, Consumer<SequentialCommandGroup> builder) {
-        SequentialCommandGroup group = new SequentialCommandGroup();
-
-        // Odometry reset first
-        group.addCommands(factory.resetOdometry(Optional.of(startPose), false));
-
-        // Let the builder add more commands
-        builder.accept(group);
-        return group;
-    }
+                // Let the builder add more commands
+                builder.accept(group);
+                return group;
+        }
 
 }
