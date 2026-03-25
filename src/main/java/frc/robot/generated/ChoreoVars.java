@@ -15,14 +15,14 @@ public final class ChoreoVars {
 
     public static final class Poses {
         public static final Pose2d BALLL1 = new Pose2d(6.917, 6.701, Rotation2d.fromRadians(-0.785));
-        public static final Pose2d BALLL2 = new Pose2d(8.306, 6.792, Rotation2d.fromRadians(-1.222));
-        public static final Pose2d BALLL3 = new Pose2d(7.326, 6.593, Rotation2d.fromRadians(-1.309));
+        public static final Pose2d BALLL2 = new Pose2d(8.806, 6.792, Rotation2d.fromRadians(-1.571));
+        public static final Pose2d BALLL3 = new Pose2d(7.626, 6.593, Rotation2d.fromRadians(-1.309));
         public static final Pose2d BALLL4 = new Pose2d(8.28, 1.924, Rotation2d.fromRadians(-1.571));
         public static final Pose2d BALLL5 = new Pose2d(5.994, 6.663, Rotation2d.fromRadians(-1.571));
         public static final Pose2d BALLM1 = new Pose2d(8.017, 4.424, Rotation2d.kZero);
         public static final Pose2d BALLR1 = new Pose2d(6.917, 1.351, Rotation2d.fromRadians(0.785));
-        public static final Pose2d BALLR2 = new Pose2d(8.306, 1.277, Rotation2d.fromRadians(1.571));
-        public static final Pose2d BALLR3 = new Pose2d(7.326, 1.499, Rotation2d.fromRadians(1.571));
+        public static final Pose2d BALLR2 = new Pose2d(8.806, 1.277, Rotation2d.fromRadians(1.571));
+        public static final Pose2d BALLR3 = new Pose2d(7.626, 1.499, Rotation2d.fromRadians(1.571));
         public static final Pose2d BALLR5 = new Pose2d(5.994, 1.262, Rotation2d.fromRadians(1.571));
         public static final Pose2d CL1 = new Pose2d(1.586, 4.196, Rotation2d.kZero);
         public static final Pose2d CL2 = new Pose2d(1.586, 3.3, Rotation2d.kZero);
@@ -41,23 +41,29 @@ public final class ChoreoVars {
         public static final Pose2d L_SWEEP0 = new Pose2d(7.485, 5.727, Rotation2d.fromRadians(-1.818));
         public static final Pose2d L_SWEEP1 = new Pose2d(8.302, 5.2, Rotation2d.fromRadians(-1.678));
         public static final Pose2d L_SWEEP100 = new Pose2d(5.551, 7.397, Rotation2d.fromRadians(1.614));
-        public static final Pose2d L_SWEEP101 = new Pose2d(6.122, 7.189, Rotation2d.fromRadians(2.793));
+        public static final Pose2d L_SWEEP101 = new Pose2d(6.022, 7.189, Rotation2d.fromRadians(2.793));
+        public static final Pose2d L_SWEEP102 = new Pose2d(6.135, 4.765, Rotation2d.fromRadians(2.056));
         public static final Pose2d L_SWEEP2 = new Pose2d(7.285, 4.791, Rotation2d.fromRadians(-2.269));
+        public static final Pose2d L_SWEEP200 = new Pose2d(7.255, 4.887, Rotation2d.fromRadians(-1.893));
+        public static final Pose2d L_SWEEP201 = new Pose2d(6.871, 5.494, Rotation2d.fromRadians(2.622));
+        public static final Pose2d L_SWEEP202 = new Pose2d(6.187, 6.192, Rotation2d.fromRadians(1.974));
+        public static final Pose2d L_SWEEP203 = new Pose2d(6.022, 7.189, Rotation2d.fromRadians(2.675));
         public static final Pose2d L_SWEEP3 = new Pose2d(5.727, 5.787, Rotation2d.fromRadians(1.495));
         public static final Pose2d L_SWEEP4 = new Pose2d(6.112, 6.301, Rotation2d.kZero);
-        public static final Pose2d L_SWEEP5 = new Pose2d(6.122, 7.189, Rotation2d.fromRadians(2.793));
+        public static final Pose2d L_SWEEP5 = new Pose2d(6.022, 7.189, Rotation2d.fromRadians(2.793));
         public static final Pose2d L_SWEEP6 = new Pose2d(5.12, 7.452, Rotation2d.fromRadians(3.123));
         public static final Pose2d R_SWEEP1 = new Pose2d(7.485, 2.325, Rotation2d.fromRadians(1.818));
         public static final Pose2d R_SWEEP2 = new Pose2d(5.727, 2.265, Rotation2d.fromRadians(-1.495));
         public static final Pose2d R_SWEEP3 = new Pose2d(5.727, 2.265, Rotation2d.fromRadians(-1.495));
         public static final Pose2d R_SWEEP4 = new Pose2d(6.112, 1.751, Rotation2d.kZero);
-        public static final Pose2d R_SWEEP5 = new Pose2d(6.122, 0.863, Rotation2d.fromRadians(-2.793));
+        public static final Pose2d R_SWEEP5 = new Pose2d(6.022, 0.863, Rotation2d.fromRadians(-2.793));
+        public static final Pose2d R_SWEEP6 = new Pose2d(5.12, 0.6, Rotation2d.fromRadians(-3.123));
         public static final Pose2d STA1 = new Pose2d(0.994, 0.661, Rotation2d.fromRadians(3.142));
-        public static final Pose2d STOPL1 = new Pose2d(8.284, 5.886, Rotation2d.fromRadians(4.712));
+        public static final Pose2d STOPL1 = new Pose2d(8.284, 5.586, Rotation2d.fromRadians(4.712));
         public static final Pose2d STOPL2 = new Pose2d(7.301, 5.655, Rotation2d.fromRadians(-1.571));
         public static final Pose2d STOPL3 = new Pose2d(8.28, 1.924, Rotation2d.fromRadians(-1.571));
         public static final Pose2d STOPL4 = new Pose2d(6.107, 4.269, Rotation2d.fromRadians(-1.571));
-        public static final Pose2d STOPR1 = new Pose2d(8.284, 2.166, Rotation2d.fromRadians(1.571));
+        public static final Pose2d STOPR1 = new Pose2d(8.284, 2.466, Rotation2d.fromRadians(1.571));
         public static final Pose2d STOPR2 = new Pose2d(7.301, 2.397, Rotation2d.fromRadians(1.571));
         public static final Pose2d STOPR3 = new Pose2d(8.28, 6.189, Rotation2d.fromRadians(1.571));
         public static final Pose2d STOPR4 = new Pose2d(6.107, 3.656, Rotation2d.fromRadians(1.571));
@@ -65,12 +71,6 @@ public final class ChoreoVars {
         public static final Pose2d TRL2 = new Pose2d(3.803, 7.503, Rotation2d.fromRadians(3.142));
         public static final Pose2d TRR1 = new Pose2d(3.803, 0.549, Rotation2d.kZero);
         public static final Pose2d TRR2 = new Pose2d(3.803, 0.549, Rotation2d.fromRadians(3.142));
-        public static final Pose2d R_SWEEP6 = new Pose2d(5.12, 0.6, Rotation2d.fromRadians(-3.123));
-        public static final Pose2d L_SWEEP102 = new Pose2d(6.135, 4.765, Rotation2d.fromRadians(2.056));
-        public static final Pose2d L_SWEEP200 = new Pose2d(7.255, 4.887, Rotation2d.fromRadians(-1.893));
-        public static final Pose2d L_SWEEP201 = new Pose2d(6.871, 5.494, Rotation2d.fromRadians(2.622));
-        public static final Pose2d L_SWEEP202 = new Pose2d(6.097, 6.192, Rotation2d.fromRadians(1.974));
-        public static final Pose2d L_SWEEP203 = new Pose2d(6.122, 7.189, Rotation2d.fromRadians(2.375));
 
         private Poses() {}
     }
