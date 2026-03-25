@@ -27,8 +27,11 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -57,22 +60,29 @@ import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
 
 public class AutoCommands {
-    // You need these dependencies passed in
-    private final CommandSwerveDrivetrain m_drivebase;
-    private final HoodS m_hood;
-    private final IntakePivotS m_intakePivot;
-    private final IntakeRollerS m_intakeRoller;
-    private final TurretS m_turret;
-    private final IndexerS m_indexer;
-    private final SpindexerS m_Spindexer;
-    private final FlyWheelS m_flywheel;
-    private final ClimbExtensionS m_climbExtension;
-    private final ObjectVision m_objectVision;
-    private final RobotStates m_robotStates;
 
-    SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
-            .withDriveRequestType(DriveRequestType.Velocity)
-            .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
+        private static final double kOverTheBumpSpeed = 1.6; // m/s
+
+        // You need these dependencies passed in
+        private final CommandSwerveDrivetrain m_drivebase;
+        private final HoodS m_hood;
+        private final IntakePivotS m_intakePivot;
+        private final IntakeRollerS m_intakeRoller;
+        private final TurretS m_turret;
+        private final IndexerS m_indexer;
+        private final SpindexerS m_Spindexer;
+        private final FlyWheelS m_flywheel;
+        private final ObjectVision m_objectVision;
+        private final ClimbExtensionS m_climbExtension;
+        private final RobotStates m_robotStates;
+
+
+        SwerveRequest.FieldCentric m_driveOverBumpRequest = new SwerveRequest.FieldCentric()
+                .withDriveRequestType(DriveRequestType.Velocity);
+
+        SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
+                .withDriveRequestType(DriveRequestType.Velocity)
+                .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
     final BooleanSupplier isJammed;
     final Supplier<Voltage> runSpindexerWithReverse;
@@ -333,4 +343,9 @@ public class AutoCommands {
                 m_intakePivot.setAngle(upperLimit).withTimeout(seconds),
                 m_intakePivot.setAngle(lowerLimit).withTimeout(seconds));
     }
+        public Command driveOverBump(boolean isBlue) {
+                return m_drivebase.applyRequest(() -> m_driveOverBumpRequest.withVelocityX(
+                        isBlue ? -kOverTheBumpSpeed : kOverTheBumpSpeed
+                )).withTimeout(1.8);  
+        }
 }

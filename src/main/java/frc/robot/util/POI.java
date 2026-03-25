@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.function.Supplier;
 
+import choreo.Choreo;
 import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -82,6 +83,8 @@ public class POI {
     public static final Supplier<Pose2d> HELPS = flipped(ChoreoVars.Poses.HELPS);
 
     public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
+
+    public static final Supplier<Pose2d> BUMPHELP1 = flipped(ChoreoVars.Poses.BUMPHELP1);
 
      // L_SWEEP path poses
 

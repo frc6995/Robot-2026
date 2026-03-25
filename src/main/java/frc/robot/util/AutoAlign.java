@@ -68,6 +68,8 @@ public class AutoAlign extends Command {
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)
         public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(1.6, DEFAULT_ACCELERATION, 20);
+                public static APConstraints SLOW_CRAWL_CONSTRAINTS = new APConstraints(0.6, DEFAULT_ACCELERATION, 20);
+
         public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, DEFAULT_JERK);
         public static APConstraints HIGH_JERK_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, 60);
         public static APConstraints DEFAULT_CONSTRAINTS = new APConstraints(DEFAULT_ACCELERATION, DEFAULT_JERK);
@@ -105,6 +107,12 @@ public class AutoAlign extends Command {
     
     public static APProfile kSlowDriveProfile = new APProfile(
             AutoAlignConstants.SLOW_DRIVE_CONSTRAINTS)
+            .withErrorXY(Centimeters.of(8))
+            .withErrorTheta(Degrees.of(2.5))
+            .withBeelineRadius(Centimeters.of(8));
+
+                public static APProfile kSlowCrawlProfile = new APProfile(
+            AutoAlignConstants.SLOW_CRAWL_CONSTRAINTS)
             .withErrorXY(Centimeters.of(8))
             .withErrorTheta(Degrees.of(2.5))
             .withBeelineRadius(Centimeters.of(8));
