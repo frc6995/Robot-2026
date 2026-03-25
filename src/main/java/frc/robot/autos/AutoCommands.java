@@ -61,7 +61,7 @@ import frc.robot.util.TriggerUtil;
 
 public class AutoCommands {
 
-        private static final double kOverTheBumpSpeed = 2.0; // m/s
+        private static final double kOverTheBumpSpeed = 3.0; // m/s
 
         // You need these dependencies passed in
         private final CommandSwerveDrivetrain m_drivebase;
@@ -334,11 +334,12 @@ public class AutoCommands {
                 m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
                 Commands.parallel(
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
-                        m_Spindexer.setVoltage(runSpindexerWithReverse),
+                        m_Spindexer.setVoltage(runSpindexerWithReverse)
+                        //,
                     //    Commands.waitSeconds(2).andThen(
-                            intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))
+                            //intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))
                    //     )
-                    );
+                    ));
     }
 
     public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
@@ -349,6 +350,6 @@ public class AutoCommands {
         public Command driveOverBump(boolean isBlue) {
                 return m_drivebase.applyRequest(() -> m_driveOverBumpRequest.withVelocityX(
                         isBlue ? -kOverTheBumpSpeed : kOverTheBumpSpeed
-                )).withTimeout(1.4);  
+                )).withTimeout(1.2);  
         }
 }

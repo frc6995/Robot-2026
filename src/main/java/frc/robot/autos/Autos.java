@@ -215,7 +215,15 @@ public class Autos {
 
         Supplier<Command> leftCircleOverBumpAndScore = () -> new AutoAlign(POI.BUMPHELP1.get(), m_drivebase,
                 AutoAlign.kDefaultVelocityLimitedProfile)
+                
+                .until(TriggerUtil.isWithinRadius(
+                () -> POI.BUMPHELP1.get()
+                        .getTranslation(),
+                () -> m_drivebase.state.Pose,
+                () -> Meters.of(0.5)))
+
                 .andThen(autoCommands.driveOverBump(true))
+                
                 .andThen(Commands.race(new AutoAlign(POI.TRL1.get(), Rotation2d.fromDegrees(180), m_drivebase,
                         AutoAlign.kSlowCrawlProfile), autoCommands.autoScore()));
 
