@@ -291,14 +291,15 @@ public class RobotContainer {
                 RobotModeTriggers.disabled().whileTrue(
                                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-                // shootNotReadyTrigger.debounce(0.5).and(DriverStation::isTeleopEnabled).and(joystick.rightTrigger()).whileTrue(
-                //         Commands.repeatingSequence(
-                //                 Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0.5)),
-                //                 Commands.waitSeconds(0.25),
-                //                 Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0)),
-                //                 Commands.waitSeconds(0.25)
-                //         )
-                // );
+                shootNotReadyTrigger//.debounce(0.5).and(DriverStation::isTeleopEnabled)//.and(joystick.rightTrigger())
+                        .whileTrue(
+                                Commands.repeatingSequence(
+                                        Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0.5)),
+                                        Commands.waitSeconds(0.25),
+                                        Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0)),
+                                        Commands.waitSeconds(0.25)))
+                        .onFalse(
+                                Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 1)));
 
                 RobotModeTriggers.autonomous().onTrue(
                         m_turret.aimAtFieldPose(
