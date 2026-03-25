@@ -74,8 +74,8 @@ public class AutoCommands {
             .withDriveRequestType(DriveRequestType.Velocity)
             .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
 
-        final BooleanSupplier isJammed;
-        final Supplier<Voltage> runSpindexerWithReverse;
+    final BooleanSupplier isJammed;
+    final Supplier<Voltage> runSpindexerWithReverse;
 
     public AutoCommands(
             CommandSwerveDrivetrain drivebase,
@@ -95,9 +95,10 @@ public class AutoCommands {
         this.m_objectVision = objectVision;
         this.m_robotStates = robotStates;
 
-        isJammed = new Trigger(() ->  m_Spindexer.getCurrent().gt(kUnjamThreshold)).debounce(1, DebounceType.kRising).debounce(0.25, DebounceType.kFalling);
+        isJammed = new Trigger(() -> m_Spindexer.getCurrent().gt(kUnjamThreshold)).debounce(1, DebounceType.kRising)
+                .debounce(0.25, DebounceType.kFalling);
         runSpindexerWithReverse = () -> {
-                return isJammed.getAsBoolean() ? SpindexerConstants.kReverseVoltage : SpindexerConstants.kFastVoltage;
+            return isJammed.getAsBoolean() ? SpindexerConstants.kReverseVoltage : SpindexerConstants.kFastVoltage;
         };
     }
 
@@ -264,19 +265,20 @@ public class AutoCommands {
         }
     };
 
-        public Command APToClusterChain(int numberOfBalls, boolean isLeftSide) {
-                return Commands.defer(
-                                () -> clusterChainFunction.apply(numberOfBalls,
-                                                isLeftSide ? POI.kLeftAutoBounds.get() : POI.kRightAutoBounds.get()),
-                                Set.of(m_drivebase, m_intakePivot));
-        }
+    public Command APToClusterChain(int numberOfBalls, boolean isLeftSide) {
+        return Commands.defer(
+                () -> clusterChainFunction.apply(numberOfBalls,
+                        isLeftSide ? POI.kLeftAutoBounds.get() : POI.kRightAutoBounds.get()),
+                Set.of(m_drivebase, m_intakePivot));
+    }
 
-        public Command APToClusterChain(int numberOfBalls, Rectangle2d bounds) {
-                return Commands.defer(
-                                () -> clusterChainFunction.apply(numberOfBalls, bounds),
-                                Set.of(m_drivebase, m_intakePivot));
-        }
-        public Command prepL1Climb(
+    public Command APToClusterChain(int numberOfBalls, Rectangle2d bounds) {
+        return Commands.defer(
+                () -> clusterChainFunction.apply(numberOfBalls, bounds),
+                Set.of(m_drivebase, m_intakePivot));
+    }
+
+    public Command prepL1Climb(
             Pose2d targetpose) {
         return Commands.race(
                 m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
@@ -294,11 +296,12 @@ public class AutoCommands {
                 m_climbExtension.setHeight(() -> Inches.of(8)).withTimeout(0.5));
     }
 
-        public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
-                        return m_climbExtension.setHeight(extensionDistance);
-        }
-        public Command fuelIntake() {
-                return m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle);
+    public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
+        return m_climbExtension.setHeight(extensionDistance);
+    }
+
+    public Command fuelIntake() {
+        return m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle);
 
     }
 
@@ -307,22 +310,22 @@ public class AutoCommands {
         return Commands.parallel(
                 m_hood.autoHoodAngle(),
                 Commands.parallel(
-                        m_indexer.setVoltage(() -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
-                        m_Spindexer.setVoltage(() -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero()))
-                );
+                        m_indexer.setVoltage(
+                                () -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
+                        m_Spindexer.setVoltage(
+                                () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())));
     }
 
     private static final Current kUnjamThreshold = Amps.of(40);
+
     public Command autoScore() {
-        
 
         return Commands.parallel(
                 m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
                 Commands.parallel(
-                        m_indexer.setVoltage(() ->  IndexerConstants.kFastVoltage),
+                        m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                         m_Spindexer.setVoltage(runSpindexerWithReverse),
-                        intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75)
-                        ));
+                        Commands.waitSeconds(2).andThen(intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))));
     }
 
     public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
