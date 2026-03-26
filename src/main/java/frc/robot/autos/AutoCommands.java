@@ -322,8 +322,11 @@ public class AutoCommands {
                 Commands.parallel(
                         m_indexer.setVoltage(
                                 () -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
-                        m_Spindexer.setVoltage(
-                                () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())));
+                        Commands.sequence(
+                                Commands.waitSeconds(0.2),
+                                m_Spindexer.setVoltage(
+                                () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
+                        )));
     }
 
     private static final Current kUnjamThreshold = Amps.of(40);
