@@ -329,17 +329,14 @@ public class AutoCommands {
     private static final Current kUnjamThreshold = Amps.of(40);
 
     public Command autoScore() {
-
         return Commands.parallel(
                 m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
                 Commands.parallel(
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
-                        m_Spindexer.setVoltage(runSpindexerWithReverse)
-                        //,
-                    //    Commands.waitSeconds(2).andThen(
-                            //intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))
-                   //     )
-                    ));
+                        m_Spindexer.setVoltage(runSpindexerWithReverse),
+                        intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))
+ 
+                    );
     }
 
     public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {

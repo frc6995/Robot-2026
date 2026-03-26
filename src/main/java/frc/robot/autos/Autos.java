@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultautoScoreTime = Seconds.of(4.2);
+        private static Time kDefaultautoScoreTime = Seconds.of(1.8);
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
         private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
@@ -208,34 +208,62 @@ public class Autos {
                 POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.CIRCLE_STOPL0.get());
 
+        Supplier<Command> rightCircleStart = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                POI.CIRCLE_STOPR0.get());
+
         Supplier<Command> leftCircleMid = () -> autoCommands.APToIntake(POI.HELPL1.get(),
                 AutoConstants.kDefaultStartRadius,
                 POI.BALLL3.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
-                POI.CIRCLE_STOPL1.get());
+                POI.CIRCLE_STOPL101.get());
+
+        Supplier<Command> rightCircleMid = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                POI.CIRCLE_STOPR101.get());
 
         Supplier<Command> leftCircleOverBumpAndScore = () -> new AutoAlign(POI.BUMPHELP1.get(), m_drivebase,
                 AutoAlign.kDefaultVelocityLimitedProfile)
-                
+
                 .until(TriggerUtil.isWithinRadius(
-                () -> POI.BUMPHELP1.get()
-                        .getTranslation(),
-                () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.5)))
+                        () -> POI.BUMPHELP1.get()
+                                .getTranslation(),
+                        () -> m_drivebase.state.Pose,
+                        () -> Meters.of(0.5)))
 
                 .andThen(autoCommands.driveOverBump(true))
-                
+
                 .andThen(Commands.race(new AutoAlign(POI.TRL1.get(), Rotation2d.fromDegrees(180), m_drivebase,
-                        AutoAlign.kSlowCrawlProfile), autoCommands.autoScore()));
+                        AutoAlign.kSlowCrawlProfile),
+                        autoCommands.Score()));
+
+        Supplier<Command> rightCircleOverBumpAndScore = () -> new AutoAlign(POI.BUMPHELP2.get(), m_drivebase,
+                AutoAlign.kDefaultVelocityLimitedProfile)
+
+                .until(TriggerUtil.isWithinRadius(
+                        () -> POI.BUMPHELP2.get()
+                                .getTranslation(),
+                        () -> m_drivebase.state.Pose,
+                        () -> Meters.of(0.5)))
+
+                .andThen(autoCommands.driveOverBump(true))
+
+                .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), Rotation2d.fromDegrees(180), m_drivebase,
+                        AutoAlign.kSlowCrawlProfile), autoCommands.Score()));
 
         // (L/R) Back From Center Line To Climb
 
         // ============= DEFINE AUTOS =============
 
-        autos.put("L 2x center-line Preplanned",
+        autos.put("L 2x trench",
                 () -> auto(POI.TRL1.get(), c -> {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
                     c.addCommands(leftBackToStartDefault.get());
+
+                    c.addCommands(autoCommands.Score()
+                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
                     c.addCommands(autoCommands.autoScore()
                             .withTimeout(AutoConstants.kDefaultautoScoreTime));
@@ -249,30 +277,43 @@ public class Autos {
 
                     c.addCommands(leftChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.autoScore());
+                    c.addCommands(autoCommands.Score()
+                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+
+                    c.addCommands(autoCommands.autoScore()
+                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+
                 }));
 
-        autos.put("R 2x center-line Preplanned",
+        autos.put("R 2x trench",
                 () -> auto(POI.TRR1.get(), c -> {
                     c.addCommands(rightToCenterLineMiddleHardCoded.get());
 
                     c.addCommands(rightBackToStartDefault.get());
 
+                    c.addCommands(autoCommands.Score()
+                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+
                     c.addCommands(autoCommands.autoScore()
                             .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
-                    c.addCommands(rightToCenterLineCloseHardCoded.get());
+                    c.addCommands(rightToCenterLineCloseHardCoded.get()
+                            .until(TriggerUtil.isWithinRadius(
+                                    () -> POI.R_SWEEP1.get()
+                                            .getTranslation(),
+                                    () -> m_drivebase.state.Pose,
+                                    () -> Meters.of(0.4))));
 
                     c.addCommands(rightChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.autoScore());
+                    c.addCommands(autoCommands.Score()
+                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+
+                    c.addCommands(autoCommands.autoScore()
+                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
                 }));
 
-        autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
-            c.addCommands(Commands.none());
-        }));
-
-        autos.put("L Circle Path", () -> auto(POI.TRL1.get(), c -> {
+        autos.put("L 2.5x bump", () -> auto(POI.TRL1.get(), c -> {
             c.addCommands(leftCircleStart.get());
 
             c.addCommands(leftCircleOverBumpAndScore.get());
@@ -285,6 +326,25 @@ public class Autos {
 
             c.addCommands(leftCircleOverBumpAndScore.get());
 
+        }));
+
+        autos.put("R 2.5x bump", () -> auto(POI.TRR1.get(), c -> {
+            c.addCommands(rightCircleStart.get());
+
+            c.addCommands(rightCircleOverBumpAndScore.get());
+
+            c.addCommands(rightCircleMid.get());
+
+            c.addCommands(rightCircleOverBumpAndScore.get());
+
+            c.addCommands(rightCircleMid.get());
+
+            c.addCommands(rightCircleOverBumpAndScore.get());
+
+        }));
+
+        autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
+            c.addCommands(Commands.none());
         }));
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));

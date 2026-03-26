@@ -85,8 +85,16 @@ public class POI {
     public static final Supplier<Pose2d> HUB1 = flipped(new Pose2d(4.625, 4.05, new Rotation2d()));
 
     public static final Supplier<Pose2d> BUMPHELP1 = flipped(ChoreoVars.Poses.BUMPHELP1);
-        public static final Supplier<Pose2d> CIRCLE_STOPL0 = flipped(ChoreoVars.Poses.CIRCLE_STOPL0);
-                public static final Supplier<Pose2d> CIRCLE_STOPL1 = flipped(ChoreoVars.Poses.CIRCLE_STOPL1);
+    public static final Supplier<Pose2d> BUMPHELP2 = flipped(ChoreoVars.Poses.BUMPHELP2);
+
+
+    public static final Supplier<Pose2d> CIRCLE_STOPL0 = flipped(ChoreoVars.Poses.CIRCLE_STOPL0);
+    public static final Supplier<Pose2d> CIRCLE_STOPR0 = flipped(ChoreoVars.Poses.CIRCLESTOPR0);
+
+        public static final Supplier<Pose2d> CIRCLE_STOPL101 = flipped(ChoreoVars.Poses.CIRCLESTOPL101);
+                public static final Supplier<Pose2d> CIRCLE_STOPR101 = flipped(ChoreoVars.Poses.CIRCLESTOPR101);
+
+
 
 
 
@@ -102,6 +110,8 @@ public class POI {
         public static final Supplier<Pose2d> L_SWEEP2 = flipped(ChoreoVars.Poses.L_SWEEP2);
 
              public static final Supplier<Pose2d> R_SWEEP6 = flipped(ChoreoVars.Poses.R_SWEEP6);
+                          public static final Supplier<Pose2d> R_SWEEP1 = flipped(ChoreoVars.Poses.R_SWEEP1);
+
 
 
     // ============= ROTATIONS =============
