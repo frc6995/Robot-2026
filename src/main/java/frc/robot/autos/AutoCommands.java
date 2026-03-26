@@ -323,7 +323,7 @@ public class AutoCommands {
                         m_indexer.setVoltage(
                                 () -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
                         Commands.sequence(
-                                Commands.waitSeconds(0.2),
+                                Commands.waitSeconds(0.25),
                                 m_Spindexer.setVoltage(
                                 () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
                         )));

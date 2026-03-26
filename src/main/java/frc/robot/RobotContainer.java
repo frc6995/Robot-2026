@@ -205,6 +205,8 @@ public class RobotContainer {
                 // B: Cardinal direction hold
                 // X: Climb
                 // RT: Hold to Shoot
+                // RB: Intake shake
+
                 // Start: Current home turret (enabled)
                 // Back: Home all (enabled); Set positions (disabled)
 
