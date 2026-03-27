@@ -236,7 +236,7 @@ public class Autos {
 
                 .andThen(Commands.race(new AutoAlign(POI.TRL1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
                         AutoAlign.kSlowCrawlProfile),
-                        autoCommands.Score()));
+                        Commands.waitSeconds(0.4).andThen(autoCommands.Score())));
 
         Supplier<Command> rightCircleOverBumpAndScore = () -> new AutoAlign(POI.BUMPHELP2.get(), m_drivebase,
                 AutoAlign.kDefaultVelocityLimitedProfile)
@@ -250,8 +250,8 @@ public class Autos {
                 .andThen(autoCommands.driveOverBump(true))
 
                 .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
-                        AutoAlign.kSlowCrawlProfile), autoCommands.Score()));
-
+                        AutoAlign.kSlowCrawlProfile), 
+                      Commands.waitSeconds(0.4).andThen(autoCommands.Score())));
         // (L/R) Back From Center Line To Climb
 
         // ============= DEFINE AUTOS =============

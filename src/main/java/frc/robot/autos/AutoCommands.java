@@ -61,7 +61,7 @@ import frc.robot.util.TriggerUtil;
 
 public class AutoCommands {
 
-        private static final double kOverTheBumpSpeed = 1.9; // m/s
+        private static final double kOverTheBumpSpeed = 2.5; // m/s
 
         // You need these dependencies passed in
         private final CommandSwerveDrivetrain m_drivebase;
@@ -82,7 +82,7 @@ public class AutoCommands {
 
         SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
                 .withDriveRequestType(DriveRequestType.Velocity)
-                .withSpeeds(new ChassisSpeeds(1.6, 0.0, 0));
+                .withSpeeds(new ChassisSpeeds(2.0, 0.0, 0));
 
     final BooleanSupplier isJammed;
     final Supplier<Voltage> runSpindexerWithReverse;
@@ -350,6 +350,6 @@ public class AutoCommands {
         public Command driveOverBump(boolean isBlue) {
                 return m_drivebase.applyRequest(() -> m_driveOverBumpRequest.withVelocityX(
                         isBlue ? -kOverTheBumpSpeed : kOverTheBumpSpeed
-                )).withTimeout(2.4);  
+                )).withTimeout(1.7);  
         }
 }

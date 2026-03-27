@@ -67,7 +67,7 @@ public class AutoAlign extends Command {
 
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)
-        public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(1.6, DEFAULT_ACCELERATION, 20);
+        public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(1.3, DEFAULT_ACCELERATION, 20);
                 public static APConstraints SLOW_CRAWL_CONSTRAINTS = new APConstraints(0.6, DEFAULT_ACCELERATION, 20);
 
         public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, DEFAULT_JERK);
