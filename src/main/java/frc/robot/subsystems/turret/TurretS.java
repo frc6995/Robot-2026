@@ -133,7 +133,7 @@ public abstract class TurretS extends SubsystemBase {
     @Logged
     public boolean atSetpoint() {
         var angle = setpoint.getMeasure();
-        return angle.isNear(getAngle(), TurretConstants.kTolerance);
+        return angle.isNear(getAngle(), TurretConstants.kShootTolerance);
     }
 
     @Logged

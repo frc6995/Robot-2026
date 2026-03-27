@@ -74,12 +74,14 @@ public class RealHoodS extends HoodS {
         public static final Angle kLowerLimit = Degrees.of(12.5); // CW Limit
         public static final Angle kUpperLimit = Degrees.of(38); // CCW Limit
         public static final Angle kStowAngle = kLowerLimit;
-        public static final Angle kTolerance = Degrees.of(2);
+        public static final Angle kTolerance = Degrees.of(5);
         public static final double[][] kAngleData = {
                 // Distance (Meters), Angle(Degrees)
                 { 1, 12.5 },
-                { 2.2, 20 },
-                { 4, 35 },
+                { 2.2, 18 },
+                { 3.4, 25},
+
+                { 4, 34 },
                 { 5, 40 },
         };
         // Motor Setup
@@ -256,9 +258,7 @@ public class RealHoodS extends HoodS {
     }
 
     public Command runSOTF(Supplier<ShooterTargetData> dataSupplier) {
-        return setAngle(() -> applyDynamicLimits(
-                Degrees.of(dataSupplier.get().hoodAngleDeg),
-                robotPose.get()));
+        return setAngle(() -> Degrees.of(dataSupplier.get().hoodAngleDeg));
     }
 
     public Command runSOTF_OVERRIDE_SAFETY(Supplier<ShooterTargetData> dataSupplier) {

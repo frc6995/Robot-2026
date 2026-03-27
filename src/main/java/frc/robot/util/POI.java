@@ -147,6 +147,9 @@ public class POI {
     public static final Supplier<Rotation2d> testEntry = flipped(new Rotation2d(Degrees.of(-90)));
     public static final Supplier<Rotation2d> depotStartEntry = flipped(new Rotation2d(Degrees.of(200)));
 
+        public static final Supplier<Rotation2d> bumpToTrenchEntry = flipped(new Rotation2d(Degrees.of(0)));
+
+
     // Passing zones
     private static final Translation2d topZoneCorner1 = new Translation2d(Meters.of(11.7), Meters.of(7.6));
     private static final Translation2d topZoneCorner2 = new Translation2d(Meters.of(4.7), Meters.of(4.7));

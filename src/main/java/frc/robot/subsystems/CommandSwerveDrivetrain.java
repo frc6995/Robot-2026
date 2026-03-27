@@ -398,12 +398,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         m_vision.periodic();
 
-        if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/8)) {
+        if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/2)) {
  
         var estimates = m_vision.getAllEstimates();
         var gyroRotation = m_gyro.getRotation3d();
         for(var estimate : estimates) {
-            if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.35 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
+            if(estimate.avgTagDist < 3.5 && estimate.getAvgTagAmbiguity() < 0.65 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
                 if(DriverStation.isEnabled()) {
                     addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.KNormalStdDevs);
                 } else {

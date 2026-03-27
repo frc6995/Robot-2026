@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultautoScoreTime = Seconds.of(1.8);
+        private static Time kDefaultautoScoreTime = Seconds.of(2.0);
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
         private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
@@ -234,7 +234,7 @@ public class Autos {
 
                 .andThen(autoCommands.driveOverBump(true))
 
-                .andThen(Commands.race(new AutoAlign(POI.TRL1.get(), Rotation2d.fromDegrees(180), m_drivebase,
+                .andThen(Commands.race(new AutoAlign(POI.TRL1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
                         AutoAlign.kSlowCrawlProfile),
                         autoCommands.Score()));
 
@@ -249,7 +249,7 @@ public class Autos {
 
                 .andThen(autoCommands.driveOverBump(true))
 
-                .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), Rotation2d.fromDegrees(180), m_drivebase,
+                .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
                         AutoAlign.kSlowCrawlProfile), autoCommands.Score()));
 
         // (L/R) Back From Center Line To Climb
@@ -280,8 +280,7 @@ public class Autos {
                     c.addCommands(autoCommands.Score()
                             .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
-                    c.addCommands(autoCommands.autoScore()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+                    c.addCommands(autoCommands.autoScore());
 
                 }));
 
@@ -309,8 +308,7 @@ public class Autos {
                     c.addCommands(autoCommands.Score()
                             .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
-                    c.addCommands(autoCommands.autoScore()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+                    c.addCommands(autoCommands.autoScore());
                 }));
 
         autos.put("L 2.5x bump", () -> auto(POI.TRL1.get(), c -> {

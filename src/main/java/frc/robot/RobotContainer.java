@@ -61,6 +61,7 @@ import frc.robot.subsystems.climb.climbextension.NoneClimbExtensionS;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.vision.detection.NoneODVision;
 import frc.robot.subsystems.vision.detection.ObjectVision;
+import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.POI;
 import frc.robot.util.ShooterController;
@@ -210,6 +211,10 @@ public class RobotContainer {
                 // Start: Current home turret (enabled)
                 // Back: Home all (enabled); Set positions (disabled)
 
+                joystick.leftTrigger().whileTrue(
+                        m_autoCommands.driveOverBump(true)
+                );
+
                 // robot relative driving with D-pad
                 joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
@@ -238,13 +243,14 @@ public class RobotContainer {
                                                                                         rotSpeed);
                                                 } // Drive counterclockwise with negative X (left)
                                 ));
-                joystick.x().toggleOnTrue(
-                        Commands.parallel(
-                                m_turret.setAngle(() -> Rotation2d.kZero),
-                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
-                                m_flywheel.setVelocity(() -> RPM.of(1750))
-                        )
-                );
+                // joystick.x().toggleOnTrue(
+                //         Commands.parallel(
+                //                 m_turret.setAngle(() -> Rotation2d.kZero),
+                //                 m_hood.setAngle(() -> HoodConstants.kLowerLimit),
+                //                 m_flywheel.setVelocity(() -> RPM.of(1750))
+                //         )
+                // );
+ joystick.x().whileTrue(new AutoAlign(POI.TRR1.get(), m_drivetrain, AutoAlign.kDefaultVelocityLimitedProfile));
 
                 joystick.y().onTrue(m_spindexer.runUnjam());
 
@@ -304,8 +310,7 @@ public class RobotContainer {
                                 Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0)));
 
                 RobotModeTriggers.autonomous().onTrue(
-                        m_turret.aimAtFieldPose(
-                                () -> POI.HUB1.get().getTranslation(), () -> m_drivetrain.state.Pose)
+                        m_turret.runSOTF(ShooterController.getInstance()::getCachedData)
                                 .until(() -> !DriverStation.isAutonomous()));
                 
                 RobotModeTriggers.autonomous().onTrue(

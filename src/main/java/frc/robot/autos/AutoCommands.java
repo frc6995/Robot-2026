@@ -61,7 +61,7 @@ import frc.robot.util.TriggerUtil;
 
 public class AutoCommands {
 
-        private static final double kOverTheBumpSpeed = 3.0; // m/s
+        private static final double kOverTheBumpSpeed = 1.9; // m/s
 
         // You need these dependencies passed in
         private final CommandSwerveDrivetrain m_drivebase;
@@ -350,6 +350,6 @@ public class AutoCommands {
         public Command driveOverBump(boolean isBlue) {
                 return m_drivebase.applyRequest(() -> m_driveOverBumpRequest.withVelocityX(
                         isBlue ? -kOverTheBumpSpeed : kOverTheBumpSpeed
-                )).withTimeout(1.2);  
+                )).withTimeout(2.4);  
         }
 }
