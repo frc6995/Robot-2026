@@ -15,7 +15,7 @@ public final class ChoreoVars {
 
     public static final class Poses {
         public static final Pose2d BALLL1 = new Pose2d(6.9166255, 6.7012215, Rotation2d.fromRadians(-0.7853982));
-        public static final Pose2d BALLL2 = new Pose2d(8.6057918, 6.7919132, Rotation2d.fromRadians(-1.5707963));
+        public static final Pose2d BALLL2 = new Pose2d(8.6057918, 6.4919132, Rotation2d.fromRadians(-1.5707963));
         public static final Pose2d BALLL3 = new Pose2d(7.6256231, 6.5934255, Rotation2d.fromRadians(-1.3089969));
         public static final Pose2d BALLL4 = new Pose2d(8.2795801, 1.9238888, Rotation2d.fromRadians(-1.5707963));
         public static final Pose2d BALLL5 = new Pose2d(5.9943895, 6.6631098, Rotation2d.fromRadians(-1.5707963));

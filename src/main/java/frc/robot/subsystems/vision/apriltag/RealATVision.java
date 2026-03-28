@@ -53,7 +53,7 @@ public class RealATVision extends AprilTagVision {
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
-        public static final Matrix<N3, N1> KNormalStdDevs = VecBuilder.fill(0.075, 0.075, 999999);
+        public static final Matrix<N3, N1> KNormalStdDevs = VecBuilder.fill(0.15, 0.15, 999999);
         public static final Matrix<N3, N1> kDisabledStdDevs = VecBuilder.fill(0.0001, 0.0001, 0.0001);
 
     }

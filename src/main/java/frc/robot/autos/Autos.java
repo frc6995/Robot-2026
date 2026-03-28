@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
@@ -24,6 +25,7 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -333,7 +335,9 @@ public class Autos {
         SequentialCommandGroup group = new SequentialCommandGroup();
 
         // Odometry reset first
-        group.addCommands(factory.resetOdometry(Optional.of(startPose), false));
+       group.addCommands(factory.resetOdometry(Optional.of(startPose), false)
+      // .onlyIf(Robot::isSimulation)
+       );
 
         // Let the builder add more commands
         builder.accept(group);
