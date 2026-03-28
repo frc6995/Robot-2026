@@ -117,7 +117,7 @@ public class POI {
     // ============= ROTATIONS =============
 
     // Center line intake pose rotations
-    public static final Supplier<Rotation2d> BALLL2Entry = flipped(new Rotation2d(Degrees.of(-35)));
+    public static final Supplier<Rotation2d> BALLL2Entry = flipped(new Rotation2d(Degrees.of(-25)));
     public static final Supplier<Rotation2d> BALLL2CloseEntry = flipped(new Rotation2d(Degrees.of(0)));
         public static final Supplier<Rotation2d> BALLL4Entry = flipped(new Rotation2d(Degrees.of(-70)));
 

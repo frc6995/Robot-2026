@@ -44,7 +44,7 @@ public class Autos {
         private static Distance kGPDStartRadius = Meters.of(2.0);
         private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
         private static Distance kCloseBackToStartRadius = Meters.of(2.0);
-        private static Distance kDefaultStartRadius = Meters.of(3.5);
+        private static Distance kDefaultStartRadius = Meters.of(3.8);
         private static Distance kDefaultBeginIntakingRadius = Meters.of(1.0);
 
     }
