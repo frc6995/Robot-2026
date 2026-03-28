@@ -311,35 +311,7 @@ public class Autos {
                     c.addCommands(autoCommands.autoScore());
                 }));
 
-        autos.put("L 2.5x bump", () -> auto(POI.TRL1.get(), c -> {
-            c.addCommands(leftCircleStart.get());
 
-            c.addCommands(leftCircleOverBumpAndScore.get());
-
-            c.addCommands(leftCircleMid.get());
-
-            c.addCommands(leftCircleOverBumpAndScore.get());
-
-            c.addCommands(leftCircleMid.get());
-
-            c.addCommands(leftCircleOverBumpAndScore.get());
-
-        }));
-
-        autos.put("R 2.5x bump", () -> auto(POI.TRR1.get(), c -> {
-            c.addCommands(rightCircleStart.get());
-
-            c.addCommands(rightCircleOverBumpAndScore.get());
-
-            c.addCommands(rightCircleMid.get());
-
-            c.addCommands(rightCircleOverBumpAndScore.get());
-
-            c.addCommands(rightCircleMid.get());
-
-            c.addCommands(rightCircleOverBumpAndScore.get());
-
-        }));
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
