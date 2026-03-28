@@ -1,6 +1,7 @@
 package frc.robot.autos;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -144,7 +145,7 @@ public class AutoCommands {
                                                 () -> intakePose.getTranslation(),
                                                 () -> m_drivebase.state.Pose,
                                                 () -> intakePoseTolerance)),
-                        new AutoAlign(stopPose, m_drivebase, AutoAlign.kSlowDriveProfile)),
+                        new AutoAlign(stopPose, m_drivebase, AutoAlign.kSlowDriveProfile).withTimeout(Seconds.of(1.5))),
                 Commands.parallel(fuelIntake(), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
     }
 
