@@ -329,6 +329,18 @@ public class AutoCommands {
                                 () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
                         )));
     }
+     public Command autoScoreNoWiggle() {
+        return Commands.parallel(
+                 m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
+                Commands.parallel(
+                        m_indexer.setVoltage(
+                                () -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
+                        Commands.sequence(
+                                Commands.waitSeconds(0.25),
+                                m_Spindexer.setVoltage(
+                                () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
+                        )));
+    }
 
     private static final Current kUnjamThreshold = Amps.of(40);
 

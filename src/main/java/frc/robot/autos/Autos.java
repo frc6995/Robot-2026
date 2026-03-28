@@ -264,7 +264,7 @@ public class Autos {
 
                     c.addCommands(leftBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.Score()
+                    c.addCommands(autoCommands.autoScoreNoWiggle()
                             .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
                     c.addCommands(autoCommands.autoScore()
@@ -279,7 +279,7 @@ public class Autos {
 
                     c.addCommands(leftChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.Score()
+                    c.addCommands(autoCommands.autoScoreNoWiggle()
                             .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
                     c.addCommands(autoCommands.autoScore());
@@ -292,7 +292,7 @@ public class Autos {
 
                     c.addCommands(rightBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.Score()
+                    c.addCommands(autoCommands.autoScoreNoWiggle()
                             .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
                     c.addCommands(autoCommands.autoScore()
@@ -307,7 +307,7 @@ public class Autos {
 
                     c.addCommands(rightChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.Score()
+                    c.addCommands(autoCommands.autoScoreNoWiggle()
                             .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
                     c.addCommands(autoCommands.autoScore());
