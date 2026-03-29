@@ -192,7 +192,7 @@ public class AutoCommands {
             Pose2d targetpose,
             Rotation2d targetPoseEntryAngle) {
         return Commands.sequence(
-                new AutoAlign(helpPose, m_drivebase,
+                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile).until(
                                 TriggerUtil.isWithinRadius(
                                         () -> helpPose.getTranslation(),

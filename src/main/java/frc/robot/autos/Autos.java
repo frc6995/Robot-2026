@@ -44,7 +44,7 @@ public class Autos {
         private static Time kDefaultautoScoreTime = Seconds.of(2.0);
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
-        private static Distance kDefaultBackToStartRadius = Meters.of(12.8);
+        private static Distance kDefaultBackToStartRadius = Meters.of(3.0);
         private static Distance kCloseBackToStartRadius = Meters.of(2.0);
         private static Distance kDefaultStartRadius = Meters.of(3.8);
         private static Distance kDefaultBeginIntakingRadius = Meters.of(1.0);
@@ -134,7 +134,7 @@ public class Autos {
                 POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
                 POI.TRL1.get(), POI.TRL1Entry.get());
 
-        Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR2.get(),
+        Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
                 POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
                 POI.TRR1.get(), POI.TRR1Entry.get());
 

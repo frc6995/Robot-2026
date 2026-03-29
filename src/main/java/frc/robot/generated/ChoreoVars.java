@@ -38,11 +38,11 @@ public final class ChoreoVars {
         public static final Pose2d HELPL1 = new Pose2d(8.9760363, 7.3, Rotation2d.fromRadians(-0.1047198));
         public static final Pose2d HELPL2 = new Pose2d(7.097064, 18.9948632, Rotation2d.fromRadians(-1.5707963));
         public static final Pose2d HELPL3 = new Pose2d(7.097064, 18.9948632, Rotation2d.fromRadians(3.1415927));
-        public static final Pose2d HELPL4 = new Pose2d(5.8430055, 8.7684441, Rotation2d.fromRadians(-1.0471976));
+        public static final Pose2d HELPL4 = new Pose2d(5.8430055, 8.9984441, Rotation2d.fromRadians(-1.0471976));
         public static final Pose2d HELPR1 = new Pose2d(8.9760363, 0.752, Rotation2d.fromRadians(0.1047198));
         public static final Pose2d HELPR2 = new Pose2d(7.097064, -10.9428632, Rotation2d.fromRadians(1.5707963));
         public static final Pose2d HELPR3 = new Pose2d(7.097064, -10.9428632, Rotation2d.fromRadians(3.1415927));
-        public static final Pose2d HELPR4 = new Pose2d(5.8430055, -0.8436441, Rotation2d.fromRadians(1.0471976));
+        public static final Pose2d HELPR4 = new Pose2d(5.8430055, -1.0736441, Rotation2d.fromRadians(1.0471976));
         public static final Pose2d HELPS = new Pose2d(3.8221934, 0.5493581, Rotation2d.fromRadians(3.1415927));
         public static final Pose2d L_SWEEP0 = new Pose2d(7.4851097, 5.7269306, Rotation2d.fromRadians(-1.817751));
         public static final Pose2d L_SWEEP1 = new Pose2d(8.3018923, 5.2002264, Rotation2d.fromRadians(-1.677894));
