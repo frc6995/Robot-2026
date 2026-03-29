@@ -73,10 +73,10 @@ public final class ChoreoVars {
         public static final Pose2d STOPR2 = new Pose2d(7.3014112, 2.3972469, Rotation2d.fromRadians(1.5707963));
         public static final Pose2d STOPR3 = new Pose2d(8.2795801, 6.1893887, Rotation2d.fromRadians(1.5707963));
         public static final Pose2d STOPR4 = new Pose2d(6.1074233, 3.6559172, Rotation2d.fromRadians(1.5707963));
-        public static final Pose2d TRL1 = new Pose2d(3.6025807, 7.5026419, Rotation2d.fromRadians(0));
-        public static final Pose2d TRL2 = new Pose2d(3.6025807, 7.5026419, Rotation2d.fromRadians(3.1415927));
-        public static final Pose2d TRR1 = new Pose2d(3.6025807, 0.5493581, Rotation2d.fromRadians(0));
-        public static final Pose2d TRR2 = new Pose2d(3.6025807, 0.5493581, Rotation2d.fromRadians(3.1415927));
+        public static final Pose2d TRL1 = new Pose2d(3.8025807, 7.5026419, Rotation2d.fromRadians(0));
+        public static final Pose2d TRL2 = new Pose2d(3.8025807, 7.5026419, Rotation2d.fromRadians(3.1415927));
+        public static final Pose2d TRR1 = new Pose2d(3.8025807, 0.5493581, Rotation2d.fromRadians(0));
+        public static final Pose2d TRR2 = new Pose2d(3.8025807, 0.5493581, Rotation2d.fromRadians(3.1415927));
     }
 }
 // spotless:on
