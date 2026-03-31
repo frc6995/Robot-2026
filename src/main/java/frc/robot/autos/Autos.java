@@ -107,23 +107,6 @@ public class Autos {
                 POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.STOPR2.get());
 
-        // (L/R) Center Line Middle GPD
-        Supplier<Command> leftToCenterLineGPD = () -> leftToCenterLineMiddleHardCoded.get()
-                .until(() -> m_objectVision.getBestCluster().isPresent()
-                        && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
-                                () -> m_drivebase.state.Pose,
-                                () -> AutoConstants.kGPDStartRadius).getAsBoolean())
-
-                .andThen(autoCommands.APToClusterChain(80000, true))
-                .withTimeout(AutoConstants.kGPDTimeout);
-
-        Supplier<Command> rightToCenterLineGPD = () -> rightToCenterLineMiddleHardCoded.get()
-                .until(() -> m_objectVision.getBestCluster().isPresent()
-                        && TriggerUtil.isWithinRadius(() -> POI.BALLL3.get().getTranslation(),
-                                () -> m_drivebase.state.Pose,
-                                () -> AutoConstants.kGPDStartRadius).getAsBoolean())
-                .andThen(autoCommands.APToClusterChain(90000, false))
-                .withTimeout(AutoConstants.kGPDTimeout);
 
         // (L/R) Back From Center Line Default
         Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
@@ -142,52 +125,8 @@ public class Autos {
                 POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
                 POI.TRR1.get(), POI.TRL1Entry.get());
 
-        // (L/R) Sweep Default
-        Supplier<Command> leftStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPL1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultStartRadius,
-                POI.STOPL3.get())
-                .andThen(new AutoAlign(POI.TRR2.get(), POI.TRR1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
 
-        Supplier<Command> rightStartSweepDefault = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultStartRadius,
-                POI.STOPR3.get())
-                .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
 
-        // (L) Back From Center Line To Depot
-        Supplier<Command> leftBackToDepot = () -> autoCommands.APBackFromIntake(POI.HELPL3.get(),
-                POI.HELPL2Entry.get(), Meters.of(12.2),
-                POI.DEPOT_HELP.get(), POI.TRL1Entry.get())
-                .until(
-                        TriggerUtil.isWithinRadius(
-                                () -> POI.DEPOT_HELP.get()
-                                        .getTranslation(),
-                                () -> m_drivebase.state.Pose,
-                                () -> Meters.of(0.1)))
-                .andThen(
-
-                        autoCommands.autoScore()
-                                .withTimeout(AutoConstants.kDefaultautoScoreTime)
-                                .alongWith(autoCommands.APtoDepot()));
-
-        Supplier<Command> rightBackToHP = () -> autoCommands.APBackFromIntake(POI.HELPR3.get(),
-                POI.HELPR2Entry.get(), Meters.of(12.5),
-                POI.HELPS.get(), POI.TRL1Entry.get())
-                .until(
-                        TriggerUtil.isWithinRadius(
-                                () -> POI.HELPS.get()
-                                        .getTranslation(),
-                                () -> m_drivebase.state.Pose,
-                                () -> Meters.of(0.3)))
-                .andThen(
-
-                        autoCommands.autoScore()
-                                .withTimeout(AutoConstants.kDefaultautoScoreTime)
-                                .alongWith(new AutoAlign(POI.STA1.get(), m_drivebase,
-                                        AutoAlign.kSlowDriveProfile)));
         // (L/R) Back From Center Line To Climb
         Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
                 () -> POI.L_SWEEP6.get()
