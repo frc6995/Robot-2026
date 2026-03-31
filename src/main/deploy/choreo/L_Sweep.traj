@@ -18,7 +18,7 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"L_SWEEP0.x", "val":7.485109710693359}, "y":{"exp":"L_SWEEP0.y", "val":5.726930618286133}, "heading":{"exp":"L_SWEEP0.heading", "val":-1.817750992750583}, "intervals":22, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"L_SWEEP0.x", "val":7.485109710693359}, "y":{"exp":"L_SWEEP0.y", "val":5.316930618286133}, "heading":{"exp":"L_SWEEP0.heading", "val":-1.817750992750583}, "intervals":22, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"L_SWEEP200.x", "val":7.2550764083862305}, "y":{"exp":"L_SWEEP200.y", "val":4.886850357055664}, "heading":{"exp":"L_SWEEP200.heading", "val":-1.892546881191539}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"L_SWEEP201.x", "val":6.271325969696045}, "y":{"exp":"L_SWEEP201.y", "val":5.393874073028565}, "heading":{"exp":"L_SWEEP201.heading", "val":2.122446889811829}, "intervals":23, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"L_SWEEP202.x", "val":6.286847534179687}, "y":{"exp":"L_SWEEP202.y", "val":6.1916022300720215}, "heading":{"exp":"L_SWEEP202.heading", "val":1.9739116033815087}, "intervals":34, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
