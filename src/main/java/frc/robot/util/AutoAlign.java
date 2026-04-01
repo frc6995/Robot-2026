@@ -63,7 +63,7 @@ public class AutoAlign extends Command {
     public static class AutoAlignConstants {
         public static double DEFAULT_MAX_VELOCITY = 4.0; // physical max is 5.5 m/s^2
         public static double DEFAULT_ACCELERATION = 18; // Calculated from swerve slip current
-        public static double DEFAULT_JERK = 6.5;
+        public static double DEFAULT_JERK = 6.0;
 
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)

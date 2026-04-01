@@ -244,13 +244,15 @@ public class RobotContainer {
                                                 } // Drive counterclockwise with negative X (left)
                                 ));
                                 
-                joystick.x().toggleOnTrue(
-                        Commands.parallel(
-                                m_turret.setAngle(() -> Rotation2d.kZero),
-                                m_hood.setAngle(() -> HoodConstants.kLowerLimit),
-                                m_flywheel.setVelocity(() -> RPM.of(1750))
-                        )
-                );
+                // joystick.x().toggleOnTrue(
+                //         Commands.parallel(
+                //                 m_turret.setAngle(() -> Rotation2d.kZero),
+                //                 m_hood.setAngle(() -> HoodConstants.kLowerLimit),
+                //                 m_flywheel.setVelocity(() -> RPM.of(1750))
+                //         )
+                // );
+
+                joystick.x().whileTrue(new AutoAlign(POI.TRR1.get(), m_drivetrain, AutoAlign.kDefaultVelocityLimitedProfile));
 
                 joystick.y().onTrue(m_spindexer.runUnjam());
 
