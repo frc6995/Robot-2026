@@ -109,7 +109,7 @@ public class Autos {
                 POI.STOPR2.get());
 
         // (L/R) Back From Center Line Default
-        Supplier<Command> leftBackToStartDefault = () -> Commands.parallel(
+        Supplier<Command> leftBackToStartDefault = () -> Commands.race(
                 autoCommands.APBackFromIntake(POI.HELPL4.get(),
                         POI.HELPL2Entry.get(), Meters.of(3),
                         POI.TRL1.get(), POI.TRL1Entry.get()),
@@ -117,26 +117,29 @@ public class Autos {
                         () -> POI.TRL1.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.2))))
+                        () -> Meters.of(0.2)))
                 .andThen(
-                        autoCommands.autoScoreNoWiggle());
+                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoScoreTime))
+                        .andThen(autoCommands.autoScore()
+                        .withTimeout(AutoConstants.kDefaultautoScoreTime)));
 
         Supplier<Command> leftBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
                 POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
                 POI.TRL1.get(), POI.TRL1Entry.get());
 
         Supplier<Command> rightBackToStartDefault = () -> Commands.parallel(
-
                 autoCommands.APBackFromIntake(POI.HELPR4.get(),
                         POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
                         POI.TRR1.get(), POI.TRR1Entry.get()),
                 Commands.waitUntil(TriggerUtil.isWithinRadius(
-                        () -> POI.TRL1.get()
+                        () -> POI.TRR1.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.1))))
+                        () -> Meters.of(0.2)))
                 .andThen(
-                        autoCommands.autoScoreNoWiggle());
+                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoScoreTime))
+                        .andThen(autoCommands.autoScore()
+                        .withTimeout(AutoConstants.kDefaultautoScoreTime)));
 
         Supplier<Command> rightBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
                 POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
@@ -265,12 +268,6 @@ public class Autos {
                     c.addCommands(rightToCenterLineMiddleHardCoded.get());
 
                     c.addCommands(rightBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.autoScoreNoWiggle()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
-
-                    c.addCommands(autoCommands.autoScore()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
 
                     c.addCommands(rightToCenterLineCloseHardCoded.get()
                             .until(TriggerUtil.isWithinRadius(
