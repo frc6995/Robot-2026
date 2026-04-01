@@ -161,7 +161,7 @@ public class RobotContainer {
 
                 m_intakeRoller.setDefaultCommand(
                                 m_intakeRoller.setVoltage(() -> {
-                                        return m_intakePivot.isIntakeDeployed() ? IntakeRollerConstants.kIntakeVoltage
+                                        return robotStates.isIntakeDeployed() ? IntakeRollerConstants.kIntakeVoltage
                                                         : Volts.zero();
                                 }));
 
@@ -369,6 +369,10 @@ public class RobotContainer {
                 
                 public boolean isFlywheelSafe() {
                         return m_flywheel.isFlywheelSafe();
+                }
+
+                public boolean isRobotMoving() {
+                        return m_drivetrain.state.Speeds.vxMetersPerSecond > 0.05 || m_drivetrain.state.Speeds.vyMetersPerSecond > 0.05 || m_drivetrain.state.Speeds.omegaRadiansPerSecond > Math.PI / 36;
                 }
         }
 }
