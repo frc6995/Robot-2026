@@ -285,7 +285,7 @@ public class Autos {
                                     () -> POI.R_SWEEP1.get()
                                             .getTranslation(),
                                     () -> m_drivebase.state.Pose,
-                                    () -> Meters.of(0.5))));
+                                    () -> Meters.of(0.6))));
 
                     c.addCommands(rightChoreoSweepBack.get());
 
