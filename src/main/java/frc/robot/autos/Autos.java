@@ -41,7 +41,9 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultautoScoreTime = Seconds.of(2.0);
+        private static Time kDefaultautoInitialTime = Seconds.of(1.4);
+                private static Time kDefaultautoShakeScoreTime = Seconds.of(2.3);
+
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
         private static Distance kDefaultBackToStartRadius = Meters.of(3.0);
@@ -119,9 +121,9 @@ public class Autos {
                         () -> m_drivebase.state.Pose,
                         () -> Meters.of(0.2)))
                 .andThen(
-                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoScoreTime))
+                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
                         .andThen(autoCommands.autoScore()
-                        .withTimeout(AutoConstants.kDefaultautoScoreTime)));
+                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
         Supplier<Command> leftBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
                 POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
@@ -135,11 +137,11 @@ public class Autos {
                         () -> POI.TRR1.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.2)))
+                        () -> Meters.of(0.5)))
                 .andThen(
-                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoScoreTime))
+                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
                         .andThen(autoCommands.autoScore()
-                        .withTimeout(AutoConstants.kDefaultautoScoreTime)));
+                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
         Supplier<Command> rightBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
                 POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
@@ -159,8 +161,17 @@ public class Autos {
                         .getTranslation(),
                 () -> m_drivebase.state.Pose,
                 () -> Meters.of(0.2)))
-                .andThen(new AutoAlign(POI.TRR2.get(), POI.TRL1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
+                .andThen(Commands.parallel(new AutoAlign(POI.TRR2.get(), POI.TRL1Entry.get(), m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile)),
+                       Commands.waitUntil(TriggerUtil.isWithinRadius(
+                        () -> POI.TRR1.get()
+                                .getTranslation(),
+                        () -> m_drivebase.state.Pose,
+                        () -> Meters.of(0.5)))
+                .andThen(
+                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
+                        .andThen(autoCommands.autoScore()
+                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
         Supplier<Command> rightPass = () -> Commands.parallel(
                 R_Pass_Center,
@@ -242,10 +253,10 @@ public class Autos {
                     c.addCommands(leftBackToStartDefault.get());
 
                     c.addCommands(autoCommands.autoScoreNoWiggle()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+                            .withTimeout(AutoConstants.kDefaultautoInitialTime));
 
                     c.addCommands(autoCommands.autoScore()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+                            .withTimeout(AutoConstants.kDefaultautoShakeScoreTime));
 
                     c.addCommands(leftToCenterLineCloseHardCoded.get()
                             .until(TriggerUtil.isWithinRadius(
@@ -257,7 +268,7 @@ public class Autos {
                     c.addCommands(leftChoreoSweepBack.get());
 
                     c.addCommands(autoCommands.autoScoreNoWiggle()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
+                            .withTimeout(AutoConstants.kDefaultautoInitialTime));
 
                     c.addCommands(autoCommands.autoScore());
 
@@ -274,14 +285,10 @@ public class Autos {
                                     () -> POI.R_SWEEP1.get()
                                             .getTranslation(),
                                     () -> m_drivebase.state.Pose,
-                                    () -> Meters.of(0.4))));
+                                    () -> Meters.of(0.5))));
 
                     c.addCommands(rightChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.autoScoreNoWiggle()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
-
-                    c.addCommands(autoCommands.autoScore());
                 }));
 
         autos.put("R pass",
