@@ -407,7 +407,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 if(DriverStation.isEnabled()) {
                     addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, RealATVision.getStdDevs(estimate));
                 } else {
-                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.kDisabledStdDevs);
+                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, RealATVision.getDisabledStdDevs(estimate));
                 }
             }
         }
