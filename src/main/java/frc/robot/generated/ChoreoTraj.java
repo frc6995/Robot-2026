@@ -76,16 +76,16 @@ public record ChoreoTraj(
     public static final ChoreoTraj R_Pass_Center = new ChoreoTraj(
         "R_Pass_Center",
         OptionalInt.empty(),
-        5.72634,
+        6.20603,
         new Pose2d(8.16188, 3.21324, Rotation2d.fromRadians(1.6065)),
         new Pose2d(6.05591, 3.58208, Rotation2d.fromRadians(1.6517))
     );
     public static final ChoreoTraj R_Pickup_Center = new ChoreoTraj(
         "R_Pickup_Center",
         OptionalInt.empty(),
-        4.40801,
-        new Pose2d(3.0885, 0.64131, Rotation2d.fromRadians(-3.12098)),
-        new Pose2d(0.7, 2.60396, Rotation2d.fromRadians(1.60782))
+        4.46856,
+        new Pose2d(3.5639, 0.61242, Rotation2d.fromRadians(-3.12098)),
+        new Pose2d(0.58216, 2.40467, Rotation2d.fromRadians(1.60782))
     );
 
     /**

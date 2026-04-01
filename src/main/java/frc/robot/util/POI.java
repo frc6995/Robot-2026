@@ -94,7 +94,10 @@ public class POI {
         public static final Supplier<Pose2d> CIRCLE_STOPL101 = flipped(ChoreoVars.Poses.CIRCLESTOPL101);
                 public static final Supplier<Pose2d> CIRCLE_STOPR101 = flipped(ChoreoVars.Poses.CIRCLESTOPR101);
 
+                public static final Supplier<Pose2d> R_ScoreStop = flipped(ChoreoVars.Poses.R_ScoreStop);
 
+                public static final Supplier<Pose2d> R_PassPathStop = flipped(ChoreoVars.Poses.R_PassPathStop);
+                public static final Supplier<Pose2d> R_PASSHELP = flipped(ChoreoVars.Poses.R_PASSHELP);
 
 
 
@@ -134,6 +137,8 @@ public class POI {
 
     // Autoalign help pose rotations
     public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));
+        public static final Supplier<Rotation2d> HELPL2PassEntry = flipped(new Rotation2d(Degrees.of(250)));
+
     public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(130)));
     public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
     public static final Supplier<Rotation2d> HELPD1ntry = flipped(new Rotation2d(Degrees.of(160)));

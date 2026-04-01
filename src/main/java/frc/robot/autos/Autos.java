@@ -80,9 +80,10 @@ public class Autos {
         this.m_FlyWheel = flyWheel;
         this.m_objectVision = objectVision;
         // ============= CHOREO PATHS =============
-        Command run = factory.trajectoryCmd("Poses");
         Command L_Sweep = factory.trajectoryCmd("L_Sweep");
         Command R_Sweep = factory.trajectoryCmd("R_Sweep");
+        Command R_Pass_Center = factory.trajectoryCmd("R_Pass_Center");
+        Command R_Pickup_Center = factory.trajectoryCmd("R_Pickup_Center");
 
         // ============= PREDEFINED HELPERS =============
 
@@ -107,25 +108,42 @@ public class Autos {
                 POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.STOPR2.get());
 
-
         // (L/R) Back From Center Line Default
-        Supplier<Command> leftBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
-                POI.HELPL2Entry.get(), Meters.of(3),
-                POI.TRL1.get(), POI.TRL1Entry.get());
+        Supplier<Command> leftBackToStartDefault = () -> Commands.race(
+                autoCommands.APBackFromIntake(POI.HELPL4.get(),
+                        POI.HELPL2Entry.get(), Meters.of(3),
+                        POI.TRL1.get(), POI.TRL1Entry.get()),
+                Commands.waitUntil(TriggerUtil.isWithinRadius(
+                        () -> POI.TRL1.get()
+                                .getTranslation(),
+                        () -> m_drivebase.state.Pose,
+                        () -> Meters.of(0.2)))
+                .andThen(
+                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoScoreTime))
+                        .andThen(autoCommands.autoScore()
+                        .withTimeout(AutoConstants.kDefaultautoScoreTime)));
 
         Supplier<Command> leftBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
                 POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
                 POI.TRL1.get(), POI.TRL1Entry.get());
 
-        Supplier<Command> rightBackToStartDefault = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
-                POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
-                POI.TRR1.get(), POI.TRR1Entry.get());
+        Supplier<Command> rightBackToStartDefault = () -> Commands.parallel(
+                autoCommands.APBackFromIntake(POI.HELPR4.get(),
+                        POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
+                        POI.TRR1.get(), POI.TRR1Entry.get()),
+                Commands.waitUntil(TriggerUtil.isWithinRadius(
+                        () -> POI.TRR1.get()
+                                .getTranslation(),
+                        () -> m_drivebase.state.Pose,
+                        () -> Meters.of(0.2)))
+                .andThen(
+                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoScoreTime))
+                        .andThen(autoCommands.autoScore()
+                        .withTimeout(AutoConstants.kDefaultautoScoreTime)));
 
         Supplier<Command> rightBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
                 POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
                 POI.TRR1.get(), POI.TRL1Entry.get());
-
-
 
         // (L/R) Back From Center Line To Climb
         Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
@@ -143,6 +161,26 @@ public class Autos {
                 () -> Meters.of(0.2)))
                 .andThen(new AutoAlign(POI.TRR2.get(), POI.TRL1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile));
+
+        Supplier<Command> rightPass = () -> Commands.parallel(
+                R_Pass_Center,
+                autoCommands.Score().until(TriggerUtil.isWithinRadius(
+                        () -> POI.R_ScoreStop.get()
+                                .getTranslation(),
+                        () -> m_drivebase.state.Pose,
+                        () -> Meters.of(0.2))))
+                .until(TriggerUtil.isWithinRadius(
+                        () -> POI.R_PassPathStop.get()
+                                .getTranslation(),
+                        () -> m_drivebase.state.Pose,
+                        () -> Meters.of(0.2)))
+                .andThen(autoCommands.APBackFromIntake(POI.R_PASSHELP.get(),
+                        POI.HELPL2PassEntry.get(), Meters.of(2.0),
+                        POI.TRR2.get(), POI.TRL1Entry.get()));
+
+        Supplier<Command> rightAlliancePickupAndScore = () -> Commands.parallel(
+                R_Pickup_Center,
+                autoCommands.Score());
 
         Supplier<Command> leftCircleStart = () -> autoCommands.APToIntake(POI.HELPL1.get(),
                 AutoConstants.kDefaultStartRadius,
@@ -191,8 +229,8 @@ public class Autos {
                 .andThen(autoCommands.driveOverBump(true))
 
                 .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
-                        AutoAlign.kSlowCrawlProfile), 
-                      Commands.waitSeconds(0.4).andThen(autoCommands.Score())));
+                        AutoAlign.kSlowCrawlProfile),
+                        Commands.waitSeconds(0.4).andThen(autoCommands.Score())));
         // (L/R) Back From Center Line To Climb
 
         // ============= DEFINE AUTOS =============
@@ -231,12 +269,6 @@ public class Autos {
 
                     c.addCommands(rightBackToStartDefault.get());
 
-                    c.addCommands(autoCommands.autoScoreNoWiggle()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
-
-                    c.addCommands(autoCommands.autoScore()
-                            .withTimeout(AutoConstants.kDefaultautoScoreTime));
-
                     c.addCommands(rightToCenterLineCloseHardCoded.get()
                             .until(TriggerUtil.isWithinRadius(
                                     () -> POI.R_SWEEP1.get()
@@ -252,7 +284,20 @@ public class Autos {
                     c.addCommands(autoCommands.autoScore());
                 }));
 
+        autos.put("R pass",
+                () -> auto(POI.TRR1.get(), c -> {
 
+                    c.addCommands(rightToCenterLineMiddleHardCoded.get().until(TriggerUtil.isWithinRadius(
+                            () -> POI.STOPR1.get()
+                                    .getTranslation(),
+                            () -> m_drivebase.state.Pose,
+                            () -> Meters.of(0.2))));
+
+                    c.addCommands(rightPass.get());
+
+                    c.addCommands(rightAlliancePickupAndScore.get());
+
+                }));
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
@@ -274,9 +319,9 @@ public class Autos {
         SequentialCommandGroup group = new SequentialCommandGroup();
 
         // Odometry reset first
-       group.addCommands(factory.resetOdometry(Optional.of(startPose), false)
-      // .onlyIf(Robot::isSimulation)
-       );
+        group.addCommands(factory.resetOdometry(Optional.of(startPose), false)
+        // .onlyIf(Robot::isSimulation)
+        );
 
         // Let the builder add more commands
         builder.accept(group);
