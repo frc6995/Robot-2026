@@ -199,18 +199,6 @@ public class RobotContainer {
         }
 
         private void configureBindings() {
-                // Left stick: Movement
-                // Right stick: Rotation
-                // D-pad: Robot relative translation
-                // A: Intake toggle
-                // B: Cardinal direction hold
-                // X: Climb
-                // RT: Hold to Shoot
-                // RB: Intake shake
-
-                // Start: Current home turret (enabled)
-                // Back: Home all (enabled); Set positions (disabled)
-
                 joystick.leftTrigger().whileTrue(
                         m_autoCommands.driveOverBump(true)
                 );
@@ -256,10 +244,8 @@ public class RobotContainer {
 
                 joystick.y().onTrue(m_spindexer.runUnjam());
 
-                // RT: hold to shoot
                 joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
-                // Start: Current home turret (enabled) or reset positions (disabled)
                 joystick.start().debounce(0.5).onTrue(
                         Commands.either(
                                 Commands.parallel(
@@ -281,17 +267,12 @@ public class RobotContainer {
                                 .whileTrue(m_autoCommands. intakeWiggle(Degrees.of(60), Degrees.of(15), 0.8));
                 joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
-                                joystick.leftBumper()
+                joystick.leftBumper()
                                 .whileTrue(m_intakePivot.setAngle (()-> IntakePivotConstants.kSafeAngle));
                 joystick.leftBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
                 m_drivetrain.registerTelemetry(logger::telemeterize);
 
-                // testController.a().whileTrue(m_drivetrain.sysIdDynamic(Direction.kForward));
-                // testController.b().whileTrue(m_drivetrain.sysIdDynamic(Direction.kReverse));
-                // testController.x().whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kForward));
-                // testController.y().whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kReverse));
-                
         }
 
         private void configureTriggers() {

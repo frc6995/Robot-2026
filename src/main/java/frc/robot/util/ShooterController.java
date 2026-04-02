@@ -62,16 +62,6 @@ static double timeFudge = -0.2;
     private final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
     private final InterpolatingDoubleTreeMap tofMap = new InterpolatingDoubleTreeMap();
 
-    // private static final double[] c = {
-    //     1.192642 - 0.1,
-    //     5.328464,
-    //     2.495469,
-    //     1.036451
-    // };
-
-    // private final Function<Double, Double> tofFunction = (d) -> {
-    //     return c[3] + ((c[0] - c[3]) / (1 + Math.pow(d / c[2], c[1])));
-    // };
 
     private final Supplier<Pose2d> robotPose;
     private final Supplier<ChassisSpeeds> robotSpeeds;

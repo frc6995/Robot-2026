@@ -24,13 +24,6 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj B = new ChoreoTraj(
-        "B",
-        OptionalInt.empty(),
-        3.23362,
-        new Pose2d(8.2971, 4.23834, Rotation2d.fromRadians(-1.57428)),
-        new Pose2d(4.28457, 7.58394, Rotation2d.fromRadians(0))
-    );
     public static final ChoreoTraj R_Pickup_Center = new ChoreoTraj(
         "R_Pickup_Center",
         OptionalInt.empty(),
@@ -48,7 +41,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj R_Sweep = new ChoreoTraj(
         "R_Sweep",
         OptionalInt.empty(),
-        4.04123,
+        4.10617,
         new Pose2d(7.48511, 2.73507, Rotation2d.fromRadians(1.81775)),
         new Pose2d(5.11978, 0.59983, Rotation2d.fromRadians(-3.12308))
     );
@@ -62,7 +55,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj R_Pass_Center = new ChoreoTraj(
         "R_Pass_Center",
         OptionalInt.empty(),
-        6.20603,
+        6.38622,
         new Pose2d(8.16188, 3.21324, Rotation2d.fromRadians(1.6065)),
         new Pose2d(6.05591, 3.58208, Rotation2d.fromRadians(1.6517))
     );
@@ -83,9 +76,9 @@ public record ChoreoTraj(
     public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
         "Center_Line_Poses",
         OptionalInt.empty(),
-        88.79366,
-        new Pose2d(3.80258, 7.50264, Rotation2d.fromRadians(0)),
-        new Pose2d(5.95889, -1.05326, Rotation2d.fromRadians(2.31917))
+        55.90545,
+        new Pose2d(3.80258, 7.60264, Rotation2d.fromRadians(0)),
+        new Pose2d(8.97604, 7.3, Rotation2d.fromRadians(-0.10472))
     );
 
     /**
@@ -93,7 +86,6 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-        Map.entry("B", B),
         Map.entry("R_Pickup_Center", R_Pickup_Center),
         Map.entry("Climb_Poses", Climb_Poses),
         Map.entry("R_Sweep", R_Sweep),

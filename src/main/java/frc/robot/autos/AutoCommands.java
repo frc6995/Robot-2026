@@ -149,30 +149,6 @@ public class AutoCommands {
                 Commands.parallel(fuelIntake(), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
     }
 
-    /**
-     * Creates a routine that intakes at the depot
-     * 
-     * @param helpPose           Pose to go through on the way to the final pose
-     *                           to intake
-     * @param helpPoseEntryAngle
-     */
-
-    public Command APtoDepot() {
-        return Commands.deadline(
-                Commands.sequence(
-                        new AutoAlign(POI.DEPOT_START.get(), POI.depotStartEntry.get(),
-                                m_drivebase,
-                                AutoAlign.kSlowDriveProfile).until(
-                                        TriggerUtil.isWithinRadius(
-                                                () -> POI.DEPOT_START
-                                                        .get()
-                                                        .getTranslation(),
-                                                () -> m_drivebase.state.Pose,
-                                                () -> Meters.of(0.1))),
-                        new AutoAlign(POI.DEPOT_END.get(), m_drivebase,
-                                AutoAlign.kSlowDriveProfile)),
-                Commands.parallel(fuelIntake()));
-    }
 
     /**
      * Creates a command that intakes from the center line
@@ -203,31 +179,6 @@ public class AutoCommands {
 
     }
 
-    /**
-     * Command that aligns to target pose and climbs
-     * 
-     * @param targetpose Target pose to autoallign to
-     * @return Command that aligns to target pose and climbs
-     */
-    public Command APL1Climb(
-            Pose2d targetpose) {
-        return Commands.parallel(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kUpperLimit),
-                Commands.sequence(
-
-                        new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile)
-                // ADD CLIMB COMMAND
-                ));
-
-    }
-
-    // public Command APToAverageFuelPose() {
-    // return Commands.parallel(
-    // new AutoAlign(new Pose2d(m_objectVision.getAverageObjectLocation().get(), new
-    // Rotation2d()), m_drivebase),
-    // fuelIntake()
-    // );
-    // }
 
     public Command APToBestCluster() {
         return Commands.deferredProxy(
@@ -289,27 +240,6 @@ public class AutoCommands {
                 Set.of(m_drivebase, m_intakePivot));
     }
 
-    public Command prepL1Climb(
-            Pose2d targetpose) {
-        return Commands.race(
-                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
-                new AutoAlign(targetpose, m_drivebase, AutoAlign.kClimbProfile),
-                m_climbExtension.setHeight(() -> Inches.of(8)));
-    }
-
-    public Command L1Climb() {
-        return Commands.sequence(
-                m_climbExtension.setHeight(() -> Inches.of(2)).withTimeout(1));
-    }
-
-    public Command finishL1Climb() {
-        return Commands.sequence(
-                m_climbExtension.setHeight(() -> Inches.of(8)).withTimeout(0.5));
-    }
-
-    public Command setClimber(Supplier<Angle> pivotAngle, Supplier<Distance> extensionDistance) {
-        return m_climbExtension.setHeight(extensionDistance);
-    }
 
     public Command fuelIntake() {
         return m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle);

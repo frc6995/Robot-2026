@@ -60,13 +60,9 @@ public class POI {
 
     // Center line help poses
     public static final Supplier<Pose2d> HELPL1 = flipped(ChoreoVars.Poses.HELPL1);
-    public static final Supplier<Pose2d> HELPL2 = flipped(ChoreoVars.Poses.HELPL2);
-    public static final Supplier<Pose2d> HELPL3 = flipped(ChoreoVars.Poses.HELPL3);
     public static final Supplier<Pose2d> HELPL4 = flipped(ChoreoVars.Poses.HELPL4);
 
     public static final Supplier<Pose2d> HELPR1 = flipped(ChoreoVars.Poses.HELPR1);
-    public static final Supplier<Pose2d> HELPR2 = flipped(ChoreoVars.Poses.HELPR2);
-    public static final Supplier<Pose2d> HELPR3 = flipped(ChoreoVars.Poses.HELPR3);
     public static final Supplier<Pose2d> HELPR4 = flipped(ChoreoVars.Poses.HELPR4);
 
     // Climb poses

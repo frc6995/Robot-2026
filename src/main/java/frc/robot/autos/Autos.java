@@ -42,7 +42,7 @@ public class Autos {
 
     public class AutoConstants {
         private static Time kDefaultautoInitialTime = Seconds.of(1.4);
-                private static Time kDefaultautoShakeScoreTime = Seconds.of(2.3);
+        private static Time kDefaultautoShakeScoreTime = Seconds.of(2.3);
 
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
@@ -50,7 +50,6 @@ public class Autos {
         private static Distance kCloseBackToStartRadius = Meters.of(2.0);
         private static Distance kDefaultStartRadius = Meters.of(3.8);
         private static Distance kDefaultBeginIntakingRadius = Meters.of(1.4);
-
     }
 
     private final AutoCommands autoCommands;
@@ -81,6 +80,7 @@ public class Autos {
         this.m_spindexer = spindexer;
         this.m_FlyWheel = flyWheel;
         this.m_objectVision = objectVision;
+
         // ============= CHOREO PATHS =============
         Command L_Sweep = factory.trajectoryCmd("L_Sweep");
         Command R_Sweep = factory.trajectoryCmd("R_Sweep");
@@ -120,32 +120,24 @@ public class Autos {
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
                         () -> Meters.of(0.2)))
-                .andThen(
-                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
+                        .andThen(
+                                autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
                         .andThen(autoCommands.autoScore()
-                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
-
-        Supplier<Command> leftBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPL4.get(),
-                POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
-                POI.TRL1.get(), POI.TRL1Entry.get());
+                                .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
         Supplier<Command> rightBackToStartDefault = () -> Commands.parallel(
                 autoCommands.APBackFromIntake(POI.HELPR4.get(),
                         POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
                         POI.TRR1.get(), POI.TRR1Entry.get()),
+
                 Commands.waitUntil(TriggerUtil.isWithinRadius(
                         () -> POI.TRR1.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
                         () -> Meters.of(0.5)))
-                .andThen(
-                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
+                        .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
                         .andThen(autoCommands.autoScore()
-                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
-
-        Supplier<Command> rightBackToStartClose = () -> autoCommands.APBackFromIntake(POI.HELPR4.get(),
-                POI.HELPL2Entry.get(), AutoConstants.kCloseBackToStartRadius,
-                POI.TRR1.get(), POI.TRL1Entry.get());
+                                .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
         // (L/R) Back From Center Line To Climb
         Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
@@ -163,28 +155,30 @@ public class Autos {
                 () -> Meters.of(0.2)))
                 .andThen(Commands.parallel(new AutoAlign(POI.TRR2.get(), POI.TRL1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile)),
-                       Commands.waitUntil(TriggerUtil.isWithinRadius(
-                        () -> POI.TRR1.get()
-                                .getTranslation(),
-                        () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.5)))
-                .andThen(
-                        autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
-                        .andThen(autoCommands.autoScore()
-                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
+                        Commands.waitUntil(TriggerUtil.isWithinRadius(
+                                () -> POI.TRR1.get()
+                                        .getTranslation(),
+                                () -> m_drivebase.state.Pose,
+                                () -> Meters.of(0.5)))
+                                .andThen(autoCommands.autoScoreNoWiggle()
+                                        .withTimeout(AutoConstants.kDefaultautoInitialTime))
+                                .andThen(autoCommands.autoScore()
+                                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
-        Supplier<Command> rightPass = () -> Commands.parallel(
-                R_Pass_Center,
+        Supplier<Command> rightPass = () -> Commands.parallel(R_Pass_Center,
+
                 autoCommands.Score().until(TriggerUtil.isWithinRadius(
                         () -> POI.R_ScoreStop.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
                         () -> Meters.of(0.2))))
+
                 .until(TriggerUtil.isWithinRadius(
                         () -> POI.R_PassPathStop.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
                         () -> Meters.of(0.2)))
+
                 .andThen(autoCommands.APBackFromIntake(POI.R_PASSHELP.get(),
                         POI.HELPL2PassEntry.get(), Meters.of(2.0),
                         POI.TRR2.get(), POI.TRL1Entry.get()));
@@ -313,7 +307,7 @@ public class Autos {
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
 
     }
-    // ============= FLEXIBLE AUTO BUILDER =============
+    // ============= AUTO BUILDER =============
 
     /**
      * Build any auto with command flexibility
