@@ -38,11 +38,10 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
+import frc.robot.util.RobotVisualizer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.util.POI;
-import frc.robot.util.RobotVisualizer;
-// import frc.robot.util.RobotVisualizer;
 import frc.robot.util.UnitUtil;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -141,8 +140,15 @@ public class RealTurretS extends TurretS {
 
     @Override
     public void simulationPeriodic(){
-        double currentAngleRad = m_turret.getAngle().in(Radians);
-        RobotVisualizer.updateTurret(currentAngleRad);
+        Optional<Angle> optionalSetpoint = m_turret.getMechanismSetpoint();
+
+        // If there is no setpoint, default to 0 radians
+        Angle actualAngle = optionalSetpoint.orElse(Radians.of(0)); 
+
+        // Now you can safely use it
+        double radians = actualAngle.in(Radians);
+        // double currentAngleRad = m_turret.getAngle().in(Radians);
+        RobotVisualizer.updateTurret(radians);
         m_turret.simIterate();
     }
 

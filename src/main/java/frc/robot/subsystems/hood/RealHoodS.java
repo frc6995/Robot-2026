@@ -60,19 +60,25 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class RealHoodS extends HoodS {
     public class HoodConstants {
-        // CAN IDs
-        public static final int kCANID = 52;
+         public static final int kCANID = 52;
         // PID-FF Constants
-        public static final double kP = 160;
+        public static final double kP = 38;
         public static final double kI = 0;
-        public static final double kD = 0;
+        public static final double kD = 0.41;
         public static final double kS = 0;
-        public static final double kV = 4.99;
-        public static final double kA = 0.04;
+        public static final double kV = 2.99;
+        public static final double kA = 0.03;
+        // Sim PID-FF Constants
+        public static final double kSimP = 38;
+        public static final double kSimI = 0;
+        public static final double kSimD = 0.41;
+        public static final double kSimS = 0;
+        public static final double kSimV = 2.99;
+        public static final double kSimA = 0.03;
 
         // Setpoints and Limits
         public static final Angle kLowerLimit = Degrees.of(12.5); // CW Limit
-        public static final Angle kUpperLimit = Degrees.of(38); // CCW Limit
+        public static final Angle kUpperLimit = Degrees.of(40); // CCW Limit
         public static final Angle kStowAngle = kLowerLimit;
         public static final Angle kTolerance = Degrees.of(5);
         public static final double[][] kAngleData = {
@@ -87,19 +93,20 @@ public class RealHoodS extends HoodS {
         // Motor Setup
         public static final double kStatorCurrentLimit = 40;
         public static final double kSupplyCurrentLimit = 25;
-        public static final Current kDriveToHomeThreshold = Amps.of(50);
-        public static final double kReduction = 73.33;
+        public static final double kReduction = 40;
         public static final boolean kMotorInverted = false;
-        public static final AngularVelocity kVelocity = DegreesPerSecond.of(1600);
-        public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(2700);
+        public static final AngularVelocity kVelocity = DegreesPerSecond.of(180);
+        public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(360);
+        public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(180);
+        public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(360);
+        public static final Current kDriveToHomeThreshold = Amps.of(50);
         // Sim Constants
         public static final Distance kArmLength = Inches.of(9.384);
-        public static final MomentOfInertia kMOI = KilogramSquareMeters.of(0.00671959172);
+        public static final Double kMOI = 0.00671959172;
         // Hood Safety Constants
         public static final Distance kSafetyOverride_NoSpeed = Meters.of(1.5);
-        public static final Distance kSafetyOverride_Final = Meters.of(0.8);
-        public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.5);
-        public static final double kHoodRetractTime = 0.25;
+        public static final Distance kSafetyOverride_Final = Meters.of(0.01);
+        public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.2);
         public static final Voltage kHomingVoltage = Volts.of(-8);
     }
 
@@ -144,7 +151,7 @@ public class RealHoodS extends HoodS {
     private Supplier<ChassisSpeeds> lastSpeeds;
     private BooleanSupplier isIntakeDeployed;
     private double poseEstPeriod = 0.02;
-    private Angle setpointNoLimit = HoodConstants.kLowerLimit;
+    private Angle setpointNoLimit = HoodConstants.kUpperLimit;
 
     private BooleanSupplier shouldApplyDynamicLimit;
 
@@ -290,8 +297,14 @@ public class RealHoodS extends HoodS {
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
-        double currentAngleRad = hood.getAngle().in(Radians);
-        RobotVisualizer.updateHood(currentAngleRad);
+        Optional<Angle> optionalSetpoint = hood.getMechanismSetpoint();
+
+        // If there is no setpoint, default to 0 radians
+        Angle actualAngle = optionalSetpoint.orElse(Radians.of(0)); 
+
+        // Now you can safely use it
+        double radians = actualAngle.in(Radians);
+        RobotVisualizer.updateHood(radians);
         hood.simIterate();
     }
 
