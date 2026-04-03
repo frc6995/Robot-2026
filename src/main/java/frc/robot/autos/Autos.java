@@ -183,60 +183,9 @@ public class Autos {
                         POI.HELPL2PassEntry.get(), Meters.of(2.0),
                         POI.TRR2.get(), POI.TRL1Entry.get()));
 
-        Supplier<Command> rightAlliancePickupAndScore = () -> Commands.parallel(
+        Supplier<Command> rightAlliancePickupAndScore = () -> Commands.race(
                 R_Pickup_Center,
-                autoCommands.Score());
-
-        Supplier<Command> leftCircleStart = () -> autoCommands.APToIntake(POI.HELPL1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
-                POI.CIRCLE_STOPL0.get());
-
-        Supplier<Command> rightCircleStart = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
-                POI.CIRCLE_STOPR0.get());
-
-        Supplier<Command> leftCircleMid = () -> autoCommands.APToIntake(POI.HELPL1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLL3.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
-                POI.CIRCLE_STOPL101.get());
-
-        Supplier<Command> rightCircleMid = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-                AutoConstants.kDefaultStartRadius,
-                POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
-                POI.CIRCLE_STOPR101.get());
-
-        Supplier<Command> leftCircleOverBumpAndScore = () -> new AutoAlign(POI.BUMPHELP1.get(), m_drivebase,
-                AutoAlign.kDefaultVelocityLimitedProfile)
-
-                .until(TriggerUtil.isWithinRadius(
-                        () -> POI.BUMPHELP1.get()
-                                .getTranslation(),
-                        () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.5)))
-
-                .andThen(autoCommands.driveOverBump(true))
-
-                .andThen(Commands.race(new AutoAlign(POI.TRL1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
-                        AutoAlign.kSlowCrawlProfile),
-                        Commands.waitSeconds(0.4).andThen(autoCommands.Score())));
-
-        Supplier<Command> rightCircleOverBumpAndScore = () -> new AutoAlign(POI.BUMPHELP2.get(), m_drivebase,
-                AutoAlign.kDefaultVelocityLimitedProfile)
-
-                .until(TriggerUtil.isWithinRadius(
-                        () -> POI.BUMPHELP2.get()
-                                .getTranslation(),
-                        () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.5)))
-
-                .andThen(autoCommands.driveOverBump(true))
-
-                .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
-                        AutoAlign.kSlowCrawlProfile),
-                        Commands.waitSeconds(0.4).andThen(autoCommands.Score())));
-        // (L/R) Back From Center Line To Climb
+                autoCommands.autoScore());
 
         // ============= DEFINE AUTOS =============
 
@@ -292,11 +241,15 @@ public class Autos {
                             () -> POI.STOPR1.get()
                                     .getTranslation(),
                             () -> m_drivebase.state.Pose,
-                            () -> Meters.of(0.2))));
+                            () -> Meters.of(1.4))));
 
                     c.addCommands(rightPass.get());
 
                     c.addCommands(rightAlliancePickupAndScore.get());
+
+                    c.addCommands(new AutoAlign(POI.R_PASS_AUTO_STOP.get(),  m_drivebase, AutoAlign.kSlowDriveProfile)
+                    .alongWith(autoCommands.autoScore()));
+
 
                 }));
 

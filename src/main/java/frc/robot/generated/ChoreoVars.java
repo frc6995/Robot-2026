@@ -55,6 +55,7 @@ public final class ChoreoVars {
         public static final Pose2d L_SWEEP5 = new Pose2d(6.2223914, 7.2894531, Rotation2d.fromRadians(2.6179939));
         public static final Pose2d L_SWEEP6 = new Pose2d(5.5197801, 7.4521726, Rotation2d.fromRadians(3.1230762));
         public static final Pose2d R_PASSHELP = new Pose2d(5.9588947, -1.0532609, Rotation2d.fromRadians(2.3191747));
+        public static final Pose2d R_PASS_AUTO_STOP = new Pose2d(0.5821602, 2.4046731, Rotation2d.fromRadians(1.6078164));
         public static final Pose2d R_PassPathStop = new Pose2d(6.0559134, 3.5820801, Rotation2d.fromRadians(1.6516999));
         public static final Pose2d R_SWEEP1 = new Pose2d(7.4851097, 2.7350694, Rotation2d.fromRadians(1.817751));
         public static final Pose2d R_SWEEP2 = new Pose2d(5.7272114, 2.2650705, Rotation2d.fromRadians(-1.4946018));
