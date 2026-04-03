@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -32,6 +34,9 @@ public class AprilTagModule {
     private final BooleanPublisher isActivePublisher;
     private final StringPublisher modePublisher;
     private final StringPublisher defaultModePublisher;
+
+    public final DoubleArrayPublisher rewindPublisher;
+    public final DoubleArraySubscriber rewindSubscriber;
     private PoseEstimate mt1Pose;
     private PoseEstimate mt2Pose;
 
@@ -56,10 +61,15 @@ public class AprilTagModule {
         isActivePublisher = moduleSubTable.getBooleanTopic("IsActive").publish();
         modePublisher = moduleSubTable.getStringTopic("LastEstimateMode").publish();
         defaultModePublisher = moduleSubTable.getStringTopic("DefaultEstimateMode").publish();
+
+        rewindPublisher = moduleSubTable.getDoubleArrayTopic("capture_rewind").publish();
+        rewindSubscriber = moduleSubTable.getDoubleArrayTopic("capture_rewind").subscribe(new double[] {0,0});
         
         mt1Pose = new PoseEstimate(limelight, "botpose_wpiblue", false);
         mt2Pose = new PoseEstimate(limelight, "botpose_orb_wpiblue", true);
 
+        // setDouble(1) to enable rewind, 0 to disable
+        moduleSubTable.getEntry("rewind_enable_set").setDouble(1);
         robotToCameraPublisher.accept(offset);
         defaultModePublisher.setDefault(defaultMode.name());
     }

@@ -180,12 +180,12 @@ public class Autos {
                         () -> Meters.of(0.2)))
 
                 .andThen(autoCommands.APBackFromIntake(POI.R_PASSHELP.get(),
-                        POI.HELPL2PassEntry.get(), Meters.of(2.0),
+                        POI.HELPL2PassEntry.get(), Meters.of(2.1),
                         POI.TRR2.get(), POI.TRL1Entry.get()));
 
         Supplier<Command> rightAlliancePickupAndScore = () -> Commands.race(
                 R_Pickup_Center,
-                autoCommands.autoScore());
+                autoCommands.autoScoreNoWiggle());
 
         // ============= DEFINE AUTOS =============
 
