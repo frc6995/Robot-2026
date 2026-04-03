@@ -41,9 +41,9 @@ public record ChoreoTraj(
     public static final ChoreoTraj R_Sweep = new ChoreoTraj(
         "R_Sweep",
         OptionalInt.empty(),
-        3.97329,
+        3.95192,
         new Pose2d(7.48511, 2.73507, Rotation2d.fromRadians(1.81775)),
-        new Pose2d(5.51978, 0.59983, Rotation2d.fromRadians(-3.12308))
+        new Pose2d(5.18958, 0.59983, Rotation2d.fromRadians(-3.12308))
     );
     public static final ChoreoTraj L_Sweep = new ChoreoTraj(
         "L_Sweep",
@@ -76,7 +76,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
         "Center_Line_Poses",
         OptionalInt.empty(),
-        55.90545,
+        53.01653,
         new Pose2d(3.80258, 7.60264, Rotation2d.fromRadians(0)),
         new Pose2d(8.97604, 7.3, Rotation2d.fromRadians(-0.10472))
     );
