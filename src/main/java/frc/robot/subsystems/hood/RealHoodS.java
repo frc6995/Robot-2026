@@ -243,12 +243,7 @@ public class RealHoodS extends HoodS {
             .andThen(setVoltage(Volts.zero()))
             .onlyIf(isIntakeDeployed);
 
-        // return Commands.sequence(
-        //     setVoltage(() -> TurretConstants.kHomingDrive)
-        //             .until(TriggerUtil.debounce(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold), TurretConstants.kHomingTime)),
-        //     resetEncoder()).withTimeout(2.0)
-        //     .andThen(setVoltage(Volts.zero()))
-        //     .onlyIf(isIntakeDeployed);
+
     }
 
     public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {

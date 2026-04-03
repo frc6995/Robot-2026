@@ -152,7 +152,7 @@ public class Autos {
                 () -> POI.R_SWEEP6.get()
                         .getTranslation(),
                 () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.2)))
+                () -> Meters.of(0.99)))
                 .andThen(Commands.parallel(new AutoAlign(POI.TRR2.get(), POI.TRL1Entry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile)),
                         Commands.waitUntil(TriggerUtil.isWithinRadius(
