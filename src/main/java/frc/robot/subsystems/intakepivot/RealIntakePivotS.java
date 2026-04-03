@@ -15,6 +15,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -181,7 +182,6 @@ public class RealIntakePivotS extends IntakePivotS {
 
     @Override
     public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
         double currentAngleRad = getAngle().in(Radians);
         RobotVisualizer.updateIntake(currentAngleRad);
         intakePivot.simIterate();

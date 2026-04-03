@@ -60,6 +60,7 @@ public class RobotVisualizer {
     }
 
     public static void updateTurret(double turretRadians) {
+        turretRadians = (turretRadians + Math.PI) % (2 * Math.PI);
         components[2] = HOOD_LOCATION
                 .rotateAround(TURRET_LOCATION.getTranslation(), new Rotation3d(0, 0, turretRadians)).transformBy(
                         new Transform3d(0, 0, 0, new Rotation3d(0, hoodAngleRadians, 0)));
