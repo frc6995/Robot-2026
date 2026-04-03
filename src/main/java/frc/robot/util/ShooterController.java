@@ -41,7 +41,7 @@ public class ShooterController {
                 this.hoodAngleDeg = hoodAngleDeg;
             }
     }
-static double timeFudge = -0.2;
+    static double timeFudge = -0.2;
     private static final double[][] kTimeOfFlightData = {
         {1.23, 1.356+timeFudge},
         {2.5, 1.0347966805},
@@ -51,6 +51,8 @@ static double timeFudge = -0.2;
 
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
     private static final double HOOD_MAX = HoodConstants.kUpperLimit.in(Degrees);
+
+    private static boolean inTower = false;
 
     private static final double LOOP_PERIOD_SECONDS = 0.02;
     private static final double LATENCY_SECONDS = 0.03; // adjust later
@@ -112,21 +114,22 @@ static double timeFudge = -0.2;
     }
 
     public static Pose2d getAimLocation(Pose2d drivePose) {
-        Translation2d driveTranslation = drivePose.getTranslation();
-        if (POI.topZone.get().contains(driveTranslation)) {
+        if (POI.topZone.get().contains(drivePose.getTranslation())) {
             return POI.topAllianceZone.get().getCenter();
         }
-        else if (POI.bottomZone.get().contains(driveTranslation)) {
-            return POI.bottomAllianceZone.get().getCenter();
+        else if (POI.bottomZone.get().contains(drivePose.getTranslation())) {
+            return POI.bottomPassingPoint.get();
         }
-        else if (POI.centerZone.get().contains(driveTranslation)) {
+        else if (POI.centerZone.get().contains(drivePose.getTranslation())) {
             if (POI.centerZone.get().getCenter().getY() > drivePose.getY())
-                return POI.topAllianceZone.get().getCenter();
+                return POI.topPassingPoint.get();
             else
-                return POI.bottomAllianceZone.get().getCenter();
+                return POI.bottomPassingPoint.get();
         }
         else {
-            if (POI.allianceZone.get().contains(driveTranslation)) {
+            if (POI.allianceZone.get().contains(drivePose.getTranslation())) {
+                if (POI.towerZone.get().contains(drivePose.getTranslation()))
+                    inTower = true;     else inTower = false;
                 return POI.HUB1.get();
             }
             else {
@@ -184,6 +187,15 @@ static double timeFudge = -0.2;
                 delta.getAngle().minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg),
                 rpmMap.get(distance),
                 hoodMap.get(distance)
+            );
+            return cachedData;
+        }
+        else if (inTower) {
+            updateTelemetry(goalTranslation, delta, distance);
+            cachedData = new ShooterTargetData(
+                delta.getAngle().minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg),
+                FlywheelConstants.kInTowerRPM,
+                HoodConstants.kInTowerAngle
             );
             return cachedData;
         }

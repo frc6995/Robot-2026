@@ -90,6 +90,8 @@ public class RealHoodS extends HoodS {
                 { 4, 34 },
                 { 5, 40 },
         };
+        // TODO: Tune this!
+        public static final double kInTowerAngle = 20;
         // Motor Setup
         public static final double kStatorCurrentLimit = 40;
         public static final double kSupplyCurrentLimit = 25;

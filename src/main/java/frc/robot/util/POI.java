@@ -168,6 +168,9 @@ public class POI {
     public static final Supplier<Rectangle2d> bottomZone = flippedRectangle(bottomZoneCorner1, bottomZoneCorner2);
 
     // ============= TRANSLATIONS =============
+    public static final Supplier<Pose2d> bottomPassingPoint = flipped(new Pose2d(Meters.of(2.9), Meters.of(1.68), new Rotation2d()));
+    public static final Supplier<Pose2d> topPassingPoint = flipped(new Pose2d(Meters.of(2.9), Meters.of(6.32), new Rotation2d()));
+
     // ============= DISTANCES =============
     public static final Distance kOriginToTrenchBlue = Meters.of(4.6);
     public static final Distance kOriginToTrenchRed = Meters.of(11.9);
@@ -215,4 +218,8 @@ public class POI {
             kRightRedBounds);
     public static final Rectangle2d kFieldBounds = new Rectangle2d(new Translation2d(0, 0),
             new Translation2d(AllianceFlipUtil.FIELD_LENGTH, AllianceFlipUtil.FIELD_WIDTH));
+
+    public static final Supplier<Rectangle2d> towerZone = flippedRectangle(
+            new Translation2d(Meters.zero(), Meters.of(4.5)), 
+            new Translation2d(Meters.of(1.07), Meters.of(2.84)));
 }
