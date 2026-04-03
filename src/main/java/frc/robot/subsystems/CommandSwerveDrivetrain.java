@@ -26,6 +26,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -46,6 +48,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.subsystems.vision.apriltag.NoneATVision;
 import frc.robot.subsystems.vision.apriltag.RealATVision;
+import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.vision.apriltag.AprilTagVision;
 import frc.robot.subsystems.vision.apriltag.RealATVision.ATVisionConstants;
 
@@ -91,8 +94,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null, // Use default ramp rate (1 V/s)
-                    Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
-                    null, // Use default timeout (10 s)
+                    Volts.of(2), // Reduce dynamic step voltage to 4 V to prevent brownout
+                    Seconds.of(5), // Use default timeout (10 s)
                     // Log state with SignalLogger class
                     state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
             new SysIdRoutine.Mechanism(
@@ -299,8 +302,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public SwerveDriveState lastState = getState().clone();
 
     /** Re-expose the state as a method of the subclass so Epilogue finds it. */
+    @Logged
     public SwerveDriveState state() {
-        return state;
+        return getState();
     }
 
     /**
@@ -394,15 +398,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         m_vision.periodic();
 
-        if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/8)) {
+        if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/2)) {
  
         var estimates = m_vision.getAllEstimates();
+        var gyroRotation = m_gyro.getRotation3d();
         for(var estimate : estimates) {
-            if(estimate.avgTagDist < 3.0 && estimate.getMaxTagAmbiguity() < 0.25) {
+            if(estimate.getAvgTagAmbiguity() < 0.65 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
                 if(DriverStation.isEnabled()) {
-                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.KNormalStdDevs);
+                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, RealATVision.getStdDevs(estimate));
                 } else {
-                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, ATVisionConstants.kDisabledStdDevs);
+                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, RealATVision.getDisabledStdDevs(estimate));
                 }
             }
         }
@@ -476,13 +481,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
     /* Robot swerve drive state */
-    private final NetworkTable driveStateTable = inst.getTable("DriveState");
-    private final StructPublisher<Pose2d> drivePose = driveStateTable.getStructTopic("TargetPose", Pose2d.struct).publish();
+    //private final NetworkTable driveStateTable = inst.getTable("DriveState");
+    //private final StructPublisher<Pose2d> drivePose = driveStateTable.getStructTopic("TargetPose", Pose2d.struct).publish();
 
     public void followPath(SwerveSample sample) {
         m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
         var pose = state().Pose;
-        drivePose.accept(sample.getPose());
+      //  drivePose.accept(sample.getPose());
         double targetHeading = sample.heading;
         double actualHeading = pose.getRotation().getRadians();
         double error = Math.IEEEremainder(targetHeading - actualHeading, 2 * Math.PI);
@@ -504,5 +509,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public double calculateThetaPID(Rotation2d target) {
         return m_pathThetaController.calculate(state.Pose.getRotation().getRadians(), target.getRadians());
+    }
+
+    public static Translation2d getProjectedTranslation(Translation2d robotTranslation, ChassisSpeeds speeds, ChassisSpeeds lastSpeeds, double period, double timeSeconds) {
+        double accelX = (speeds.vxMetersPerSecond - lastSpeeds.vxMetersPerSecond) / period;
+        double accelY = (speeds.vyMetersPerSecond - lastSpeeds.vyMetersPerSecond) / period;
+        return robotTranslation.plus(
+            new Translation2d(
+                speeds.vxMetersPerSecond * timeSeconds,
+                speeds.vyMetersPerSecond * timeSeconds
+            )
+        );
     }
 }

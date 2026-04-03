@@ -1,6 +1,7 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -32,6 +33,8 @@ public abstract class TurretS extends SubsystemBase {
     protected Supplier<ChassisSpeeds> robotSpeeds;
     protected BooleanSupplier isIntakeDeployed;
 
+    protected Rotation2d setpoint = Rotation2d.kZero;
+
     public TurretS(Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotSpeeds, BooleanSupplier isIntakeDeployed) {
         this.robotPose = robotPose;
         this.robotSpeeds = robotSpeeds;
@@ -39,22 +42,14 @@ public abstract class TurretS extends SubsystemBase {
     }
 
     public abstract Command setAngle(Supplier<Rotation2d> angle);
-
     public abstract Command setAngle(Rotation2d angle);
-
     public abstract Command setVoltage(Supplier<Voltage> voltage);
-
     public abstract Command setVoltage(Voltage voltage);
-
     public abstract Command sysId();
-
     public abstract Command resetEncoder();
-
     public abstract Optional<Angle> getSetpoint();
-
     @Logged
     public abstract Angle getAngle();
-
     @Logged
     public abstract Current getSupplyCurrent();
 
@@ -136,7 +131,15 @@ public abstract class TurretS extends SubsystemBase {
     
     @Logged
     public boolean atSetpoint() {
-        var refOpt = getSetpoint();
-        return refOpt.isPresent() && refOpt.get().isNear(getAngle(), TurretConstants.kTolerance);
+        var angle = setpoint.getMeasure();
+        return angle.isNear(getAngle(), TurretConstants.kShootTolerance);
     }
+
+    @Logged
+    public boolean isInDeadzone() {
+        Angle angle = setpoint.getMeasure();
+        return angle.lt(TurretConstants.kCWHardLimit) || angle.gt(TurretConstants.kCCWHardLimit);
+    }
+
+    
 }

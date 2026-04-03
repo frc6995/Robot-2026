@@ -21,6 +21,10 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class TunerConstants {
     // Both sets of gains need to be tuned to your individual robot.
 
+    // Theoretical free speed (m/s) at 12 V applied output;
+    // This needs to be tuned to your individual robot
+    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.30);
+
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
     // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
@@ -31,8 +35,8 @@ public class TunerConstants {
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     private static final Slot0Configs driveGains = new Slot0Configs()
-        .withKP(0.2).withKI(0).withKD(0.0)
-        .withKS(0).withKV(0.124);
+        .withKP(0.343).withKI(0).withKD(0.0)
+        .withKS(0.167).withKV(1.0 / kSpeedAt12Volts.baseUnitMagnitude());
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
@@ -52,11 +56,15 @@ public class TunerConstants {
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
-    private static final Current kSlipCurrent = Amps.of(120);
+    private static final Current kSlipCurrent = Amps.of(65);
 
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
-    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
+    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
+        .withCurrentLimits(
+            new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(Amps.of(50))
+        );
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
         .withCurrentLimits(
             new CurrentLimitsConfigs()
@@ -74,15 +82,12 @@ public class TunerConstants {
     public static final CANBus kLowerBus = new CANBus("LowerBus", "./logs/example.hoot");
 
     public static final CANBus kHigherBus = new CANBus("UpperBus", "./logs/example.hoot");
-    // Theoretical free speed (m/s) at 12 V applied output;
-    // This needs to be tuned to your individual robot
-    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.85);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
     private static final double kCoupleRatio = 3.375;
 
-    private static final double kDriveGearRatio = 5.2734375;
+    private static final double kDriveGearRatio = 6.03; //5.2734375;
     private static final double kSteerGearRatio = 26.09090909090909;
     private static final Distance kWheelRadius = Inches.of(2);
 

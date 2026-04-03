@@ -5,13 +5,14 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
@@ -19,49 +20,47 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autos.AutoCommands;
 import frc.robot.autos.Autos;
-import frc.robot.generated.ChoreoVars;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.FlyWheelS;
-import frc.robot.subsystems.flywheel.NoneFlyWheelS;
 import frc.robot.subsystems.flywheel.RealFlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
-import frc.robot.subsystems.hood.NoneHoodS;
 import frc.robot.subsystems.hood.RealHoodS;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.indexer.IndexerS;
-import frc.robot.subsystems.indexer.NoneIndexerS;
 import frc.robot.subsystems.indexer.RealIndexerS;
 import frc.robot.subsystems.intakepivot.IntakePivotS;
-import frc.robot.subsystems.intakepivot.NoneIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
-import frc.robot.subsystems.intakeroller.NoneIntakeRollerS;
 import frc.robot.subsystems.intakeroller.RealIntakeRollerS;
-import frc.robot.subsystems.spindexer.NoneSpindexerS;
+import frc.robot.subsystems.intakeroller.RealIntakeRollerS.IntakeRollerConstants;
 import frc.robot.subsystems.spindexer.RealSpindexerS;
 import frc.robot.subsystems.spindexer.SpindexerS;
-import frc.robot.subsystems.turret.NoneTurretS;
+import frc.robot.subsystems.spindexer.RealSpindexerS.SpindexerConstants;
 import frc.robot.subsystems.turret.RealTurretS;
 import frc.robot.subsystems.turret.TurretS;
+import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
+import frc.robot.subsystems.climb.climbextension.NoneClimbExtensionS;
+import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.vision.detection.NoneODVision;
 import frc.robot.subsystems.vision.detection.ObjectVision;
-import frc.robot.subsystems.vision.detection.RealODVision;
-import frc.robot.subsystems.vision.detection.SimODVision;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.AutoAlignFixedHeading;
 import frc.robot.util.POI;
@@ -70,246 +69,293 @@ import frc.robot.util.Telemetry;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
-    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.LOW;
+        public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.LOW;
 
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
-                                                                                  // speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
-                                                                                      // second
-                                                                                      // max angular velocity
+        private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
+                                                                                      // speed
+        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
+                                                                                          // second
+                                                                                          // max angular velocity
 
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
-                                                                     // motors
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+        /* Setting up bindings for necessary control of the swerve drive platform */
+        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+                        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
+                                                                                 // motors
+        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+        private final Telemetry logger = new Telemetry();
 
-    public static final CommandXboxController joystick = new CommandXboxController(0);
+        public static final CommandXboxController joystick = new CommandXboxController(0);
+        // public static final CommandXboxController testController = new CommandXboxController(1);
 
-    public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
-            TunerConstants.DrivetrainConstants,
-            TunerConstants.FrontLeft,
-            TunerConstants.FrontRight,
-            TunerConstants.BackLeft,
-            TunerConstants.BackRight);
+        RobotStates robotStates = new RobotStates();
 
-    @Logged(name = "Flywheel")
-    private final FlyWheelS m_flywheel = new RealFlyWheelS();
-    @Logged(name = "Hood")
-    private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds);
-    // private final HoodS m_hood = new NoneHoodS();
+        @Logged
+        public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
+                        TunerConstants.DrivetrainConstants,
+                        TunerConstants.FrontLeft,
+                        TunerConstants.FrontRight,
+                        TunerConstants.BackLeft,
+                        TunerConstants.BackRight);
 
-    @Logged(name = "Indexer")
-    private final IndexerS m_indexer = new RealIndexerS();
-    @Logged(name = "IntakePivot")
-    private final IntakePivotS m_intakePivot = new NoneIntakePivotS();
-    @Logged(name = "IntakeRoller")
-    private final IntakeRollerS m_intakeRoller = new NoneIntakeRollerS(); 
-    @Logged(name = "Spindexer")
-    private final SpindexerS m_spindexer = new RealSpindexerS();
-    @Logged(name = "Turret")
-    private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, ()-> m_intakePivot.isIntakeDeployed());
-    //private final TurretS m_turret = new NoneTurretS();
+        @Logged(name = "Flywheel")
+        private final FlyWheelS m_flywheel = new RealFlyWheelS(robotStates::isIntakeDeployed);
+        @Logged(name = "Hood")
+        private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state, () -> m_drivetrain.lastState, robotStates::isIntakeDeployed);
+        @Logged(name = "Indexer")
+        private final IndexerS m_indexer = new RealIndexerS();
+        @Logged(name = "IntakePivot")
+        private final IntakePivotS m_intakePivot = new RealIntakePivotS(robotStates::isTurretStowed, robotStates::isFlywheelSafe);
+        @Logged(name = "IntakeRoller")
+        private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
+        @Logged(name = "Spindexer")
+        private final SpindexerS m_spindexer = new RealSpindexerS();
+        @Logged(name = "Turret")
+        private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, robotStates::isIntakeDeployed);
+        @Logged(name = "ClimbExtension")
+        private final ClimbExtensionS m_climbExtension = new NoneClimbExtensionS();
 
+        // @Logged(name = "ObjectDetection")
+        private final ObjectVision m_objectVision = new NoneODVision(() -> m_drivetrain.state.Pose);
 
-    // @Logged(name = "ObjectDetection")
-    private final ObjectVision m_objectVision = new NoneODVision(() -> m_drivetrain.state.Pose);
+        private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, m_hood, m_intakePivot,
+                        m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_climbExtension, m_objectVision, robotStates);
 
-    private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, null, m_hood, m_intakePivot,
-            m_intakeRoller, m_turret, m_indexer, m_spindexer, m_flywheel, m_objectVision);
+        private final AutoFactory autoFactory;
+        private final Autos autoRoutines;
+        public final AutoChooser m_chooser = new AutoChooser();
 
-    private final AutoFactory autoFactory;
-    private Mechanism2d VISUALIZER;
-    private final Autos autoRoutines;
-    public final AutoChooser m_chooser = new AutoChooser();
+        private final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric()
+                        .withDriveRequestType(DriveRequestType.Velocity);
 
-    private final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(DriveRequestType.Velocity);
-
-    public RobotContainer() {
-        ShooterController.initialize(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, (pose) -> ShooterController.getAimLocation(pose));
-        VISUALIZER = logger.MECH_VISUALIZER;
-
-        SmartDashboard.putData("Visualzer", VISUALIZER);
+        private Trigger shootReadyTrigger = new Trigger(robotStates::isShootReady);
+        private Trigger shootNotReadyTrigger = shootReadyTrigger.negate();
         
-        autoFactory = m_drivetrain.createAutoFactory();
-        autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot, m_intakeRoller,
-                m_turret,
-                m_indexer, m_spindexer, m_flywheel, m_objectVision);
-        SmartDashboard.putData("Auto Mode", m_chooser);
-        setDefaultCommands();
-        configureBindings();
-    }
+        public RobotContainer() {
+                ShooterController.initialize(() -> m_drivetrain.state, () -> m_drivetrain.lastState,
+                                (pose) -> ShooterController.getAimLocation(pose));
 
-    public void periodic() {
-        m_objectVision.update();
-    }
+                autoFactory = m_drivetrain.createAutoFactory();
+                autoRoutines = new Autos(m_autoCommands, m_drivetrain, autoFactory, this, m_hood, m_intakePivot,
+                                m_intakeRoller,
+                                m_turret,
+                                m_indexer, m_spindexer, m_flywheel, m_objectVision);
+                SmartDashboard.putData("Auto Mode", m_chooser);
 
-    public double xButtonPressedTime = 0;
-    public boolean intakeState = false;
-    public Angle hoodTarget = HoodConstants.kLowerLimit;
+                configureDefaultCommands();
+                configureBindings();
+                configureTriggers();
 
-    private void setDefaultCommands() {
-        m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-                m_drivetrain.applyRequest(
-                        () -> {
-                            var xSpeed = MathUtil.applyDeadband(-joystick.getLeftY(), 0.1) * 4.2;
-                            var ySpeed = MathUtil.applyDeadband(-joystick.getLeftX(), 0.1) * 4.2;
-                            var rotationSpeed = MathUtil.applyDeadband(-joystick.getRightX(), 0.1) * 2 * Math.PI;
-                            if (DriverStation.isAutonomous()) {
-                                return m_driveRequest.withVelocityX(0).withVelocityY(0)
-                                        .withRotationalRate(0);
-                            }
-                            return m_driveRequest
-                                    .withVelocityX(
-                                            xSpeed) // Drive forward with
-                                                    // negative Y (forward)
-                                    .withVelocityY(
-                                            ySpeed) // Drive left with
-                                                    // negative X (left)
-                                    .withRotationalRate(
-                                            rotationSpeed); // Drive counterclockwise with negative X (left)
-                        }));
-       //  m_turret.setDefaultCommand(m_turret.aimAtHub());
-        // m_hood.setDefaultCommand(m_hood.autoHoodAngle());
-        m_turret.setDefaultCommand(
-                m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
+                SignalLogger.enableAutoLogging(false);
+        }
 
-       m_hood.setDefaultCommand(
-               m_hood.setAngle(() -> hoodTarget));
+        public void periodic() {
+                m_objectVision.update();
+        }
 
-       m_flywheel.setDefaultCommand(
-               m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
-    }
+        private void configureDefaultCommands() {
+                m_intakePivot.setDefaultCommand(
+                                m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle));
 
-    private void configureBindings() {
-        
-        // robot relative driving with D-pad
-        joystick.povCenter().whileFalse(driveIntakeRelativePOV());
+                m_intakeRoller.setDefaultCommand(
+                                m_intakeRoller.setVoltage(() -> {
+                                        return robotStates.isIntakeDeployed() ? IntakeRollerConstants.kIntakeVoltage
+                                                        : Volts.zero();
+                                }));
 
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
-        final var idle = new SwerveRequest.Idle();
-        RobotModeTriggers.disabled().whileTrue(
-                m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+                m_turret.setDefaultCommand(
+                                m_turret.runSOTF(ShooterController.getInstance()::getCachedData));
 
-        // A intake toggle
-        joystick.a().onTrue(m_autoCommands.fuelIntake());
+                m_hood.setDefaultCommand(m_hood.setAngle(() -> Degrees.zero()));
 
-        // B button align to cardinal direction
-        joystick.b().whileTrue(
-                m_drivetrain.applyRequest(
-                        () -> {
-                            var xSpeed = -joystick.getLeftY() * 4.2;
-                            var ySpeed = -joystick.getLeftX() * 4.2;
-                            var rotSpeed = m_drivetrain.calculateThetaPID(
-                                    AutoAlignFixedHeading.cardinalizeHeadingNS(
-                                            m_drivetrain.state.Pose
-                                                    .getRotation()));
+                m_flywheel.setDefaultCommand(
+                                m_flywheel.runSOTF(ShooterController.getInstance()::getCachedData));
+                m_drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+                                m_drivetrain.applyRequest(
+                                                () -> {
+                                                        var xSpeed = -joystick.getLeftY() * 5.25;
+                                                        var ySpeed = -joystick.getLeftX() * 5.25;
+                                                        var rotationSpeed = -joystick.getRightX() * 2 * Math.PI;
+                                                        if (DriverStation.isAutonomous()) {
+                                                                return m_driveRequest.withVelocityX(0).withVelocityY(0)
+                                                                                .withRotationalRate(0);
+                                                        }
+                                                        return m_driveRequest
+                                                                        .withVelocityX(
+                                                                                        xSpeed) // Drive forward with
+                                                                                                // negative Y (forward)
+                                                                        .withVelocityY(
+                                                                                        ySpeed) // Drive left with
+                                                                                                // negative X (left)
+                                                                        .withRotationalRate(
+                                                                                        rotationSpeed); // Drive
+                                                                                                        // counterclockwise
+                                                                                                        // with negative
+                                                                                                        // X (left)
+                                                }));
 
-                            return m_driveRequest
-                                    .withVelocityX(
-                                            xSpeed) // Drive forward with
-                                                    // negative Y (forward)
-                                    .withVelocityY(
-                                            ySpeed) // Drive left with
-                                                    // negative X (left)
-                                    .withRotationalRate(
-                                            rotSpeed);
-                        } // Drive counterclockwise with negative X (left)
-                ));
+        }
 
-        // X: climb
-        // Y: stow intake
-        //joystick.y().whileTrue(
-         //       Commands.parallel(
-         //               m_intakePivot.setAngle(() -> IntakePivotConstants.kStowAngle),
-         //               m_intakeRoller.setVoltage(Volts.of(0))));
+        private void configureBindings() {
+                joystick.leftTrigger().whileTrue(
+                        m_autoCommands.driveOverBump(true)
+                );
 
-        //joystick.rightBumper().whileTrue(
-           //     m_autoCommands.APToClusterChain(200, true));
+                // robot relative driving with D-pad
+                joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
-        // right trigger hold to score
-        joystick.leftTrigger().onTrue(m_turret.setAngle(() -> Rotation2d.kZero));
-        // right trigger hold to score
-        // joystick.x().whileTrue(m_flywheel.setVoltage(() -> Volts.of(1)));
-        // joystick.x().onFalse(m_flywheel.setVoltage(() -> Volts.of(0)));
+                // A intake toggle
+                joystick.a().toggleOnTrue(m_autoCommands.fuelIntake());
 
-        joystick.x().whileTrue(m_flywheel.setVelocity(() -> RotationsPerSecond.of((1750.0 / 60.0))));
-                // joystick.x().onTrue(m_turret.setAngle(new Rotation2d()));
+                // B button align to cardinal direction
+                joystick.b().whileTrue(
+                                m_drivetrain.applyRequest(
+                                                () -> {
+                                                        var xSpeed = -joystick.getLeftY() * 4.2;
+                                                        var ySpeed = -joystick.getLeftX() * 4.2;
+                                                        var rotSpeed = m_drivetrain.calculateThetaPID(
+                                                                        AutoAlignFixedHeading.cardinalizeHeading(
+                                                                                        m_drivetrain.state.Pose
+                                                                                                        .getRotation()));
 
-        joystick.x().onFalse(m_flywheel.setVelocity(() -> DegreesPerSecond.of(0)));
+                                                        return m_driveRequest
+                                                                        .withVelocityX(
+                                                                                        xSpeed) // Drive forward with
+                                                                                                // negative Y (forward)
+                                                                        .withVelocityY(
+                                                                                        ySpeed) // Drive left with
+                                                                                                // negative X (left)
+                                                                        .withRotationalRate(
+                                                                                        rotSpeed);
+                                                } // Drive counterclockwise with negative X (left)
+                                ));
+                                
+                // joystick.x().toggleOnTrue(
+                //         Commands.parallel(
+                //                 m_turret.setAngle(() -> Rotation2d.kZero),
+                //                 m_hood.setAngle(() -> HoodConstants.kLowerLimit),
+                //                 m_flywheel.setVelocity(() -> RPM.of(1750))
+                //         )
+                // );
 
-        joystick.rightTrigger().whileTrue(m_autoCommands.Score());
-    //    joystick.y().whileTrue(m_hood.setAngle(()-> HoodConstants.kUpperLimit));
-    //     joystick.y().onFalse(m_hood.setAngle(()-> HoodConstants.kLowerLimit));
+                joystick.x().whileTrue(new AutoAlign(POI.TRR1.get(), m_drivetrain, AutoAlign.kDefaultVelocityLimitedProfile));
 
-        joystick.y().onTrue(
-            Commands.runOnce(() -> {
-                hoodTarget = hoodTarget.plus(Degrees.of(2));
-                if(hoodTarget.gt(HoodConstants.kUpperLimit)) {
-                    hoodTarget = HoodConstants.kLowerLimit;
+                joystick.y().onTrue(m_spindexer.runUnjam());
+
+                joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+
+                joystick.start().debounce(0.5).onTrue(
+                        Commands.either(
+                                Commands.parallel(
+                                        m_turret.driveToHome()
+                                ),
+                                Commands.parallel(
+                                        m_turret.resetEncoder(),
+                                        m_hood.resetEncoder()
+                                ),
+                                DriverStation::isEnabled
+                        )
+                );
+
+                // Back: Set intake to Home (disabled)
+                joystick.back()
+                                .onTrue(m_intakePivot.resetEncoder().onlyIf(DriverStation::isDisabled));
+
+                joystick.rightBumper()
+                                .whileTrue(m_autoCommands. intakeWiggle(Degrees.of(60), Degrees.of(15), 0.8));
+                joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
+
+                joystick.leftBumper()
+                                .whileTrue(m_intakePivot.setAngle (()-> IntakePivotConstants.kSafeAngle));
+                joystick.leftBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
+
+                m_drivetrain.registerTelemetry(logger::telemeterize);
+
+        }
+
+        private void configureTriggers() {
+                // Idle while the robot is disabled. This ensures the configured
+                // neutral mode is applied to the drive motors while disabled.
+                final var idle = new SwerveRequest.Idle();
+                RobotModeTriggers.disabled().whileTrue(
+                                m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+
+                shootNotReadyTrigger.debounce(0.5).and(DriverStation::isTeleopEnabled).and(joystick.rightTrigger())
+                        .whileTrue(
+                                Commands.repeatingSequence(
+                                        Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0.5)),
+                                        Commands.waitSeconds(0.25),
+                                        Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0)),
+                                        Commands.waitSeconds(0.25)))
+                        .whileFalse(
+                                Commands.runOnce(() -> joystick.setRumble(RumbleType.kBothRumble, 0)));
+
+                RobotModeTriggers.autonomous().onTrue(
+                        m_turret.runSOTF(ShooterController.getInstance()::getCachedData)
+                                .until(() -> !DriverStation.isAutonomous()));
+                
+                RobotModeTriggers.autonomous().onTrue(
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(1),
+                                m_flywheel.setVoltage(() -> Volts.zero()))
+                );
+        }
+
+        private RobotCentric m_robotCentricRequest = new RobotCentric().withDriveRequestType(DriveRequestType.Velocity);
+
+        public Command driveIntakeRelativePOV() {
+                return m_drivetrain.applyRequest(() -> {
+
+                        double pov = Units.degreesToRadians(-joystick.getHID().getPOV());
+                        double adjustSpeed = Units.feetToMeters(3); // m/s
+                        return m_robotCentricRequest.withVelocityX(
+                                Math.cos(pov) * adjustSpeed).withVelocityY(Math.sin(pov) * adjustSpeed)
+                                        .withRotationalRate(-joystick.getRightX() * 2 * Math.PI);
+                });
+        }
+
+        public Command getAutonomousCommand() {
+                return m_chooser.selectedCommand();
+
+        }
+
+        public class RobotStates {
+                public boolean isShootReady() {
+                        return isTurretReady() && isHoodReady() && isFlywheelReady();
                 }
-            })
-        );
 
-        joystick.rightBumper().whileTrue(m_autoCommands.APToBestCluster());
+                public boolean isTurretStowed() {
+                        return m_turret.getAngle().isNear(TurretConstants.kStowedAngle, TurretConstants.kTolerance);
+                }
 
-        joystick.leftBumper().whileTrue(
-                AutoAlign.climbProfileToAlliance(ChoreoVars.Poses.CL1, m_drivetrain));
-        // joystick.rightBumper().whileTrue(m_spindexer.setVelocity(() ->
-        // DegreesPerSecond.of(1000)));
-        // joystick.rightBumper().onFalse(m_spindexer.setVelocity(() ->
-        // DegreesPerSecond.of(0)));
+                public boolean isTurretReady() {
+                        return m_turret.atSetpoint();
+                }
 
-        // start button home turret
-        joystick.start()
-                .onTrue(m_turret.driveToHome());
-        // select button home all, reset on disable
-        // JS: This could be one parallel group, with
-        // m_turret.driveToHome().onlyIf(DriverStation::isEnabled).ignoringDisable(true)
-        joystick.back().onTrue(Commands.parallel(
-                Commands.either(
-                        m_turret.driveToHome(),
-                        m_turret.resetEncoder(),
-                        () -> DriverStation.isEnabled()),
-                m_flywheel.resetEncoder(),
-                m_spindexer.resetEncoder(),
-                m_intakeRoller.resetEncoder(),
-                m_intakePivot.resetEncoder(),
-                m_indexer.resetEncoder(),
-                m_hood.resetEncoder()));
+                public boolean isIntakeDeployed() {
+                        return m_intakePivot.isIntakeDeployed();
+                }
 
-        //joystick.x().whileTrue(m_hood.autoHoodAngle());
-        
+                public boolean isHoodReady() {
+                        return m_hood.isHoodReady();
+                }
 
-        m_drivetrain.registerTelemetry(logger::telemeterize);
-        // JS: Why is this a deferred proxy?
-        RobotModeTriggers.autonomous().onTrue(m_turret.driveToHome().andThen(m_turret.aimAtFieldPose(()->POI.HUB1.get().getTranslation(), ()-> m_drivetrain.state.Pose)).until(() -> !DriverStation.isAutonomous()));
-    }
+                public boolean isHoodSafe() {
+                        return m_hood.isHoodSafe();
+                }
 
-    private RobotCentric m_robotCentricRequest = new RobotCentric().withDriveRequestType(DriveRequestType.Velocity);
+                public boolean isFlywheelReady() {
+                        return m_flywheel.atSetpoint();
+                }
+                
+                public boolean isFlywheelSafe() {
+                        return m_flywheel.isFlywheelSafe();
+                }
 
-    public Command driveIntakeRelativePOV() {
-        return m_drivetrain.applyRequest(() -> {
-            double pov = Units.degreesToRadians(-joystick.getHID().getPOV());
-            double adjustSpeed = Units.feetToMeters(3); // m/s
-            return m_robotCentricRequest.withVelocityX(
-                    Math.cos(pov) * adjustSpeed).withVelocityY(
-                            Math.sin(pov) * adjustSpeed)
-                    .withRotationalRate(
-                            -joystick.getRightX() * 2
-                                    * Math.PI);
-        });
-    }
-
-    public Command getAutonomousCommand() {
-        return m_chooser.selectedCommand();
-
-    }
-
+                public boolean isRobotMoving() {
+                        return m_drivetrain.state.Speeds.vxMetersPerSecond > 0.05 || m_drivetrain.state.Speeds.vyMetersPerSecond > 0.05 || m_drivetrain.state.Speeds.omegaRadiansPerSecond > Math.PI / 36;
+                }
+        }
 }

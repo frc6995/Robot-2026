@@ -31,11 +31,11 @@ public class RealIndexerS extends IndexerS {
             // Motor Properties
         public static final boolean kInverted = true;
         public static final int kStatorCurrentLimit = 120; 
-        public static final int kSupplyCurrentLimit = 60; 
+        public static final int kSupplyCurrentLimit = 80; 
         public static final int kGearRatio = 5;
             // Setpoints
         public static final Voltage kSlowVoltage = Volts.of(6.0);
-                public static final Voltage kFastVoltage = Volts.of(10);
+                public static final Voltage kFastVoltage = Volts.of(10.0);
 
 
     }

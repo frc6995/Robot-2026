@@ -39,7 +39,8 @@ import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 public class RealATVision extends AprilTagVision {
     public static class ATVisionConstants {
         public static final String[] LL_IDS = {
-            "limelight-climb", "limelight-right", "limelight-left"
+            "limelight-climb", 
+            "limelight-right", "limelight-left"
         };
 
 
@@ -56,8 +57,8 @@ public class RealATVision extends AprilTagVision {
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
-        public static final Matrix<N3, N1> KNormalStdDevs = VecBuilder.fill(0.05, 0.05, 999999);
-        public static final Matrix<N3, N1> kDisabledStdDevs = VecBuilder.fill(0.0001, 0.0001, 0.0001);
+        public static final double[] kStdDevCoefficients = {0.075, 0.03}; // deviation order is [xy, theta]
+        public static final double[] kDisabledStdDevCoefficients = {0.02, 0.03};
 
     }
     
