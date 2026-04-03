@@ -79,6 +79,8 @@ public class RealFlyWheelS extends FlyWheelS {
                 {15.0, 3500}
 
         };
+        // TODO: Tune this!
+        public static final double kInTowerRPM = 1850;
     }
 
     // Motors
