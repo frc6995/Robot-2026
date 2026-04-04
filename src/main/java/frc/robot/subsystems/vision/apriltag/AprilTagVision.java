@@ -15,6 +15,7 @@ public abstract class AprilTagVision {
 
     public abstract void periodic();
     public abstract List<PoseEstimate> getAllEstimates();
+    public abstract void captureRewinds(double seconds);
 
     public static Matrix<N3,N1> getStdDevs(PoseEstimate estimate) {
         double xydevs = ATVisionConstants.kStdDevCoefficients[0] * Math.pow(estimate.avgTagDist, 2.0) / Math.pow(estimate.tagCount, 2.0);

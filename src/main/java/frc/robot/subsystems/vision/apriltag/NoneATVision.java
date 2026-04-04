@@ -15,8 +15,10 @@ public class NoneATVision extends AprilTagVision {
     public void periodic() {}
 
     @Override
+    public void captureRewinds(double seconds) {}
+
+    @Override
     public List<PoseEstimate> getAllEstimates() {
         return estimates;
-    }
-    
+    }   
 }

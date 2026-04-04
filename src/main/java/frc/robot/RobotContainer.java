@@ -301,6 +301,14 @@ public class RobotContainer {
                                 new WaitCommand(1),
                                 m_flywheel.setVoltage(() -> Volts.zero()))
                 );
+
+                RobotModeTriggers.autonomous().onFalse(
+                        Commands.runOnce(() -> m_drivetrain.m_vision.captureRewinds(20))
+                );
+
+                RobotModeTriggers.teleop().onFalse(
+                        Commands.runOnce(() -> m_drivetrain.m_vision.captureRewinds(10))
+                );
         }
 
         private RobotCentric m_robotCentricRequest = new RobotCentric().withDriveRequestType(DriveRequestType.Velocity);

@@ -151,7 +151,7 @@ public class RealATVision extends AprilTagVision {
         return estimates;
     }
 
-    private void captureRewinds(double seconds) {
+    public void captureRewinds(double seconds) {
             for(int i = 0; i < limelights.length; i++) {
                 double[] lastRecord = limelights[i].rewindSubscriber.get();
                 limelights[i].rewindPublisher.set(new double[] {lastRecord[0] + 1, seconds});
