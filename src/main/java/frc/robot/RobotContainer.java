@@ -199,9 +199,9 @@ public class RobotContainer {
         }
 
         private void configureBindings() {
-                joystick.leftTrigger().whileTrue(
-                        m_autoCommands.driveOverBump(true)
-                );
+                // joystick.leftTrigger().whileTrue(
+                //         m_autoCommands.driveOverBump(true)
+                // );
 
                 // robot relative driving with D-pad
                 joystick.povCenter().whileFalse(driveIntakeRelativePOV());
@@ -245,6 +245,8 @@ public class RobotContainer {
                 joystick.y().onTrue(m_spindexer.runUnjam());
 
                 joystick.rightTrigger().whileTrue(m_autoCommands.Score());
+
+                joystick.leftTrigger().whileTrue(m_autoCommands.moveSlowlyToSetpoint(Degrees.of(65)));
 
                 joystick.start().debounce(0.5).onTrue(
                         Commands.either(

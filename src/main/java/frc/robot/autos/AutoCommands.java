@@ -59,6 +59,7 @@ import frc.robot.util.AutoAlign;
 import frc.robot.util.DriveUtil;
 import frc.robot.util.POI;
 import frc.robot.util.TriggerUtil;
+import frc.robot.util.UnitUtil;
 
 public class AutoCommands {
 
@@ -270,6 +271,18 @@ public class AutoCommands {
                                 m_Spindexer.setVoltage(
                                 () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
                         )));
+    }
+
+    Angle angleSetpoint = Degrees.of(0);
+    Supplier<Angle> slowMoveSupplier = () ->{
+        return angleSetpoint.plus(Degrees.of(0.1));
+    };
+
+    public Command moveSlowlyToSetpoint(Angle angle){
+        
+        return m_intakePivot.setAngle(slowMoveSupplier).until(UnitUtil.isWithinTolerance(()->m_intakePivot.getAngle(), ()->angleSetpoint, ()->Degrees.of(5)));
+
+        
     }
 
     private static final Current kUnjamThreshold = Amps.of(40);
