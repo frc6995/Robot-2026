@@ -8,8 +8,10 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -23,9 +25,10 @@ public class RealAgitatorS extends AgitatorS {
 
     public static class AgitatorConstants {
         // CAN IDs
-        public static final int kCAN_ID = 61;
+        public static final int kCAN_ID = 60;
+        public static final int kFOLLOWER_CAN_ID = 61;
         // Motor Properties
-        public static final boolean kInverted = true;
+        public static final MotorAlignmentValue kInvertedFollower = MotorAlignmentValue.Opposed;
         public static final int kStatorCurrentLimit = 80;
         public static final int kSupplyCurrentLimit = 40;
         public static final int kGearRatio = 4 / 1;
@@ -44,14 +47,19 @@ public class RealAgitatorS extends AgitatorS {
             return config;
         }
     }
-
+    
     private TalonFX m_agitatorMotor = new TalonFX(AgitatorConstants.kCAN_ID, TunerConstants.kHigherBus);
+    // private TalonFX m_followerMotor = new TalonFX(AgitatorConstants.kFOLLOWER_CAN_ID, TunerConstants.kHigherBus);
 
     private final VoltageOut voltageRequest = new VoltageOut(0);
 
     public RealAgitatorS() {
         m_agitatorMotor.getConfigurator().apply(AgitatorConstants.configureMotor1(new TalonFXConfiguration()));
         m_agitatorMotor.setNeutralMode(AgitatorConstants.kneutralMode);
+
+        // m_followerMotor.getConfigurator().apply(AgitatorConstants.configureMotor1(new TalonFXConfiguration()));
+        // m_followerMotor.setNeutralMode(AgitatorConstants.kneutralMode);
+        // m_followerMotor.setControl(new Follower(m_agitatorMotor.getDeviceID(), AgitatorConstants.kInvertedFollower));
     }
 
     @Override
