@@ -34,9 +34,9 @@ public record ChoreoTraj(
     public static final ChoreoTraj ClimbTest = new ChoreoTraj(
         "ClimbTest",
         OptionalInt.empty(),
-        3.26392,
-        new Pose2d(3.12002, 7.13968, Rotation2d.fromRadians(0)),
-        new Pose2d(0.67401, 4.08217, Rotation2d.fromRadians(0))
+        4.53109,
+        new Pose2d(3.5639, 0.61242, Rotation2d.fromRadians(-3.12098)),
+        new Pose2d(0.58216, 2.40467, Rotation2d.fromRadians(1.60782))
     );
     public static final ChoreoTraj Climb_Poses = new ChoreoTraj(
         "Climb_Poses",
@@ -62,7 +62,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj R_Pass_Center = new ChoreoTraj(
         "R_Pass_Center",
         OptionalInt.empty(),
-        8.31556,
+        7.81188,
         new Pose2d(8.24211, 2.17563, Rotation2d.fromRadians(1.6065)),
         new Pose2d(6.05591, 3.58208, Rotation2d.fromRadians(1.6517))
     );
