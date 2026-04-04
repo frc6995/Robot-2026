@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer.RobotStates;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.agitator.AgitatorS;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
@@ -71,7 +72,8 @@ public class AutoCommands {
         private final IntakeRollerS m_intakeRoller;
         private final TurretS m_turret;
         private final IndexerS m_indexer;
-        private final SpindexerS m_Spindexer;
+        private final SpindexerS m_spindexer;
+        private final AgitatorS m_agitator;
         private final FlyWheelS m_flywheel;
         private final ObjectVision m_objectVision;
         private final ClimbExtensionS m_climbExtension;
@@ -92,7 +94,7 @@ public class AutoCommands {
             CommandSwerveDrivetrain drivebase,
             HoodS hood, IntakePivotS intakePivot,
             IntakeRollerS intakeRoller, TurretS turret,
-            IndexerS indexer, SpindexerS spindexer,
+            IndexerS indexer, SpindexerS spindexer, AgitatorS agitator,
             FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision, RobotStates robotStates) {
         this.m_drivebase = drivebase;
         this.m_hood = hood;
@@ -100,13 +102,14 @@ public class AutoCommands {
         this.m_intakeRoller = intakeRoller;
         this.m_turret = turret;
         this.m_indexer = indexer;
-        this.m_Spindexer = spindexer;
+        this.m_spindexer = spindexer;
+        this.m_agitator = agitator;
         this.m_flywheel = flyWheel;
         this.m_climbExtension = climbExtension;
         this.m_objectVision = objectVision;
         this.m_robotStates = robotStates;
 
-        isJammed = new Trigger(() -> m_Spindexer.getCurrent().gt(kUnjamThreshold)).debounce(1, DebounceType.kRising)
+        isJammed = new Trigger(() -> m_spindexer.getCurrent().gt(kUnjamThreshold)).debounce(1, DebounceType.kRising)
                 .debounce(0.25, DebounceType.kFalling);
         runSpindexerWithReverse = () -> {
             return isJammed.getAsBoolean() ? SpindexerConstants.kReverseVoltage : SpindexerConstants.kFastVoltage;
@@ -255,7 +258,7 @@ public class AutoCommands {
                                 () -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
                         Commands.sequence(
                                 Commands.waitSeconds(0.25),
-                                m_Spindexer.setVoltage(
+                                m_spindexer.setVoltage(
                                 () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
                         )));
     }
@@ -267,7 +270,7 @@ public class AutoCommands {
                                 () -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
                         Commands.sequence(
                                 Commands.waitSeconds(0.25),
-                                m_Spindexer.setVoltage(
+                                m_spindexer.setVoltage(
                                 () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
                         )));
     }
@@ -279,7 +282,7 @@ public class AutoCommands {
                 m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
                 Commands.parallel(
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
-                        m_Spindexer.setVoltage(runSpindexerWithReverse),
+                        m_spindexer.setVoltage(runSpindexerWithReverse),
                         intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))
  
                     );
