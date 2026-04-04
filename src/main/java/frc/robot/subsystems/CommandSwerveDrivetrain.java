@@ -403,11 +403,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         var estimates = m_vision.getAllEstimates();
         var gyroRotation = m_gyro.getRotation3d();
         for(var estimate : estimates) {
-            if(estimate.getAvgTagAmbiguity() < 0.65 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
+            if(estimate.getAvgTagAmbiguity() < 0.65 && !(Math.abs(gyroRotation.getX()) > Math.toRadians(20) || Math.abs(gyroRotation.getY()) > Math.toRadians(20))) {
                 if(DriverStation.isEnabled()) {
-                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, RealATVision.getStdDevs(estimate));
+                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, AprilTagVision.getStdDevs(estimate));
                 } else {
-                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, RealATVision.getDisabledStdDevs(estimate));
+                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, AprilTagVision.getDisabledStdDevs(estimate));
                 }
             }
         }
