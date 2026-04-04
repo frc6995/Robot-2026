@@ -111,17 +111,31 @@ public class Autos {
                 POI.STOPR2.get());
 
         // (L/R) Back From Center Line Default
-        Supplier<Command> leftBackToStartDefault = () -> Commands.race(
+        // Supplier<Command> leftBackToStartDefault = () -> Commands.race(
+        //         autoCommands.APBackFromIntake(POI.HELPL4.get(),
+        //                 POI.HELPL2Entry.get(), Meters.of(3),
+        //                 POI.TRL1.get(), POI.TRL1Entry.get()),
+        //         Commands.waitUntil(TriggerUtil.isWithinRadius(
+        //                 () -> POI.TRL1.get()
+        //                         .getTranslation(),
+        //                 () -> m_drivebase.state.Pose,
+        //                 () -> Meters.of(0.2)))
+        //                 .andThen(
+        //                         autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
+        //                 .andThen(autoCommands.autoScore()
+        //                         .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
+
+        Supplier<Command> leftBackToStartDefault = () -> Commands.parallel(
                 autoCommands.APBackFromIntake(POI.HELPL4.get(),
-                        POI.HELPL2Entry.get(), Meters.of(3),
+                        POI.HELPL2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
                         POI.TRL1.get(), POI.TRL1Entry.get()),
+
                 Commands.waitUntil(TriggerUtil.isWithinRadius(
                         () -> POI.TRL1.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.2)))
-                        .andThen(
-                                autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
+                        () -> Meters.of(0.5)))
+                        .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
                         .andThen(autoCommands.autoScore()
                                 .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
@@ -140,13 +154,31 @@ public class Autos {
                                 .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
         // (L/R) Back From Center Line To Climb
-        Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
+        // Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
+        //         () -> POI.L_SWEEP6.get()
+        //                 .getTranslation(),
+        //         () -> m_drivebase.state.Pose,
+        //         () -> Meters.of(0.2)))
+        //         .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
+        //                 AutoAlign.kDefaultVelocityLimitedProfile));
+
+            Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
                 () -> POI.L_SWEEP6.get()
                         .getTranslation(),
                 () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.2)))
-                .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
+                () -> Meters.of(0.99)))
+                .andThen(Commands.parallel(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile)),
+                        Commands.waitUntil(TriggerUtil.isWithinRadius(
+                                () -> POI.TRL1.get()
+                                        .getTranslation(),
+                                () -> m_drivebase.state.Pose,
+                                () -> Meters.of(0.5)))
+                                .andThen(autoCommands.autoScoreNoWiggle()
+                                        .withTimeout(AutoConstants.kDefaultautoInitialTime))
+                                .andThen(autoCommands.autoScore()
+                                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
+
 
         Supplier<Command> rightChoreoSweepBack = () -> R_Sweep.until(TriggerUtil.isWithinRadius(
                 () -> POI.R_SWEEP6.get()
@@ -164,6 +196,24 @@ public class Autos {
                                         .withTimeout(AutoConstants.kDefaultautoInitialTime))
                                 .andThen(autoCommands.autoScore()
                                         .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
+
+        //  Supplier<Command> leftPass = () -> Commands.parallel(R_asdgPass_Center,
+
+        //         autoCommands.Score().until(TriggerUtil.isWithinRadius(
+        //                 () -> POI.Rgasf_ScoreStop.get()
+        //                         .getTranslation(),
+        //                 () -> m_drivebase.state.Pose,
+        //                 () -> Meters.of(0.2))))
+
+        //         .until(TriggerUtil.isWithinRadius(
+        //                 () -> POI.R_PagrassPathStop.get()
+        //                         .getTranslation(),
+        //                 () -> m_drivebase.state.Pose,
+        //                 () -> Meters.of(0.2)))
+
+        //         .andThen(autoCommands.APBackFromIntake(POI.R_PAasdgdSSHELP.get(),
+        //                 POI.HELPL2PassEntry.get(), Meters.of(2.1),
+        //                 POI.TRL2.get(), POI.TRL1Entry.get()));
 
         Supplier<Command> rightPass = () -> Commands.parallel(R_Pass_Center,
 
@@ -186,6 +236,10 @@ public class Autos {
         Supplier<Command> rightAlliancePickupAndScore = () -> Commands.race(
                 R_Pickup_Center,
                 autoCommands.autoScoreNoWiggle());
+    
+                //   Supplier<Command> rightAlliancePickupAndScore = () -> Commands.race(
+                // R_Pisfackup_Center,
+                // autoCommands.autoScoreNoWiggle());
 
         // ============= DEFINE AUTOS =============
 
@@ -194,12 +248,6 @@ public class Autos {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
                     c.addCommands(leftBackToStartDefault.get());
-
-                    c.addCommands(autoCommands.autoScoreNoWiggle()
-                            .withTimeout(AutoConstants.kDefaultautoInitialTime));
-
-                    c.addCommands(autoCommands.autoScore()
-                            .withTimeout(AutoConstants.kDefaultautoShakeScoreTime));
 
                     c.addCommands(leftToCenterLineCloseHardCoded.get()
                             .until(TriggerUtil.isWithinRadius(
@@ -210,10 +258,6 @@ public class Autos {
 
                     c.addCommands(leftChoreoSweepBack.get());
 
-                    c.addCommands(autoCommands.autoScoreNoWiggle()
-                            .withTimeout(AutoConstants.kDefaultautoInitialTime));
-
-                    c.addCommands(autoCommands.autoScore());
 
                 }));
 
@@ -247,11 +291,28 @@ public class Autos {
 
                     c.addCommands(rightAlliancePickupAndScore.get());
 
-                    c.addCommands(new AutoAlign(POI.R_PASS_AUTO_STOP.get(),  m_drivebase, AutoAlign.kSlowDriveProfile)
-                    .alongWith(autoCommands.autoScore()));
-
+                    c.addCommands(new AutoAlign(POI.R_PASS_AUTO_STOP.get(), m_drivebase, AutoAlign.kSlowDriveProfile)
+                            .alongWith(autoCommands.autoScore()));
 
                 }));
+
+            // autos.put("R pass",
+            //     () -> auto(POI.TRL1.get(), c -> {
+
+            //         c.addCommands(leftToCenterLineMiddleHardCoded.get().until(TriggerUtil.isWithinRadius(
+            //                 () -> POI.STOPL1.get()
+            //                         .getTranslation(),
+            //                 () -> m_drivebase.state.Pose,
+            //                 () -> Meters.of(1.4))));
+
+            //         c.addCommands(leftPass.get());
+
+            //         c.addCommands(LeftAlliancePickupAndScore.get());
+
+            //         c.addCommands(new AutoAlign(POI.R_PASS_AUTO_STOP.get(), m_drivebase, AutoAlign.kSlowDriveProfile)
+            //                 .alongWith(autoCommands.autoScore()));
+
+            //     }));
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
