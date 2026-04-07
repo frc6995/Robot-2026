@@ -377,6 +377,48 @@
      "val":3.141592653589793
     }
    },
+   "L_PASSHELP":{
+    "x":{
+     "exp":"R_PASSHELP.x",
+     "val":5.958894729614258
+    },
+    "y":{
+     "exp":"fieldWidth - R_PASSHELP.y",
+     "val":9.105260922431944
+    },
+    "heading":{
+     "exp":"-R_PASSHELP.heading",
+     "val":-2.3191746788132592
+    }
+   },
+   "L_PASS_AUTO_STOP":{
+    "x":{
+     "exp":"R_PASS_AUTO_STOP.x",
+     "val":0.582160234451294
+    },
+    "y":{
+     "exp":"fieldWidth - R_PASS_AUTO_STOP.y",
+     "val":5.947326900482178
+    },
+    "heading":{
+     "exp":"-R_PASS_AUTO_STOP.heading",
+     "val":-1.60781363291927
+    }
+   },
+   "L_PassPathStop":{
+    "x":{
+     "exp":"R_PassPathStop.x",
+     "val":6.05591344833374
+    },
+    "y":{
+     "exp":"fieldWidth - R_PassPathStop.y",
+     "val":4.469919874191284
+    },
+    "heading":{
+     "exp":"-R_PassPathStop.heading",
+     "val":-1.6516999024520127
+    }
+   },
    "L_SWEEP0":{
     "x":{
      "exp":"7.485109710693359 m",
@@ -593,12 +635,12 @@
      "val":0.582160234451294
     },
     "y":{
-     "exp":"2.4046730995178223 m",
-     "val":2.4046730995178223
+     "exp":"2.104673099517822 m",
+     "val":2.104673099517822
     },
     "heading":{
-     "exp":"1.607816363291927 rad",
-     "val":1.607816363291927
+     "exp":"1.60781363291927 rad",
+     "val":1.60781363291927
     }
    },
    "R_PassPathStop":{

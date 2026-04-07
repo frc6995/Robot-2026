@@ -40,6 +40,9 @@ public final class ChoreoVars {
         public static final Pose2d HELPR1 = new Pose2d(8.9760363, 0.752, Rotation2d.fromRadians(0.1047198));
         public static final Pose2d HELPR4 = new Pose2d(5.1430055, -1.0736441, Rotation2d.fromRadians(1.0471976));
         public static final Pose2d HELPS = new Pose2d(3.8221934, 0.5493581, Rotation2d.fromRadians(3.1415927));
+        public static final Pose2d L_PASSHELP = new Pose2d(5.9588947, 9.1052609, Rotation2d.fromRadians(-2.3191747));
+        public static final Pose2d L_PASS_AUTO_STOP = new Pose2d(0.5821602, 5.9473269, Rotation2d.fromRadians(-1.6078136));
+        public static final Pose2d L_PassPathStop = new Pose2d(6.0559134, 4.4699199, Rotation2d.fromRadians(-1.6516999));
         public static final Pose2d L_SWEEP0 = new Pose2d(7.4851097, 5.3169306, Rotation2d.fromRadians(-1.817751));
         public static final Pose2d L_SWEEP1 = new Pose2d(8.3018923, 5.2002264, Rotation2d.fromRadians(-1.677894));
         public static final Pose2d L_SWEEP100 = new Pose2d(5.5507539, 7.3972359, Rotation2d.fromRadians(1.613627));
@@ -55,7 +58,7 @@ public final class ChoreoVars {
         public static final Pose2d L_SWEEP5 = new Pose2d(6.2223914, 7.2894531, Rotation2d.fromRadians(2.6179939));
         public static final Pose2d L_SWEEP6 = new Pose2d(5.5197801, 7.4521726, Rotation2d.fromRadians(3.1230762));
         public static final Pose2d R_PASSHELP = new Pose2d(5.9588947, -1.0532609, Rotation2d.fromRadians(2.3191747));
-        public static final Pose2d R_PASS_AUTO_STOP = new Pose2d(0.5821602, 2.4046731, Rotation2d.fromRadians(1.6078164));
+        public static final Pose2d R_PASS_AUTO_STOP = new Pose2d(0.5821602, 2.1046731, Rotation2d.fromRadians(1.6078136));
         public static final Pose2d R_PassPathStop = new Pose2d(6.0559134, 3.5820801, Rotation2d.fromRadians(1.6516999));
         public static final Pose2d R_SWEEP1 = new Pose2d(7.4851097, 2.7350694, Rotation2d.fromRadians(1.817751));
         public static final Pose2d R_SWEEP2 = new Pose2d(5.7272114, 2.2650705, Rotation2d.fromRadians(-1.4946018));
