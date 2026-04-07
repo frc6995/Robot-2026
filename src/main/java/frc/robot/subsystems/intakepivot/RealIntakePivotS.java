@@ -96,13 +96,9 @@ public class RealIntakePivotS extends IntakePivotS {
             .withClosedLoopController(IntakePivotConstants.kP, IntakePivotConstants.kI, IntakePivotConstants.kD,
                     IntakePivotConstants.kVelocity,
                     IntakePivotConstants.kAcceleration)
-
             .withFeedforward(
                     new ArmFeedforward(IntakePivotConstants.kS, IntakePivotConstants.kG, IntakePivotConstants.kV,
                             IntakePivotConstants.kA))
-            // .withSimFeedforward(
-            // new ArmFeedforward(IntakePivotConstants.kSimS, IntakePivotConstants.kSimG,
-            // IntakePivotConstants.kSimV, IntakePivotConstants.kSimA))
             // Telemetry name and verbosity level
             .withTelemetry("ArmMotor", RobotContainer.kTelemetryVerbosity)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(IntakePivotConstants.kReduction)))
@@ -111,14 +107,12 @@ public class RealIntakePivotS extends IntakePivotS {
             .withStatorCurrentLimit(Amps.of(IntakePivotConstants.kStatorCurrentLimit));
 
     // Vendor motor controller object
-    private TalonFX intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kLowerBus);
+    private TalonFX intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kHigherBus);
 
-    // Create our SmartMotorController from our Spark and config with the NEO.
     private SmartMotorController IntakeSMC = new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);
 
     private ArmConfig intakeCfg = new ArmConfig(IntakeSMC)
             // Soft limit is applied to the SmartMotorControllers PID
-
             .withHardLimit(IntakePivotConstants.kLowerLimit, IntakePivotConstants.kUpperLimit)
             // Starting position is where your arm starts
             .withStartingPosition(IntakePivotConstants.kStowAngle)
