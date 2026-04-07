@@ -52,7 +52,7 @@ public class ShooterController {
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
     private static final double HOOD_MAX = HoodConstants.kUpperLimit.in(Degrees);
 
-    private static boolean inTower = false;
+    // private static boolean inTower = false;
 
     private static final double LOOP_PERIOD_SECONDS = 0.02;
     private static final double LATENCY_SECONDS = 0.03; // adjust later
@@ -128,8 +128,8 @@ public class ShooterController {
         }
         else {
             if (POI.allianceZone.get().contains(drivePose.getTranslation())) {
-                if (POI.towerZone.get().contains(drivePose.getTranslation()))
-                    inTower = true;     else inTower = false;
+                // if (POI.towerZone.get().contains(drivePose.getTranslation()))
+                //     inTower = true;     else inTower = false;
                 return POI.HUB1.get();
             }
             else {
@@ -190,15 +190,15 @@ public class ShooterController {
             );
             return cachedData;
         }
-        else if (inTower) {
-            updateTelemetry(goalTranslation, delta, distance);
-            cachedData = new ShooterTargetData(
-                delta.getAngle().minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg),
-                FlywheelConstants.kInTowerRPM,
-                HoodConstants.kInTowerAngle
-            );
-            return cachedData;
-        }
+        // else if (inTower) {
+        //     updateTelemetry(goalTranslation, delta, distance);
+        //     cachedData = new ShooterTargetData(
+        //         delta.getAngle().minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg),
+        //         FlywheelConstants.kInTowerRPM,
+        //         HoodConstants.kInTowerAngle
+        //     );
+        //     return cachedData;
+        // }
         
         Translation2d projectedTranslation = estimatedPose.getTranslation();
         delta = goalTranslation.minus(projectedTranslation);

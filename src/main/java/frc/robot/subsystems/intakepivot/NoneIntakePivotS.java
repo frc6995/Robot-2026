@@ -21,6 +21,10 @@ public class NoneIntakePivotS extends IntakePivotS {
         return Commands.none();
     }
 
+    public Command setAngleSlowMove(Angle angle) {
+        return Commands.none();
+    }
+
     @Override
     public Command setVoltage(Supplier<Voltage> voltage) {
         return Commands.none();

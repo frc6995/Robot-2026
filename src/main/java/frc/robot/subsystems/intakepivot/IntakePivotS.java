@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public abstract class IntakePivotS extends SubsystemBase {
     public abstract Command setAngle(Supplier<Angle> angle);
     public abstract Command setAngle(Angle angle);
+    public abstract Command setAngleSlowMove(Angle angle);
     public abstract Command setVoltage(Supplier<Voltage> voltage);
     public abstract Command sysId();
     public abstract Command resetEncoder();

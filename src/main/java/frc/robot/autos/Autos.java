@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.agitator.AgitatorS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
 import frc.robot.subsystems.indexer.IndexerS;
@@ -61,6 +62,7 @@ public class Autos {
     private final IntakeRollerS m_intakeRoller;
     private final TurretS m_turret;
     private final IndexerS m_indexer;
+    private final AgitatorS m_agitator;
     private final SpindexerS m_spindexer;
     private final FlyWheelS m_FlyWheel;
     private final ObjectVision m_objectVision;
@@ -68,7 +70,7 @@ public class Autos {
     public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory,
             RobotContainer container, HoodS hood,
             IntakePivotS intakePivot, IntakeRollerS intakeRoller, TurretS turret, IndexerS indexer,
-            SpindexerS spindexer, FlyWheelS flyWheel, ObjectVision objectVision) {
+            SpindexerS spindexer, AgitatorS agitator, FlyWheelS flyWheel, ObjectVision objectVision) {
         this.factory = factory;
         this.autoCommands = autoCommands;
         this.m_hood = hood;
@@ -78,6 +80,7 @@ public class Autos {
         this.m_drivebase = drive;
         this.m_indexer = indexer;
         this.m_spindexer = spindexer;
+        this.m_agitator = agitator;
         this.m_FlyWheel = flyWheel;
         this.m_objectVision = objectVision;
 

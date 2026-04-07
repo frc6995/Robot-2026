@@ -29,10 +29,8 @@ public class RealIndexerS extends IndexerS {
     public class IndexerConstants {
         // CAN IDs
         public static final int kCAN_ID = 61;
-        public static final int kFollowerCAN_ID = 60;
         // Motor Properties
         public static final boolean kInverted = true;
-        public static final boolean kInvertFollowMotor = true;
         public static final int kStatorCurrentLimit = 120;
         public static final int kSupplyCurrentLimit = 80;
         public static final int kGearRatio = 5;
@@ -43,8 +41,6 @@ public class RealIndexerS extends IndexerS {
     }
 
     private TalonFX m_indexerMotor = new TalonFX(IndexerConstants.kCAN_ID, TunerConstants.kHigherBus);
-    private TalonFX m_indexerFollowerMotor = new TalonFX(IndexerConstants.kFollowerCAN_ID,
-            TunerConstants.kHigherBus);
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
             .withControlMode(ControlMode.OPEN_LOOP)
@@ -55,8 +51,7 @@ public class RealIndexerS extends IndexerS {
             .withMotorInverted(IndexerConstants.kInverted)
             .withIdleMode(MotorMode.COAST)
             .withStatorCurrentLimit(Amps.of(IndexerConstants.kStatorCurrentLimit))
-            .withSupplyCurrentLimit(Amps.of(IndexerConstants.kSupplyCurrentLimit))
-            .withFollowers(Pair.of(m_indexerFollowerMotor, IndexerConstants.kInvertFollowMotor));
+            .withSupplyCurrentLimit(Amps.of(IndexerConstants.kSupplyCurrentLimit));
 
     private SmartMotorController m_indexerController = new TalonFXWrapper(m_indexerMotor, DCMotor.getKrakenX44(1),
             smcConfig);
