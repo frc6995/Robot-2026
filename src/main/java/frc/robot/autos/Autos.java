@@ -241,6 +241,30 @@ public class Autos {
                 // R_Pisfackup_Center,
                 // autoCommands.autoScoreNoWiggle());
 
+        Supplier<Command> rightCircleStart = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                POI.CIRCLE_STOPR0.get());
+                 Supplier<Command> rightCircleOverBumpAndScore = () -> new AutoAlign(POI.BUMPHELP2.get(), m_drivebase,
+                AutoAlign.kDefaultVelocityLimitedProfile)
+
+                .until(TriggerUtil.isWithinRadius(
+                        () -> POI.BUMPHELP2.get()
+                                .getTranslation(),
+                        () -> m_drivebase.state.Pose,
+                        () -> Meters.of(0.5)))
+
+                .andThen(autoCommands.driveOverBump(true))
+
+                .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
+                        AutoAlign.kSlowCrawlProfile), 
+                      Commands.waitSeconds(0.4).andThen(autoCommands.Score())));
+
+       Supplier<Command> rightCircleMid = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+                AutoConstants.kDefaultStartRadius,
+                POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
+                POI.CIRCLE_STOPR101.get());
+
         // ============= DEFINE AUTOS =============
 
         autos.put("L 2x trench",
@@ -316,7 +340,26 @@ public class Autos {
 
         autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
             c.addCommands(Commands.none());
+                    }));
+
+            
+        autos.put("R 2.5x bump", () -> auto(POI.TRR1.get(), c -> {
+            c.addCommands(rightCircleStart.get());
+
+            c.addCommands(rightCircleOverBumpAndScore.get());
+
+            c.addCommands(rightCircleMid.get());
+
+            c.addCommands(rightCircleOverBumpAndScore.get());
+
+            c.addCommands(rightCircleMid.get());
+
+            c.addCommands(rightCircleOverBumpAndScore.get());
+
         }));
+
+
+        
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
 
