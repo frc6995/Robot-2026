@@ -168,9 +168,7 @@ public class RealIntakePivotS extends IntakePivotS {
     public Command setAngleSlowMove(Angle angle) {
         Angle withLimits = applyDynamicLimits(angle);
         setpoint = withLimits;
-        return Commands.run(() -> m_intakePivotMotor.setControl(controlRequest.withPosition(withLimits).withVelocity(IntakePivotConstants.kSlowVelocity))).until(
-            () -> getAngle().isNear(withLimits, IntakePivotConstants.kSlowMoveTolerance)
-        );
+        return Commands.run(() -> m_intakePivotMotor.setControl(controlRequest.withPosition(withLimits).withVelocity(IntakePivotConstants.kSlowVelocity)));
     }
 
     public Command setVoltage(Supplier<Voltage> volts) {
