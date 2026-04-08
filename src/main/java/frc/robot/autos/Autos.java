@@ -87,8 +87,8 @@ public class Autos {
         this.m_objectVision = objectVision;
 
         // ============= CHOREO PATHS =============
-        Command L_Sweep = factory.trajectoryCmd(ChoreoTraj.L_Sweep.name());
-        Command R_Sweep = factory.trajectoryCmd(ChoreoTraj.L_Sweep.name(), AutoTrajectory::mirrorY);
+        Command L_Sweep = factory.trajectoryCmd(ChoreoTraj.R_Sweep.name(), AutoTrajectory::mirrorY);
+        Command R_Sweep = factory.trajectoryCmd(ChoreoTraj.R_Sweep.name());
 
         Command L_Pass_Center = factory.trajectoryCmd(ChoreoTraj.R_Pass_Center.name(), AutoTrajectory::mirrorY);
         Command R_Pass_Center = factory.trajectoryCmd(ChoreoTraj.R_Pass_Center.name());
