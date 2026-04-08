@@ -57,14 +57,14 @@ public class RealATVision extends AprilTagVision {
                 new Translation3d(Inches.of(2.550), Inches.of(-12.987), Inches.of(7.435)),
                 new Rotation3d(Degrees.zero(), Degrees.of(22.5), Degrees.of(90))),
             new Pose3d(
-                new Translation3d(Inches.of(-7.375), Inches.of(11.213), Inches.of(-20.849)),
+                new Translation3d(Inches.of(-11.213), Inches.of(7.375), Inches.of(20.849)),
                 new Rotation3d(Degrees.zero(), Degrees.of(30), Degrees.zero())
             )
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
         public static final double[] kStdDevCoefficients = {0.075, 0.03}; // deviation order is [xy, theta]
-        public static final double[] kDisabledStdDevCoefficients = {0.02, 0.03};
+        public static final double[] kDisabledStdDevCoefficients = {0.075, 0.03};
 
     }
     

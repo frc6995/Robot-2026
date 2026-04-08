@@ -31,7 +31,7 @@ public class RealIndexerS extends IndexerS {
         public static final int kCAN_ID = 61;
         // Motor Properties
         public static final boolean kInverted = true;
-        public static final int kStatorCurrentLimit = 120;
+        public static final int kStatorCurrentLimit = 350;
         public static final int kSupplyCurrentLimit = 80;
         public static final int kGearRatio = 5;
         // Setpoints

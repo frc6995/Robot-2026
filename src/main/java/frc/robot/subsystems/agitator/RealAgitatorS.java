@@ -35,7 +35,7 @@ public class RealAgitatorS extends AgitatorS {
         public static final int kGearRatio = 4;
         public static final NeutralModeValue kNeutralMode = NeutralModeValue.Coast;
         // Setpoints
-        public static final Voltage kFastVoltage = Volts.of(5.0);
+        public static final Voltage kFastVoltage = Volts.of(2.0);
 
         public static TalonFXConfiguration configureMotor1(TalonFXConfiguration config) {
             config.CurrentLimits.withStatorCurrentLimit(kStatorCurrentLimit)
