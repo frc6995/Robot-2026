@@ -16,9 +16,11 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -30,6 +32,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.RobotVisualizer;
@@ -56,6 +59,7 @@ public class RealIntakePivotS extends IntakePivotS {
         public static final double kD = 0.12;
         public static final AngularVelocity kVelocity = DegreesPerSecond.of(1000);
         public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1000);
+        public static final AngularVelocity kSlowVelocity = DegreesPerSecond.of(80);
         // Feeforward Constants
         public static final double kS = 0;
         public static final double kG = 0.28;
@@ -84,11 +88,15 @@ public class RealIntakePivotS extends IntakePivotS {
         public static final Angle kFuelIntakeAngle = kLowerLimit;
         public static final Angle kStowAngle = kUpperLimit;
         public static final Angle kTolerance = Degrees.of(35);
+        public static final Angle kSlowMoveTolerance = Degrees.of(10);
         public static final Angle kSafeAngle = Degrees.of(35);
-
-
         public static final Angle kSafetyUpperLimit = Degrees.of(90);
+        public static final Angle kWiggleUpperAngle = Degrees.of(60);
+        public static final Angle kCollapseUpperAngle = Degrees.of(70);
+        public static final Angle kWiggleLowerAngle = Degrees.of(15);
     }
+
+    private DynamicMotionMagicVoltage controlRequest = new DynamicMotionMagicVoltage(IntakePivotConstants.kStowAngle, IntakePivotConstants.kVelocity, IntakePivotConstants.kAcceleration);
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
             .withControlMode(ControlMode.CLOSED_LOOP)
@@ -107,11 +115,11 @@ public class RealIntakePivotS extends IntakePivotS {
             .withStatorCurrentLimit(Amps.of(IntakePivotConstants.kStatorCurrentLimit));
 
     // Vendor motor controller object
-    private TalonFX intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kHigherBus);
+    private TalonFX m_intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kHigherBus);
 
-    private SmartMotorController IntakeSMC = new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);
+    private SmartMotorController m_intakePivotController = new TalonFXWrapper(m_intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);
 
-    private ArmConfig intakeCfg = new ArmConfig(IntakeSMC)
+    private ArmConfig intakeCfg = new ArmConfig(m_intakePivotController)
             // Soft limit is applied to the SmartMotorControllers PID
             .withHardLimit(IntakePivotConstants.kLowerLimit, IntakePivotConstants.kUpperLimit)
             // Starting position is where your arm starts
@@ -126,7 +134,7 @@ public class RealIntakePivotS extends IntakePivotS {
             .withTelemetry("Intake", RobotContainer.kTelemetryVerbosity);
 
     // Arm Mechanism
-    private Arm intakePivot = new Arm(intakeCfg);
+    private Arm m_intakePivot = new Arm(intakeCfg);
     private BooleanSupplier isTurretStowed, isFlywheelSafe;
     private Angle setpoint;
 
@@ -141,32 +149,41 @@ public class RealIntakePivotS extends IntakePivotS {
      * @param angle Angle to go to.
      */
     public Command setAngle(Supplier<Angle> angle) {
-        return intakePivot.setAngle(() -> {
-            Angle ang = applyDynamicLimits(angle.get());
-            setpoint = ang;
-            return ang;
-        });
+        return Commands.run(() -> {
+            Angle withLimits = applyDynamicLimits(angle.get());
+            setpoint = withLimits;
+            m_intakePivotMotor.setControl(controlRequest.withPosition(withLimits).withVelocity(IntakePivotConstants.kVelocity));
+        }, this);
     }
 
     public Command setAngle(Angle angle) {
         Angle withLimits = applyDynamicLimits(angle);
+        setpoint = withLimits;  
+        return Commands.run(() -> m_intakePivotMotor.setControl(controlRequest.withPosition(withLimits).withVelocity(IntakePivotConstants.kVelocity)), this).until(
+            () -> getAngle().isNear(withLimits, IntakePivotConstants.kSlowMoveTolerance)
+        );
+    }
+
+    @Override
+    public Command setAngleSlowMove(Angle angle) {
+        Angle withLimits = applyDynamicLimits(angle);
         setpoint = withLimits;
-        return intakePivot.setAngle(withLimits);
+        return Commands.run(() -> m_intakePivotMotor.setControl(controlRequest.withPosition(withLimits).withVelocity(IntakePivotConstants.kSlowVelocity)));
     }
 
     public Command setVoltage(Supplier<Voltage> volts) {
-        return intakePivot.setVoltage(volts);
+        return m_intakePivot.setVoltage(volts);
     }
 
     /**
      * Run sysId on the {@link Arm}
      */
     public Command sysId() {
-        return intakePivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+        return m_intakePivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
     }
 
     public Command resetEncoder() {
-        return runOnce(() -> IntakeSMC.setEncoderPosition(IntakePivotConstants.kStowAngle)).ignoringDisable(true);
+        return runOnce(() -> m_intakePivotController.setEncoderPosition(IntakePivotConstants.kStowAngle)).ignoringDisable(true);
     }
 
     @Override
@@ -178,11 +195,11 @@ public class RealIntakePivotS extends IntakePivotS {
     public void simulationPeriodic() {
         double currentAngleRad = getAngle().in(Radians);
         RobotVisualizer.updateIntake(currentAngleRad);
-        intakePivot.simIterate();
+        m_intakePivot.simIterate();
     }
 
     public Angle getAngle() {
-        return intakePivot.getAngle();
+        return m_intakePivot.getAngle();
     }
 
     private Angle applyDynamicLimits(Angle angle) {

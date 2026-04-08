@@ -60,14 +60,15 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class RealHoodS extends HoodS {
     public class HoodConstants {
-         public static final int kCANID = 52;
+        // CAN IDs
+        public static final int kCANID = 52;
         // PID-FF Constants
-        public static final double kP = 38;
+        public static final double kP = 160;
         public static final double kI = 0;
-        public static final double kD = 0.41;
+        public static final double kD = 0;
         public static final double kS = 0;
-        public static final double kV = 2.99;
-        public static final double kA = 0.03;
+        public static final double kV = 4.99;
+        public static final double kA = 0.04;
         // Sim PID-FF Constants
         public static final double kSimP = 38;
         public static final double kSimI = 0;
@@ -86,29 +87,36 @@ public class RealHoodS extends HoodS {
                 { 1, 12.5 },
                 { 2.2, 18 },
                 { 3.4, 25},
-
                 { 4, 34 },
                 { 5, 40 },
         };
+
+        public static final double[][] kPassAngleData = {
+            { 1, 15 },
+            { 2, 20 },
+            { 3, 30},
+            { 4, 40},
+            { 5, 40},
+        };
+
         // TODO: Tune this!
-        public static final double kInTowerAngle = 20;
+        // public static final double kInTowerAngle = 20;
         // Motor Setup
         public static final double kStatorCurrentLimit = 40;
         public static final double kSupplyCurrentLimit = 25;
-        public static final double kReduction = 40;
-        public static final boolean kMotorInverted = false;
-        public static final AngularVelocity kVelocity = DegreesPerSecond.of(180);
-        public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(360);
-        public static final AngularVelocity kSimVelocity = DegreesPerSecond.of(180);
-        public static final AngularAcceleration kSimAcceleration = DegreesPerSecondPerSecond.of(360);
         public static final Current kDriveToHomeThreshold = Amps.of(50);
+        public static final double kReduction = 73.33;
+        public static final boolean kMotorInverted = false;
+        public static final AngularVelocity kVelocity = DegreesPerSecond.of(1600);
+        public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(2700);
         // Sim Constants
         public static final Distance kArmLength = Inches.of(9.384);
-        public static final Double kMOI = 0.00671959172;
+        public static final MomentOfInertia kMOI = KilogramSquareMeters.of(0.00671959172);
         // Hood Safety Constants
         public static final Distance kSafetyOverride_NoSpeed = Meters.of(1.5);
-        public static final Distance kSafetyOverride_Final = Meters.of(0.01);
-        public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.2);
+        public static final Distance kSafetyOverride_Final = Meters.of(0.8);
+        public static final LinearVelocity kSafetyOverrideVelocity = MetersPerSecond.of(0.5);
+        public static final double kHoodRetractTime = 0.25;
         public static final Voltage kHomingVoltage = Volts.of(-8);
     }
 

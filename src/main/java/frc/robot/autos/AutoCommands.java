@@ -19,6 +19,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.therekrab.autopilot.APProfile;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -40,6 +41,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer.RobotStates;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.agitator.AgitatorS;
+import frc.robot.subsystems.agitator.RealAgitatorS.AgitatorConstants;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
 import frc.robot.subsystems.flywheel.FlyWheelS;
 import frc.robot.subsystems.hood.HoodS;
@@ -72,47 +75,51 @@ public class AutoCommands {
         private final IntakeRollerS m_intakeRoller;
         private final TurretS m_turret;
         private final IndexerS m_indexer;
-        private final SpindexerS m_Spindexer;
+        private final SpindexerS m_spindexer;
+        private final AgitatorS m_agitator;
         private final FlyWheelS m_flywheel;
         private final ObjectVision m_objectVision;
         private final ClimbExtensionS m_climbExtension;
         private final RobotStates m_robotStates;
 
-
         SwerveRequest.FieldCentric m_driveOverBumpRequest = new SwerveRequest.FieldCentric()
-                .withDriveRequestType(DriveRequestType.Velocity);
+                        .withDriveRequestType(DriveRequestType.Velocity);
 
         SwerveRequest m_intakeDriveRequest = new SwerveRequest.ApplyRobotSpeeds()
-                .withDriveRequestType(DriveRequestType.Velocity)
-                .withSpeeds(new ChassisSpeeds(2.0, 0.0, 0));
+                        .withDriveRequestType(DriveRequestType.Velocity)
+                        .withSpeeds(new ChassisSpeeds(2.0, 0.0, 0));
 
-    final BooleanSupplier isJammed;
-    final Supplier<Voltage> runSpindexerWithReverse;
+        final BooleanSupplier isJammed;
+        final Supplier<Voltage> runSpindexerWithReverse;
 
-    public AutoCommands(
-            CommandSwerveDrivetrain drivebase,
-            HoodS hood, IntakePivotS intakePivot,
-            IntakeRollerS intakeRoller, TurretS turret,
-            IndexerS indexer, SpindexerS spindexer,
-            FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision, RobotStates robotStates) {
-        this.m_drivebase = drivebase;
-        this.m_hood = hood;
-        this.m_intakePivot = intakePivot;
-        this.m_intakeRoller = intakeRoller;
-        this.m_turret = turret;
-        this.m_indexer = indexer;
-        this.m_Spindexer = spindexer;
-        this.m_flywheel = flyWheel;
-        this.m_climbExtension = climbExtension;
-        this.m_objectVision = objectVision;
-        this.m_robotStates = robotStates;
+        public AutoCommands(
+                        CommandSwerveDrivetrain drivebase,
+                        HoodS hood, IntakePivotS intakePivot,
+                        IntakeRollerS intakeRoller, TurretS turret,
+                        IndexerS indexer, SpindexerS spindexer, AgitatorS agitator,
+                        FlyWheelS flyWheel, ClimbExtensionS climbExtension, ObjectVision objectVision,
+                        RobotStates robotStates) {
+                this.m_drivebase = drivebase;
+                this.m_hood = hood;
+                this.m_intakePivot = intakePivot;
+                this.m_intakeRoller = intakeRoller;
+                this.m_turret = turret;
+                this.m_indexer = indexer;
+                this.m_spindexer = spindexer;
+                this.m_agitator = agitator;
+                this.m_flywheel = flyWheel;
+                this.m_climbExtension = climbExtension;
+                this.m_objectVision = objectVision;
+                this.m_robotStates = robotStates;
 
-        isJammed = new Trigger(() -> m_Spindexer.getCurrent().gt(kUnjamThreshold)).debounce(1, DebounceType.kRising)
-                .debounce(0.25, DebounceType.kFalling);
-        runSpindexerWithReverse = () -> {
-            return isJammed.getAsBoolean() ? SpindexerConstants.kReverseVoltage : SpindexerConstants.kFastVoltage;
-        };
-    }
+                isJammed = new Trigger(() -> m_spindexer.getCurrent().gt(kUnjamThreshold))
+                                .debounce(1, DebounceType.kRising)
+                                .debounce(0.25, DebounceType.kFalling);
+                runSpindexerWithReverse = () -> {
+                        return isJammed.getAsBoolean() ? SpindexerConstants.kReverseVoltage
+                                        : SpindexerConstants.kFastVoltage;
+                };
+        }
 
     // Create a trigger that watches your condition
     /**
@@ -151,161 +158,162 @@ public class AutoCommands {
     }
 
 
-    /**
-     * Creates a command that intakes from the center line
-     * 
-     * @param helpPose             Pose to go through on the way to the final pose
-     *                             for scoring
-     * @param helpPoseEntryAngle
-     * @param helpPoseTolerance    Minimum radius for robot to be in from helpPose
-     *                             that triggers the next command
-     * @param targetpose           Final pose to drive to for scoring
-     * @param targetPoseEntryAngle
-     * @return command that intakes from the center line
-     */
-    public Command APBackFromIntake(Pose2d helpPose,
-            Rotation2d helpPoseEntryAngle,
-            Distance helpPoseTolerance,
-            Pose2d targetpose,
-            Rotation2d targetPoseEntryAngle) {
-        return Commands.sequence(
-                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile).until(
-                                TriggerUtil.isWithinRadius(
-                                        () -> helpPose.getTranslation(),
-                                        () -> m_drivebase.state.Pose,
-                                        () -> helpPoseTolerance)),
-                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase,
-                        AutoAlign.kDefaultVelocityLimitedProfile));
+        /**
+         * Creates a command that intakes from the center line
+         * 
+         * @param helpPose             Pose to go through on the way to the final pose
+         *                             for scoring
+         * @param helpPoseEntryAngle
+         * @param helpPoseTolerance    Minimum radius for robot to be in from helpPose
+         *                             that triggers the next command
+         * @param targetpose           Final pose to drive to for scoring
+         * @param targetPoseEntryAngle
+         * @return command that intakes from the center line
+         */
+        public Command APBackFromIntake(Pose2d helpPose,
+                        Rotation2d helpPoseEntryAngle,
+                        Distance helpPoseTolerance,
+                        Pose2d targetpose,
+                        Rotation2d targetPoseEntryAngle) {
+                return Commands.sequence(
+                                new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase,
+                                                AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                                                TriggerUtil.isWithinRadius(
+                                                                                () -> helpPose.getTranslation(),
+                                                                                () -> m_drivebase.state.Pose,
+                                                                                () -> helpPoseTolerance)),
+                                new AutoAlign(targetpose, targetPoseEntryAngle, m_drivebase,
+                                                AutoAlign.kDefaultVelocityLimitedProfile));
 
-    }
-
-
-    public Command APToBestCluster() {
-        return Commands.deferredProxy(
-                () -> {
-                    Optional<Cluster> clusterOpt = m_objectVision.getBestCluster();
-                    if (clusterOpt.isPresent()) {
-                        var clusterLoc = clusterOpt.get().getCenter();
-                        var at = new AutoAlign(
-                                new Pose2d(clusterLoc,
-                                        clusterLoc.minus(m_drivebase.state.Pose
-                                                .getTranslation())
-                                                .getAngle()),
-                                m_drivebase, AutoAlign.kGPDProfile);
-                        return Commands.deadline(
-                                at,
-                                fuelIntake());
-                    }
-                    return Commands.none();
-                });
-    }
-
-    private static int tempNumberPickedUp = 0;
-    private static boolean hasTurned = false;
-    private BiFunction<Integer, Rectangle2d, Command> clusterChainFunction = new BiFunction<Integer, Rectangle2d, Command>() {
-        public Command apply(Integer numBalls, Rectangle2d bounds) {
-            var clusterOpt = m_objectVision.getBestCluster(bounds);
-            if (clusterOpt.isPresent() && tempNumberPickedUp < numBalls) {
-                tempNumberPickedUp += clusterOpt.get().getPieceCount();
-                var clusterLoc = clusterOpt.get().getCenter();
-                var at = new AutoAlign(
-                        new Pose2d(clusterLoc,
-                                DriveUtil.getAngleTowards(clusterLoc, m_drivebase.state.Pose.getTranslation())),
-                        m_drivebase, AutoAlign.kGPDProfile);
-                return Commands.deadline(at, fuelIntake()).andThen(APToClusterChain(numBalls, bounds));
-            } else if (!hasTurned && tempNumberPickedUp < numBalls) {
-                hasTurned = true;
-                return new AutoAlign(
-                        new Pose2d(m_drivebase.state.Pose.getTranslation(),
-                                DriveUtil.getAngleTowards(bounds.getCenter(), m_drivebase.state.Pose)),
-                        m_drivebase, AutoAlign.kGPDProfile).andThen(APToClusterChain(numBalls, bounds));
-            } else {
-                hasTurned = false;
-                tempNumberPickedUp = 0;
-                return Commands.none();
-            }
         }
-    };
 
-    public Command APToClusterChain(int numberOfBalls, boolean isLeftSide) {
-        return Commands.defer(
-                () -> clusterChainFunction.apply(numberOfBalls,
-                        isLeftSide ? POI.kLeftAutoBounds.get() : POI.kRightAutoBounds.get()),
-                Set.of(m_drivebase, m_intakePivot));
-    }
+        public Command APToBestCluster() {
+                return Commands.deferredProxy(
+                                () -> {
+                                        Optional<Cluster> clusterOpt = m_objectVision.getBestCluster();
+                                        if (clusterOpt.isPresent()) {
+                                                var clusterLoc = clusterOpt.get().getCenter();
+                                                var at = new AutoAlign(
+                                                                new Pose2d(clusterLoc,
+                                                                                clusterLoc.minus(m_drivebase.state.Pose
+                                                                                                .getTranslation())
+                                                                                                .getAngle()),
+                                                                m_drivebase, AutoAlign.kGPDProfile);
+                                                return Commands.deadline(
+                                                                at,
+                                                                fuelIntake());
+                                        }
+                                        return Commands.none();
+                                });
+        }
 
-    public Command APToClusterChain(int numberOfBalls, Rectangle2d bounds) {
-        return Commands.defer(
-                () -> clusterChainFunction.apply(numberOfBalls, bounds),
-                Set.of(m_drivebase, m_intakePivot));
-    }
+        private static int tempNumberPickedUp = 0;
+        private static boolean hasTurned = false;
+        private BiFunction<Integer, Rectangle2d, Command> clusterChainFunction = new BiFunction<Integer, Rectangle2d, Command>() {
+                public Command apply(Integer numBalls, Rectangle2d bounds) {
+                        var clusterOpt = m_objectVision.getBestCluster(bounds);
+                        if (clusterOpt.isPresent() && tempNumberPickedUp < numBalls) {
+                                tempNumberPickedUp += clusterOpt.get().getPieceCount();
+                                var clusterLoc = clusterOpt.get().getCenter();
+                                var at = new AutoAlign(
+                                                new Pose2d(clusterLoc,
+                                                                DriveUtil.getAngleTowards(clusterLoc,
+                                                                                m_drivebase.state.Pose
+                                                                                                .getTranslation())),
+                                                m_drivebase, AutoAlign.kGPDProfile);
+                                return Commands.deadline(at, fuelIntake()).andThen(APToClusterChain(numBalls, bounds));
+                        } else if (!hasTurned && tempNumberPickedUp < numBalls) {
+                                hasTurned = true;
+                                return new AutoAlign(
+                                                new Pose2d(m_drivebase.state.Pose.getTranslation(),
+                                                                DriveUtil.getAngleTowards(bounds.getCenter(),
+                                                                                m_drivebase.state.Pose)),
+                                                m_drivebase, AutoAlign.kGPDProfile)
+                                                .andThen(APToClusterChain(numBalls, bounds));
+                        } else {
+                                hasTurned = false;
+                                tempNumberPickedUp = 0;
+                                return Commands.none();
+                        }
+                }
+        };
 
+        public Command APToClusterChain(int numberOfBalls, boolean isLeftSide) {
+                return Commands.defer(
+                                () -> clusterChainFunction.apply(numberOfBalls,
+                                                isLeftSide ? POI.kLeftAutoBounds.get() : POI.kRightAutoBounds.get()),
+                                Set.of(m_drivebase, m_intakePivot));
+        }
 
-    public Command fuelIntake() {
-        return m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle);
+        public Command APToClusterChain(int numberOfBalls, Rectangle2d bounds) {
+                return Commands.defer(
+                                () -> clusterChainFunction.apply(numberOfBalls, bounds),
+                                Set.of(m_drivebase, m_intakePivot));
+        }
 
-    }
+        public Command fuelIntake() {
+                return m_intakePivot.setAngle(() -> IntakePivotConstants.kFuelIntakeAngle);
 
-    // auto hood angle command
-    public Command Score() {
-        return Commands.parallel(
-                m_hood.autoHoodAngle(),
-                Commands.parallel(
-                        m_indexer.setVoltage(
-                                () -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
-                        Commands.sequence(
-                                Commands.waitSeconds(0.25),
-                                m_Spindexer.setVoltage(
-                                () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
-                        )));
-    }
-     public Command autoScoreNoWiggle() {
-        return Commands.parallel(
-                 m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
-                Commands.parallel(
-                        m_indexer.setVoltage(
-                                () -> m_robotStates.isShootReady() ? IndexerConstants.kFastVoltage : Volts.zero()),
-                        Commands.sequence(
-                                Commands.waitSeconds(0.25),
-                                m_Spindexer.setVoltage(
-                                () -> m_robotStates.isShootReady() ? runSpindexerWithReverse.get() : Volts.zero())
-                        )));
-    }
+        }
 
-    Angle angleSetpoint = Degrees.of(0);
-    Supplier<Angle> slowMoveSupplier = () ->{
-        return angleSetpoint.plus(Degrees.of(0.1));
-    };
+        // auto hood angle command
+        public Command Score() {
+                return Commands.parallel(
+                                m_hood.autoHoodAngle(),
+                                Commands.parallel(
+                                                m_agitator.setVoltage(() -> AgitatorConstants.kFastVoltage),
+                                                m_indexer.setVoltage(
+                                                                () -> m_robotStates.isShootReady()
+                                                                                ? IndexerConstants.kFastVoltage
+                                                                                : Volts.zero()),
+                                                Commands.sequence(
+                                                                Commands.waitSeconds(0.25),
+                                                                m_spindexer.setVoltage(
+                                                                                () -> m_robotStates.isShootReady()
+                                                                                                ? runSpindexerWithReverse
+                                                                                                                .get()
+                                                                                                : Volts.zero()))));
+        }
 
-    public Command moveSlowlyToSetpoint(Angle angle){
-        
-        return m_intakePivot.setAngle(slowMoveSupplier).until(UnitUtil.isWithinTolerance(()->m_intakePivot.getAngle(), ()->angleSetpoint, ()->Degrees.of(5)));
+        public Command autoScoreNoWiggle() {
+                return Commands.parallel(
+                                m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
+                                Commands.parallel(
+                                                m_agitator.setVoltage(() -> AgitatorConstants.kFastVoltage),
+                                                m_indexer.setVoltage(
+                                                                () -> m_robotStates.isShootReady()
+                                                                                ? IndexerConstants.kFastVoltage
+                                                                                : Volts.zero()),
+                                                Commands.sequence(
+                                                                Commands.waitSeconds(0.25),
+                                                                m_spindexer.setVoltage(
+                                                                                () -> m_robotStates.isShootReady()
+                                                                                                ? runSpindexerWithReverse
+                                                                                                                .get()
+                                                                                                : Volts.zero()))));
+        }
 
-        
-    }
+        private static final Current kUnjamThreshold = Amps.of(40);
 
-    private static final Current kUnjamThreshold = Amps.of(40);
+        public Command autoScore() {
+                return Commands.parallel(
+                                m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
+                                Commands.parallel(
+                                                m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
+                                                m_spindexer.setVoltage(runSpindexerWithReverse),
+                                                intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))
 
-    public Command autoScore() {
-        return Commands.parallel(
-                m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
-                Commands.parallel(
-                        m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
-                        m_Spindexer.setVoltage(runSpindexerWithReverse),
-                        intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))
- 
-                    );
-    }
+                );
+        }
 
-    public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
-        return Commands.repeatingSequence(
-                m_intakePivot.setAngle(upperLimit).withTimeout(seconds),
-                m_intakePivot.setAngle(lowerLimit).withTimeout(seconds));
-    }
+        public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
+                return Commands.repeatingSequence(
+                                m_intakePivot.setAngle(upperLimit),
+                                m_intakePivot.setAngle(lowerLimit));
+        }
+
         public Command driveOverBump(boolean isBlue) {
                 return m_drivebase.applyRequest(() -> m_driveOverBumpRequest.withVelocityX(
-                        isBlue ? -kOverTheBumpSpeed : kOverTheBumpSpeed
-                )).withTimeout(1.7);  
+                                isBlue ? -kOverTheBumpSpeed : kOverTheBumpSpeed)).withTimeout(1.7);
         }
 }

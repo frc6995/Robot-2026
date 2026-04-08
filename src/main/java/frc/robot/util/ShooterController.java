@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -23,6 +24,7 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.flywheel.RealFlyWheelS.FlywheelConstants;
 import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
+import yams.mechanisms.config.FlyWheelConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 // Inspiration taken from 6328
@@ -49,10 +51,12 @@ public class ShooterController {
         {4.44, 1.164+timeFudge}
     };
 
+    private static final double[][] kTimeOfFlightPassData = kTimeOfFlightData;
+
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
     private static final double HOOD_MAX = HoodConstants.kUpperLimit.in(Degrees);
 
-    private static boolean inTower = false;
+    // private static boolean inTower = false;
 
     private static final double LOOP_PERIOD_SECONDS = 0.02;
     private static final double LATENCY_SECONDS = 0.03; // adjust later
@@ -64,11 +68,14 @@ public class ShooterController {
     private final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
     private final InterpolatingDoubleTreeMap tofMap = new InterpolatingDoubleTreeMap();
 
+    private final InterpolatingDoubleTreeMap rpmPassMap = new InterpolatingDoubleTreeMap();
+    private final InterpolatingDoubleTreeMap hoodPassMap = new InterpolatingDoubleTreeMap();
+    private final InterpolatingDoubleTreeMap tofPassMap = new InterpolatingDoubleTreeMap();
 
     private final Supplier<Pose2d> robotPose;
     private final Supplier<ChassisSpeeds> robotSpeeds;
     private final Supplier<ChassisSpeeds> lastSpeeds;
-    private final Function<Pose2d, Pose2d> goalPose;
+    private final Function<Pose2d, Pair<Pose2d, Boolean>> goalData;
 
     public NetworkTable goalPoseTable; 
     public StructPublisher<Pose2d> targetPosePub;
@@ -79,12 +86,12 @@ public class ShooterController {
         Supplier<Pose2d> robotPose,
         Supplier<ChassisSpeeds> robotSpeeds,
         Supplier<ChassisSpeeds> lastSpeeds,
-        Function<Pose2d, Pose2d> goalPose
+        Function<Pose2d, Pair<Pose2d, Boolean>> goalData
     ) {
         this.robotPose = robotPose;
         this.robotSpeeds = robotSpeeds;
         this.lastSpeeds = lastSpeeds;
-        this.goalPose = goalPose;
+        this.goalData = goalData;
 
         goalPoseTable = NetworkTableInstance.getDefault().getTable("Aim");
         targetPosePub = goalPoseTable.getStructTopic("target", Pose2d.struct).publish();
@@ -94,14 +101,14 @@ public class ShooterController {
         populateLUTs();
     }
 
-    public static void initialize(Supplier<SwerveDriveState> currentState, Supplier<SwerveDriveState> lastState, Function<Pose2d, Pose2d> targetPose) {
+    public static void initialize(Supplier<SwerveDriveState> currentState, Supplier<SwerveDriveState> lastState, Function<Pose2d, Pair<Pose2d, Boolean>> targetData) {
         if(instance == null) {
             Function<ChassisSpeeds, ChassisSpeeds> speedsFieldRelative = (ch) -> ChassisSpeeds.fromRobotRelativeSpeeds(ch, currentState.get().Pose.getRotation());
             instance = new ShooterController(
                 () -> currentState.get().Pose,
                 () -> speedsFieldRelative.apply(currentState.get().Speeds),
                 () -> speedsFieldRelative.apply(lastState.get().Speeds),
-                targetPose
+                targetData
             );
         }
     }
@@ -113,27 +120,27 @@ public class ShooterController {
         return instance;
     }
 
-    public static Pose2d getAimLocation(Pose2d drivePose) {
+    public static Pair<Pose2d, Boolean> getAimLocation(Pose2d drivePose) {
         if (POI.topZone.get().contains(drivePose.getTranslation())) {
-            return POI.topAllianceZone.get().getCenter();
+            return Pair.of(POI.topPassingPoint.get(), true);
         }
         else if (POI.bottomZone.get().contains(drivePose.getTranslation())) {
-            return POI.bottomPassingPoint.get();
+            return Pair.of(POI.bottomPassingPoint.get(), true);
         }
         else if (POI.centerZone.get().contains(drivePose.getTranslation())) {
             if (POI.centerZone.get().getCenter().getY() > drivePose.getY())
-                return POI.topPassingPoint.get();
+                return Pair.of(POI.topPassingPoint.get(), true);
             else
-                return POI.bottomPassingPoint.get();
+                return Pair.of(POI.bottomPassingPoint.get(), true);
         }
         else {
             if (POI.allianceZone.get().contains(drivePose.getTranslation())) {
-                if (POI.towerZone.get().contains(drivePose.getTranslation()))
-                    inTower = true;     else inTower = false;
-                return POI.HUB1.get();
+                // if (POI.towerZone.get().contains(drivePose.getTranslation()))
+                //     inTower = true;     else inTower = false;
+                return Pair.of(POI.HUB1.get(), false);
             }
             else {
-                return POI.HUB1.get();
+                return Pair.of(POI.HUB1.get(), false);
             }
         }
     }
@@ -155,6 +162,18 @@ public class ShooterController {
         for(var value : kTimeOfFlightData) {
             tofMap.put(value[0], value[1]);
         }
+
+        for(var value : FlywheelConstants.kPassShooterData) {
+            rpmPassMap.put(value[0], value[1]);
+        }
+
+        for(var value : HoodConstants.kPassAngleData) {
+            hoodPassMap.put(value[0], value[1]);
+        }
+
+        for(var value : kTimeOfFlightPassData) {
+            tofPassMap.put(value[0], value[1]);
+        }
     }
 
     public ShooterTargetData calculate() {
@@ -172,7 +191,14 @@ public class ShooterController {
             )
         );
 
-        Translation2d goalTranslation = goalPose.apply(estimatedPose).getTranslation();
+        var goal = goalData.apply(estimatedPose);
+
+        Translation2d goalTranslation = goal.getFirst().getTranslation();
+
+        var tofMap = goal.getSecond() ? this.tofPassMap : this.tofMap;
+        var rpmMap = goal.getSecond() ? this.rpmPassMap : this.rpmMap;
+        var hoodMap = goal.getSecond() ? this.hoodPassMap : this.hoodMap; 
+
         Translation2d delta = goalTranslation.minus(estimatedPose.getTranslation());
         
         double distance = goalTranslation.getDistance(estimatedPose.getTranslation());
@@ -190,15 +216,15 @@ public class ShooterController {
             );
             return cachedData;
         }
-        else if (inTower) {
-            updateTelemetry(goalTranslation, delta, distance);
-            cachedData = new ShooterTargetData(
-                delta.getAngle().minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg),
-                FlywheelConstants.kInTowerRPM,
-                HoodConstants.kInTowerAngle
-            );
-            return cachedData;
-        }
+        // else if (inTower) {
+        //     updateTelemetry(goalTranslation, delta, distance);
+        //     cachedData = new ShooterTargetData(
+        //         delta.getAngle().minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg),
+        //         FlywheelConstants.kInTowerRPM,
+        //         HoodConstants.kInTowerAngle
+        //     );
+        //     return cachedData;
+        // }
         
         Translation2d projectedTranslation = estimatedPose.getTranslation();
         delta = goalTranslation.minus(projectedTranslation);

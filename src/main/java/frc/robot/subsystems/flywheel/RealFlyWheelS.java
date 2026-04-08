@@ -79,6 +79,20 @@ public class RealFlyWheelS extends FlyWheelS {
                 {15.0, 3500}
 
         };
+
+        public static final double[][] kPassShooterData = {
+            {0, 1000},
+            {1, 1100},
+            {2, 1200},
+            {3, 1300},
+            {4, 1400},
+            {5, 1600},
+            {6, 1800},
+            {8, 2200},
+            {10, 2500},
+            {15, 2500}
+        };
+
         // TODO: Tune this!
         public static final double kInTowerRPM = 1850;
     }
