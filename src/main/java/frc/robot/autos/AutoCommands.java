@@ -154,7 +154,7 @@ public class AutoCommands {
                                                 () -> m_drivebase.state.Pose,
                                                 () -> intakePoseTolerance)),
                         new AutoAlign(stopPose, m_drivebase, AutoAlign.kSlowDriveProfile).withTimeout(Seconds.of(1.5))),
-                Commands.parallel(Commands.sequence(Commands.waitSeconds(0.25),fuelIntake()), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
+                Commands.parallel(Commands.sequence(Commands.waitSeconds(0.5),fuelIntake()), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
     }
 
 
@@ -267,7 +267,7 @@ public class AutoCommands {
                                                                                 ? IndexerConstants.kFastVoltage
                                                                                 : Volts.zero()),
                                                 Commands.sequence(
-                                                                Commands.waitSeconds(0.25),
+                                                                Commands.waitSeconds(0.35),
                                                                 m_spindexer.setVoltage(
                                                                                 () -> m_robotStates.isShootReady()
                                                                                                 ? runSpindexerWithReverse
@@ -285,7 +285,7 @@ public class AutoCommands {
                                                                                 ? IndexerConstants.kFastVoltage
                                                                                 : Volts.zero()),
                                                 Commands.sequence(
-                                                                Commands.waitSeconds(0.25),
+                                                                Commands.waitSeconds(0.35),
                                                                 m_spindexer.setVoltage(
                                                                                 () -> m_robotStates.isShootReady()
                                                                                                 ? runSpindexerWithReverse
@@ -299,6 +299,7 @@ public class AutoCommands {
                 return Commands.parallel(
                                 m_hood.autoHoodAngle_OVERRIDE_SAFETY(),
                                 Commands.parallel(
+                                                m_agitator.setVoltage(() -> AgitatorConstants.kFastVoltage),
                                                 m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                                                 m_spindexer.setVoltage(runSpindexerWithReverse),
                                                 intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))

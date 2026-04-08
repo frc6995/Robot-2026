@@ -24,7 +24,7 @@ import frc.robot.util.ShooterController;
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
-    @Logged(name = "RobotContainer")
+    // @Logged(name = "RobotContainer")
     private final RobotContainer m_robotContainer;
     private double autoSimTime = 20;
 

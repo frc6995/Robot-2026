@@ -131,6 +131,8 @@ public class POI {
     public static final Supplier<Rotation2d> TRL1Entry = flipped(new Rotation2d(Degrees.of(185)));
 
     public static final Supplier<Rotation2d> TRR1Entry = flipped(new Rotation2d(Degrees.of(175)));
+        public static final Supplier<Rotation2d> TRR1CloseEntry = flipped(new Rotation2d(Degrees.of(180)));
+
 
     // Autoalign help pose rotations
     public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));

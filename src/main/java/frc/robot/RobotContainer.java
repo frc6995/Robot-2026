@@ -95,7 +95,7 @@ public class RobotContainer {
 
     RobotStates robotStates = new RobotStates();
 
-    @Logged
+//     @Logged
     public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
             TunerConstants.DrivetrainConstants,
             TunerConstants.FrontLeft,
@@ -103,23 +103,23 @@ public class RobotContainer {
             TunerConstants.BackLeft,
             TunerConstants.BackRight);
 
-    @Logged(name = "Flywheel")
+//     @Logged(name = "Flywheel")
     private final FlyWheelS m_flywheel = new RealFlyWheelS(robotStates::isIntakeDeployed);
-    @Logged(name = "Hood")
+//     @Logged(name = "Hood")
     private final HoodS m_hood = new RealHoodS(() -> m_drivetrain.state, () -> m_drivetrain.lastState, robotStates::isIntakeDeployed);
-    @Logged(name = "Indexer")
+//     @Logged(name = "Indexer")
     private final IndexerS m_indexer = new RealIndexerS();
-    @Logged(name = "IntakePivot")
+//     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS(robotStates::isTurretStowed, robotStates::isFlywheelSafe);
-    @Logged(name = "IntakeRoller")
+//     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
-    @Logged(name = "Spindexer")
+//     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
-    @Logged(name = "Agitator")
+//     @Logged(name = "Agitator")
     private final AgitatorS m_agitator = new RealAgitatorS();
-    @Logged(name = "Turret")
+//     @Logged(name = "Turret")
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, robotStates::isIntakeDeployed);
-    @Logged(name = "ClimbExtension")
+//     @Logged(name = "ClimbExtension")
     private final ClimbExtensionS m_climbExtension = new NoneClimbExtensionS();
 
     // @Logged(name = "ObjectDetection")

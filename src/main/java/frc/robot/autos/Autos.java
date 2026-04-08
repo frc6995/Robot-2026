@@ -160,7 +160,7 @@ public class Autos {
                         () -> POI.TRR1.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.5)))
+                        () -> Meters.of(0.4)))
                         .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
                         .andThen(autoCommands.autoScore()
                                 .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
@@ -196,14 +196,14 @@ public class Autos {
                 () -> POI.R_SWEEP6.get()
                         .getTranslation(),
                 () -> m_drivebase.state.Pose,
-                () -> Meters.of(0.99)))
-                .andThen(Commands.parallel(new AutoAlign(POI.TRR2.get(), POI.TRR1Entry.get(), m_drivebase,
+                () -> Meters.of(0.59)))
+                .andThen(Commands.parallel(new AutoAlign(POI.TRR2.get(), POI.TRR1CloseEntry.get(), m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile)),
                         Commands.waitUntil(TriggerUtil.isWithinRadius(
                                 () -> POI.TRR1.get()
                                         .getTranslation(),
                                 () -> m_drivebase.state.Pose,
-                                () -> Meters.of(0.5)))
+                                () -> Meters.of(0.4)))
                                 .andThen(autoCommands.autoScoreNoWiggle()
                                         .withTimeout(AutoConstants.kDefaultautoInitialTime))
                                 .andThen(autoCommands.autoScore()
@@ -314,7 +314,7 @@ public class Autos {
                 }));
 
         autos.put("R pass",
-                () -> auto(POI.TRR1.get(), c -> {
+                () -> auto(POI.TRR3.get(), c -> {
 
                     c.addCommands(rightToCenterLineMiddleHardCoded.get().until(TriggerUtil.isWithinRadius(
                             () -> POI.STOPR1.get()

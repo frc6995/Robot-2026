@@ -76,7 +76,7 @@ public class RealIntakePivotS extends IntakePivotS {
         // public static final double kSimV = 6.83;
         // public static final double kSimA = 0.03;
         // Motor Configs
-        public static final double kSupplyCurrentLimit = 30;
+        public static final double kSupplyCurrentLimit = 46;
         public static final double kStatorCurrentLimit = 120;
         // Physical Properties
         public static final double kMOI = 0.05;
