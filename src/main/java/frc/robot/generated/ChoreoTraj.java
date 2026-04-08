@@ -69,9 +69,16 @@ public record ChoreoTraj(
     public static final ChoreoTraj Center_Line_Poses = new ChoreoTraj(
         "Center_Line_Poses",
         OptionalInt.empty(),
-        54.74731,
-        new Pose2d(3.80258, 7.60264, Rotation2d.fromRadians(0)),
-        new Pose2d(5.95889, 9.10526, Rotation2d.fromRadians(-2.31917))
+        62.49084,
+        new Pose2d(3.80258, 7.50264, Rotation2d.fromRadians(0)),
+        new Pose2d(8.97604, 0.752, Rotation2d.fromRadians(1.5708))
+    );
+    public static final ChoreoTraj L_Circle_Auto_Shot = new ChoreoTraj(
+        "L_Circle_Auto_Shot",
+        OptionalInt.empty(),
+        4.20735,
+        new Pose2d(2.62585, 5.33739, Rotation2d.fromRadians(3.03672)),
+        new Pose2d(3.37808, 7.34702, Rotation2d.fromRadians(0))
     );
 
     /**
@@ -85,7 +92,8 @@ public record ChoreoTraj(
         Map.entry("L_Sweep", L_Sweep),
         Map.entry("R_Pass_Center", R_Pass_Center),
         Map.entry("HP_test", HP_test),
-        Map.entry("Center_Line_Poses", Center_Line_Poses)
+        Map.entry("Center_Line_Poses", Center_Line_Poses),
+        Map.entry("L_Circle_Auto_Shot", L_Circle_Auto_Shot)
     );
 
     /**

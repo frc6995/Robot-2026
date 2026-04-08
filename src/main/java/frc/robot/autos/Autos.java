@@ -93,6 +93,9 @@ public class Autos {
         Command L_Pickup_Center = factory.trajectoryCmd(ChoreoTraj.R_Pickup_Center.name(), AutoTrajectory::mirrorY);
         Command R_Pickup_Center = factory.trajectoryCmd(ChoreoTraj.R_Pickup_Center.name());
 
+        Supplier<Command >R_Circle_Auto_Shot = ()-> factory.trajectoryCmd(ChoreoTraj.L_Circle_Auto_Shot.name(), AutoTrajectory::mirrorY);
+
+
         // ============= PREDEFINED HELPERS =============
 
         // (L/R) Center Line Preplanned
@@ -100,13 +103,13 @@ public class Autos {
                 AutoConstants.kDefaultStartRadius,
                 POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.STOPL1.get());
-
+ 
         Supplier<Command> leftToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
                 AutoConstants.kDefaultStartRadius,
                 POI.BALLL3.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.STOPL2.get());
 
-        Supplier<Command> rightToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+        Supplier<Command> rightToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPR5.get(),
                 AutoConstants.kDefaultStartRadius,
                 POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.STOPR1.get());
@@ -262,9 +265,9 @@ public class Autos {
 
                 .andThen(autoCommands.driveOverBump(true))
 
-                .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
-                        AutoAlign.kSlowCrawlProfile),
-                        Commands.waitSeconds(0.4).andThen(autoCommands.Score())));
+                .andThen(Commands.race(Commands.sequence(R_Circle_Auto_Shot.get(), new AutoAlign(POI.TRR1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
+                        AutoAlign.kSlowCrawlProfile))),
+                        Commands.waitSeconds(0.4).andThen(autoCommands.Score()));
 
         Supplier<Command> rightCircleMid = () -> autoCommands.APToIntake(POI.HELPR1.get(),
                 AutoConstants.kDefaultStartRadius,
@@ -291,7 +294,7 @@ public class Autos {
                 }));
 
         autos.put("R 2x trench",
-                () -> auto(POI.TRR1.get(), c -> {
+                () -> auto(POI.TRR3.get(), c -> {
                     c.addCommands(rightToCenterLineMiddleHardCoded.get());
 
                     c.addCommands(rightBackToStartDefault.get());
@@ -344,10 +347,6 @@ public class Autos {
 
                 }));
 
-        autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
-            c.addCommands(Commands.none());
-        }));
-
         autos.put("R 2.5x bump", () -> auto(POI.TRR1.get(), c -> {
             c.addCommands(rightCircleStart.get());
 
@@ -362,6 +361,11 @@ public class Autos {
             c.addCommands(rightCircleOverBumpAndScore.get());
 
         }));
+
+        autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
+            c.addCommands(Commands.none());
+        }));
+
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));

@@ -33,8 +33,7 @@ public class POI {
     public static final Supplier<Pose2d> BALLR1 = flipped(ChoreoVars.Poses.BALLR1);
     public static final Supplier<Pose2d> BALLR2 = flipped(ChoreoVars.Poses.BALLR2);
     public static final Supplier<Pose2d> BALLR3 = flipped(ChoreoVars.Poses.BALLR3);
-    // public static final Supplier<Pose2d> BALLR4 =
-    // flipped(ChoreoVars.Poses.BALLR4);
+
     public static final Supplier<Pose2d> BALLR5 = flipped(ChoreoVars.Poses.BALLR5);
 
     // Center line intake stop poses
@@ -51,16 +50,22 @@ public class POI {
     // Auto start poses
     public static final Supplier<Pose2d> TRL1 = flipped(ChoreoVars.Poses.TRL1);
     public static final Supplier<Pose2d> TRL2 = flipped(ChoreoVars.Poses.TRL2);
+    public static final Supplier<Pose2d> TRL3 = flipped(ChoreoVars.Poses.TRL3);
 
     public static final Supplier<Pose2d> TRR1 = flipped(ChoreoVars.Poses.TRR1);
     public static final Supplier<Pose2d> TRR2 = flipped(ChoreoVars.Poses.TRR2);
+    public static final Supplier<Pose2d> TRR3 = flipped(ChoreoVars.Poses.TRR3);
 
     // Center line help poses
     public static final Supplier<Pose2d> HELPL1 = flipped(ChoreoVars.Poses.HELPL1);
     public static final Supplier<Pose2d> HELPL4 = flipped(ChoreoVars.Poses.HELPL4);
+        public static final Supplier<Pose2d> HELPL5 = flipped(ChoreoVars.Poses.HELPL5);
+
 
     public static final Supplier<Pose2d> HELPR1 = flipped(ChoreoVars.Poses.HELPR1);
     public static final Supplier<Pose2d> HELPR4 = flipped(ChoreoVars.Poses.HELPR4);
+    public static final Supplier<Pose2d> HELPR5 = flipped(ChoreoVars.Poses.HELPR5);
+
 
     // Climb poses
     public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
@@ -89,15 +94,13 @@ public class POI {
     public static final Supplier<Pose2d> R_ScoreStop = flipped(ChoreoVars.Poses.R_ScoreStop);
 
     public static final Supplier<Pose2d> R_PassPathStop = flipped(ChoreoVars.Poses.R_PassPathStop);
-        public static final Supplier<Pose2d> L_PassPathStop = flipped(ChoreoVars.Poses.L_PassPathStop);
+    public static final Supplier<Pose2d> L_PassPathStop = flipped(ChoreoVars.Poses.L_PassPathStop);
 
     public static final Supplier<Pose2d> R_PASSHELP = flipped(ChoreoVars.Poses.R_PASSHELP);
-        public static final Supplier<Pose2d> L_PASSHELP = flipped(ChoreoVars.Poses.L_PASSHELP);
-
+    public static final Supplier<Pose2d> L_PASSHELP = flipped(ChoreoVars.Poses.L_PASSHELP);
 
     public static final Supplier<Pose2d> R_PASS_AUTO_STOP = flipped(ChoreoVars.Poses.R_PASS_AUTO_STOP);
     public static final Supplier<Pose2d> L_PASS_AUTO_STOP = flipped(ChoreoVars.Poses.L_PASS_AUTO_STOP);
-
 
     // L_SWEEP path poses
 
@@ -133,7 +136,6 @@ public class POI {
     public static final Supplier<Rotation2d> HELPL1Entry = flipped(new Rotation2d(Degrees.of(0)));
     public static final Supplier<Rotation2d> HELPR2PassEntry = flipped(new Rotation2d(Degrees.of(250)));
     public static final Supplier<Rotation2d> HELPL2PassEntry = flipped(new Rotation2d(Degrees.of(-250)));
-
 
     public static final Supplier<Rotation2d> HELPL2Entry = flipped(new Rotation2d(Degrees.of(130)));
     public static final Supplier<Rotation2d> HELPL2CloseEntry = flipped(new Rotation2d(Degrees.of(140)));
@@ -176,8 +178,10 @@ public class POI {
     public static final Supplier<Rectangle2d> bottomZone = flippedRectangle(bottomZoneCorner1, bottomZoneCorner2);
 
     // ============= TRANSLATIONS =============
-    public static final Supplier<Pose2d> bottomPassingPoint = flipped(new Pose2d(Meters.of(2.9), Meters.of(1.68), new Rotation2d()));
-    public static final Supplier<Pose2d> topPassingPoint = flipped(new Pose2d(Meters.of(2.9), Meters.of(6.32), new Rotation2d()));
+    public static final Supplier<Pose2d> bottomPassingPoint = flipped(
+            new Pose2d(Meters.of(2.9), Meters.of(1.68), new Rotation2d()));
+    public static final Supplier<Pose2d> topPassingPoint = flipped(
+            new Pose2d(Meters.of(2.9), Meters.of(6.32), new Rotation2d()));
 
     // ============= DISTANCES =============
     public static final Distance kOriginToTrenchBlue = Meters.of(4.6);
@@ -228,6 +232,6 @@ public class POI {
             new Translation2d(AllianceFlipUtil.FIELD_LENGTH, AllianceFlipUtil.FIELD_WIDTH));
 
     public static final Supplier<Rectangle2d> towerZone = flippedRectangle(
-            new Translation2d(Meters.zero(), Meters.of(4.5)), 
+            new Translation2d(Meters.zero(), Meters.of(4.5)),
             new Translation2d(Meters.of(1.07), Meters.of(2.84)));
 }

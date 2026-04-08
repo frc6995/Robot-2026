@@ -147,7 +147,7 @@ public class AutoCommands {
                                                 () -> m_drivebase.state.Pose,
                                                 () -> intakePoseTolerance)),
                         new AutoAlign(stopPose, m_drivebase, AutoAlign.kSlowDriveProfile).withTimeout(Seconds.of(1.5))),
-                Commands.parallel(fuelIntake(), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
+                Commands.parallel(Commands.sequence(Commands.waitSeconds(0.25),fuelIntake()), m_hood.setAngle(() -> HoodConstants.kLowerLimit)));
     }
 
 

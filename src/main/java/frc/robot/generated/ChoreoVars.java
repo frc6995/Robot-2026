@@ -35,10 +35,12 @@ public final class ChoreoVars {
         public static final Pose2d DEPOTEND = new Pose2d(0.5552138, 5.9745647, Rotation2d.fromRadians(3.1319774));
         public static final Pose2d DEPOTSTART = new Pose2d(0.9729946, 5.9745647, Rotation2d.fromRadians(3.1415927));
         public static final Pose2d HELPD1 = new Pose2d(2.9996292, 7.3746572, Rotation2d.fromRadians(3.1415927));
-        public static final Pose2d HELPL1 = new Pose2d(8.9760363, 7.3, Rotation2d.fromRadians(-0.1047198));
+        public static final Pose2d HELPL1 = new Pose2d(8.9760363, 7.3, Rotation2d.fromRadians(-0.1745329));
         public static final Pose2d HELPL4 = new Pose2d(5.1430055, 8.9984441, Rotation2d.fromRadians(-1.0471976));
-        public static final Pose2d HELPR1 = new Pose2d(8.9760363, 0.752, Rotation2d.fromRadians(0.1047198));
+        public static final Pose2d HELPL5 = new Pose2d(8.9760363, 7.3, Rotation2d.fromRadians(-1.5707963));
+        public static final Pose2d HELPR1 = new Pose2d(8.9760363, 0.752, Rotation2d.fromRadians(0.1745329));
         public static final Pose2d HELPR4 = new Pose2d(5.1430055, -1.0736441, Rotation2d.fromRadians(1.0471976));
+        public static final Pose2d HELPR5 = new Pose2d(8.9760363, 0.752, Rotation2d.fromRadians(1.5707963));
         public static final Pose2d HELPS = new Pose2d(3.8221934, 0.5493581, Rotation2d.fromRadians(3.1415927));
         public static final Pose2d L_PASSHELP = new Pose2d(5.9588947, 9.1052609, Rotation2d.fromRadians(-2.3191747));
         public static final Pose2d L_PASS_AUTO_STOP = new Pose2d(0.5821602, 5.9473269, Rotation2d.fromRadians(-1.6078136));
@@ -78,8 +80,10 @@ public final class ChoreoVars {
         public static final Pose2d STOPR4 = new Pose2d(6.1074233, 3.6559172, Rotation2d.fromRadians(1.5707963));
         public static final Pose2d TRL1 = new Pose2d(3.8025807, 7.5026419, Rotation2d.fromRadians(0));
         public static final Pose2d TRL2 = new Pose2d(3.8025807, 7.5026419, Rotation2d.fromRadians(3.1415927));
+        public static final Pose2d TRL3 = new Pose2d(3.8025807, 7.5026419, Rotation2d.fromRadians(-1.5707963));
         public static final Pose2d TRR1 = new Pose2d(3.8025807, 0.5493581, Rotation2d.fromRadians(0));
         public static final Pose2d TRR2 = new Pose2d(3.8025807, 0.5493581, Rotation2d.fromRadians(3.1415927));
+        public static final Pose2d TRR3 = new Pose2d(3.8025807, 0.5493581, Rotation2d.fromRadians(1.5707963));
     }
 }
 // spotless:on
