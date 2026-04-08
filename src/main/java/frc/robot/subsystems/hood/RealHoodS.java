@@ -90,6 +90,15 @@ public class RealHoodS extends HoodS {
                 { 4, 34 },
                 { 5, 40 },
         };
+
+        public static final double[][] kPassAngleData = {
+            { 1, 15 },
+            { 2, 20 },
+            { 3, 30},
+            { 4, 40},
+            { 5, 40},
+        };
+
         // TODO: Tune this!
         // public static final double kInTowerAngle = 20;
         // Motor Setup
