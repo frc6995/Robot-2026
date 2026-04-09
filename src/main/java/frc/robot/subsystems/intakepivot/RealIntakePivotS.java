@@ -59,7 +59,7 @@ public class RealIntakePivotS extends IntakePivotS {
         public static final double kD = 0.12;
         public static final AngularVelocity kVelocity = DegreesPerSecond.of(1000);
         public static final AngularAcceleration kAcceleration = DegreesPerSecondPerSecond.of(1000);
-        public static final AngularVelocity kSlowVelocity = DegreesPerSecond.of(80);
+        public static final AngularVelocity kSlowVelocity = DegreesPerSecond.of(40);
         // Feeforward Constants
         public static final double kS = 0;
         public static final double kG = 0.28;
@@ -91,7 +91,7 @@ public class RealIntakePivotS extends IntakePivotS {
         public static final Angle kSlowMoveTolerance = Degrees.of(10);
         public static final Angle kSafeAngle = Degrees.of(35);
         public static final Angle kSafetyUpperLimit = Degrees.of(90);
-        public static final Angle kWiggleUpperAngle = Degrees.of(60);
+        public static final Angle kWiggleUpperAngle = Degrees.of(65);
         public static final Angle kCollapseUpperAngle = Degrees.of(70);
         public static final Angle kWiggleLowerAngle = Degrees.of(15);
     }
