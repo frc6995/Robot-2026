@@ -88,6 +88,10 @@ public class POI {
     public static final Supplier<Pose2d> CIRCLE_STOPL0 = flipped(ChoreoVars.Poses.CIRCLE_STOPL0);
     public static final Supplier<Pose2d> CIRCLE_STOPR0 = flipped(ChoreoVars.Poses.CIRCLESTOPR0);
 
+    public static final Supplier<Pose2d> R_SecondSwipeStart = flipped(ChoreoVars.Poses.R_SecondSwipeStart);
+    public static final Supplier<Pose2d> R_SecondSwipeStop = flipped(ChoreoVars.Poses.R_SecondSwipeStop);
+
+
     public static final Supplier<Pose2d> CIRCLE_STOPL101 = flipped(ChoreoVars.Poses.CIRCLESTOPL101);
     public static final Supplier<Pose2d> CIRCLE_STOPR101 = flipped(ChoreoVars.Poses.CIRCLESTOPR101);
 
