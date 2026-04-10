@@ -39,6 +39,7 @@ import frc.robot.autos.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.agitator.AgitatorS;
+import frc.robot.subsystems.agitator.NoneAgitatorS;
 import frc.robot.subsystems.agitator.RealAgitatorS;
 import frc.robot.subsystems.agitator.RealAgitatorS.AgitatorConstants;
 import frc.robot.subsystems.flywheel.FlyWheelS;
@@ -115,7 +116,7 @@ public class RobotContainer {
 //     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
 //     @Logged(name = "Agitator")
-    private final AgitatorS m_agitator = new RealAgitatorS();
+    private final AgitatorS m_agitator = new NoneAgitatorS();
 //     @Logged(name = "Turret")
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, robotStates::isIntakeDeployed);
 //     @Logged(name = "ClimbExtension")

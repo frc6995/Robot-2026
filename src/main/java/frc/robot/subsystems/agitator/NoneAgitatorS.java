@@ -33,4 +33,9 @@ public class NoneAgitatorS extends AgitatorS{
         return Amps.of(69.95);
     }
     
+    @Override
+    public void setDefaultCommand(Command defaultCommand) {
+        defaultCommand.addRequirements(this);
+        super.setDefaultCommand(defaultCommand);
+    }
 }

@@ -148,10 +148,12 @@ public class Autos {
                         () -> POI.TRL1.get()
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
-                        () -> Meters.of(0.5)))
-                        .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
+                        () -> Meters.of(0.4)))
                         .andThen(autoCommands.autoScore()
-                                .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
+                                .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)
+                                .andThen(m_intakePivot.setAngle(IntakePivotConstants.kFuelIntakeAngle)
+                                        .withTimeout(Seconds.of(0.1)))));
+
 
         Supplier<Command> rightBackToStartDefault = () -> Commands.parallel(
                 autoCommands.APBackFromIntake(POI.HELPR4.get(),

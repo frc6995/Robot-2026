@@ -63,8 +63,8 @@ public class RealATVision extends AprilTagVision {
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
-        public static final double[] kStdDevCoefficients = {0.075, 0.03}; // deviation order is [xy, theta]
-        public static final double[] kDisabledStdDevCoefficients = {0.075, 0.03};
+        public static final double[] kStdDevCoefficients = {0.125, 0.03}; // deviation order is [xy, theta]
+        public static final double[] kDisabledStdDevCoefficients = {0.1, 0.075};
 
     }
     

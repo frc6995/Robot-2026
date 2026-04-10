@@ -239,7 +239,7 @@ public class AutoCommands {
                         m_agitator.setVoltage(() -> AgitatorConstants.kFastVoltage),
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                         m_spindexer.setVoltage(runSpindexerWithReverse),
-                        intakeWiggle(Degrees.of(40), Degrees.of(0)))
+                       m_intakePivot.setAngleSlowMove(IntakePivotConstants.kWiggleUpperAngle))
 
         );
     }
