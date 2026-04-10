@@ -272,20 +272,6 @@ public class Autos {
 
                 }));
 
-        autos.put("R 2x bump", () -> auto(POI.TRR3.get(), c -> {
-            c.addCommands(rightCircleStart.get());
-
-            c.addCommands(rightCircleOverBumpAndScore.get());
-
-            c.addCommands(rightCircleMid.get());
-
-            c.addCommands(rightCircleOverBumpAndScore.get());
-
-            c.addCommands(rightCircleMid.get());
-
-            c.addCommands(rightCircleOverBumpAndScore.get());
-
-        }));
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
