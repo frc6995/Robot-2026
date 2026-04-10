@@ -98,17 +98,17 @@ public class Autos {
         Command L_Pickup_Center = factory.trajectoryCmd(ChoreoTraj.R_Pickup_Center.name(), AutoTrajectory::mirrorY);
         Command R_Pickup_Center = factory.trajectoryCmd(ChoreoTraj.R_Pickup_Center.name());
 
-        Supplier<Command >R_Circle_Auto_Shot = ()-> factory.trajectoryCmd(ChoreoTraj.L_Circle_Auto_Shot.name(), AutoTrajectory::mirrorY);
-
+        Supplier<Command> R_Circle_Auto_Shot = () -> factory.trajectoryCmd(ChoreoTraj.L_Circle_Auto_Shot.name(),
+                AutoTrajectory::mirrorY);
 
         // ============= PREDEFINED HELPERS =============
 
         // (L/R) Center Line Preplanned
-        Supplier<Command> leftToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
+        Supplier<Command> leftToCenterLineMiddleHardCoded = () -> autoCommands.APToIntake(POI.HELPL5.get(),
                 AutoConstants.kDefaultStartRadius,
                 POI.BALLL2.get(), POI.BALLL2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.STOPL1.get());
- 
+
         Supplier<Command> leftToCenterLineCloseHardCoded = () -> autoCommands.APToIntake(POI.HELPL1.get(),
                 AutoConstants.kDefaultStartRadius,
                 POI.BALLL3.get(), POI.BALLL4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
@@ -165,17 +165,9 @@ public class Autos {
                         () -> Meters.of(0.4)))
                         .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
                         .andThen(autoCommands.autoScore()
-                                .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
-
-        // (L/R) Back From Center Line To Climb
-        // Supplier<Command> leftChoreoSweepBack = () ->
-        // L_Sweep.until(TriggerUtil.isWithinRadius(
-        // () -> POI.L_SWEEP6.get()
-        // .getTranslation(),
-        // () -> m_drivebase.state.Pose,
-        // () -> Meters.of(0.2)))
-        // .andThen(new AutoAlign(POI.TRL2.get(), POI.TRL1Entry.get(), m_drivebase,
-        // AutoAlign.kDefaultVelocityLimitedProfile));
+                                .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)
+                                .andThen(m_intakePivot.setAngle(IntakePivotConstants.kFuelIntakeAngle)
+                                        .withTimeout(Seconds.of(0.1)))));
 
         Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
                 () -> POI.L_SWEEP6.get()
@@ -192,7 +184,7 @@ public class Autos {
                                 .andThen(autoCommands.autoScoreNoWiggle()
                                         .withTimeout(AutoConstants.kDefaultautoInitialTime))
                                 .andThen(autoCommands.autoScore()
-                                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
+                                       ));
 
         Supplier<Command> rightChoreoSweepBack = () -> R_Sweep.until(TriggerUtil.isWithinRadius(
                 () -> POI.R_SWEEP6.get()
@@ -208,11 +200,9 @@ public class Autos {
                                 () -> Meters.of(0.4)))
                                 .andThen(autoCommands.autoScoreNoWiggle()
                                         .withTimeout(AutoConstants.kDefaultautoInitialTime))
-                                .andThen(autoCommands.autoScore()
-                                        .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
+                                .andThen(autoCommands.autoScore()));
 
-
-        Supplier<Command> rightCircleStart = () -> autoCommands.APToIntake(POI.HELPR1.get(),
+        Supplier<Command> rightCircleStart = () -> autoCommands.APToIntake(POI.HELPR5.get(),
                 AutoConstants.kDefaultStartRadius,
                 POI.BALLR2.get(), POI.BALLR2Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.CIRCLE_STOPR0.get());
@@ -230,17 +220,26 @@ public class Autos {
 
                 .andThen(Commands.race(new AutoAlign(POI.TRR1.get(), POI.bumpToTrenchEntry.get(), m_drivebase,
                         AutoAlign.kSlowCrawlProfile),
-                        Commands.waitSeconds(0).andThen(autoCommands.Score()).withTimeout(Seconds.of(0.5)).andThen(m_intakePivot.setAngleSlowMove(IntakePivotConstants.kWiggleUpperAngle))));
+                        autoCommands.Score()).alongWith(
+                                Commands.sequence(Commands.waitSeconds(1.7),
+                                        m_intakePivot.setAngleSlowMove(IntakePivotConstants.kWiggleUpperAngle)
+                                                .until(TriggerUtil.isWithinRadius(
+                                                        () -> POI.TRR1.get()
+                                                                .getTranslation(),
+                                                        () -> m_drivebase.state.Pose,
+                                                        () -> Meters.of(0.6))),
+                                        m_intakePivot.setAngle(IntakePivotConstants.kFuelIntakeAngle))));
 
         Supplier<Command> rightCircleMid = () -> autoCommands.APToIntake(POI.HELPR1.get(),
-               Meters.of(3.5),
+                Meters.of(3.5),
                 POI.R_SecondSwipeStart.get(), POI.BALLR4Entry.get(), Meters.of(1.0),
-                POI.R_PassPathStop.get()).andThen(new AutoAlign(POI.R_SecondSwipeStop.get(), m_drivebase, AutoAlign.kSlowDriveProfile));
+                POI.R_PassPathStop.get())
+                .andThen(new AutoAlign(POI.R_SecondSwipeStop.get(), m_drivebase, AutoAlign.kSlowDriveProfile));
 
         // ============= DEFINE AUTOS =============
 
         autos.put("L 2x trench",
-                () -> auto(POI.TRL1.get(), c -> {
+                () -> auto(POI.TRL3.get(), c -> {
                     c.addCommands(leftToCenterLineMiddleHardCoded.get());
 
                     c.addCommands(leftBackToStartDefault.get());
@@ -273,8 +272,7 @@ public class Autos {
 
                 }));
 
-
-        autos.put("R 2.5x bump", () -> auto(POI.TRR1.get(), c -> {
+        autos.put("R 2x bump", () -> auto(POI.TRR3.get(), c -> {
             c.addCommands(rightCircleStart.get());
 
             c.addCommands(rightCircleOverBumpAndScore.get());
@@ -288,11 +286,6 @@ public class Autos {
             c.addCommands(rightCircleOverBumpAndScore.get());
 
         }));
-
-        autos.put("Seeding-test", () -> auto(POI.CL1.get(), c -> {
-            c.addCommands(Commands.none());
-        }));
-
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));

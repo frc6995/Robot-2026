@@ -239,12 +239,12 @@ public class AutoCommands {
                         m_agitator.setVoltage(() -> AgitatorConstants.kFastVoltage),
                         m_indexer.setVoltage(() -> IndexerConstants.kFastVoltage),
                         m_spindexer.setVoltage(runSpindexerWithReverse),
-                        intakeWiggle(Degrees.of(40), Degrees.of(0), 0.75))
+                        intakeWiggle(Degrees.of(40), Degrees.of(0)))
 
         );
     }
 
-    public Command intakeWiggle(Angle upperLimit, Angle lowerLimit, double seconds) {
+    public Command intakeWiggle(Angle upperLimit, Angle lowerLimit) {
         return Commands.repeatingSequence(
                 m_intakePivot.setAngle(upperLimit),
                 m_intakePivot.setAngle(lowerLimit));
