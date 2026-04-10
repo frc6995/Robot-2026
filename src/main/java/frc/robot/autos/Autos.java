@@ -49,12 +49,16 @@ public class Autos {
         private static Time kDefaultautoInitialTime = Seconds.of(1.4);
         private static Time kDefaultautoShakeScoreTime = Seconds.of(2.3);
 
+        private static Time kIntakeBackDownTime = Seconds.of(0.6);
+
+
         private static Time kGPDTimeout = Seconds.of(6.0);
         private static Distance kGPDStartRadius = Meters.of(2.0);
         private static Distance kDefaultBackToStartRadius = Meters.of(3.0);
         private static Distance kCloseBackToStartRadius = Meters.of(2.0);
         private static Distance kDefaultStartRadius = Meters.of(3.8);
         private static Distance kDefaultBeginIntakingRadius = Meters.of(1.4);
+
     }
 
     private final AutoCommands autoCommands;
@@ -152,7 +156,7 @@ public class Autos {
                         .andThen(autoCommands.autoScore()
                                 .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)
                                 .andThen(m_intakePivot.setAngle(IntakePivotConstants.kFuelIntakeAngle)
-                                        .withTimeout(Seconds.of(0.1)))));
+                                        .withTimeout(AutoConstants.kIntakeBackDownTime))));
 
 
         Supplier<Command> rightBackToStartDefault = () -> Commands.parallel(
@@ -169,7 +173,7 @@ public class Autos {
                         .andThen(autoCommands.autoScore()
                                 .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)
                                 .andThen(m_intakePivot.setAngle(IntakePivotConstants.kFuelIntakeAngle)
-                                        .withTimeout(Seconds.of(0.1)))));
+                                 .withTimeout(AutoConstants.kIntakeBackDownTime))));
 
         Supplier<Command> leftChoreoSweepBack = () -> L_Sweep.until(TriggerUtil.isWithinRadius(
                 () -> POI.L_SWEEP6.get()
