@@ -153,6 +153,7 @@ public class Autos {
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
                         () -> Meters.of(0.4)))
+                                                .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
                         .andThen(autoCommands.autoScore()
                                 .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)
                                 .andThen(m_intakePivot.setAngle(IntakePivotConstants.kFuelIntakeAngle)

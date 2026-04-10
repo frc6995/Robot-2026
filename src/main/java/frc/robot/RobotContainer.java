@@ -315,7 +315,7 @@ public class RobotContainer {
         return m_drivetrain.applyRequest(() -> {
 
             double pov = Units.degreesToRadians(-joystick.getHID().getPOV());
-            double adjustSpeed = Units.feetToMeters(3); // m/s
+            double adjustSpeed = Units.feetToMeters(5); //  converted to m/s
             return m_robotCentricRequest.withVelocityX(
                     Math.cos(pov) * adjustSpeed).withVelocityY(Math.sin(pov) * adjustSpeed)
                     .withRotationalRate(-joystick.getRightX() * 2 * Math.PI);

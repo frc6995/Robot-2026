@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import choreo.Choreo;
 import choreo.util.ChoreoAllianceFlipUtil;
+import choreo.util.FieldSize;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -159,10 +160,10 @@ public class POI {
     public static final Supplier<Rotation2d> bumpToTrenchEntry = flipped(new Rotation2d(Degrees.of(0)));
 
     // Passing zones
-    private static final Translation2d topZoneCorner1 = new Translation2d(Meters.of(11.7), Meters.of(7.6));
+    private static final Translation2d topZoneCorner1 = new Translation2d(FieldSize.FIELD_LENGTH, Meters.of(7.6));
     private static final Translation2d topZoneCorner2 = new Translation2d(Meters.of(4.7), Meters.of(4.7));
     private static final Translation2d centerZoneCorner1 = topZoneCorner2;
-    private static final Translation2d centerZoneCorner2 = new Translation2d(Meters.of(11.7), Meters.of(3.3));
+    private static final Translation2d centerZoneCorner2 = new Translation2d(FieldSize.FIELD_LENGTH, Meters.of(3.3));
     private static final Translation2d bottomZoneCorner1 = new Translation2d(Meters.of(4.7), Meters.of(0.5));
     private static final Translation2d bottomZoneCorner2 = centerZoneCorner2;
 

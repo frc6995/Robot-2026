@@ -6,6 +6,7 @@ import java.util.concurrent.Flow.Publisher;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.controls.LarsonAnimation;
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
@@ -77,10 +78,12 @@ public class ShooterController {
     private final Supplier<ChassisSpeeds> lastSpeeds;
     private final Function<Pose2d, Pair<Pose2d, Boolean>> goalData;
 
-    public NetworkTable goalPoseTable; 
-    public StructPublisher<Pose2d> targetPosePub;
-    public StructPublisher<Pose2d> projectedPosePub;
-    public DoublePublisher distanceToTargetPub;
+    private NetworkTable goalPoseTable; 
+    private StructPublisher<Pose2d> targetPosePub;
+    private StructPublisher<Pose2d> projectedPosePub;
+    private DoublePublisher distanceToTargetPub;
+
+    private static Pair<Pose2d, Boolean> lastTarget;
 
     private ShooterController(
         Supplier<Pose2d> robotPose,
@@ -97,6 +100,8 @@ public class ShooterController {
         targetPosePub = goalPoseTable.getStructTopic("target", Pose2d.struct).publish();
         projectedPosePub = goalPoseTable.getStructTopic("projected", Pose2d.struct).publish();
         distanceToTargetPub = goalPoseTable.getDoubleTopic("distance").publish();
+
+        lastTarget = Pair.of(POI.HUB1.get(), false);
 
         populateLUTs();
     }
@@ -122,27 +127,21 @@ public class ShooterController {
 
     public static Pair<Pose2d, Boolean> getAimLocation(Pose2d drivePose) {
         if (POI.topZone.get().contains(drivePose.getTranslation())) {
-            return Pair.of(POI.topPassingPoint.get(), true);
+            lastTarget = Pair.of(POI.topPassingPoint.get(), true);
         }
         else if (POI.bottomZone.get().contains(drivePose.getTranslation())) {
-            return Pair.of(POI.bottomPassingPoint.get(), true);
+            lastTarget = Pair.of(POI.bottomPassingPoint.get(), true);
         }
         else if (POI.centerZone.get().contains(drivePose.getTranslation())) {
             if (POI.centerZone.get().getCenter().getY() > drivePose.getY())
-                return Pair.of(POI.topPassingPoint.get(), true);
+                lastTarget = Pair.of(POI.topPassingPoint.get(), true);
             else
-                return Pair.of(POI.bottomPassingPoint.get(), true);
+                lastTarget = Pair.of(POI.bottomPassingPoint.get(), true);
         }
-        else {
-            if (POI.allianceZone.get().contains(drivePose.getTranslation())) {
-                // if (POI.towerZone.get().contains(drivePose.getTranslation()))
-                //     inTower = true;     else inTower = false;
-                return Pair.of(POI.HUB1.get(), false);
-            }
-            else {
-                return Pair.of(POI.HUB1.get(), false);
-            }
+        else if (POI.allianceZone.get().contains(drivePose.getTranslation())) {
+            lastTarget = Pair.of(POI.HUB1.get(), false);
         }
+        return lastTarget;
     }
 
     public ShooterTargetData getCachedData() {
