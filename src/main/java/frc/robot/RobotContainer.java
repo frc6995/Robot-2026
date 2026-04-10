@@ -91,7 +91,6 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry();
 
     public static final CommandXboxController joystick = new CommandXboxController(0);
-    // public static final CommandXboxController testController = new CommandXboxController(1);
 
     RobotStates robotStates = new RobotStates();
 
@@ -205,9 +204,6 @@ public class RobotContainer {
     }
 
         private void configureBindings() {
-                // joystick.leftTrigger().whileTrue(
-                //         m_autoCommands.driveOverBump(true)
-                // );
 
         // robot relative driving with D-pad
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
@@ -246,14 +242,14 @@ public class RobotContainer {
         //         )
         // );
 
-        joystick.x().whileTrue(new AutoAlign(POI.TRR1.get(), m_drivetrain, AutoAlign.kDefaultVelocityLimitedProfile));
+      //  joystick.x().whileTrue(new AutoAlign(POI.TRR1.get(), m_drivetrain, AutoAlign.kDefaultVelocityLimitedProfile));
 
         joystick.y().onTrue(m_spindexer.runUnjam());
         joystick.y().whileTrue(m_agitator.setVoltage(() -> AgitatorConstants.kFastVoltage));
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
-        joystick.leftTrigger().whileTrue(m_intakePivot.setAngleSlowMove(IntakePivotConstants.kWiggleUpperAngle));
+        joystick.leftBumper().whileTrue(m_intakePivot.setAngleSlowMove(IntakePivotConstants.kWiggleUpperAngle));
 
         joystick.start().debounce(0.5).onTrue(
                 Commands.either(
@@ -276,9 +272,9 @@ public class RobotContainer {
                 .whileTrue(m_autoCommands.intakeWiggle(IntakePivotConstants.kWiggleUpperAngle, IntakePivotConstants.kWiggleLowerAngle));
         joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
-        joystick.leftBumper()
+        joystick.leftTrigger()
                 .whileTrue(m_intakePivot.setAngle(() -> IntakePivotConstants.kSafeAngle));
-        joystick.leftBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
+        joystick.leftTrigger().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
 
