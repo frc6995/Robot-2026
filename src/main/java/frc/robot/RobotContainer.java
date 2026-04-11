@@ -116,7 +116,7 @@ public class RobotContainer {
 //     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
 //     @Logged(name = "Agitator")
-    private final AgitatorS m_agitator = new RealAgitatorS();
+    private final AgitatorS m_agitator = new NoneAgitatorS();
 //     @Logged(name = "Turret")
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, robotStates::isIntakeDeployed);
 //     @Logged(name = "ClimbExtension")

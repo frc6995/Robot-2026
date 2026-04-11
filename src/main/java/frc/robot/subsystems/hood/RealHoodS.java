@@ -85,7 +85,7 @@ public class RealHoodS extends HoodS {
         public static final double[][] kAngleData = {
                 // Distance (Meters), Angle(Degrees)
                 { 1, 12.5 },
-                { 2.2, 22 },
+                { 2.5, 20 },
                 { 3.7, 25 },
                 { 4, 34 },
                 { 5, 36},

@@ -48,8 +48,8 @@ public class ShooterController {
     private static final double[][] kTimeOfFlightData = {
         {1.23, 1.356+timeFudge+0.05},
         {2.5, 1.0347966805+0.05},
-        {3.64, 1.186+timeFudge+0.05},
-        {4.44, 1.164+timeFudge},
+        {3.64, 1.186+timeFudge+0.1},
+        {4.44, 1.164+timeFudge+0.05},
         {5.5, 1.13}
     };
 
@@ -196,11 +196,11 @@ public class ShooterController {
         ChassisSpeeds lastSpeeds = this.lastSpeeds.get();
         
 
-        Pose2d estimatedPose = currentPose.exp(
-            new Twist2d(
+        Pose2d estimatedPose = currentPose.plus(
+            new Transform2d(
                 speeds.vxMetersPerSecond * LATENCY_SECONDS,
                 speeds.vyMetersPerSecond * LATENCY_SECONDS,
-                speeds.omegaRadiansPerSecond * LATENCY_SECONDS
+                Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * LATENCY_SECONDS)
             )
         );
 
@@ -218,7 +218,7 @@ public class ShooterController {
         double timeOfFlight = tofMap.get(distance);
         // double timeOfFlight = tofFunction.apply(distance);
 
-        boolean isLongRange = distance > 5.5;
+        boolean isLongRange = distance > 10;
 
         if(isLongRange) {
             updateTelemetry(goalTranslation, delta, distance, timeOfFlight);

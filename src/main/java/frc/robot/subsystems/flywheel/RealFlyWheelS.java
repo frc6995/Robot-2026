@@ -71,7 +71,7 @@ public class RealFlyWheelS extends FlyWheelS {
         public static final AngularVelocity kTolerance = RPM.of(100);
 
         public static final double[][] kShooterData = {
-                {0.0, 1750},
+                {0.0, 1500},
                 {3.0, 1750},
                 {4.0, 1850},
                 {5.0, 2050},
