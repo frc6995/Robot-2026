@@ -43,14 +43,14 @@ public class RealAgitatorS extends AgitatorS {
             config.CurrentLimits.withSupplyCurrentLimit(kSupplyCurrentLimit)
                     .withSupplyCurrentLimitEnable(true);
             config.Feedback.SensorToMechanismRatio = kGearRatio;
-            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
             return config;
         }
     }
     
     private TalonFX m_agitatorMotor = new TalonFX(AgitatorConstants.kLeaderCANID, TunerConstants.kHigherBus);
-    private TalonFX m_followerMotor = new TalonFX(AgitatorConstants.kFollowCANID, TunerConstants.kHigherBus);
+    // private TalonFX m_followerMotor = new TalonFX(AgitatorConstants.kFollowCANID, TunerConstants.kHigherBus);
 
     private final VoltageOut voltageRequest = new VoltageOut(0);
 
@@ -58,9 +58,9 @@ public class RealAgitatorS extends AgitatorS {
         m_agitatorMotor.getConfigurator().apply(AgitatorConstants.configureMotor1(new TalonFXConfiguration()));
         m_agitatorMotor.setNeutralMode(AgitatorConstants.kNeutralMode);
 
-        m_followerMotor.getConfigurator().apply(AgitatorConstants.configureMotor1(new TalonFXConfiguration()));
-        m_followerMotor.setNeutralMode(AgitatorConstants.kNeutralMode);
-        m_followerMotor.setControl(new Follower(m_agitatorMotor.getDeviceID(), AgitatorConstants.kFollowerAlignment));
+        // m_followerMotor.getConfigurator().apply(AgitatorConstants.configureMotor1(new TalonFXConfiguration()));
+        // m_followerMotor.setNeutralMode(AgitatorConstants.kNeutralMode);
+        // m_followerMotor.setControl(new Follower(m_agitatorMotor.getDeviceID(), AgitatorConstants.kFollowerAlignment));
     }
 
     @Override

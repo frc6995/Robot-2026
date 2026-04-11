@@ -46,8 +46,8 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultautoInitialTime = Seconds.of(1.4);
-        private static Time kDefaultautoShakeScoreTime = Seconds.of(2.3);
+        private static Time kDefaultAutoInitialScoreTime = Seconds.of(1.4);
+        private static Time kDefaultAutoShakeScoreTime = Seconds.of(2.3);
 
         private static Time kIntakeBackDownTime = Seconds.of(0.6);
 
@@ -153,9 +153,9 @@ public class Autos {
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
                         () -> Meters.of(0.4)))
-                                                .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
+                        .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultAutoInitialScoreTime))
                         .andThen(autoCommands.autoScore()
-                                .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)
+                                .withTimeout(AutoConstants.kDefaultAutoShakeScoreTime)
                                 .andThen(m_intakePivot.setAngle(IntakePivotConstants.kFuelIntakeAngle)
                                         .withTimeout(AutoConstants.kIntakeBackDownTime))));
 
@@ -170,9 +170,9 @@ public class Autos {
                                 .getTranslation(),
                         () -> m_drivebase.state.Pose,
                         () -> Meters.of(0.4)))
-                        .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultautoInitialTime))
+                        .andThen(autoCommands.autoScoreNoWiggle().withTimeout(AutoConstants.kDefaultAutoInitialScoreTime))
                         .andThen(autoCommands.autoScore()
-                                .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)
+                                .withTimeout(AutoConstants.kDefaultAutoShakeScoreTime)
                                 .andThen(m_intakePivot.setAngle(IntakePivotConstants.kFuelIntakeAngle)
                                  .withTimeout(AutoConstants.kIntakeBackDownTime))));
 
@@ -189,7 +189,7 @@ public class Autos {
                                 () -> m_drivebase.state.Pose,
                                 () -> Meters.of(0.5)))
                                 .andThen(autoCommands.autoScoreNoWiggle()
-                                        .withTimeout(AutoConstants.kDefaultautoInitialTime))
+                                        .withTimeout(AutoConstants.kDefaultAutoInitialScoreTime))
                                 .andThen(autoCommands.autoScore()
                                        ));
 
@@ -206,7 +206,7 @@ public class Autos {
                                 () -> m_drivebase.state.Pose,
                                 () -> Meters.of(0.4)))
                                 .andThen(autoCommands.autoScoreNoWiggle()
-                                        .withTimeout(AutoConstants.kDefaultautoInitialTime))
+                                        .withTimeout(AutoConstants.kDefaultAutoInitialScoreTime))
                                 .andThen(autoCommands.autoScore()));
 
         Supplier<Command> rightCircleStart = () -> autoCommands.APToIntake(POI.HELPR5.get(),

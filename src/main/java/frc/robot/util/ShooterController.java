@@ -52,7 +52,18 @@ public class ShooterController {
         {4.44, 1.164+timeFudge}
     };
 
-    private static final double[][] kTimeOfFlightPassData = kTimeOfFlightData;
+    private static final double[][] kTimeOfFlightPassData = {
+        {1.23, 1.356+timeFudge},
+        {2.5, 1.0347966805},
+        {3.64, 1.186+timeFudge},
+        {4, 1.2},
+        {5, 1.18},
+        {7.25, 1.4},
+        {8, 1.43},
+        {10, 1.5},
+        {12, 1.6},
+        {14, 1.8}
+    };
 
     private static final double HOOD_MIN = HoodConstants.kLowerLimit.in(Degrees);
     private static final double HOOD_MAX = HoodConstants.kUpperLimit.in(Degrees);
@@ -82,6 +93,7 @@ public class ShooterController {
     private StructPublisher<Pose2d> targetPosePub;
     private StructPublisher<Pose2d> projectedPosePub;
     private DoublePublisher distanceToTargetPub;
+    private DoublePublisher timeOfFlightPub;
 
     private static Pair<Pose2d, Boolean> lastTarget;
 
@@ -100,6 +112,7 @@ public class ShooterController {
         targetPosePub = goalPoseTable.getStructTopic("target", Pose2d.struct).publish();
         projectedPosePub = goalPoseTable.getStructTopic("projected", Pose2d.struct).publish();
         distanceToTargetPub = goalPoseTable.getDoubleTopic("distance").publish();
+        timeOfFlightPub = goalPoseTable.getDoubleTopic("flightTime").publish();
 
         lastTarget = Pair.of(POI.HUB1.get(), false);
 
@@ -207,7 +220,7 @@ public class ShooterController {
         boolean isLongRange = distance > 5.5;
 
         if(isLongRange) {
-            updateTelemetry(goalTranslation, delta, distance);
+            updateTelemetry(goalTranslation, delta, distance, timeOfFlight);
             cachedData = new ShooterTargetData(
                 delta.getAngle().minus(estimatedPose.getRotation()).plus(Rotation2d.k180deg),
                 rpmMap.get(distance),
@@ -258,16 +271,18 @@ public class ShooterController {
         cachedData.rpm = finalRPM;
         cachedData.turretAngle = turretRobotAngle;
 
-        updateTelemetry(goalTranslation, projectedTranslation, distance);
+        if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
+            updateTelemetry(goalTranslation, projectedTranslation, distance, timeOfFlight);
 
         return cachedData;
     }
 
-    private void updateTelemetry(Translation2d goal, Translation2d projectedPose, double distance) {
+    private void updateTelemetry(Translation2d goal, Translation2d projectedPose, double distance, double timeOfFlight) {
         // if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0)
         targetPosePub.accept(new Pose2d(goal, Rotation2d.kZero));
         projectedPosePub.accept(new Pose2d(projectedPose, Rotation2d.kZero));
         distanceToTargetPub.accept(distance);
+        timeOfFlightPub.accept(timeOfFlight);
     }
 }
 

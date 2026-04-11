@@ -116,7 +116,7 @@ public class RobotContainer {
 //     @Logged(name = "Spindexer")
     private final SpindexerS m_spindexer = new RealSpindexerS();
 //     @Logged(name = "Agitator")
-    private final AgitatorS m_agitator = new NoneAgitatorS();
+    private final AgitatorS m_agitator = new RealAgitatorS();
 //     @Logged(name = "Turret")
     private final TurretS m_turret = new RealTurretS(() -> m_drivetrain.state.Pose, () -> m_drivetrain.state.Speeds, robotStates::isIntakeDeployed);
 //     @Logged(name = "ClimbExtension")
@@ -315,7 +315,7 @@ public class RobotContainer {
         return m_drivetrain.applyRequest(() -> {
 
             double pov = Units.degreesToRadians(-joystick.getHID().getPOV());
-            double adjustSpeed = Units.feetToMeters(5); //  converted to m/s
+            double adjustSpeed = Units.feetToMeters(3.5); //  converted to m/s
             return m_robotCentricRequest.withVelocityX(
                     Math.cos(pov) * adjustSpeed).withVelocityY(Math.sin(pov) * adjustSpeed)
                     .withRotationalRate(-joystick.getRightX() * 2 * Math.PI);
