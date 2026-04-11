@@ -49,7 +49,8 @@ public class ShooterController {
         {1.23, 1.356+timeFudge},
         {2.5, 1.0347966805},
         {3.64, 1.186+timeFudge},
-        {4.44, 1.164+timeFudge}
+        {4.44, 1.164+timeFudge},
+        {5.5, 1.13}
     };
 
     private static final double[][] kTimeOfFlightPassData = {

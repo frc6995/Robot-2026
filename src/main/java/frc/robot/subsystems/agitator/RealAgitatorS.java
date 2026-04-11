@@ -31,11 +31,11 @@ public class RealAgitatorS extends AgitatorS {
         // Motor Properties
         public static final MotorAlignmentValue kFollowerAlignment = MotorAlignmentValue.Opposed;
         public static final int kStatorCurrentLimit = 80;
-        public static final int kSupplyCurrentLimit = 20;
+        public static final int kSupplyCurrentLimit = 30;
         public static final int kGearRatio = 4;
         public static final NeutralModeValue kNeutralMode = NeutralModeValue.Coast;
         // Setpoints
-        public static final Voltage kFastVoltage = Volts.of(2.0);
+        public static final Voltage kFastVoltage = Volts.of(3.0);
 
         public static TalonFXConfiguration configureMotor1(TalonFXConfiguration config) {
             config.CurrentLimits.withStatorCurrentLimit(kStatorCurrentLimit)

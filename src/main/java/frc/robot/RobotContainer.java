@@ -73,7 +73,7 @@ import frc.robot.util.Telemetry;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class RobotContainer {
-    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.LOW;
+    public static final TelemetryVerbosity kTelemetryVerbosity = TelemetryVerbosity.MID;
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                   // speed
