@@ -72,8 +72,8 @@ public class RealFlyWheelS extends FlyWheelS {
 
         public static final double[][] kShooterData = {
                 {0.0, 1500},
-                {3.0, 1750},
-                {4.0, 1850},
+                {3.0, 1850},
+                {4.0, 1950},
                 {5.0, 2050},
                 {10, 2500},
                 {15.0, 3500}

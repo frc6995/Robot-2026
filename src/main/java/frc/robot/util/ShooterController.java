@@ -46,10 +46,10 @@ public class ShooterController {
     }
     static double timeFudge = -0.2;
     private static final double[][] kTimeOfFlightData = {
-        {1.23, 1.356+timeFudge+0.05},
-        {2.5, 1.0347966805+0.05},
-        {3.64, 1.186+timeFudge+0.1},
-        {4.44, 1.164+timeFudge+0.05},
+        {1.23, 1.10},
+        {2.5, 1.13},
+        {3.64, 1.18},
+        {4.44, 1.08},
         {5.5, 1.13}
     };
 
