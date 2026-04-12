@@ -44,19 +44,27 @@ public class ShooterController {
                 this.hoodAngleDeg = hoodAngleDeg;
             }
     }
-    static double timeFudge = -0.2;
+    static double timeFudge = -0.1;
     private static final double[][] kTimeOfFlightData = {
-        {1.23, 1.10},
-        {2.5, 1.13},
-        {3.64, 1.18},
-        {4.44, 1.08},
-        {5.5, 1.13}
+        // Old Data
+        // {1.23, 1.10},
+        // {2.5, 1.13},
+        // {3.64, 1.18},
+        // {4.44, 1.08},
+        // {5.5, 1.13}
+        {1.4, 1.24 + timeFudge},
+        {2.5, 1.3 + timeFudge},
+        {3.5, 1.39 + timeFudge},
+        {4, 1.35 + timeFudge},
+        {4.6, 1.37 + timeFudge},
+        {5.5, 1.32 + timeFudge},
+        {6.05, 1.29 + timeFudge}
     };
 
     private static final double[][] kTimeOfFlightPassData = {
-        {1.23, 1.356+timeFudge},
+        {1.23, 1.156},
         {2.5, 1.0347966805},
-        {3.64, 1.186+timeFudge},
+        {3.64, 0.986},
         {4, 1.2},
         {5, 1.18},
         {7.25, 1.4},

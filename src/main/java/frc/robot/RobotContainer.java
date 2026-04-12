@@ -183,7 +183,7 @@ public class RobotContainer {
                         () -> {
                             var xSpeed = -joystick.getLeftY() * 5.25;
                             var ySpeed = -joystick.getLeftX() * 5.25;
-                            var rotationSpeed = -joystick.getRightX() * 2 * Math.PI;
+                            var rotationSpeed = -joystick.getRightX() * 2 * Math.PI * 1.25;
                             if (DriverStation.isAutonomous()) {
                                 return m_driveRequest.withVelocityX(0).withVelocityY(0)
                                         .withRotationalRate(0);
@@ -250,7 +250,7 @@ public class RobotContainer {
 
         joystick.rightTrigger().whileTrue(m_autoCommands.Score());
 
-        joystick.leftBumper().whileTrue(m_intakePivot.setAngleSlowMove(IntakePivotConstants.kWiggleUpperAngle));
+        // joystick.leftBumper().whileTrue(m_intakePivot.setAngleSlowMove(IntakePivotConstants.kWiggleUpperAngle));
 
         joystick.start().debounce(0.5).onTrue(
                 Commands.either(
@@ -278,6 +278,10 @@ public class RobotContainer {
         joystick.leftTrigger().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
+
+        joystick.leftBumper().whileTrue(
+            m_drivetrain.applyRequest(() -> brake)
+        );
 
     }
 

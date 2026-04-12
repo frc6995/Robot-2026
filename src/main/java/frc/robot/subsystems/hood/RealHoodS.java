@@ -86,9 +86,8 @@ public class RealHoodS extends HoodS {
                 // Distance (Meters), Angle(Degrees)
                 { 1, 12.5 },
                 { 2.5, 20 },
-                { 3.7, 25 },
-                { 4, 34 },
-                { 5, 36},
+                { 4, 26 },
+                { 5, 30},
                 { 6, 40}
         };
 

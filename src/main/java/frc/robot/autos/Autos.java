@@ -46,7 +46,7 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultAutoInitialScoreTime = Seconds.of(1.4);
+        private static Time kDefaultAutoInitialScoreTime = Seconds.of(2.1);
         private static Time kDefaultAutoShakeScoreTime = Seconds.of(2.3);
 
         private static Time kIntakeBackDownTime = Seconds.of(0.6);
