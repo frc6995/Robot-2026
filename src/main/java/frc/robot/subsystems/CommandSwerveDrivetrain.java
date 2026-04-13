@@ -65,8 +65,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private final Pigeon2 m_gyro = new Pigeon2(TunerConstants.DrivetrainConstants.Pigeon2Id, TunerConstants.kLowerBus);
 
-    private final AprilTagVision m_vision;
-
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -158,36 +156,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * through
      * getters in the classes.
      *
-     * @param enableVision        Whether or not to enable vision
-     * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
-     * @param modules             Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-            boolean enableVision,
-            SwerveDrivetrainConstants drivetrainConstants,
-            SwerveModuleConstants<?, ?, ?>... modules
-            ) {
-        super(drivetrainConstants, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
-            () -> this.getRotation3d(),
-            (pose) -> {
-                resetPose(pose);
-            }
-        );
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not
-     * construct
-     * the devices themselves. If they need the devices, they can access them
-     * through
-     * getters in the classes.
-     *
      * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
      * @param modules             Constants for each specific module
      */
@@ -199,46 +167,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        this.m_vision = Robot.isSimulation() ? new NoneATVision() : new RealATVision(
-            () -> new Rotation3d(this.state.Pose.getRotation()),
-            (pose) -> {
-                resetPose(pose);
-            }
-        );
-        // JS: Replace with this(!Robot.isSimulation(), drivetrainConstants, modules)
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not
-     * construct
-     * the devices themselves. If they need the devices, they can access them
-     * through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants     Drivetrain-wide constants for the swerve drive
-     * @param odometryUpdateFrequency The frequency to run the odometry loop. If
-     *                                unspecified or set to 0 Hz, this is 250 Hz on
-     *                                CAN FD, and 100 Hz on CAN 2.0.
-     * @param modules                 Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-            boolean enableVision,
-            SwerveDrivetrainConstants drivetrainConstants,
-            double odometryUpdateFrequency,
-            SwerveModuleConstants<?, ?, ?>... modules) {
-        super(drivetrainConstants, odometryUpdateFrequency, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        
-        this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
-            () -> new Rotation3d(this.state.Pose.getRotation()),
-          (pose) -> {
-                resetPose(pose);
-            }
-        );
     }
 
     public Rotation2d getGyroRotation() {
@@ -247,53 +175,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void zeroHeading() {
         m_gyro.setYaw(0);
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not
-     * construct
-     * the devices themselves. If they need the devices, they can access them
-     * through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants       Drivetrain-wide constants for the swerve
-     *                                  drive
-     * @param odometryUpdateFrequency   The frequency to run the odometry loop. If
-     *                                  unspecified or set to 0 Hz, this is 250 Hz
-     *                                  on
-     *                                  CAN FD, and 100 Hz on CAN 2.0.
-     * @param odometryStandardDeviation The standard deviation for odometry
-     *                                  calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in
-     *                                  meters
-     *                                  and radians
-     * @param visionStandardDeviation   The standard deviation for vision
-     *                                  calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in
-     *                                  meters
-     *                                  and radians
-     * @param modules                   Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-            boolean enableVision,
-            SwerveDrivetrainConstants drivetrainConstants,
-            double odometryUpdateFrequency,
-            Matrix<N3, N1> odometryStandardDeviation,
-            Matrix<N3, N1> visionStandardDeviation,
-            SwerveModuleConstants<?, ?, ?>... modules) {
-        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation,
-                modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        this.m_vision = !enableVision ? new NoneATVision() : new RealATVision(
-            () -> new Rotation3d(this.state.Pose.getRotation()),
-            (pose) -> {
-                resetPose(pose);
-            }
-        );
     }
 
     @NotLogged
@@ -395,24 +276,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-
-        m_vision.periodic();
-
-        if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/2)) {
- 
-        var estimates = m_vision.getAllEstimates();
-        var gyroRotation = m_gyro.getRotation3d();
-        for(var estimate : estimates) {
-            if(estimate.getAvgTagAmbiguity() < 0.65 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
-                if(DriverStation.isEnabled()) {
-                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, RealATVision.getStdDevs(estimate));
-                } else {
-                    addVisionMeasurement(estimate.pose.toPose2d(), estimate.timestampSeconds, RealATVision.getDisabledStdDevs(estimate));
-                }
-            }
-        }
     }
-}
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();

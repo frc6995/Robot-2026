@@ -63,6 +63,8 @@ import frc.robot.subsystems.turret.TurretS;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.subsystems.climb.climbextension.NoneClimbExtensionS;
 import frc.robot.subsystems.climb.climbextension.ClimbExtensionS;
+import frc.robot.subsystems.vision.apriltag.AprilTagVision;
+import frc.robot.subsystems.vision.apriltag.RealATVision;
 import frc.robot.subsystems.vision.detection.NoneODVision;
 import frc.robot.subsystems.vision.detection.ObjectVision;
 import frc.robot.util.AutoAlign;
@@ -125,6 +127,8 @@ public class RobotContainer {
     // @Logged(name = "ObjectDetection")
     private final ObjectVision m_objectVision = new NoneODVision(() -> m_drivetrain.state.Pose);
 
+    private final AprilTagVision m_aprilTagVision = new RealATVision(m_drivetrain::getRotation3d, m_drivetrain::resetPose);
+
     private final AutoCommands m_autoCommands = new AutoCommands(m_drivetrain, m_hood, m_intakePivot,
             m_intakeRoller, m_turret, m_indexer, m_spindexer, m_agitator, m_flywheel, m_climbExtension, m_objectVision,
             robotStates);
@@ -159,6 +163,18 @@ public class RobotContainer {
 
     public void periodic() {
         m_objectVision.update();
+
+        m_aprilTagVision.periodic();
+
+        if (Math.abs(m_drivetrain.state.Speeds.omegaRadiansPerSecond) < (Math.PI/2)) {
+            var estimates = m_aprilTagVision.getAllEstimates();
+            var gyroRotation = m_drivetrain.getPigeon2().getRotation3d();
+            for(var estimate : estimates) {
+                if(estimate.avgAmbiguity() < 0.65 && !(gyroRotation.getX() > 10 || gyroRotation.getY() > 10)) {
+                    m_drivetrain.addVisionMeasurement(estimate.estimatedPose(), estimate.timestampSeconds(), RealATVision.getStdDevs(estimate));
+                }
+            }
+        }
     }
 
     private void configureDefaultCommands() {
@@ -291,6 +307,7 @@ public class RobotContainer {
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
+
         RobotModeTriggers.disabled().whileTrue(
                 m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
@@ -311,8 +328,11 @@ public class RobotContainer {
         RobotModeTriggers.autonomous().onTrue(
                 new ParallelDeadlineGroup(
                         new WaitCommand(1),
-                        m_flywheel.setVoltage(() -> Volts.zero()))
-        );
+                        m_flywheel.setVoltage(() -> Volts.zero())));
+
+
+        RobotModeTriggers.autonomous().onFalse(m_aprilTagVision.captureRewindsCommand(20));
+        RobotModeTriggers.teleop().onFalse(m_aprilTagVision.captureRewindsCommand(30));
     }
 
     private RobotCentric m_robotCentricRequest = new RobotCentric().withDriveRequestType(DriveRequestType.Velocity);
