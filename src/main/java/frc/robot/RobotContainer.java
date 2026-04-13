@@ -206,13 +206,13 @@ public class RobotContainer {
 
         private void configureBindings() {
 
-        // robot relative driving with D-pad
+        // Drive Robot Relative
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
-        // A intake toggle
+        // Intake Toggle Deployed
         joystick.a().toggleOnTrue(m_autoCommands.fuelIntake());
 
-        // B button align to cardinal direction
+        // Drive Align to Cardinal Direction
         joystick.b().whileTrue(
                 m_drivetrain.applyRequest(
                         () -> {
@@ -235,16 +235,10 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
 
-        // joystick.x().toggleOnTrue(
-        //         Commands.parallel(
-        //                 m_turret.setAngle(() -> Rotation2d.kZero),
-        //                 m_hood.setAngle(() -> HoodConstants.kLowerLimit),
-        //                 m_flywheel.setVelocity(() -> RPM.of(1750))
-        //         )
-        // );
-
+        // Align to Auto Start (DEBUG/TEST ONLY)
       //  joystick.x().whileTrue(new AutoAlign(POI.TRR1.get(), m_drivetrain, AutoAlign.kDefaultVelocityLimitedProfile));
 
+        // Dye Rotor Unjam Commands
         joystick.y().onTrue(m_spindexer.runUnjam());
         joystick.y().whileTrue(m_agitator.setVoltage(() -> AgitatorConstants.kFastVoltage));
 
@@ -252,6 +246,7 @@ public class RobotContainer {
 
         // joystick.leftBumper().whileTrue(m_intakePivot.setAngleSlowMove(IntakePivotConstants.kWiggleUpperAngle));
 
+        // Turret Home Sequence
         joystick.start().debounce(0.5).onTrue(
                 Commands.either(
                         Commands.parallel(
@@ -269,19 +264,26 @@ public class RobotContainer {
         joystick.back()
                 .onTrue(m_intakePivot.resetEncoder().onlyIf(DriverStation::isDisabled));
 
+        // Intake Agitation Command
         joystick.rightBumper()
                 .whileTrue(m_autoCommands.intakeWiggle(IntakePivotConstants.kWiggleUpperAngle, IntakePivotConstants.kWiggleLowerAngle));
         joystick.rightBumper().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
+        // Intake Low Agitate/Safe Position
         joystick.leftTrigger()
                 .whileTrue(m_intakePivot.setAngle(() -> IntakePivotConstants.kSafeAngle));
         joystick.leftTrigger().onFalse(m_intakePivot.setAngle(() -> IntakePivotConstants.kLowerLimit));
 
-        m_drivetrain.registerTelemetry(logger::telemeterize);
+        // joystick.leftTrigger().whileTrue(
+        //     m_intakeRoller.setVoltage(() -> IntakeRollerConstants.kOuttakeVoltage)
+        // );
 
+        // Drive X-Mode
         joystick.leftBumper().whileTrue(
             m_drivetrain.applyRequest(() -> brake)
         );
+
+        m_drivetrain.registerTelemetry(logger::telemeterize);
 
     }
 

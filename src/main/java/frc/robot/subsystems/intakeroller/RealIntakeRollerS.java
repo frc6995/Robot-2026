@@ -60,6 +60,7 @@ public class RealIntakeRollerS extends IntakeRollerS {
     public static final double kSimAcceleration = 0;
 
     public static final Voltage kIntakeVoltage = Volts.of(10);
+    public static final Voltage kOuttakeVoltage = kIntakeVoltage.times(-1);
     
     }
 

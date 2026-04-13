@@ -46,8 +46,8 @@ import java.util.function.Supplier;
 public class Autos {
 
     public class AutoConstants {
-        private static Time kDefaultAutoInitialScoreTime = Seconds.of(2.1);
-        private static Time kDefaultAutoShakeScoreTime = Seconds.of(2.3);
+        private static Time kDefaultAutoInitialScoreTime = Seconds.of(3.1);
+        private static Time kDefaultAutoShakeScoreTime = Seconds.of(2.0);
 
         private static Time kIntakeBackDownTime = Seconds.of(0.6);
 
@@ -58,6 +58,8 @@ public class Autos {
         private static Distance kCloseBackToStartRadius = Meters.of(2.0);
         private static Distance kDefaultStartRadius = Meters.of(3.8);
         private static Distance kDefaultBeginIntakingRadius = Meters.of(1.4);
+                private static Distance kInitialHelpRadius = Meters.of(0.4);
+
 
     }
 
@@ -144,7 +146,9 @@ public class Autos {
         // .withTimeout(AutoConstants.kDefaultautoShakeScoreTime)));
 
         Supplier<Command> leftBackToStartDefault = () -> Commands.parallel(
-                autoCommands.APBackFromIntake(POI.HELPL4.get(),
+                autoCommands.APBackFromIntake(
+                          POI.L_InitialHelpPose.get(), POI.L_InitialHelpPoseEntry.get(), AutoConstants.kInitialHelpRadius, 
+                POI.HELPL4.get(),
                         POI.HELPL2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
                         POI.TRL1.get(), POI.TRL1Entry.get()),
 
@@ -161,7 +165,13 @@ public class Autos {
 
 
         Supplier<Command> rightBackToStartDefault = () -> Commands.parallel(
-                autoCommands.APBackFromIntake(POI.HELPR4.get(),
+                autoCommands.APBackFromIntake
+                
+                (
+                        POI.R_InitialHelpPose.get(), POI.R_InitialHelpPoseEntry.get(), AutoConstants.kInitialHelpRadius, 
+                
+                
+                POI.HELPR4.get(),
                         POI.HELPR2Entry.get(), AutoConstants.kDefaultBackToStartRadius,
                         POI.TRR1.get(), POI.TRR1Entry.get()),
 

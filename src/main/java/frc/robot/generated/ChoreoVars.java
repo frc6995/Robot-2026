@@ -36,12 +36,13 @@ public final class ChoreoVars {
         public static final Pose2d DEPOTSTART = new Pose2d(0.9729946, 5.9745647, Rotation2d.fromRadians(3.1415927));
         public static final Pose2d HELPD1 = new Pose2d(2.9996292, 7.3746572, Rotation2d.fromRadians(3.1415927));
         public static final Pose2d HELPL1 = new Pose2d(8.9760363, 7.3, Rotation2d.fromRadians(-0.1745329));
-        public static final Pose2d HELPL4 = new Pose2d(5.1430055, 8.9984441, Rotation2d.fromRadians(-1.0471976));
+        public static final Pose2d HELPL4 = new Pose2d(5.1430055, 9.0984441, Rotation2d.fromRadians(-1.0471976));
         public static final Pose2d HELPL5 = new Pose2d(8.9760363, 7.3, Rotation2d.fromRadians(-1.5707963));
         public static final Pose2d HELPR1 = new Pose2d(8.9760363, 0.752, Rotation2d.fromRadians(0.1745329));
-        public static final Pose2d HELPR4 = new Pose2d(5.1430055, -1.0736441, Rotation2d.fromRadians(1.0471976));
+        public static final Pose2d HELPR4 = new Pose2d(5.1430055, -1.1736441, Rotation2d.fromRadians(1.0471976));
         public static final Pose2d HELPR5 = new Pose2d(8.9760363, 0.752, Rotation2d.fromRadians(1.5707963));
         public static final Pose2d HELPS = new Pose2d(3.8221934, 0.5493581, Rotation2d.fromRadians(3.1415927));
+        public static final Pose2d L_InitialHelpPose = new Pose2d(7.076299, 5.7153495, Rotation2d.fromRadians(-1.5707963));
         public static final Pose2d L_PASSHELP = new Pose2d(5.9588947, 9.1052609, Rotation2d.fromRadians(-2.3191747));
         public static final Pose2d L_PASS_AUTO_STOP = new Pose2d(0.5821602, 5.9473269, Rotation2d.fromRadians(-1.6078136));
         public static final Pose2d L_PassPathStop = new Pose2d(6.0559134, 4.4599199, Rotation2d.fromRadians(-1.6516999));
@@ -59,6 +60,7 @@ public final class ChoreoVars {
         public static final Pose2d L_SWEEP4 = new Pose2d(6.1118161, 6.3011065, Rotation2d.fromRadians(0));
         public static final Pose2d L_SWEEP5 = new Pose2d(6.2223914, 7.2894531, Rotation2d.fromRadians(2.6179939));
         public static final Pose2d L_SWEEP6 = new Pose2d(5.5197801, 7.4521726, Rotation2d.fromRadians(3.1230762));
+        public static final Pose2d R_InitialHelpPose = new Pose2d(7.076299, 2.3366505, Rotation2d.fromRadians(1.5707963));
         public static final Pose2d R_PASSHELP = new Pose2d(5.9588947, -1.0532609, Rotation2d.fromRadians(2.3191747));
         public static final Pose2d R_PASS_AUTO_STOP = new Pose2d(0.5821602, 2.1046731, Rotation2d.fromRadians(1.6078136));
         public static final Pose2d R_PassPathStop = new Pose2d(6.0559134, 3.5920801, Rotation2d.fromRadians(1.6516999));

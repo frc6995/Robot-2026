@@ -170,12 +170,22 @@ public class AutoCommands {
      * @param targetPoseEntryAngle
      * @return command that intakes from the center line
      */
-    public Command APBackFromIntake(Pose2d helpPose,
+    public Command APBackFromIntake(
+        Pose2d initialHelpPose,
+            Rotation2d initialHelpPoseEntryAngle,
+            Distance initialHelpPoseTolerance,
+        Pose2d helpPose,
             Rotation2d helpPoseEntryAngle,
             Distance helpPoseTolerance,
             Pose2d targetpose,
             Rotation2d targetPoseEntryAngle) {
         return Commands.sequence(
+                    new AutoAlign(initialHelpPose, initialHelpPoseEntryAngle, m_drivebase,
+                        AutoAlign.kDefaultVelocityLimitedProfile).until(
+                                TriggerUtil.isWithinRadius(
+                                        () -> initialHelpPose.getTranslation(),
+                                        () -> m_drivebase.state.Pose,
+                                        () -> initialHelpPoseTolerance)),
                 new AutoAlign(helpPose, helpPoseEntryAngle, m_drivebase,
                         AutoAlign.kDefaultVelocityLimitedProfile).until(
                                 TriggerUtil.isWithinRadius(

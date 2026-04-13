@@ -67,6 +67,11 @@ public class POI {
     public static final Supplier<Pose2d> HELPR4 = flipped(ChoreoVars.Poses.HELPR4);
     public static final Supplier<Pose2d> HELPR5 = flipped(ChoreoVars.Poses.HELPR5);
 
+        public static final Supplier<Pose2d> L_InitialHelpPose = flipped(ChoreoVars.Poses.L_InitialHelpPose);
+        public static final Supplier<Pose2d> R_InitialHelpPose = flipped(ChoreoVars.Poses.R_InitialHelpPose);
+
+
+
 
     // Climb poses
     public static final Supplier<Pose2d> CL1 = flipped(ChoreoVars.Poses.CL1);
@@ -136,7 +141,7 @@ public class POI {
     public static final Supplier<Rotation2d> TRL1Entry = flipped(new Rotation2d(Degrees.of(185)));
 
     public static final Supplier<Rotation2d> TRR1Entry = flipped(new Rotation2d(Degrees.of(175)));
-        public static final Supplier<Rotation2d> TRR1CloseEntry = flipped(new Rotation2d(Degrees.of(180)));
+    public static final Supplier<Rotation2d> TRR1CloseEntry = flipped(new Rotation2d(Degrees.of(180)));
 
 
     // Autoalign help pose rotations
@@ -151,6 +156,10 @@ public class POI {
     public static final Supplier<Rotation2d> HELPR1Entry = flipped(new Rotation2d(Degrees.of(-30)));
     public static final Supplier<Rotation2d> HELPR2Entry = flipped(new Rotation2d(Degrees.of(-130)));
     public static final Supplier<Rotation2d> HELPR2CloseEntry = flipped(new Rotation2d(Degrees.of(-140)));
+    public static final Supplier<Rotation2d> R_InitialHelpPoseEntry = flipped(new Rotation2d(Degrees.of(-90)));
+                public static final Supplier<Rotation2d> L_InitialHelpPoseEntry = flipped(new Rotation2d(Degrees.of(90)));
+
+
 
     // Climb pose rotations
     // Other rotations
