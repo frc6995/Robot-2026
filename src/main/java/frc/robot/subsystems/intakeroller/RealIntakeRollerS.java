@@ -60,6 +60,7 @@ public class RealIntakeRollerS extends IntakeRollerS {
     public static final double kSimAcceleration = 0;
 
     public static final Voltage kIntakeVoltage = Volts.of(10);
+    public static final Voltage kOuttakeVoltage = kIntakeVoltage.times(-1);
     
     }
 
@@ -86,7 +87,7 @@ private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(th
   .withSupplyCurrentLimit(Amps.of(60))
   .withStatorCurrentLimit(Amps.of(IntakeRollerConstants.kStatorCurrentLimit));
 
-  private TalonFX motor = new TalonFX(IntakeRollerConstants.kCANID, TunerConstants.kLowerBus);
+  private TalonFX motor = new TalonFX(IntakeRollerConstants.kCANID, TunerConstants.kHigherBus);
 
   private SmartMotorController talonFXSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig); 
   public Command setVoltage(Supplier<Voltage> volts) {

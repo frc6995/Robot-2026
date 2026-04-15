@@ -33,14 +33,14 @@ public class AutoAlign extends Command {
 
 
     public static class AutoAlignConstants {
-        public static double DEFAULT_MAX_VELOCITY = 5.0; // physical max is 5.5 m/s^2
-        public static double DEFAULT_ACCELERATION = 18; // Calculated from swerve slip current
+        public static double DEFAULT_MAX_VELOCITY = 5.5; // physical max is 5.5 m/s^2
+        public static double DEFAULT_ACCELERATION = 23; // Calculated from swerve slip current
         public static double DEFAULT_JERK = 6.0;
 
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)
         public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(1.3, DEFAULT_ACCELERATION, 20);
-                public static APConstraints SLOW_CRAWL_CONSTRAINTS = new APConstraints(0.6, DEFAULT_ACCELERATION, 20);
+                public static APConstraints SLOW_CRAWL_CONSTRAINTS = new APConstraints(0.5, DEFAULT_ACCELERATION, 20);
 
         public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, DEFAULT_JERK);
         public static APConstraints HIGH_JERK_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, 60);

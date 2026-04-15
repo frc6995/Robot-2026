@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.fasterxml.jackson.databind.node.TreeTraversingParser;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.Matrix;
@@ -40,7 +41,9 @@ public class RealATVision extends AprilTagVision {
     public static class ATVisionConstants {
         public static final String[] LL_IDS = {
             "limelight-climb", 
-            "limelight-right", "limelight-left"
+            "limelight-right", 
+            "limelight-left",
+            "limelight-front"
         };
 
 
@@ -53,12 +56,16 @@ public class RealATVision extends AprilTagVision {
                 new Rotation3d(Degrees.zero(), Degrees.of(22.5), Degrees.of(-90))),
             new Pose3d( // left
                 new Translation3d(Inches.of(2.550), Inches.of(-12.987), Inches.of(7.435)),
-                new Rotation3d(Degrees.zero(), Degrees.of(22.5), Degrees.of(90)))
+                new Rotation3d(Degrees.zero(), Degrees.of(22.5), Degrees.of(90))),
+            new Pose3d( // front
+                new Translation3d(Inches.of(-11.213), Inches.of(7.375), Inches.of(20.849)),
+                new Rotation3d(Degrees.zero(), Degrees.of(30), Degrees.zero())
+            )
         };
         public static final EstimationMode kDefaultMode = EstimationMode.MEGATAG2;
 
-        public static final double[] kStdDevCoefficients = {0.075, 0.03}; // deviation order is [xy, theta]
-        public static final double[] kDisabledStdDevCoefficients = {0.02, 0.03};
+        public static final double[] kStdDevCoefficients = {0.085, 0.03}; // deviation order is [xy, theta]
+        public static final double[] kDisabledStdDevCoefficients = {0.1, 0.075};
 
     }
     
