@@ -105,9 +105,9 @@ public class AprilTagModule {
             offset.getX(),
             offset.getY(),
             offset.getZ(),
-            cameraRot.getX(),
-            cameraRot.getY(),
-            cameraRot.getZ()
+            Math.toDegrees(cameraRot.getX()),
+            Math.toDegrees(cameraRot.getY()),
+            Math.toDegrees(cameraRot.getZ())
         );
     }
 
