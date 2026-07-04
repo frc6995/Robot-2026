@@ -63,8 +63,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    private final Pigeon2 m_gyro = new Pigeon2(TunerConstants.DrivetrainConstants.Pigeon2Id, TunerConstants.kLowerBus);
-
     public final AprilTagVision m_vision;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
@@ -242,11 +240,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Rotation2d getGyroRotation() {
-        return m_gyro.getRotation2d();
+       return this.getPigeon2().getRotation2d();
     }
 
     public void zeroHeading() {
-        m_gyro.setYaw(0);
+        this.getPigeon2().setYaw(0);
     }
 
     /**
@@ -401,7 +399,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Math.abs(state.Speeds.omegaRadiansPerSecond) < (Math.PI/2)) {
  
         var estimates = m_vision.getAllEstimates();
-        var gyroRotation = m_gyro.getRotation3d();
+        var gyroRotation = this.getPigeon2().getRotation3d();
         for(var estimate : estimates) {
             if(estimate.getAvgTagAmbiguity() < 0.65 && !(Math.abs(gyroRotation.getX()) > Math.toRadians(20) || Math.abs(gyroRotation.getY()) > Math.toRadians(20))) {
                 if(DriverStation.isEnabled()) {
