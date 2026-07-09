@@ -319,6 +319,14 @@ public class Autos {
                 return pathBuilder.build(path);
         });
 
+        autos.put("Rotation test", () -> {
+                Path path = new Path("rotation test");
+
+                path.setPathConstraints(constraints);
+
+                return pathBuilder.build(path);
+        });
+
 
         // Auto-register
         autos.forEach((name, sup) -> container.m_chooser.addCmd(name, sup));
