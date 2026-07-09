@@ -3,6 +3,7 @@ package frc.robot.autos;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import choreo.util.ChoreoAllianceFlipUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -31,6 +32,8 @@ import frc.robot.util.TriggerUtil;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.generated.ChoreoTraj;
+import frc.robot.lib.BLine.FollowPath;
+import frc.robot.lib.BLine.Path;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meter;
@@ -76,6 +79,13 @@ public class Autos {
     private final SpindexerS m_spindexer;
     private final FlyWheelS m_FlyWheel;
     private final ObjectVision m_objectVision;
+    private final FollowPath.Builder pathBuilder;
+
+    Path.PathConstraints constraints = new Path.PathConstraints()
+    .setMaxVelocityMetersPerSec(1.0)
+    .setMaxAccelerationMetersPerSec2(2.0)
+    .setEndTranslationToleranceMeters(0.08)
+    .setEndRotationToleranceDeg(2.0);
 
     public Autos(AutoCommands autoCommands, CommandSwerveDrivetrain drive, AutoFactory factory,
             RobotContainer container, HoodS hood,
@@ -129,6 +139,18 @@ public class Autos {
                 AutoConstants.kDefaultStartRadius,
                 POI.BALLR3.get(), POI.BALLR4Entry.get(), AutoConstants.kDefaultBeginIntakingRadius,
                 POI.STOPR2.get());
+
+        pathBuilder = new FollowPath.Builder(
+                drive,                     // Subsystem requirement
+                drive::getPose,            // Supplier<Pose2d>
+                drive::getChassisSpeeds,   // Supplier<ChassisSpeeds> (robot-relative)
+                drive::drive,              // Consumer<ChassisSpeeds>  (robot-relative)
+                new PIDController(5.0, 0.0, 0.0),   // translation — minimizes remaining distance
+                new PIDController(3.0, 0.0, 0.0),   // rotation    — minimizes heading error
+                new PIDController(2.0, 0.0, 0.0)    // cross-track — minimizes perpendicular deviation
+        )
+        .withDefaultShouldFlip()                // auto-flip when on the red alliance
+        .withPoseReset(drive::resetPose); // reset odometry at each path's start pose
 
         // (L/R) Back From Center Line Default
         // Supplier<Command> leftBackToStartDefault = () -> Commands.race(
@@ -288,6 +310,14 @@ public class Autos {
                     c.addCommands(rightChoreoSweepBack.get());
 
                 }));
+
+        autos.put("bline testing", () -> {
+                Path path = new Path("test bline");
+
+                path.setPathConstraints(constraints);
+
+                return pathBuilder.build(path);
+        });
 
 
         // Auto-register

@@ -3,13 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
+import frc.robot.lib.BLine.*;
+import edu.wpi.first.math.controller.PIDController;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+
+import java.io.File;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.SignalLogger;
@@ -22,9 +25,11 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -95,6 +100,12 @@ public class RobotContainer {
 
     RobotStates robotStates = new RobotStates();
 
+//     Path.PathConstraints constraints = new Path.PathConstraints()
+//     .setMaxVelocityMetersPerSec(1.0)
+//     .setMaxAccelerationMetersPerSec2(2.0)
+//     .setEndTranslationToleranceMeters(0.08)
+//     .setEndRotationToleranceDeg(2.0);
+
 //     @Logged
     public final CommandSwerveDrivetrain m_drivetrain = new CommandSwerveDrivetrain(
             TunerConstants.DrivetrainConstants,
@@ -132,6 +143,8 @@ public class RobotContainer {
     private final AutoFactory autoFactory;
     private final Autos autoRoutines;
     public final AutoChooser m_chooser = new AutoChooser();
+//     public SendableChooser<Command> auto_chooser = new SendableChooser<>();
+//     FollowPath.Builder pathBuilder;
 
     private final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.Velocity);
@@ -153,6 +166,7 @@ public class RobotContainer {
         configureDefaultCommands();
         configureBindings();
         configureTriggers();
+        // configAuto();
 
         SignalLogger.enableAutoLogging(false);
     }
@@ -235,6 +249,7 @@ public class RobotContainer {
                         } // Drive counterclockwise with negative X (left)
                 ));
 
+
         // Align to Auto Start (DEBUG/TEST ONLY)
       //  joystick.x().whileTrue(new AutoAlign(POI.TRR1.get(), m_drivetrain, AutoAlign.kDefaultVelocityLimitedProfile));
 
@@ -287,6 +302,41 @@ public class RobotContainer {
 
     }
 
+//     public void configAuto() {
+//         pathBuilder = new FollowPath.Builder(
+//                 m_drivetrain,                     // Subsystem requirement
+//                 m_drivetrain::getPose,            // Supplier<Pose2d>
+//                 m_drivetrain::getChassisSpeeds,   // Supplier<ChassisSpeeds> (robot-relative)
+//                 m_drivetrain::drive,              // Consumer<ChassisSpeeds>  (robot-relative)
+//                 new PIDController(5.0, 0.0, 0.0),   // translation — minimizes remaining distance
+//                 new PIDController(3.0, 0.0, 0.0),   // rotation    — minimizes heading error
+//                 new PIDController(2.0, 0.0, 0.0)    // cross-track — minimizes perpendicular deviation
+//         )
+//         .withDefaultShouldFlip()                // auto-flip when on the red alliance
+//         .withPoseReset(m_drivetrain::resetPose); // reset odometry at each path's start pose
+
+//         File path_directory = new File("src/main/deploy/autos/paths");
+        
+//         String[] paths = path_directory.list();
+
+//         for (int i = 0; i < paths.length; i++) {
+//                 int index = paths[i].indexOf(".json");
+
+//                 paths[i] = paths[i].substring(0, index);
+//         }
+
+//         for (String path : paths) {
+//                 Path bline_Path = new Path(path);
+
+//                 bline_Path.setPathConstraints(constraints);
+
+//                 auto_chooser.addOption(path, pathBuilder.build(bline_Path));
+//         }
+
+//         SmartDashboard.putData(auto_chooser);
+
+//     }
+
     private void configureTriggers() {
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -338,7 +388,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return m_chooser.selectedCommand();
-
+        // return auto_chooser.getSelected();
     }
 
     public class RobotStates {
@@ -380,4 +430,6 @@ public class RobotContainer {
                     || m_drivetrain.state.Speeds.omegaRadiansPerSecond > Math.PI / 36;
         }
     }
+
+
 }
