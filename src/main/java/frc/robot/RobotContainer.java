@@ -50,6 +50,7 @@ import frc.robot.subsystems.hood.RealHoodS.HoodConstants;
 import frc.robot.subsystems.indexer.IndexerS;
 import frc.robot.subsystems.indexer.RealIndexerS;
 import frc.robot.subsystems.intakepivot.IntakePivotS;
+import frc.robot.subsystems.intakepivot.IntakeStateTest;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS;
 import frc.robot.subsystems.intakepivot.RealIntakePivotS.IntakePivotConstants;
 import frc.robot.subsystems.intakeroller.IntakeRollerS;
@@ -111,6 +112,7 @@ public class RobotContainer {
     private final IndexerS m_indexer = new RealIndexerS();
 //     @Logged(name = "IntakePivot")
     private final IntakePivotS m_intakePivot = new RealIntakePivotS(robotStates::isTurretStowed, robotStates::isFlywheelSafe);
+private final IntakeStateTest m_intakePivot2 = new IntakeStateTest();
 //     @Logged(name = "IntakeRoller")
     private final IntakeRollerS m_intakeRoller = new RealIntakeRollerS();
 //     @Logged(name = "Spindexer")
@@ -210,7 +212,8 @@ public class RobotContainer {
         joystick.povCenter().whileFalse(driveIntakeRelativePOV());
 
         // Intake Toggle Deployed
-        joystick.a().toggleOnTrue(m_autoCommands.fuelIntake());
+        joystick.a().onTrue(m_intakePivot2.deployCommand());
+        joystick.a().onFalse(m_intakePivot2.retractCommand());
 
         // Drive Align to Cardinal Direction
         joystick.b().whileTrue(
