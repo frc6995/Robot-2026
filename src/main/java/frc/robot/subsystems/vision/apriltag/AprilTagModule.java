@@ -31,6 +31,7 @@ public class AprilTagModule {
 
     private final StructPublisher<Pose3d> robotToCameraPublisher;
     private final StructPublisher<Pose3d> estimatePublisher;
+    private final StructPublisher<Pose3d> mtOnePublisher;
     private final BooleanPublisher isActivePublisher;
     private final StringPublisher modePublisher;
     private final StringPublisher defaultModePublisher;
@@ -58,6 +59,7 @@ public class AprilTagModule {
         moduleSubTable = visionTable.getSubTable(limelightID);
         robotToCameraPublisher = moduleSubTable.getStructTopic("CameraOffset", Pose3d.struct).publish();
         estimatePublisher = moduleSubTable.getStructTopic("PoseEstimate", Pose3d.struct).publish();
+        mtOnePublisher = moduleSubTable.getStructTopic("mtOne", Pose3d.struct).publish();
         isActivePublisher = moduleSubTable.getBooleanTopic("IsActive").publish();
         modePublisher = moduleSubTable.getStringTopic("LastEstimateMode").publish();
         defaultModePublisher = moduleSubTable.getStringTopic("DefaultEstimateMode").publish();
@@ -91,6 +93,8 @@ public class AprilTagModule {
         if(RobotContainer.kTelemetryVerbosity.compareTo(TelemetryVerbosity.MID) >= 0) {
             var poseSupp = getPose();
             estimatePublisher.accept(poseSupp.isPresent() ? poseSupp.get().pose : Pose3d.kZero);
+            var poseSupp2 = getPoseMT1();
+            mtOnePublisher.accept(poseSupp2.isPresent() ? poseSupp2.get().pose : Pose3d.kZero);
             isActivePublisher.accept(isActive());
             modePublisher.accept(lastMode.toString());
             defaultModePublisher.accept(defaultMode.toString());

@@ -28,8 +28,11 @@ public abstract class AprilTagVision {
     }
 
     public static Matrix<N3,N1> getDisabledStdDevs(PoseEstimate estimate) {
-        double xydevs = ATVisionConstants.kDisabledStdDevCoefficients[0] * Math.pow(estimate.avgTagDist, 2.0) / Math.pow(estimate.tagCount, 2.0);
-        double thetadevs = ATVisionConstants.kDisabledStdDevCoefficients[1] * Math.pow(estimate.avgTagDist, 2.0) / Math.pow(estimate.tagCount, 2.0);
+        // double xydevs = ATVisionConstants.kDisabledStdDevCoefficients[0] * Math.pow(estimate.avgTagDist, 2.0) / Math.pow(estimate.tagCount, 2.0);
+
+        // double thetadevs = ATVisionConstants.kDisabledStdDevCoefficients[1] * Math.pow(estimate.avgTagDist, 2.0) / Math.pow(estimate.tagCount, 2.0);
+        Double xydevs = Double.MAX_VALUE;
+        Double thetadevs = Double.MAX_VALUE;
         return VecBuilder.fill(
             xydevs,
             xydevs,

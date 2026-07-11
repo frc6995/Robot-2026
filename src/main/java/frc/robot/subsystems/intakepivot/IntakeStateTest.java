@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
-import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -60,9 +59,6 @@ public class IntakeStateTest extends SubsystemBase {
         public static final Angle kStowAngle = kUpperLimit;
 
         public static final Angle kTolerance = Degrees.of(3);
-
-        // Safety
-        public static final double kMaxTempCelsius = 60;
     }
 
     private final TalonFX intakePivotMotor =
@@ -182,11 +178,6 @@ public class IntakeStateTest extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (intakePivotMotor.getDeviceTemp().getValueAsDouble()
-                >= IntakePivotConstants.kMaxTempCelsius) {
-            intakePivotMotor.setControl(new NeutralOut());
-            return;
-        }
 
         if (activeState != lastState) {
             if (activeState == IntakeStates.IDLE) {
