@@ -42,8 +42,8 @@ public abstract class AprilTagVision {
     }
 
     private static Matrix<N3,N1> getStdDevsMT1(AprilTagEstimate estimate) {
-        double xydevs = 0.01;
-        double thetadevs = 0.01;
+        double xydevs = 0.0001;
+        double thetadevs = 0.0001;
         return VecBuilder.fill(
             xydevs,
             xydevs,
