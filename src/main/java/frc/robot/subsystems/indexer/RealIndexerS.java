@@ -40,7 +40,7 @@ public class RealIndexerS extends IndexerS {
 
     }
 
-    private TalonFX m_indexerMotor = new TalonFX(IndexerConstants.kCAN_ID, TunerConstants.kHigherBus);
+    private TalonFX m_indexerMotor = new TalonFX(IndexerConstants.kCAN_ID, TunerConstants.kLowerBus);
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
             .withControlMode(ControlMode.OPEN_LOOP)

@@ -115,7 +115,7 @@ public class RealIntakePivotS extends IntakePivotS {
             .withStatorCurrentLimit(Amps.of(IntakePivotConstants.kStatorCurrentLimit));
 
     // Vendor motor controller object
-    private TalonFX m_intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kHigherBus);
+    private TalonFX m_intakePivotMotor = new TalonFX(IntakePivotConstants.kCANID, TunerConstants.kLowerBus);
 
     private SmartMotorController m_intakePivotController = new TalonFXWrapper(m_intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);
 

@@ -98,8 +98,8 @@ public class RealFlyWheelS extends FlyWheelS {
     }
 
     // Motors
-    private TalonFX m_leadMotor = new TalonFX(FlywheelConstants.kLeadMotorCANID, TunerConstants.kHigherBus);
-    private TalonFX m_followerMotor = new TalonFX(FlywheelConstants.kFollowMotorCANID, TunerConstants.kHigherBus);
+    private TalonFX m_leadMotor = new TalonFX(FlywheelConstants.kLeadMotorCANID, TunerConstants.kLowerBus);
+    private TalonFX m_followerMotor = new TalonFX(FlywheelConstants.kFollowMotorCANID, TunerConstants.kLowerBus);
 
     // SmartMotorController Config
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)

@@ -96,7 +96,7 @@ public class RealTurretS extends TurretS {
 
     }
 
-    private final TalonFX m_turretMotor = new TalonFX(TurretConstants.kCANID, TunerConstants.kHigherBus);
+    private final TalonFX m_turretMotor = new TalonFX(TurretConstants.kCANID, TunerConstants.kLowerBus);
     private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
             .withClosedLoopController(TurretConstants.kP, TurretConstants.kI, TurretConstants.kD,
                     TurretConstants.kVelocity,

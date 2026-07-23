@@ -137,7 +137,7 @@ public class RealHoodS extends HoodS {
             .withStatorCurrentLimit(Amps.of(HoodConstants.kStatorCurrentLimit))
             .withSupplyCurrentLimit(Amps.of(HoodConstants.kSupplyCurrentLimit));
 
-    private TalonFX motor = new TalonFX(HoodConstants.kCANID, TunerConstants.kHigherBus);
+    private TalonFX motor = new TalonFX(HoodConstants.kCANID, TunerConstants.kLowerBus);
 
     private SmartMotorController talonSmartMotorController = new TalonFXWrapper(motor, DCMotor.getKrakenX44(1),
             smcConfig);
