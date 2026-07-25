@@ -132,7 +132,7 @@ public class AprilTagModule {
      * @return The estimated pose if the Limelight has targets
      */
     public Optional<AprilTagEstimate> getPose() {
-        return getPose(defaultMode == EstimationMode.MEGATAG2);
+        return getPose(defaultMode == EstimationMode.MEGATAG1);
     }
 
     // modified version of LL Helpers getPose method
