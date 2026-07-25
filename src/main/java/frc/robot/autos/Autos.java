@@ -314,8 +314,6 @@ public class Autos {
         autos.put("example_a", () -> {
                 Path path = new Path("example_a");
 
-                path.setPathConstraints(constraints);
-
                 return pathBuilder.build(path);
         });
 
