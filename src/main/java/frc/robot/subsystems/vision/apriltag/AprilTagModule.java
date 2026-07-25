@@ -46,6 +46,9 @@ public class AprilTagModule {
         this.limelightID = limelightID;
 
         LimelightHelpers.SetIMUMode(limelightID, 0);
+        
+        updateOffset(offset);
+
         defaultMode = ATVisionConstants.kDefaultMode;
 
             // Publishers for Limelight data
@@ -187,11 +190,11 @@ public class AprilTagModule {
     public void seedOrientation(Rotation3d rot) {
         LimelightHelpers.SetRobotOrientation(
             limelightID,
-            rot.getZ(),
+            Math.toDegrees((rot.getZ())),
             0,
-            rot.getY(),
+            Math.toDegrees((rot.getY())),
             0,
-            rot.getX(),
+            Math.toDegrees((rot.getX())),
             0
         );
     }
