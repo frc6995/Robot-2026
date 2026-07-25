@@ -444,6 +444,24 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
     }
 
+        public Pose2d getPose(){
+        return state().Pose;
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return state().Speeds;
+    }
+
+    public void drive(ChassisSpeeds speeds) {
+        SwerveRequest.RobotCentric drive_request = new SwerveRequest.RobotCentric()
+            .withDriveRequestType(DriveRequestType.Velocity);
+
+        drive_request.withVelocityX(speeds.vxMetersPerSecond);
+        drive_request.withVelocityY(speeds.vyMetersPerSecond);
+        drive_request.withRotationalRate(speeds.omegaRadiansPerSecond);
+
+        this.setControl(drive_request);
+    }
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the
      * odometry pose estimate
