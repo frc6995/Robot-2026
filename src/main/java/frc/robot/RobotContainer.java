@@ -141,7 +141,11 @@ public class RobotContainer {
     public final AutoChooser m_chooser = new AutoChooser();
 
     private final SwerveRequest.FieldCentric m_driveRequest = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(DriveRequestType.Velocity);
+            .withDriveRequestType(DriveRequestType.Velocity)
+            .withDeadband(5.30*0.05)
+            ;
+
+            
 
     private Trigger shootReadyTrigger = new Trigger(robotStates::isShootReady);
     private Trigger shootNotReadyTrigger = shootReadyTrigger.negate();
