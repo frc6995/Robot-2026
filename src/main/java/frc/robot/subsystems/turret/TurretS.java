@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.turret.RealTurretS.TurretConstants;
 import frc.robot.util.POI;
-import frc.robot.util.RobotVisualizer;
 import frc.robot.util.TriggerUtil;
 import frc.robot.util.ShooterController.ShooterTargetData;
 import frc.robot.util.UnitUtil;
@@ -133,7 +132,7 @@ public abstract class TurretS extends SubsystemBase {
     @Logged
     public boolean atSetpoint() {
         var angle = setpoint.getMeasure();
-        return angle.isNear(getAngle(), TurretConstants.kTolerance);
+        return angle.isNear(getAngle(), TurretConstants.kShootTolerance);
     }
 
     @Logged

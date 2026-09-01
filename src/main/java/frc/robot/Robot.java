@@ -17,13 +17,14 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.util.Elastic;
 import frc.robot.util.ShooterController;
 
 @Logged
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
-    @Logged(name = "RobotContainer")
+    // @Logged(name = "RobotContainer")
     private final RobotContainer m_robotContainer;
     private double autoSimTime = 20;
 
@@ -90,7 +91,12 @@ public class Robot extends TimedRobot {
       if (m_autonomousCommand != null) {
         CommandScheduler.getInstance().schedule(m_autonomousCommand);
       }
+      Elastic.selectTab("Autonomous");
   }
+
+
+
+
 
   @Override
   public void autonomousPeriodic() {}
@@ -103,6 +109,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    Elastic.selectTab("Teleoperated");
 
   }
 

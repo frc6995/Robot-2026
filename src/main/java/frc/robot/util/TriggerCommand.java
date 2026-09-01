@@ -83,12 +83,4 @@ public class TriggerCommand extends Command {
         return this;
     }
 
-    // public Set<Subsystem> getRequirements() {
-    //     Set<Subsystem> requirements = new HashSet<Subsystem>();
-
-    //     for(Command command : m_commands) {
-    //         requirements.addAll(command.getRequirements());
-    //     }
-    //     return requirements;
-    // } 
 }

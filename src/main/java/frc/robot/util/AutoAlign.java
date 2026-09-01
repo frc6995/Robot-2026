@@ -30,45 +30,17 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class AutoAlign extends Command {
     // Static factory methods with profile parameters
-    public static Command defaultProfileToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
-            CommandSwerveDrivetrain drivetrain) {
-        return defaultProfileToAlliance(bluePose, blueEntryAngle, drivetrain, kDefaultProfile);
-    }
 
-    public static Command defaultProfileToAlliance(Pose2d bluePose, Rotation2d blueEntryAngle,
-            CommandSwerveDrivetrain drivetrain, APProfile profile) {
-        return AllianceFlipUtil.flippedCommand(
-                (pose, rotation) -> new AutoAlign(pose, rotation, drivetrain, profile),
-                bluePose, blueEntryAngle);
-    }
-
-    public static Command climbProfileToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
-        return climbProfileToAlliance(bluePose, drivetrain, kClimbProfile);
-    }
-
-    public static Command climbProfileToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain,
-            APProfile profile) {
-        return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain, profile), bluePose);
-    }
-
-    public static Command defaultProfileToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain) {
-        return defaultProfileToAlliance(bluePose, drivetrain, kDefaultProfile);
-    }
-
-    public static Command defaultProfileToAlliance(Pose2d bluePose, CommandSwerveDrivetrain drivetrain,
-            APProfile profile) {
-        return AllianceFlipUtil.flippedCommand((pose) -> new AutoAlign(pose, drivetrain, profile), bluePose);
-    }
 
     public static class AutoAlignConstants {
-        public static double DEFAULT_MAX_VELOCITY = 3.3; // physical max is 5.5 m/s^2
-        public static double DEFAULT_ACCELERATION = 14.6; // Calculated from swerve slip current
-        public static double DEFAULT_JERK = 18.0;
+        public static double DEFAULT_MAX_VELOCITY = 5.5; // physical max is 5.5 m/s^2
+        public static double DEFAULT_ACCELERATION = 23; // Calculated from swerve slip current
+        public static double DEFAULT_JERK = 6.0;
 
         // Constants are listed as (velocity, acceleration, jerk) or (acceleration,
         // jerk)
-        public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(1.6, DEFAULT_ACCELERATION, 20);
-                public static APConstraints SLOW_CRAWL_CONSTRAINTS = new APConstraints(0.6, DEFAULT_ACCELERATION, 20);
+        public static APConstraints SLOW_DRIVE_CONSTRAINTS = new APConstraints(1.3, DEFAULT_ACCELERATION, 20);
+                public static APConstraints SLOW_CRAWL_CONSTRAINTS = new APConstraints(0.5, DEFAULT_ACCELERATION, 20);
 
         public static APConstraints VELOCITY_LIMITED_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, DEFAULT_JERK);
         public static APConstraints HIGH_JERK_CONSTRAINTS = new APConstraints(DEFAULT_MAX_VELOCITY, DEFAULT_ACCELERATION, 60);
@@ -99,11 +71,6 @@ public class AutoAlign extends Command {
             .withErrorTheta(Degrees.of(10))
             .withBeelineRadius(Centimeters.of(8));
 
-        public static APProfile kHighJerkProfile = new APProfile(
-            AutoAlignConstants.HIGH_JERK_CONSTRAINTS)
-            .withErrorXY(Centimeters.of(6))
-            .withErrorTheta(Degrees.of(1.5))
-            .withBeelineRadius(Centimeters.of(8));
     
     public static APProfile kSlowDriveProfile = new APProfile(
             AutoAlignConstants.SLOW_DRIVE_CONSTRAINTS)

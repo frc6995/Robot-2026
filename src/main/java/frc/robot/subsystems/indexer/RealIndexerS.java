@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -26,35 +27,38 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class RealIndexerS extends IndexerS {
     public class IndexerConstants {
-            // CAN IDs
-        public static final int kCAN_ID = 61; 
-            // Motor Properties
+        // CAN IDs
+        public static final int kCAN_ID = 61;
+        // Motor Properties
         public static final boolean kInverted = true;
-        public static final int kStatorCurrentLimit = 120; 
-        public static final int kSupplyCurrentLimit = 80; 
+        public static final int kStatorCurrentLimit = 350;
+        public static final int kSupplyCurrentLimit = 80;
         public static final int kGearRatio = 5;
-            // Setpoints
+        // Setpoints
         public static final Voltage kSlowVoltage = Volts.of(6.0);
-                public static final Voltage kFastVoltage = Volts.of(10.0);
-
+        public static final Voltage kFastVoltage = Volts.of(10.0);
 
     }
-    private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-        .withControlMode(ControlMode.OPEN_LOOP)
-            // Apply Telemetry Config
-        .withTelemetry("IndexerMotor", RobotContainer.kTelemetryVerbosity)
-            // Motor Physicsal Properties
-        .withGearing(new MechanismGearing(GearBox.fromReductionStages(IndexerConstants.kGearRatio)))
-        .withMotorInverted(IndexerConstants.kInverted)
-        .withIdleMode(MotorMode.COAST)
-        .withStatorCurrentLimit(Amps.of(IndexerConstants.kStatorCurrentLimit))
-        .withSupplyCurrentLimit(Amps.of(IndexerConstants.kSupplyCurrentLimit));
 
     private TalonFX m_indexerMotor = new TalonFX(IndexerConstants.kCAN_ID, TunerConstants.kHigherBus);
-    private SmartMotorController m_indexerController = new TalonFXWrapper(m_indexerMotor, DCMotor.getKrakenX44(1),smcConfig);
 
-    public Command setVoltage(Supplier<Voltage> voltage) {  
-        return run(() -> m_indexerController.setVoltage(voltage.get())).finallyDo(() -> m_indexerController.setVoltage(Volts.zero()));
+    private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+            .withControlMode(ControlMode.OPEN_LOOP)
+            // Apply Telemetry Config
+            .withTelemetry("IndexerMotor", RobotContainer.kTelemetryVerbosity)
+            // Motor Physicsal Properties
+            .withGearing(new MechanismGearing(GearBox.fromReductionStages(IndexerConstants.kGearRatio)))
+            .withMotorInverted(IndexerConstants.kInverted)
+            .withIdleMode(MotorMode.COAST)
+            .withStatorCurrentLimit(Amps.of(IndexerConstants.kStatorCurrentLimit))
+            .withSupplyCurrentLimit(Amps.of(IndexerConstants.kSupplyCurrentLimit));
+
+    private SmartMotorController m_indexerController = new TalonFXWrapper(m_indexerMotor, DCMotor.getKrakenX44(1),
+            smcConfig);
+
+    public Command setVoltage(Supplier<Voltage> voltage) {
+        return run(() -> m_indexerController.setVoltage(voltage.get()))
+                .finallyDo(() -> m_indexerController.setVoltage(Volts.zero()));
     }
 
     public Current getCurrent() {
@@ -69,18 +73,16 @@ public class RealIndexerS extends IndexerS {
     }
 
     @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-   // m_indexerController.updateTelemetry();
+    public void periodic() {
+        // This method will be called once per scheduler run
+        // m_indexerController.updateTelemetry();
 
-  }
+    }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-    m_indexerController.simIterate();
+    @Override
+    public void simulationPeriodic() {
+        // This method will be called once per scheduler run during simulation
+        m_indexerController.simIterate();
 
-
-    
-  }
+    }
 }

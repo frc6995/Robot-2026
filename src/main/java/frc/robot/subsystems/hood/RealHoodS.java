@@ -69,19 +69,38 @@ public class RealHoodS extends HoodS {
         public static final double kS = 0;
         public static final double kV = 4.99;
         public static final double kA = 0.04;
+        // Sim PID-FF Constants
+        public static final double kSimP = 38;
+        public static final double kSimI = 0;
+        public static final double kSimD = 0.41;
+        public static final double kSimS = 0;
+        public static final double kSimV = 2.99;
+        public static final double kSimA = 0.03;
 
         // Setpoints and Limits
         public static final Angle kLowerLimit = Degrees.of(12.5); // CW Limit
-        public static final Angle kUpperLimit = Degrees.of(38); // CCW Limit
+        public static final Angle kUpperLimit = Degrees.of(40); // CCW Limit
         public static final Angle kStowAngle = kLowerLimit;
-        public static final Angle kTolerance = Degrees.of(2);
+        public static final Angle kTolerance = Degrees.of(5);
         public static final double[][] kAngleData = {
                 // Distance (Meters), Angle(Degrees)
                 { 1, 12.5 },
-                { 2.2, 20 },
-                { 4, 35 },
-                { 5, 40 },
+                { 2.5, 20 },
+                { 4, 26 },
+                { 5, 30},
+                { 6, 40}
         };
+
+        public static final double[][] kPassAngleData = {
+            { 1, 15 },
+            { 2, 20 },
+            { 3, 30},
+            { 4, 40},
+            { 5, 40},
+        };
+
+        // TODO: Tune this!
+        // public static final double kInTowerAngle = 20;
         // Motor Setup
         public static final double kStatorCurrentLimit = 40;
         public static final double kSupplyCurrentLimit = 25;
@@ -142,7 +161,7 @@ public class RealHoodS extends HoodS {
     private Supplier<ChassisSpeeds> lastSpeeds;
     private BooleanSupplier isIntakeDeployed;
     private double poseEstPeriod = 0.02;
-    private Angle setpointNoLimit = HoodConstants.kLowerLimit;
+    private Angle setpointNoLimit = HoodConstants.kUpperLimit;
 
     private BooleanSupplier shouldApplyDynamicLimit;
 
@@ -234,12 +253,7 @@ public class RealHoodS extends HoodS {
             .andThen(setVoltage(Volts.zero()))
             .onlyIf(isIntakeDeployed);
 
-        // return Commands.sequence(
-        //     setVoltage(() -> TurretConstants.kHomingDrive)
-        //             .until(TriggerUtil.debounce(() -> getSupplyCurrent().gt(TurretConstants.kHomingCurrentThreshold), TurretConstants.kHomingTime)),
-        //     resetEncoder()).withTimeout(2.0)
-        //     .andThen(setVoltage(Volts.zero()))
-        //     .onlyIf(isIntakeDeployed);
+
     }
 
     public Angle applyDynamicLimits(Angle targetAngle, Pose2d robotPose) {
@@ -256,9 +270,7 @@ public class RealHoodS extends HoodS {
     }
 
     public Command runSOTF(Supplier<ShooterTargetData> dataSupplier) {
-        return setAngle(() -> applyDynamicLimits(
-                Degrees.of(dataSupplier.get().hoodAngleDeg),
-                robotPose.get()));
+        return setAngle(() -> Degrees.of(dataSupplier.get().hoodAngleDeg));
     }
 
     public Command runSOTF_OVERRIDE_SAFETY(Supplier<ShooterTargetData> dataSupplier) {
@@ -290,8 +302,14 @@ public class RealHoodS extends HoodS {
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
-        double currentAngleRad = hood.getAngle().in(Radians);
-        RobotVisualizer.updateHood(currentAngleRad);
+        Optional<Angle> optionalSetpoint = hood.getMechanismSetpoint();
+
+        // If there is no setpoint, default to 0 radians
+        Angle actualAngle = optionalSetpoint.orElse(Radians.of(0)); 
+
+        // Now you can safely use it
+        double radians = actualAngle.in(Radians);
+        RobotVisualizer.updateHood(radians);
         hood.simIterate();
     }
 
